@@ -1,11 +1,19 @@
-package genetools.exceptions;
+package exceptions.parse.sample;
+
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class HsdFileParseException extends HsdException{
+import exceptions.parse.samplefile.HsdFileException;
+
+public class HsdFileSampleParseException extends HsdFileException{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7884048528486763694L;
+	
 	String testSampleID = "";
-	public HsdFileParseException(String message) {
+	public HsdFileSampleParseException(String message) {
 		super(message);
 	}
 

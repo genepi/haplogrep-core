@@ -1,10 +1,9 @@
-package haploClassification;
-
-import java.util.Iterator;
+package search;
 
 import genetools.Polymorphism;
-import genetools.Sample;
 import genetools.TestSample;
+
+import java.util.Iterator;
 
 public class SearchResultHamming extends SearchResult {
 

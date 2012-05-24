@@ -1,24 +1,18 @@
 package genetools;
 
-import genetools.exceptions.HsdException;
-import genetools.exceptions.HsdFileParseException;
-import genetools.exceptions.InvalidBaseException;
-import genetools.exceptions.InvalidFormatException;
-import genetools.exceptions.InvalidHsdFileColumnCount;
-import genetools.exceptions.InvalidHsdFileException;
-import genetools.exceptions.InvalidRangeException;
-import genetools.exceptions.UniqueKeyException;
+import exceptions.parse.sample.HsdFileSampleParseException;
+import exceptions.parse.sample.InvalidBaseException;
+import exceptions.parse.sample.InvalidRangeException;
+import exceptions.parse.samplefile.HsdFileException;
+import exceptions.parse.samplefile.InvalidColumnCountException;
+import exceptions.parse.samplefile.UniqueKeyException;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
@@ -30,21 +24,21 @@ import org.jdom.Element;
 public class SampleFile {
 	Hashtable<String,TestSample> testSamples = new Hashtable<String,TestSample>();
 	
-	public SampleFile(ArrayList<String> sampleLines) throws InvalidRangeException, InvalidHsdFileColumnCount, HsdFileParseException,InvalidRangeException,NumberFormatException, UniqueKeyException
+	public SampleFile(ArrayList<String> sampleLines) throws InvalidRangeException, InvalidColumnCountException, HsdFileSampleParseException,InvalidRangeException,NumberFormatException, UniqueKeyException
 	{
 		int lineIndex = 1;
 		for(String currentLine : sampleLines)
 		{
 			TestSample newSample;
 			try {
-				newSample = new TestSample(currentLine);
+				newSample = TestSample.parse(currentLine);
 			} catch (InvalidRangeException e) {
 				e.setLineExceptionOccured(lineIndex);
 				throw e;
-			} catch (InvalidHsdFileColumnCount e) {
+			} catch (InvalidColumnCountException e) {
 				e.setLineExceptionOccured(lineIndex);
 				throw e;
-			} catch (HsdFileParseException e) {
+			} catch (HsdFileSampleParseException e) {
 				e.setLineExceptionOccured(lineIndex);
 				throw e;
 			}
@@ -62,7 +56,7 @@ public class SampleFile {
 		}
 	}
 	//depends on the read in method
-	public SampleFile(String pathToSampleFile,boolean testCase) throws IOException, NumberFormatException, InvalidHsdFileException, HsdException, InvalidBaseException, InvalidRangeException,InvalidFormatException, InvalidHsdFileColumnCount 
+	public SampleFile(String pathToSampleFile,boolean testCase) throws IOException, NumberFormatException, HsdFileException, InvalidBaseException, InvalidRangeException, InvalidColumnCountException 
 	{
 		BufferedReader sampleFileStream;
 		if(testCase){ //for test cases
@@ -77,7 +71,7 @@ public class SampleFile {
 		String currentLine = sampleFileStream.readLine();
 		
 		while (currentLine != null) {
-			TestSample newSample = new TestSample(currentLine);
+			TestSample newSample = TestSample.parse(currentLine);
 			testSamples.put(newSample.getSampleID(), newSample);
 
 			currentLine = sampleFileStream.readLine();

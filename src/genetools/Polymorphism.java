@@ -1,11 +1,9 @@
 package genetools;
 
 
-import genetools.exceptions.InvalidBaseException;
-import genetools.exceptions.InvalidFormatException;
-import genetools.exceptions.InvalidPolymorphismException;
+import exceptions.parse.sample.InvalidBaseException;
+import exceptions.parse.sample.InvalidPolymorphismException;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
@@ -31,7 +29,7 @@ public class Polymorphism implements Comparable<Polymorphism>{
 		this.position = newPosition;
 	}
 	
-	public Polymorphism(String phyloString) throws NumberFormatException, InvalidFormatException, InvalidPolymorphismException {
+	public Polymorphism(String phyloString) throws NumberFormatException, InvalidPolymorphismException {
 		parse(phyloString);
 	}
 	
@@ -87,9 +85,6 @@ public class Polymorphism implements Comparable<Polymorphism>{
 		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (InvalidFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (InvalidPolymorphismException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -117,7 +112,7 @@ public class Polymorphism implements Comparable<Polymorphism>{
 				&& this.mutation == ((Polymorphism)p).mutation){
 			
 			//insertions
-			if(((Polymorphism)p).getMutation().equals(this.mutation.INS)){
+			if(((Polymorphism)p).getMutation().equals(Mutations.INS)){
 				
 				if(((Polymorphism)p).insertedPolys.contains(this.insertedPolys))
 					return true;
@@ -228,9 +223,9 @@ public class Polymorphism implements Comparable<Polymorphism>{
 		}
 	}
 	
-	private void parse(String phyloString) throws InvalidFormatException,NumberFormatException, InvalidPolymorphismException
+	private void parse(String phyloString) throws InvalidPolymorphismException
 	{
-		// Because of deletion and insertion more than one resulting polymorphismn are possible
+		// Because of deletion and insertion more than one resulting polymorphisms are possible
 		StringTokenizer st1 = null;
 		phyloString=phyloString.trim();
 		
@@ -316,7 +311,7 @@ public class Polymorphism implements Comparable<Polymorphism>{
 			 try {
 				Integer.parseInt(phyloString.substring(m.start(), m.end()),10);
 			} catch (NumberFormatException e) {
-				throw new InvalidFormatException(phyloString);
+				throw new InvalidPolymorphismException(phyloString);
 			}
 			 
 			 //if(m.end() < phyloString.length())

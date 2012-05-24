@@ -1,4 +1,4 @@
-package haploClassification;
+package search;
  
 import genetools.Polymorphism;
 

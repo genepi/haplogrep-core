@@ -1,20 +1,19 @@
-package haploClassification;
+package search;
 
+import exceptions.parse.sample.InvalidBaseException;
+import exceptions.parse.sample.InvalidPolymorphismException;
 import genetools.Haplogroup;
 import genetools.Polymorphism;
 import genetools.TestSample;
-import genetools.exceptions.InvalidBaseException;
-import genetools.exceptions.InvalidFormatException;
-import genetools.exceptions.InvalidPolymorphismException;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.jdom.Element;
 import org.jdom.JDOMException;
+
+import com.sun.media.sound.InvalidFormatException;
 
 public class HaploSearchHamming implements IHaploSearch 
 {
@@ -29,8 +28,7 @@ public class HaploSearchHamming implements IHaploSearch
 	 * @see haploClassification.IHaploSearch#search(genetools.TestSample)
 	 */
 	@Override
-	public List<ClusteredSearchResult> search(TestSample testSample) throws JDOMException, IOException, NumberFormatException, InvalidPolymorphismException,
-			InvalidFormatException {
+	public List<ClusteredSearchResult> search(TestSample testSample) throws JDOMException, IOException, NumberFormatException, InvalidPolymorphismException {
 
 		// Remove all polymorphisms which don`t appear in the phylo tree (e.g
 		// unstable ones...)
@@ -58,7 +56,7 @@ public class HaploSearchHamming implements IHaploSearch
 	 * @throws InvalidBaseException
 	 * @throws InvalidFormatException
 	 */
-	private ArrayList<SearchResult> searchPhylotreeWrapper(TestSample sample) throws NumberFormatException, InvalidPolymorphismException, InvalidFormatException {
+	private ArrayList<SearchResult> searchPhylotreeWrapper(TestSample sample) throws NumberFormatException, InvalidPolymorphismException {
 		ArrayList<SearchResult> results = new ArrayList<SearchResult>();
 
 		// Start at root node (mt dna reference NC_012920)
@@ -88,7 +86,7 @@ public class HaploSearchHamming implements IHaploSearch
 	 * @throws InvalidFormatException
 	 */
 	private void searchPhylotree(Element parent, ArrayList<SearchResult> results, TestSample sample, SearchResult parentResult) throws NumberFormatException,
-	InvalidPolymorphismException, InvalidFormatException {
+	InvalidPolymorphismException {
 		// Query all child haplogroup nodes
 		List<Element> children = (List<Element>) parent.getChildren("haplogroup");
 

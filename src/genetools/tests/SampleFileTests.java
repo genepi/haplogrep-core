@@ -1,15 +1,10 @@
 package genetools.tests;
 
-import genetools.Polymorphism;
-import genetools.Sample;
+import exceptions.parse.sample.InvalidBaseException;
+import exceptions.parse.samplefile.HsdFileException;
+import exceptions.parse.samplefile.InvalidColumnCountException;
+import exceptions.parse.samplefile.UniqueKeyException;
 import genetools.SampleFile;
-import genetools.SampleRange;
-import genetools.exceptions.HsdException;
-import genetools.exceptions.InvalidBaseException;
-import genetools.exceptions.InvalidFormatException;
-import genetools.exceptions.InvalidHsdFileColumnCount;
-import genetools.exceptions.InvalidHsdFileException;
-import genetools.exceptions.UniqueKeyException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,7 +15,7 @@ import org.junit.Test;
 
 public class SampleFileTests {
 	@Test
-	public void ParseHSDSampleFormatTest() throws NumberFormatException, InvalidBaseException, InvalidFormatException, IOException, InvalidHsdFileException, HsdException, InvalidHsdFileColumnCount, UniqueKeyException
+	public void ParseHSDSampleFormatTest() throws NumberFormatException, InvalidBaseException, IOException, HsdFileException, InvalidColumnCountException, UniqueKeyException
 	{
 		ArrayList<String> sampleTokens = new ArrayList<String>();
 		sampleTokens.add("1	1..576;16024..16569	H	249DEL 263G");
@@ -36,7 +31,7 @@ public class SampleFileTests {
 	}
 	
 	@Test
-	public void ParseHSDFileTest() throws NumberFormatException, InvalidBaseException, InvalidFormatException, IOException, InvalidHsdFileException, HsdException, InvalidHsdFileColumnCount
+	public void ParseHSDFileTest() throws  InvalidBaseException, IOException, HsdFileException, InvalidColumnCountException
 	{
 		SampleFile newSampleFile = new SampleFile("../docs/testSamples/hsdFiles/FullGenomes.hsd",true);
 		
@@ -48,7 +43,7 @@ public class SampleFileTests {
 	}
 	
 	@Test
-	public void ParseInvalidHSDFileTest() throws NumberFormatException, InvalidBaseException, InvalidFormatException, IOException, InvalidHsdFileException, HsdException, InvalidHsdFileColumnCount, UniqueKeyException
+	public void ParseInvalidHSDFileTest() throws NumberFormatException, InvalidBaseException, IOException, HsdFileException, InvalidColumnCountException, UniqueKeyException
 	{
 		ArrayList<String> sampleTokens = new ArrayList<String>();
 		sampleTokens.add("1	1..576;16024..16569	HH	249DEL 263G");

@@ -1,7 +1,7 @@
-package haploClassification;
+package search;
 import genetools.Haplogroup;
 import genetools.Polymorphism;
-import genetools.Sample;
+
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;

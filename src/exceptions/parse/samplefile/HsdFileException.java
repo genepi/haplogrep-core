@@ -1,25 +1,25 @@
-package genetools.exceptions;
+package exceptions.parse.samplefile;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class HsdException extends Exception {
+public class HsdFileException extends Exception {
 
 	private int lineExceptionOccured = -1;
 
-	public HsdException() {
+	public HsdFileException() {
 		super();
 	}
 
-	public HsdException(String message) {
+	public HsdFileException(String message) {
 		super(message);
 	}
 
-	public HsdException(Throwable cause) {
+	public HsdFileException(Throwable cause) {
 		super(cause);
 	}
 
-	public HsdException(String message, Throwable cause) {
+	public HsdFileException(String message, Throwable cause) {
 		super(message, cause);
 	}
 

@@ -1,10 +1,17 @@
-package genetools.exceptions;
+package exceptions.parse.samplefile;
+
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class InvalidHsdFileColumnCount extends HsdException {
-	public InvalidHsdFileColumnCount(int columns)
+
+public class InvalidColumnCountException extends HsdFileException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2297850578045810738L;
+
+	public InvalidColumnCountException(int columns)
 	{
 		super("A hsd file consists of more than 4 tab seperated columns. " +
 				"The used file had only " + columns + " column(s)");

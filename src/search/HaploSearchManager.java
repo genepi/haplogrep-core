@@ -1,10 +1,8 @@
-package haploClassification;
+package search;
 
+import exceptions.parse.sample.InvalidBaseException;
 import genetools.Haplogroup;
 import genetools.Polymorphism;
-import genetools.exceptions.InvalidBaseException;
-import genetools.exceptions.InvalidFormatException;
-import genetools.exceptions.InvalidPolymorphismException;
 import haploClassification.exceptions.PolyDoesNotExistException;
 
 import java.io.BufferedReader;
@@ -13,16 +11,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
-
 
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
+
+import com.sun.media.sound.InvalidFormatException;
 
 public final class HaploSearchManager {
 
@@ -55,9 +53,6 @@ public final class HaploSearchManager {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (NumberFormatException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InvalidFormatException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (InvalidBaseException e) {
@@ -95,7 +90,7 @@ public final class HaploSearchManager {
 	 */
 	//private void setPolygeneticWeights(String pathToPhyloWeightsFile) throws FileNotFoundException, IOException,
 	public void setPolygeneticWeights(InputStream pathToPhyloWeightsFile) throws FileNotFoundException, IOException,
-			InvalidBaseException, InvalidFormatException {
+			InvalidBaseException {
 		
 		//Read in the fluctuation rates
 		BufferedReader flucFile = new BufferedReader ( new InputStreamReader ( pathToPhyloWeightsFile ) ); 	

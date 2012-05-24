@@ -1,5 +1,5 @@
 package genetools;
-import genetools.exceptions.InvalidRangeException;
+import exceptions.parse.sample.InvalidRangeException;
 
 import java.util.ArrayList;
 

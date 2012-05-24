@@ -1,15 +1,14 @@
 package haploClassifier.acceptanceTests;
 
-import junit.framework.Assert;
+import exceptions.parse.sample.InvalidPolymorphismException;
 import genetools.Haplogroup;
-import genetools.Polymorphism;
-import genetools.exceptions.InvalidFormatException;
-import genetools.exceptions.InvalidPolymorphismException;
-import haploClassification.HaploSearchManager;
 import haploClassification.exceptions.PolyDoesNotExistException;
+import junit.framework.Assert;
 
 import org.jdom.JDOMException;
 import org.junit.Test;
+
+import search.HaploSearchManager;
 
 
 
@@ -18,7 +17,7 @@ public class ChangePhylotreeTests {
 	HaploSearchManager searchManager = new HaploSearchManager("phylotree11.xml","fluctRates11.txt");
 	
 	@Test
-	public void changePolyTest() throws NumberFormatException, InvalidFormatException, JDOMException, InvalidPolymorphismException, PolyDoesNotExistException
+	public void changePolyTest() throws NumberFormatException, JDOMException, InvalidPolymorphismException, PolyDoesNotExistException
 	{
 	
 		Assert.assertEquals("263G", searchManager.getPolysOfHg(new Haplogroup("H2a2")).get(2).getText());

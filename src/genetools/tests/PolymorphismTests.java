@@ -1,12 +1,8 @@
 package genetools.tests;
 
-import java.util.ArrayList;
-
+import exceptions.parse.sample.InvalidPolymorphismException;
 import genetools.Mutations;
 import genetools.Polymorphism;
-import genetools.exceptions.InvalidBaseException;
-import genetools.exceptions.InvalidFormatException;
-import genetools.exceptions.InvalidPolymorphismException;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -14,7 +10,7 @@ import org.junit.Test;
 
 public class PolymorphismTests {
 	@Test
-	public void ParseInsertionTest() throws  NumberFormatException, InvalidFormatException, InvalidPolymorphismException
+	public void ParseInsertionTest() throws  NumberFormatException, InvalidPolymorphismException
 	{
 		Polymorphism poly = new Polymorphism("573.1CCC");
 		Assert.assertNotNull(poly);
@@ -26,7 +22,7 @@ public class PolymorphismTests {
 	}
 	
 	@Test
-	public void ParseInsertionTest56() throws  NumberFormatException, InvalidFormatException, InvalidPolymorphismException
+	public void ParseInsertionTest56() throws  NumberFormatException, InvalidPolymorphismException
 	{
 		Polymorphism poly = new Polymorphism("573.1CCCC");
 		Assert.assertNotNull(poly);
@@ -35,14 +31,14 @@ public class PolymorphismTests {
 	
 	
 	@Test
-	public void ParseInsertionTest2() throws NumberFormatException, InvalidFormatException, InvalidPolymorphismException
+	public void ParseInsertionTest2() throws NumberFormatException, InvalidPolymorphismException
 	{
 		Polymorphism polys = new Polymorphism("573.1C");
 		Assert.assertEquals( "573.1C",polys.toString());
 	}
 	
 	@Test
-	public void ConvertPolyInsert() throws NumberFormatException, InvalidFormatException, InvalidPolymorphismException
+	public void ConvertPolyInsert() throws NumberFormatException, InvalidPolymorphismException
 	{
 		Polymorphism result = new Polymorphism("2232.1A");
 		
@@ -53,7 +49,7 @@ public class PolymorphismTests {
 			Assert.assertEquals(result.getMutation(), Mutations.INS);
 	}
 	@Test
-	public void ConvertPolyBackMutation() throws  NumberFormatException, InvalidFormatException, InvalidPolymorphismException
+	public void ConvertPolyBackMutation() throws  NumberFormatException, InvalidPolymorphismException
 	{
 		/*ArrayList<*/Polymorphism result = new Polymorphism("2706!");
 		
@@ -64,7 +60,7 @@ public class PolymorphismTests {
 	}
 	
 	@Test
-	public void TestEquals() throws  NumberFormatException, InvalidFormatException, InvalidPolymorphismException
+	public void TestEquals() throws  NumberFormatException, InvalidPolymorphismException
 	{
 		/*ArrayList<*/Polymorphism result = new Polymorphism("2706");
 		
@@ -75,7 +71,7 @@ public class PolymorphismTests {
 	}
 	
 	@Test
-	public void ConvertPolyDel() throws  NumberFormatException, InvalidFormatException, InvalidPolymorphismException
+	public void ConvertPolyDel() throws  NumberFormatException, InvalidPolymorphismException
 	{
 		Polymorphism result = new Polymorphism("5752del");
 		
@@ -87,19 +83,19 @@ public class PolymorphismTests {
 	
 	
 	@Test(expected=InvalidPolymorphismException.class)
-	public void CheckMalformedPolyException() throws InvalidPolymorphismException, InvalidFormatException
+	public void CheckMalformedPolyException() throws InvalidPolymorphismException
 	{
 		new Polymorphism("1X");
 	}
 	
 	@Test(expected=InvalidPolymorphismException.class)
-	public void CheckMalformedInsertPolyException() throws InvalidPolymorphismException, InvalidFormatException
+	public void CheckMalformedInsertPolyException() throws InvalidPolymorphismException
 	{
 		new Polymorphism("1.1X");
 	}
 	
 	@Test(expected=NumberFormatException.class)
-	public void CheckMalformedPolys() throws InvalidPolymorphismException, InvalidFormatException
+	public void CheckMalformedPolys() throws InvalidPolymorphismException
 	{
 		new Polymorphism("215T316A");
 	}

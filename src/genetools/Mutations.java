@@ -1,6 +1,7 @@
 package genetools;
 
-import genetools.exceptions.InvalidBaseException;
+import exceptions.parse.sample.InvalidBaseException;
+
 
 public enum Mutations
 {

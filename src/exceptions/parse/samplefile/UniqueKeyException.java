@@ -1,9 +1,10 @@
-package genetools.exceptions;
+package exceptions.parse.samplefile;
+
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class UniqueKeyException extends HsdException {
+public class UniqueKeyException extends HsdFileException {
 	String testSampleID = "";
 	public UniqueKeyException() {
 		super("Keys of samples (first column) are not unique");

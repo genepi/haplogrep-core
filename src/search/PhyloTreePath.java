@@ -1,14 +1,11 @@
-package haploClassification;
+package search;
 
 import genetools.Polymorphism;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 
 import org.jdom.Element;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 public class PhyloTreePath {
 	private ArrayList<PhyloTreeNode> path = new ArrayList<PhyloTreeNode>();

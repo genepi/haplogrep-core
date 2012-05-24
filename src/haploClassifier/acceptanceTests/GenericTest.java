@@ -1,36 +1,27 @@
 package haploClassifier.acceptanceTests;
 
-import java.io.BufferedReader;
+import exceptions.parse.sample.InvalidPolymorphismException;
+import genetools.Haplogroup;
+import genetools.SampleFile;
+import genetools.TestSample;
+
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import junit.framework.Assert;
 
 import org.jdom.JDOMException;
 import org.junit.BeforeClass;
-import org.junit.Test;
 
-import genetools.Haplogroup;
-import genetools.Sample;
-import genetools.SampleFile;
-import genetools.TestSample;
-import genetools.SampleRange;
-import genetools.exceptions.InvalidBaseException;
-import genetools.exceptions.InvalidFormatException;
-import genetools.exceptions.InvalidPolymorphismException;
-import haploClassification.ClusteredSearchResult;
-import haploClassification.HaploSearchHamming;
-import haploClassification.HaploSearchManager;
-import haploClassification.IHaploSearch;
+import search.ClusteredSearchResult;
+import search.HaploSearchHamming;
+import search.HaploSearchManager;
+import search.IHaploSearch;
 
 public class GenericTest {
 	static IHaploSearch newSearch = null;
@@ -87,7 +78,7 @@ public class GenericTest {
 	}
 
 	
-	public void runCompleteTestfile(String filename) throws IOException, JDOMException, NumberFormatException, InvalidPolymorphismException, InvalidFormatException
+	public void runCompleteTestfile(String filename) throws IOException, JDOMException, NumberFormatException, InvalidPolymorphismException
 	{
 		int correctHits = 0;
 		int i = 0;
@@ -237,8 +228,7 @@ public class GenericTest {
 	
 
 	protected void TestSampleDetailed( String string)
-	throws NumberFormatException, JDOMException, IOException,
-	InvalidPolymorphismException, InvalidFormatException {
+	throws NumberFormatException, JDOMException, IOException,InvalidPolymorphismException {
 		
 		List<ClusteredSearchResult> results = newSearch.search(testProbes.get(string));
 	

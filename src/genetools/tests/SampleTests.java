@@ -1,13 +1,7 @@
 package genetools.tests;
 
-import genetools.Polymorphism;
+import exceptions.parse.sample.InvalidPolymorphismException;
 import genetools.Sample;
-import genetools.SampleRange;
-import genetools.exceptions.InvalidBaseException;
-import genetools.exceptions.InvalidFormatException;
-import genetools.exceptions.InvalidPolymorphismException;
-
-import java.util.ArrayList;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,7 +9,7 @@ import org.junit.Test;
 
 public class SampleTests {
 	@Test
-	public void ParseSampleInsertionTest() throws NumberFormatException, InvalidPolymorphismException, InvalidFormatException
+	public void ParseSampleInsertionTest() throws NumberFormatException, InvalidPolymorphismException
 	{
 		Sample testSample = new Sample("249DEL 489C 573.1C 573.2C 573.3C 573.4A",0);
 		
@@ -26,7 +20,7 @@ public class SampleTests {
 	}
 
 	@Test
-	public void ParseLongInsertionTest() throws NumberFormatException, InvalidPolymorphismException, InvalidFormatException
+	public void ParseLongInsertionTest() throws NumberFormatException, InvalidPolymorphismException
 	{		
 		Sample testSample = new Sample("398.1T 398.2T 398.3T 398.4T 398.5T 398.6T 398.7T 398.8T 398.9T 398.10T 398.11C",0);
 		
@@ -36,7 +30,7 @@ public class SampleTests {
 	}
 	
 	@Test
-	public void ParseSampleInsertionUnorderedTest() throws NumberFormatException, InvalidPolymorphismException, InvalidFormatException
+	public void ParseSampleInsertionUnorderedTest() throws NumberFormatException, InvalidPolymorphismException
 	{
 		Sample testSample = new Sample("249DEL 489C 573.2C 573.1C 573.4A 573.3C",0);
 		
@@ -47,7 +41,7 @@ public class SampleTests {
 	}
 	
 	@Test
-	public void ParseSampleDeletationRangeTest() throws NumberFormatException, InvalidPolymorphismException, InvalidFormatException
+	public void ParseSampleDeletationRangeTest() throws NumberFormatException, InvalidPolymorphismException
 	{
 		Sample testSample = new Sample("8281-8284d",0);
 		
@@ -59,7 +53,7 @@ public class SampleTests {
 	}
 	
 	@Test
-	public void ParseSampleHighMutableTest() throws NumberFormatException, InvalidPolymorphismException, InvalidFormatException
+	public void ParseSampleHighMutableTest() throws NumberFormatException, InvalidPolymorphismException
 	{
 		Sample testSample = new Sample("309.1C 315.1C 16182C 16183C",0);
 		
@@ -70,7 +64,7 @@ public class SampleTests {
 		Assert.assertEquals( "16183C",testSample.getPolymorphismn().get(3).toString());
 	}
 	@Test
-	public void ParseSampleInsTest() throws NumberFormatException, InvalidPolymorphismException, InvalidFormatException
+	public void ParseSampleInsTest() throws NumberFormatException, InvalidPolymorphismException
 	{
 		Sample testSample = new Sample("309.1CCC",0);
 		
@@ -78,7 +72,7 @@ public class SampleTests {
 		Assert.assertEquals( "309.1CCC",testSample.getPolymorphismn().get(0).toString());
 	}
 	@Test
-	public void ParseSampleInsTest455() throws NumberFormatException, InvalidPolymorphismException, InvalidFormatException
+	public void ParseSampleInsTest455() throws NumberFormatException, InvalidPolymorphismException
 	{
 		Sample testSample = new Sample("455.2T",0);
 		
@@ -87,7 +81,7 @@ public class SampleTests {
 	}
 	
 	@Test
-	public void ParseSample524() throws NumberFormatException, InvalidPolymorphismException, InvalidFormatException
+	public void ParseSample524() throws NumberFormatException, InvalidPolymorphismException
 	{
 		Sample testSample = new Sample("524.2C 524.1A",0);
 		
@@ -98,7 +92,7 @@ public class SampleTests {
 	}
 	
 	@Test
-	public void ParseSample5242() throws NumberFormatException, InvalidPolymorphismException, InvalidFormatException
+	public void ParseSample5242() throws NumberFormatException, InvalidPolymorphismException
 	{
 		Sample testSample = new Sample("524.1AC",0);
 		

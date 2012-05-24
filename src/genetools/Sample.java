@@ -1,9 +1,6 @@
 package genetools;
 
-import genetools.exceptions.InvalidBaseException;
-import genetools.exceptions.InvalidFormatException;
-import genetools.exceptions.InvalidPolymorphismException;
-import genetools.exceptions.InvalidRangeException;
+import exceptions.parse.sample.InvalidPolymorphismException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,7 +11,7 @@ import java.util.regex.Pattern;
 public class Sample {
 	public ArrayList<Polymorphism> sample = new ArrayList<Polymorphism>();
 	//callMethod defines the call. callMethod=1 call from PhyloTree
-	public Sample(String sampleToParse,int callMethod) throws NumberFormatException, InvalidFormatException, InvalidPolymorphismException {
+	public Sample(String sampleToParse,int callMethod) throws InvalidPolymorphismException {
 	
 		String[] polyTokens = sampleToParse.trim().split("\\s+");
 		ArrayList<String> listOfSampleTokens = new ArrayList<String>(Arrays.asList(polyTokens));
@@ -57,7 +54,7 @@ public class Sample {
 		this.sample = filteredSample;
 	}
 
-	private ArrayList<Polymorphism> parseSample(ArrayList<String> sample, int callMethod) throws  InvalidFormatException,NumberFormatException, InvalidPolymorphismException {
+	private ArrayList<Polymorphism> parseSample(ArrayList<String> sample, int callMethod) throws   InvalidPolymorphismException {
 
 		ArrayList<Polymorphism> filteredSample = new ArrayList<Polymorphism>();
 		for (String currentPoly : sample) {

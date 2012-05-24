@@ -1,7 +1,7 @@
 package genetools.tests;
 
-import junit.framework.Assert;
 import genetools.Haplogroup;
+import junit.framework.Assert;
 
 import org.junit.Test;
 
