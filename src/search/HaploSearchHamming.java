@@ -38,7 +38,7 @@ public class HaploSearchHamming implements IHaploSearch
 		ArrayList<SearchResult> results = searchPhylotreeWrapper(testSample);
 
 		// Cluster search results with same rank together
-		ArrayList<ClusteredSearchResult> clusteredResult = ClusteredSearchResult.createClusteredSearchResult(results,testSample.getPredefiniedHaplogroup(), searchManager.getPhylotreeString());
+		ArrayList<ClusteredSearchResult> clusteredResult = ClusteredSearchResult.createClusteredSearchResult(results,testSample.getExpectedHaplogroup(), searchManager.getPhylotreeString());
 		
 		//set results to null (>20) to save memory. 
 		results.clear();

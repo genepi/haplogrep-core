@@ -3,6 +3,7 @@ package genetools;
 import exceptions.parse.sample.HsdFileSampleParseException;
 import exceptions.parse.sample.InvalidPolymorphismException;
 import exceptions.parse.sample.InvalidRangeException;
+import exceptions.parse.samplefile.HsdFileException;
 import exceptions.parse.samplefile.InvalidColumnCountException;
 
 import java.math.BigDecimal;
@@ -15,8 +16,8 @@ import search.SearchResult;
 public class TestSample implements Comparable<TestSample>{
 	
 	private String testSampleID = "Unknown";
-	private Haplogroup predefiniedHaplogroup;
-	private Haplogroup recognizedHaplogroup;
+	private Haplogroup expectedHaplogroup;
+	private Haplogroup detectedHaplogroup;
 	private Sample sample;
 	private SampleRange sampleRange = null;
 	
@@ -33,40 +34,55 @@ public class TestSample implements Comparable<TestSample>{
 	public TestSample (String sampleID, Haplogroup predefiniedHaplogroup,Sample sample, SampleRange sampleRange, String state) 
 	{
 		this.testSampleID = sampleID;
-		this.predefiniedHaplogroup = predefiniedHaplogroup;
+		this.expectedHaplogroup = predefiniedHaplogroup;
 		this.sample = sample;
 		this.sampleRange = sampleRange;
 		this.state=state;
 	}
 
-	public static TestSample parse(String currentLine) throws InvalidRangeException, NumberFormatException, InvalidColumnCountException, HsdFileSampleParseException {
+	/**
+	 * Parses a new Test sample object from an input string
+	 * @param inputString The string to parse
+	 * @return The parsed string as new TestSample object
+	 * @throws InvalidRangeException
+	 * @throws InvalidColumnCountException
+	 * @throws HsdFileSampleParseException
+	 */
+	public static TestSample parse(String inputString) throws HsdFileException {
 		TestSample parsedSample = new TestSample();
 
-		String[] tokens = currentLine.split("\t");
-
-		if (tokens.length < 4)
-			throw new InvalidColumnCountException(tokens.length);
-
-		parsedSample.testSampleID = tokens[0].trim();
-
-		tokens[1] = tokens[1].replaceAll("\"", "");
-		parsedSample.sampleRange = new SampleRange(tokens[1]);
-
-		if (tokens[2].equals("?") || tokens[2].equals("SEQ"))
-			parsedSample.predefiniedHaplogroup = new Haplogroup("");
-
-		else
-			parsedSample.predefiniedHaplogroup = new Haplogroup(tokens[2]);
-
-		// Interpret the rest of the line polymorphism tokens
-		StringBuffer sampleString = new StringBuffer();
-		for (int i = 3; i < tokens.length; i++) {
-			sampleString.append(tokens[i] + " ");
-		}
-
 		try {
+			//Split the input string in separate column strings 
+			String[] columns = inputString.split("\t");
+
+			//Check of number of columns are correct
+			if (columns.length < 4)
+				throw new InvalidColumnCountException(columns.length);
+
+			//Parse the test sample id
+			parsedSample.testSampleID = columns[0].trim();
+
+			//Parse range
+			columns[1] = columns[1].replaceAll("\"", "");
+			parsedSample.sampleRange = new SampleRange(columns[1]);
+
+			//Parse expected haplogroup
+			if (columns[2].equals("?") || columns[2].equals("SEQ"))
+				parsedSample.expectedHaplogroup = new Haplogroup("");
+
+			else
+				parsedSample.expectedHaplogroup = new Haplogroup(columns[2]);
+
+			// Parse the sample and all its polymprhisms
+			StringBuffer sampleString = new StringBuffer();
+			for (int i = 3; i < columns.length; i++) {
+				sampleString.append(columns[i] + " ");
+			}
 			parsedSample.sample = new Sample(sampleString.toString(), 0);
-		} catch (InvalidPolymorphismException e) {
+		} 
+		
+		//Something went wrong during the parse process. Throw exception.
+		 catch (InvalidPolymorphismException e) {
 			HsdFileSampleParseException ex = new HsdFileSampleParseException(e.getMessage());
 			ex.setTestSampleID(parsedSample.testSampleID);
 			throw ex;
@@ -75,58 +91,8 @@ public class TestSample implements Comparable<TestSample>{
 		return parsedSample;
 	}
 
-//	public TestSample(String currentLine) throws InvalidRangeException, NumberFormatException,InvalidHsdFileColumnCount, HsdFileParseException {
-//		
-//		String[] tokens = currentLine.split("\t");
-//		
-//		if(tokens.length < 4)
-//			throw new InvalidHsdFileColumnCount(tokens.length);
-//		
-//		this.testSampleID = tokens[0].trim();
-//		
-//		tokens[1] = tokens[1].replaceAll("\"", "");
-//		this.sampleRange = new SampleRange(tokens[1]);
-//		
-//		if(tokens[2].equals("?") || tokens[2].equals("SEQ"))
-//		this.predefiniedHaplogroup = new Haplogroup("");
-//		
-//		else
-//			this.predefiniedHaplogroup = new Haplogroup(tokens[2]);
-//		
-//		//Interpret the rest of the line polymorhismn tokens
-//		StringBuffer sampleString = new StringBuffer();
-//		for(int i = 3; i < tokens.length;i++)
-//		{
-//			//if(  !tokens[i].contains("R") &&  !tokens[i].contains("S") &&  !tokens[i].contains("K") &&  !tokens[i].contains("Y") &&  !tokens[i].contains("W")&&  !tokens[i].contains("M")){
-//				
-//			
-//			sampleString.append(tokens[i] + " ");
-//			//}
-//		}
-//		
-//		
-//			try {
-//				this.sample = new Sample(sampleString.toString(),0);
-//			} catch (NumberFormatException e) {
-//				HsdFileParseException ex = new HsdFileParseException(e.getMessage());
-//				ex.setTestSampleID(this.testSampleID);			
-//				throw ex;
-//			}
-//			catch (InvalidPolymorphismException e) {
-//				HsdFileParseException ex = new HsdFileParseException(e.getMessage());
-//				ex.setTestSampleID(this.testSampleID);			
-//				throw ex;
-//			}
-//			catch (InvalidFormatException e) {
-//				HsdFileParseException ex = new HsdFileParseException(e.getMessage());
-//				ex.setTestSampleID(this.testSampleID);			
-//				throw ex;
-//			}
-//		
-//	}
-
-	public Haplogroup getPredefiniedHaplogroup() {	
-		return predefiniedHaplogroup;
+	public Haplogroup getExpectedHaplogroup() {	
+		return expectedHaplogroup;
 	}
 
 	public ArrayList<Polymorphism> getPolymorphismn() {
@@ -141,9 +107,25 @@ public class TestSample implements Comparable<TestSample>{
 		return sample;
 	}
 
+	public Haplogroup getDetectedHaplogroup() {
+		return detectedHaplogroup;
+	}
+
+	public void setDetectedHaplogroup(Haplogroup recognizedHaplogroup) {
+		this.detectedHaplogroup = recognizedHaplogroup;
+	}
+
+	public void setExpectedHaplogroup(Haplogroup predefiniedHaplogroup) {
+		this.expectedHaplogroup = predefiniedHaplogroup;
+	}
+
+	public String getSampleID() {
+		return testSampleID;
+	}
+
 	public String toString()
 	{
-		String result = testSampleID + "\t" + predefiniedHaplogroup + "\t";
+		String result = testSampleID + "\t" + expectedHaplogroup + "\t";
 		
 		for(Polymorphism currentPoly : sample.sample)
 		{
@@ -153,12 +135,9 @@ public class TestSample implements Comparable<TestSample>{
 		return result;	
 	}
 
-	public String getSampleID() {
-		return testSampleID;
-	}
-
 	
-	public String getStatus() {
+	//TODO Consider removing state and use new warning/error system instead
+	public String getState() {
 		return state;
 	}
 
@@ -166,17 +145,6 @@ public class TestSample implements Comparable<TestSample>{
 		state = status;
 	}
 	
-
-	public Haplogroup getRecognizedHaplogroup() {
-		return recognizedHaplogroup;
-	}
-
-	public void setRecognizedHaplogroup(Haplogroup recognizedHaplogroup) {
-		this.recognizedHaplogroup = recognizedHaplogroup;
-	}
-	public void setPredefiniedHaplogroup(Haplogroup predefiniedHaplogroup) {
-		this.predefiniedHaplogroup = predefiniedHaplogroup;
-	}
 
 	//??
 	public void setResultQuality(double myDec) {
@@ -211,25 +179,22 @@ public class TestSample implements Comparable<TestSample>{
 	}
 
 	public void addRecommendedHaplogroups(Haplogroup hg, double rank) {
-		setRecognizedHaplogroup(hg);
+		setDetectedHaplogroup(hg);
 
+		double firstRank = (rank);
+		BigDecimal myDec = new BigDecimal(firstRank);
+		myDec = myDec.setScale(1, BigDecimal.ROUND_HALF_UP);
+		setResultQuality(myDec.doubleValue());
 
-			
-			double firstRank=(rank);
-			BigDecimal myDec = new BigDecimal( firstRank );
-			myDec = myDec.setScale( 1, BigDecimal.ROUND_HALF_UP );
-			setResultQuality(myDec.doubleValue());		
-			
-			//set status for colors
-			if(getPredefiniedHaplogroup().equals(getRecognizedHaplogroup()))
-				setState("identical");
-			else if(getPredefiniedHaplogroup().isSuperHaplogroup(getRecognizedHaplogroup())||
-					getRecognizedHaplogroup().isSuperHaplogroup(getPredefiniedHaplogroup()))
-				setState("similar");
-			else setState("mismatch");
-			
+		// set status for colors
+		if (getExpectedHaplogroup().equals(getDetectedHaplogroup()))
+			setState("identical");
+		else if (getExpectedHaplogroup().isSuperHaplogroup(getDetectedHaplogroup()) || getDetectedHaplogroup().isSuperHaplogroup(getExpectedHaplogroup()))
+			setState("similar");
+		else
+			setState("mismatch");
 
-		}
+	}
 	
 	void addNewSearchResult(SearchResult newResult){
 		allSearchResults.add(newResult);

@@ -24,7 +24,7 @@ import org.jdom.Element;
 public class SampleFile {
 	Hashtable<String,TestSample> testSamples = new Hashtable<String,TestSample>();
 	
-	public SampleFile(ArrayList<String> sampleLines) throws InvalidRangeException, InvalidColumnCountException, HsdFileSampleParseException,InvalidRangeException,NumberFormatException, UniqueKeyException
+	public SampleFile(ArrayList<String> sampleLines) throws HsdFileException
 	{
 		int lineIndex = 1;
 		for(String currentLine : sampleLines)
@@ -32,13 +32,7 @@ public class SampleFile {
 			TestSample newSample;
 			try {
 				newSample = TestSample.parse(currentLine);
-			} catch (InvalidRangeException e) {
-				e.setLineExceptionOccured(lineIndex);
-				throw e;
-			} catch (InvalidColumnCountException e) {
-				e.setLineExceptionOccured(lineIndex);
-				throw e;
-			} catch (HsdFileSampleParseException e) {
+			} catch (HsdFileException e) {
 				e.setLineExceptionOccured(lineIndex);
 				throw e;
 			}
@@ -196,23 +190,23 @@ public class SampleFile {
 			newElement1 = new Element("haplogroup");
 			
 			//if no haplogroup is predefinied, than set our result to predefinied
-			if(sample.getPredefiniedHaplogroup().toString().equals("")&&
-					sample.getRecognizedHaplogroup() != null ){ 
-			sample.setPredefiniedHaplogroup(sample.getRecognizedHaplogroup());
+			if(sample.getExpectedHaplogroup().toString().equals("")&&
+					sample.getDetectedHaplogroup() != null ){ 
+			sample.setExpectedHaplogroup(sample.getDetectedHaplogroup());
 			sample.setState("top rank");
 			}
-			if(sample.getRecognizedHaplogroup() != null 
-					&& !sample.getRecognizedHaplogroup().equals(sample.getPredefiniedHaplogroup())
+			if(sample.getDetectedHaplogroup() != null 
+					&& !sample.getDetectedHaplogroup().equals(sample.getExpectedHaplogroup())
 					)
-				newElement1.setText(sample.getPredefiniedHaplogroup().toString() 
-						+ " (" +sample.getRecognizedHaplogroup() .toString() + ")");
+				newElement1.setText(sample.getExpectedHaplogroup().toString() 
+						+ " (" +sample.getDetectedHaplogroup() .toString() + ")");
 			else
 			{
-				newElement1.setText(sample.getPredefiniedHaplogroup().toString());	}
+				newElement1.setText(sample.getExpectedHaplogroup().toString());	}
 			newElement.addContent(newElement1);
 			
 			newElement1 = new Element ("status");
-			newElement1.setText(String.valueOf(sample.getStatus()));
+			newElement1.setText(String.valueOf(sample.getState()));
 			newElement.addContent(newElement1);
 			
 			newElement1 = new Element ("hit");

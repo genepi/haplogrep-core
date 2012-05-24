@@ -98,7 +98,7 @@ public class GenericTest {
 			{
 				
 				List<ClusteredSearchResult> results = newSearch.search(currentSample);
-				boolean isCorrectHit = results.get(0).containsSuperhaplogroup(currentSample.getPredefiniedHaplogroup());//checkIfCorrectHaplogroup(results.get(0).getHaplogroup(),currentHaplogroup);
+				boolean isCorrectHit = results.get(0).containsSuperhaplogroup(currentSample.getExpectedHaplogroup());//checkIfCorrectHaplogroup(results.get(0).getHaplogroup(),currentHaplogroup);
 				 
 				sumBestRankClusterSize += results.get(0).getCluster().size();
 				
@@ -120,7 +120,7 @@ public class GenericTest {
 				{
 					 if(/*results.get(0).getCluster().size() >= 1*/true)//results.get(0).getHaplogroup().equals("P**16176"))
 					 {
-					 System.out.println(i + ". Failed to query "+ currentSample.getPredefiniedHaplogroup() + " : " + currentSample);
+					 System.out.println(i + ". Failed to query "+ currentSample.getExpectedHaplogroup() + " : " + currentSample);
 					 System.out.println( "\t Best Result "+results.get(0).getHaplogroup()+"("+results.get(0).getCluster().get(0).getRank() +")\n");
 					 System.out.println( "\t TestSample Rank "+results.get(0).getCluster().get(0).getCorrectPolyInTestSampleRatio());
 					 System.out.println("\t Cluster size: " +results.get(0).getCluster().size() );
@@ -129,9 +129,9 @@ public class GenericTest {
 					 boolean found = false;
 					 for(ClusteredSearchResult currentcluster : results)
 					 {
-						 if(currentcluster.containsSuperhaplogroup(currentSample.getPredefiniedHaplogroup()))
+						 if(currentcluster.containsSuperhaplogroup(currentSample.getExpectedHaplogroup()))
 						 {
-							 System.out.println( "\t Expected haplogroup "+currentSample.getPredefiniedHaplogroup() +" at rank:" + rank);
+							 System.out.println( "\t Expected haplogroup "+currentSample.getExpectedHaplogroup() +" at rank:" + rank);
 							 System.out.println();
 							 found = true;
 							 break;
@@ -233,9 +233,9 @@ public class GenericTest {
 		List<ClusteredSearchResult> results = newSearch.search(testProbes.get(string));
 	
 		
-		boolean isCorrectHit = results.get(0).containsSuperhaplogroup(testProbes.get(string).getPredefiniedHaplogroup());
+		boolean isCorrectHit = results.get(0).containsSuperhaplogroup(testProbes.get(string).getExpectedHaplogroup());
 		
-		outputResultDetailed(testProbes.get(string).getPredefiniedHaplogroup(),results,testProbes.get(string));	
+		outputResultDetailed(testProbes.get(string).getExpectedHaplogroup(),results,testProbes.get(string));	
 		
 		if(!isCorrectHit)
 		{
