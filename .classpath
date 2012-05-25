@@ -11,10 +11,10 @@
 	<classpathentry kind="lib" path="jars/batik-dom.jar"/>
 	<classpathentry kind="lib" path="jars/batik-awt-util.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="/Restlet/jars/org.json.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="jars/batik-svg-dom.jar"/>
 	<classpathentry kind="lib" path="jars/batik-svggen.jar"/>
 	<classpathentry kind="lib" path="jars/batik-swing.jar"/>
+	<classpathentry kind="lib" path="jars/org.json.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
