@@ -1,12 +1,13 @@
 package search;
 
 import exceptions.parse.sample.InvalidPolymorphismException;
-import genetools.TestSample;
 
 import java.io.IOException;
 import java.util.List;
 
 import org.jdom.JDOMException;
+
+import core.TestSample;
 
 public interface IHaploSearch {
 

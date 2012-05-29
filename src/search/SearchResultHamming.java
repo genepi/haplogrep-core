@@ -1,9 +1,10 @@
 package search;
 
-import genetools.Polymorphism;
-import genetools.TestSample;
 
 import java.util.Iterator;
+
+import core.Polymorphism;
+import core.TestSample;
 
 public class SearchResultHamming extends SearchResult {
 

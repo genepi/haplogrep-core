@@ -1,9 +1,6 @@
 package tests;
 
 import exceptions.parse.sample.InvalidPolymorphismException;
-import genetools.Haplogroup;
-import genetools.SampleFile;
-import genetools.TestSample;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -17,6 +14,10 @@ import junit.framework.Assert;
 
 import org.jdom.JDOMException;
 import org.junit.BeforeClass;
+
+import core.Haplogroup;
+import core.SampleFile;
+import core.TestSample;
 
 import search.ClusteredSearchResult;
 import search.HaploSearchHamming;

@@ -1,11 +1,12 @@
 package search;
 
-import genetools.Polymorphism;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
 import org.jdom.Element;
+
+import core.Polymorphism;
 
 public class PhyloTreePath {
 	private ArrayList<PhyloTreeNode> path = new ArrayList<PhyloTreeNode>();

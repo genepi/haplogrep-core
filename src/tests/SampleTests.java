@@ -1,10 +1,11 @@
 package tests;
 
 import exceptions.parse.sample.InvalidPolymorphismException;
-import genetools.Sample;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import core.Sample;
 
 
 public class SampleTests {

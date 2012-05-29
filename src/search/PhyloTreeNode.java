@@ -1,9 +1,10 @@
 package search;
 
-import genetools.Haplogroup;
-import genetools.Polymorphism;
 
 import java.util.ArrayList;
+
+import core.Haplogroup;
+import core.Polymorphism;
 
 public class PhyloTreeNode {
 	Haplogroup haplogroup = null;

@@ -1,8 +1,9 @@
 package search;
 
-import genetools.Polymorphism;
 
 import java.util.Iterator;
+
+import core.Polymorphism;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 

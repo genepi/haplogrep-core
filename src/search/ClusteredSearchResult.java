@@ -1,6 +1,4 @@
 package search;
-import genetools.Haplogroup;
-import genetools.Polymorphism;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -13,6 +11,9 @@ import org.jdom.Element;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import core.Haplogroup;
+import core.Polymorphism;
 
 
 

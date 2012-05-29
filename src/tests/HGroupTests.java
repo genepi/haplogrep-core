@@ -3,7 +3,6 @@ package tests;
 import exceptions.parse.sample.InvalidPolymorphismException;
 import exceptions.parse.samplefile.HsdFileException;
 import exceptions.parse.samplefile.InvalidColumnCountException;
-import genetools.TestSample;
 
 import java.io.IOException;
 import java.util.List;
@@ -13,6 +12,8 @@ import junit.framework.Assert;
 import org.jdom.JDOMException;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import core.TestSample;
 
 import search.ClusteredSearchResult;
 import search.HaploSearchHamming;

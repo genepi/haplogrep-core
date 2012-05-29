@@ -4,13 +4,14 @@ import exceptions.parse.sample.InvalidBaseException;
 import exceptions.parse.samplefile.HsdFileException;
 import exceptions.parse.samplefile.InvalidColumnCountException;
 import exceptions.parse.samplefile.UniqueKeyException;
-import genetools.SampleFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import core.SampleFile;
 
 
 public class SampleFileTests {

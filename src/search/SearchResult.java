@@ -1,9 +1,5 @@
 package search;
 
-import genetools.Haplogroup;
-import genetools.Polymorphism;
-import genetools.Sample;
-import genetools.TestSample;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,6 +7,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import org.jdom.Element;
+
+import core.Haplogroup;
+import core.Polymorphism;
+import core.Sample;
+import core.TestSample;
 
 /**
  * @author Dominic Pacher, Sebastian Sch�nherr, Hansi Weissensteiner

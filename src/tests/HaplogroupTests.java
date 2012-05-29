@@ -1,9 +1,10 @@
 package tests;
 
-import genetools.Haplogroup;
 import junit.framework.Assert;
 
 import org.junit.Test;
+
+import core.Haplogroup;
 
 
 public class HaplogroupTests {

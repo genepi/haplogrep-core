@@ -1,9 +1,10 @@
 package search;
  
-import genetools.Polymorphism;
 
 import java.util.Comparator;
 import java.util.Iterator;
+
+import core.Polymorphism;
  
 public class HammingDistanceComparator implements Comparator<SearchResult> {
  

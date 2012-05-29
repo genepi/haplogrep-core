@@ -1,4 +1,4 @@
-package genetools;
+package core;
 
 import exceptions.parse.sample.InvalidBaseException;
 

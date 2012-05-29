@@ -1,11 +1,12 @@
 package tests;
 
 import exceptions.parse.sample.InvalidPolymorphismException;
-import genetools.Mutations;
-import genetools.Polymorphism;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import core.Mutations;
+import core.Polymorphism;
 
 
 public class PolymorphismTests {
