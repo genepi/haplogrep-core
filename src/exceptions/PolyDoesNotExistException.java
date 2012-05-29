@@ -1,4 +1,4 @@
-package haploClassification.exceptions;
+package exceptions;
 
 public class PolyDoesNotExistException extends Exception {
 

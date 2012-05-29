@@ -1,8 +1,8 @@
-package haploClassifier.acceptanceTests;
+package tests;
 
+import exceptions.PolyDoesNotExistException;
 import exceptions.parse.sample.InvalidPolymorphismException;
 import genetools.Haplogroup;
-import haploClassification.exceptions.PolyDoesNotExistException;
 import junit.framework.Assert;
 
 import org.jdom.JDOMException;

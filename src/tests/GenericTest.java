@@ -1,4 +1,4 @@
-package haploClassifier.acceptanceTests;
+package tests;
 
 import exceptions.parse.sample.InvalidPolymorphismException;
 import genetools.Haplogroup;

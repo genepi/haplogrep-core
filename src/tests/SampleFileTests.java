@@ -1,4 +1,4 @@
-package genetools.tests;
+package tests;
 
 import exceptions.parse.sample.InvalidBaseException;
 import exceptions.parse.samplefile.HsdFileException;

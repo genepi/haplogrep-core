@@ -1,4 +1,4 @@
-package genetools.tests;
+package tests;
 
 import exceptions.parse.sample.InvalidPolymorphismException;
 import genetools.Sample;

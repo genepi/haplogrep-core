@@ -1,4 +1,4 @@
-package genetools.tests;
+package tests;
 
 import genetools.Haplogroup;
 import junit.framework.Assert;

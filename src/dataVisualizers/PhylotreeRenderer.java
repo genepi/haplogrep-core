@@ -1,6 +1,5 @@
-package genetools.dataVisualizers;
+package dataVisualizers;
 
-import genetools.dataVisualizers.utils.RecData;
 
 import java.awt.Color;
 import java.awt.Dimension;

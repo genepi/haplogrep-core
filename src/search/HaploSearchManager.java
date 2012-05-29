@@ -1,9 +1,9 @@
 package search;
 
+import exceptions.PolyDoesNotExistException;
 import exceptions.parse.sample.InvalidBaseException;
 import genetools.Haplogroup;
 import genetools.Polymorphism;
-import haploClassification.exceptions.PolyDoesNotExistException;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

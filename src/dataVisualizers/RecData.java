@@ -1,4 +1,4 @@
-package genetools.dataVisualizers.utils;
+package dataVisualizers;
 
 public class RecData {
 	private int currentPosX;
