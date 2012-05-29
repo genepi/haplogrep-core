@@ -1,10 +1,5 @@
 package tests;
 
-import exceptions.parse.sample.InvalidBaseException;
-import exceptions.parse.samplefile.HsdFileException;
-import exceptions.parse.samplefile.InvalidColumnCountException;
-import exceptions.parse.samplefile.UniqueKeyException;
-
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -12,6 +7,10 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import core.SampleFile;
+import exceptions.parse.sample.InvalidBaseException;
+import exceptions.parse.samplefile.HsdFileException;
+import exceptions.parse.samplefile.InvalidColumnCountException;
+import exceptions.parse.samplefile.UniqueKeyException;
 
 
 public class SampleFileTests {

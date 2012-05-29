@@ -1,9 +1,5 @@
 package tests;
 
-import exceptions.parse.sample.InvalidPolymorphismException;
-import exceptions.parse.samplefile.HsdFileException;
-import exceptions.parse.samplefile.InvalidColumnCountException;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -13,12 +9,14 @@ import org.jdom.JDOMException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import core.TestSample;
-
 import search.ClusteredSearchResult;
 import search.HaploSearchHamming;
 import search.HaploSearchManager;
 import search.IHaploSearch;
+import core.TestSample;
+import exceptions.parse.sample.InvalidPolymorphismException;
+import exceptions.parse.samplefile.HsdFileException;
+import exceptions.parse.samplefile.InvalidColumnCountException;
 
 public class HGroupTests {
 

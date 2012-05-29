@@ -1,7 +1,7 @@
 package core;
-import exceptions.parse.sample.InvalidRangeException;
-
 import java.util.ArrayList;
+
+import exceptions.parse.sample.InvalidRangeException;
 
 
 

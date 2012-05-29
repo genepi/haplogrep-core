@@ -1,11 +1,10 @@
 package tests;
 
-import exceptions.parse.sample.InvalidPolymorphismException;
-
 import org.junit.Assert;
 import org.junit.Test;
 
 import core.Sample;
+import exceptions.parse.sample.InvalidPolymorphismException;
 
 
 public class SampleTests {

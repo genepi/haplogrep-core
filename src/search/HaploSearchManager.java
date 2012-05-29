@@ -1,8 +1,5 @@
 package search;
 
-import exceptions.PolyDoesNotExistException;
-import exceptions.parse.sample.InvalidBaseException;
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -22,6 +19,8 @@ import com.sun.media.sound.InvalidFormatException;
 
 import core.Haplogroup;
 import core.Polymorphism;
+import exceptions.PolyDoesNotExistException;
+import exceptions.parse.sample.InvalidBaseException;
 
 public final class HaploSearchManager {
 

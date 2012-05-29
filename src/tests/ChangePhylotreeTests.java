@@ -1,15 +1,14 @@
 package tests;
 
-import exceptions.PolyDoesNotExistException;
-import exceptions.parse.sample.InvalidPolymorphismException;
 import junit.framework.Assert;
 
 import org.jdom.JDOMException;
 import org.junit.Test;
 
-import core.Haplogroup;
-
 import search.HaploSearchManager;
+import core.Haplogroup;
+import exceptions.PolyDoesNotExistException;
+import exceptions.parse.sample.InvalidPolymorphismException;
 
 
 

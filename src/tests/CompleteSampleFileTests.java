@@ -1,11 +1,11 @@
 package tests;
 
-import exceptions.parse.sample.InvalidPolymorphismException;
-
 import java.io.IOException;
 
 import org.jdom.JDOMException;
 import org.junit.Test;
+
+import exceptions.parse.sample.InvalidPolymorphismException;
 
 public class CompleteSampleFileTests extends GenericTest {
 	/*@Test

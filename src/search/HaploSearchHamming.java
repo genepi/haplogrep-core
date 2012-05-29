@@ -1,8 +1,5 @@
 package search;
 
-import exceptions.parse.sample.InvalidBaseException;
-import exceptions.parse.sample.InvalidPolymorphismException;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +12,8 @@ import com.sun.media.sound.InvalidFormatException;
 import core.Haplogroup;
 import core.Polymorphism;
 import core.TestSample;
+import exceptions.parse.sample.InvalidBaseException;
+import exceptions.parse.sample.InvalidPolymorphismException;
 
 public class HaploSearchHamming implements IHaploSearch 
 {

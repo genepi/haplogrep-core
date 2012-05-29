@@ -1,7 +1,5 @@
 package tests;
 
-import exceptions.parse.sample.InvalidPolymorphismException;
-
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -15,14 +13,14 @@ import junit.framework.Assert;
 import org.jdom.JDOMException;
 import org.junit.BeforeClass;
 
-import core.Haplogroup;
-import core.SampleFile;
-import core.TestSample;
-
 import search.ClusteredSearchResult;
 import search.HaploSearchHamming;
 import search.HaploSearchManager;
 import search.IHaploSearch;
+import core.Haplogroup;
+import core.SampleFile;
+import core.TestSample;
+import exceptions.parse.sample.InvalidPolymorphismException;
 
 public class GenericTest {
 	static IHaploSearch newSearch = null;

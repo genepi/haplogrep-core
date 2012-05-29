@@ -1,17 +1,16 @@
 package core;
 
-import exceptions.parse.sample.HsdFileSampleParseException;
-import exceptions.parse.sample.InvalidPolymorphismException;
-import exceptions.parse.sample.InvalidRangeException;
-import exceptions.parse.samplefile.HsdFileException;
-import exceptions.parse.samplefile.InvalidColumnCountException;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
 import qualityAssurance.Cerberus;
 import search.SearchResult;
+import exceptions.parse.sample.HsdFileSampleParseException;
+import exceptions.parse.sample.InvalidPolymorphismException;
+import exceptions.parse.sample.InvalidRangeException;
+import exceptions.parse.samplefile.HsdFileException;
+import exceptions.parse.samplefile.InvalidColumnCountException;
 
 public class TestSample implements Comparable<TestSample>{
 	

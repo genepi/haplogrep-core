@@ -1,13 +1,13 @@
 package core;
 
 
-import exceptions.parse.sample.InvalidBaseException;
-import exceptions.parse.sample.InvalidPolymorphismException;
-
 import java.util.HashMap;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import exceptions.parse.sample.InvalidBaseException;
+import exceptions.parse.sample.InvalidPolymorphismException;
 
 
 public class Polymorphism implements Comparable<Polymorphism>{

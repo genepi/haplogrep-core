@@ -3,9 +3,8 @@ package search;
 
 import java.util.Iterator;
 
-import core.Polymorphism;
-
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import core.Polymorphism;
 
 public class MissingPolysIterator implements Iterator<Polymorphism> {
 	SearchResult searchResult;

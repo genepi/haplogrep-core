@@ -1,12 +1,12 @@
 package core;
 
-import exceptions.parse.sample.InvalidPolymorphismException;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import exceptions.parse.sample.InvalidPolymorphismException;
 
 public class Sample {
 	public ArrayList<Polymorphism> sample = new ArrayList<Polymorphism>();

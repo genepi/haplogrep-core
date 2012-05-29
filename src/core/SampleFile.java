@@ -1,12 +1,5 @@
 package core;
 
-import exceptions.parse.sample.HsdFileSampleParseException;
-import exceptions.parse.sample.InvalidBaseException;
-import exceptions.parse.sample.InvalidRangeException;
-import exceptions.parse.samplefile.HsdFileException;
-import exceptions.parse.samplefile.InvalidColumnCountException;
-import exceptions.parse.samplefile.UniqueKeyException;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -18,6 +11,12 @@ import java.util.Hashtable;
 import java.util.StringTokenizer;
 
 import org.jdom.Element;
+
+import exceptions.parse.sample.InvalidBaseException;
+import exceptions.parse.sample.InvalidRangeException;
+import exceptions.parse.samplefile.HsdFileException;
+import exceptions.parse.samplefile.InvalidColumnCountException;
+import exceptions.parse.samplefile.UniqueKeyException;
 
 
 
