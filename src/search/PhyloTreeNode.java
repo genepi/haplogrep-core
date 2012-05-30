@@ -1,6 +1,10 @@
 package search;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.jdom.Element;
 
 import core.Haplogroup;
 import core.Polymorphism;
@@ -14,8 +18,10 @@ public class PhyloTreeNode {
 	protected ArrayList<PhyloTreeNode> subHaplogroups = new ArrayList<PhyloTreeNode>(); 
 	
 	public PhyloTreeNode(PhyloTreeNode parent,Haplogroup haplogroup) {
-		 this.parent = null;
+		 this.parent = parent;
 		 this.haplogroup = haplogroup;
+		 this.expectedPolys.addAll(parent.expectedPolys);
+		 Collections.sort(this.expectedPolys);
 	}
 
 	public void addExpectedPoly(Polymorphism currentPoly) {
@@ -30,7 +36,11 @@ public class PhyloTreeNode {
 		return expectedPolys;
 	}
 
-	public void addSubNode(){
-		
+	public void addSubHaplogroup(PhyloTreeNode newSubGroup){
+		subHaplogroups.add(newSubGroup);
+	}
+
+	public List<PhyloTreeNode> getSubHaplogroups() {
+		return subHaplogroups;
 	}
 }

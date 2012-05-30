@@ -20,7 +20,7 @@ public class Polymorphism implements Comparable<Polymorphism>{
 	String numberOfIns = "";
 	String insertedPolys = "";
 	
-	static HashMap<String, Double>  phyloGeneticWeights = new HashMap<String, Double>();
+	
 	
 
 	public Polymorphism(int newPosition,Mutations mutatedBase)
@@ -41,21 +41,21 @@ public class Polymorphism implements Comparable<Polymorphism>{
 		this.insertedPolys = currentPoly.insertedPolys;
 	}
 
-	public static void changePhyloGeneticWeight(Polymorphism poly, String phylotreeString, double newPhylogeneticWeight)
-	{		
-		phyloGeneticWeights.put(phylotreeString+poly.toString(), newPhylogeneticWeight);
-
-	}
-	
-	public double getMutationRate(String phylotreeString)
-	{
-		if(phyloGeneticWeights.containsKey(phylotreeString+this.toString()))
-			return phyloGeneticWeights.get(phylotreeString+this.toString());
-		
-		else
-			return 0;
-
-	}
+//	public static void changePhyloGeneticWeight(Polymorphism poly, String phylotreeString, double newPhylogeneticWeight)
+//	{		
+//		phyloGeneticWeights.put(phylotreeString+poly.toString(), newPhylogeneticWeight);
+//
+//	}
+//	
+//	public double getMutationRate(String phylotreeString)
+//	{
+//		if(phyloGeneticWeights.containsKey(phylotreeString+this.toString()))
+//			return phyloGeneticWeights.get(phylotreeString+this.toString());
+//		
+//		else
+//			return 0;
+//
+//	}
 
 	public boolean isMTHotspot()
 	{
@@ -434,7 +434,10 @@ private boolean  isTransitionPoly() throws InvalidBaseException {
 		return 0;*/
 	}
 
-
+	@Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
 
 	
 	

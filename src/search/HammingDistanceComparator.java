@@ -31,11 +31,11 @@ public class HammingDistanceComparator implements Comparator<SearchResult> {
 		Iterator<Polymorphism> missing = r.getIterMissingPolys();
 		
 		while(missing.hasNext()){
-			distance += missing.next().getMutationRate(phyolTreeString);
+			distance += missing.next().getPhylogeneticWeight(phyolTreeString);
 		}
 		
 		for(Polymorphism remainingPoly : r.getUnusedPolys())
-			distance += remainingPoly.getMutationRate(phyolTreeString);
+			distance += remainingPoly.getPhylogeneticWeight(phyolTreeString);
 		
 		return distance;
 	}

@@ -117,7 +117,7 @@ public class HaploSearchKulczynski implements IHaploSearch
 			List<Element> polys = currentElement.getChild("details").getChildren("poly");
 			//H2a2a has no polys
 			//if(polys.size() > 0){
-			PhyloTreeNodeSearchResult newNode = new PhyloTreeNodeSearchResult(null,new Haplogroup(currentElement.getAttributeValue("name")));
+			SearchResultPerNode newNode = new SearchResultPerNode(null,new Haplogroup(currentElement.getAttributeValue("name")));
 			// Check all expected polys of the current haplogroup
 			for (Element currentPolyElement : polys) {
 				Polymorphism currentPoly = new Polymorphism(currentPolyElement.getValue());

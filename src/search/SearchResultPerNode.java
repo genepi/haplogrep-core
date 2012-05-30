@@ -6,13 +6,13 @@ import java.util.ArrayList;
 import core.Haplogroup;
 import core.Polymorphism;
 
-public class PhyloTreeNodeSearchResult {
+public class SearchResultPerNode {
 	PhyloTreeNode phylotreeNode = null; 
 	ArrayList<Polymorphism> foundPolys = new ArrayList<Polymorphism>();
 	ArrayList<Polymorphism> notInRangePolys = new ArrayList<Polymorphism>();
 	ArrayList<Polymorphism> correctedBackmutation = new ArrayList<Polymorphism>();
 	
-	public PhyloTreeNodeSearchResult(PhyloTreeNode phylotreeNode)
+	public SearchResultPerNode(PhyloTreeNode phylotreeNode)
 	{
 		this.phylotreeNode = phylotreeNode;
 	}
@@ -59,4 +59,7 @@ public class PhyloTreeNodeSearchResult {
 		correctedBackmutation.add(poly);
 	}
 	
+	public Haplogroup getHaplogroup(){
+		return phylotreeNode.getHaplogroup();
+	}
 }

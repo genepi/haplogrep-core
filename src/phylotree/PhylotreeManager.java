@@ -1,27 +1,14 @@
 package phylotree;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.StringTokenizer;
-
-import com.sun.media.sound.InvalidFormatException;
-
-import core.Polymorphism;
-import exceptions.parse.sample.InvalidBaseException;
-
-import search.HaploSearchManager;
 
 public class PhylotreeManager {
 	private Map<String, PhyloTree> phylotreeMap;
 	static PhylotreeManager instance = null;
 
 	private PhylotreeManager() {
-		phylotreeMap = new HashMap<String, HaploSearchManager>();
+		phylotreeMap = new HashMap<String, PhyloTree>();
 	}
 
 	public static PhylotreeManager getInstance() {
