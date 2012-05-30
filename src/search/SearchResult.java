@@ -28,7 +28,7 @@ public class SearchResult implements Comparable<SearchResult> {
 	private ArrayList<Polymorphism> missingPolysOutOfRange = new ArrayList<Polymorphism>();
 	private HashSet<Polymorphism> missingPolys = new  HashSet<Polymorphism>();
 	
-	private PhyloTreePath usedPath = new PhyloTreePath();
+	private SearchResultPath usedPath = new SearchResultPath();
 	
 	private Sample usedPolysInSample = null;
 
@@ -64,8 +64,8 @@ public class SearchResult implements Comparable<SearchResult> {
 		
 		
 		
-		PhyloTreeNode rootNode = new PhyloTreeNode(this.haplogroup);
-		usedPath.add(rootNode);
+		PhyloTreeNodeSearchResult resultNode = new PhyloTreeNodeSearchResult(null,this.haplogroup);
+		usedPath.add(resultNode);
 	}
 
 	
@@ -84,7 +84,7 @@ public class SearchResult implements Comparable<SearchResult> {
 		this.remainingPolysNotInRange.addAll(resultToCopy.remainingPolysNotInRange);
 		this.missingPolysOutOfRange.addAll(resultToCopy.missingPolysOutOfRange);
 		this.missingPolys.addAll(resultToCopy.missingPolys);
-		this.usedPath =  new PhyloTreePath(resultToCopy.usedPath);
+		this.usedPath =  new SearchResultPath(resultToCopy.usedPath);
 		this.phyolTreeString=phyolTreeString;
 		
 		usedWeightPolys = resultToCopy.usedWeightPolys;
@@ -257,7 +257,7 @@ public class SearchResult implements Comparable<SearchResult> {
 
 	}
 	
-	public Element getUnusedPolysXML(PhyloTreePath phyloTreePath, boolean includeHotspots)
+	public Element getUnusedPolysXML(SearchResultPath phyloTreePath, boolean includeHotspots)
 	{
 		Element results = new Element("DetailedResults");
 		Collections.sort(remainingPolys);
@@ -531,14 +531,14 @@ public class SearchResult implements Comparable<SearchResult> {
 
 
 
-	public PhyloTreePath getUsedPath() {
+	public SearchResultPath getUsedPath() {
 		
 		return usedPath;
 		
 	}
 
 
-	public void extendPath(PhyloTreeNode newNode) {
+	public void extendPath(PhyloTreeNodeSearchResult newNode) {
 		usedPath.add(newNode);
 		
 	}
@@ -549,7 +549,7 @@ public class SearchResult implements Comparable<SearchResult> {
 	}
 
 
-	public PhyloTreePath getPhyloTreePath() {
+	public SearchResultPath getPhyloTreePath() {
 		return usedPath;
 	}
 	

@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
-import qualityAssurance.Cerberus;
+import qualityAssurance.QualityAssistent;
 import search.SearchResult;
 import exceptions.parse.sample.HsdFileSampleParseException;
 import exceptions.parse.sample.InvalidPolymorphismException;
@@ -21,7 +21,7 @@ public class TestSample implements Comparable<TestSample>{
 	private SampleRange sampleRange = null;
 	
 	private TreeSet<SearchResult> allSearchResults;
-	private Cerberus cerberus = null;
+	private QualityAssistent cerberus = null;
 	
 	private String state="n/a";
 	private double resultQuality=0;

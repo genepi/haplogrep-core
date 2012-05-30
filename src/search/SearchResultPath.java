@@ -8,19 +8,17 @@ import org.jdom.Element;
 
 import core.Polymorphism;
 
-public class PhyloTreePath {
-	private ArrayList<PhyloTreeNode> path = new ArrayList<PhyloTreeNode>();
+public class SearchResultPath {
+	private ArrayList<PhyloTreeNodeSearchResult> path = new ArrayList<PhyloTreeNodeSearchResult>();
 	
-	public PhyloTreePath(PhyloTreePath usedPath) {
-		
+	public SearchResultPath() {
+	}
+	
+	public SearchResultPath(SearchResultPath usedPath) {	
 		path.addAll(usedPath.getNodes());
 	}
 	
-	public PhyloTreePath() {
-		// TODO Auto-generated constructor stub
-	}
-
-	public ArrayList<PhyloTreeNode> getNodes()
+	public ArrayList<PhyloTreeNodeSearchResult> getNodes()
 	{
 		return path;
 	}
@@ -32,7 +30,7 @@ public class PhyloTreePath {
 		Element root =null;
 		Element currentEndNode = null;
 		
-		for(PhyloTreeNode currentNode : path){
+		for(PhyloTreeNodeSearchResult currentNode : path){
 			if(root == null){
 				currentEndNode = root = new Element("TreeNode");
 				root.setAttribute("name", currentNode.getHaplogroup().toString());
@@ -83,8 +81,7 @@ public class PhyloTreePath {
 		return root;
 		
 	}
-	public void add(PhyloTreeNode newNode) {
-		
+	public void add(PhyloTreeNodeSearchResult newNode) {
 		path.add(newNode);		
 	}
 

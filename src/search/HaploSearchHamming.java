@@ -96,7 +96,7 @@ public class HaploSearchHamming implements IHaploSearch
 			List<Element> polys = currentElement.getChild("details").getChildren("poly");
 			//H2a2a has no polys
 			//if(polys.size() > 0){
-			PhyloTreeNode newNode = new PhyloTreeNode(new Haplogroup(currentElement.getAttributeValue("name")));
+			PhyloTreeNodeSearchResult newNode = new PhyloTreeNodeSearchResult(null,new Haplogroup(currentElement.getAttributeValue("name")));
 			// Check all expected polys of the current haplogroup
 			for (Element currentPolyElement : polys) {
 				Polymorphism currentPoly = new Polymorphism(currentPolyElement.getValue());

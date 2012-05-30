@@ -30,7 +30,11 @@ public final class HaploSearchManager {
 	private String phylotreeString;
 	private String fluctRates;
 	
-	public HaploSearchManager(String phylotree, String weights)
+	/**
+	 * @param phylotree Name of xml file which contains the phylotree
+	 * @param polyWeights Name of file with polygenetic weights
+	 */
+	public HaploSearchManager(String phylotree, String polyWeights)
 	{
 		this.phylotreeString=phylotree;
 		allPolysUsedinPhylotree = new ArrayList<Polymorphism>();
@@ -40,7 +44,7 @@ public final class HaploSearchManager {
 			try {
 				//for CLAP protocol:
 				InputStream phyloFile = this.getClass().getClassLoader().getResourceAsStream(phylotree);
-				InputStream flucRates = this.getClass().getClassLoader().getResourceAsStream(weights);
+				InputStream flucRates = this.getClass().getClassLoader().getResourceAsStream(polyWeights);
 				phyloTree = builder.build(phyloFile);
 				// parses and sets the polygenetic weights
 				setPolygeneticWeights(flucRates);
@@ -64,7 +68,7 @@ public final class HaploSearchManager {
 	
 
 	/**
-	 * Traverses the whole phylo tree and saves all appearing phylo types
+	 * Traverses the entire phylo tree and saves all appearing phylo types
 	 * @throws JDOMException
 	 * @throws InvalidBaseException
 	 * @throws InvalidFormatException
@@ -80,44 +84,7 @@ public final class HaploSearchManager {
 		}
 	}*/
 	
-	/**
-	 * Parses the pyhlo weights given by a file. Sets weights for all polymorphismn
-	 * @param pathToPhyloWeightsFile 
-	 * @throws FileNotFoundException
-	 * @throws IOException
-	 * @throws InvalidBaseException
-	 * @throws InvalidFormatException
-	 */
-	//private void setPolygeneticWeights(String pathToPhyloWeightsFile) throws FileNotFoundException, IOException,
-	public void setPolygeneticWeights(InputStream pathToPhyloWeightsFile) throws FileNotFoundException, IOException,
-			InvalidBaseException {
-		
-		//Read in the fluctuation rates
-		BufferedReader flucFile = new BufferedReader ( new InputStreamReader ( pathToPhyloWeightsFile ) ); 	
-		String line = flucFile.readLine();
-		System.out.println(line);
-		//Read-in each line
-		int i=0;
-		while(line != null)
-		{
-			StringTokenizer mainTokenizer = new StringTokenizer(line,"\t");
-			
-			String polyString = mainTokenizer.nextToken();
-			double phyloGeneticWeight = Double.parseDouble(mainTokenizer.nextToken());
-			
-			
-			Polymorphism poly;
-			//TODO remove with fixed phylotree 8 BUG 2232.12A
-			try {
-				poly = new Polymorphism(polyString);
-				Polymorphism.changePhyloGeneticWeight(poly,phylotreeString ,phyloGeneticWeight);
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
-			line = flucFile.readLine();
-			}
-		
-	}
+	
 	
 	/**
 	 * Searches and renames a certain haplogroup in the XML tree

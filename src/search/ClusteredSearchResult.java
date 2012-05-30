@@ -269,7 +269,7 @@ public JSONObject toJson() throws JSONException {
 		return child;
 	}
 	
-public PhyloTreePath getPhyloTreePath(Haplogroup haplogroup) {
+public SearchResultPath getPhyloTreePath(Haplogroup haplogroup) {
 	for(SearchResult currentResult : cluster)
 	{
 		if(currentResult.getHaplogroup().equals(haplogroup))
@@ -281,7 +281,7 @@ public PhyloTreePath getPhyloTreePath(Haplogroup haplogroup) {
 	return null;
 }
 
-public PhyloTreePath getPhyloTreePath(int index) {
+public SearchResultPath getPhyloTreePath(int index) {
 	
 	return cluster.get(index).getUsedPath();
 	/*for(SearchResult currentResult : cluster)
