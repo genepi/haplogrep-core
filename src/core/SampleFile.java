@@ -11,7 +11,11 @@ import java.util.Hashtable;
 
 import org.jdom.Element;
 
+import phylotree.PhyloTree;
+
 import qualityAssurance.QualityIssue;
+import search.PhyloTreeNode;
+import search.ranking.Ranker;
 
 import exceptions.parse.sample.InvalidBaseException;
 import exceptions.parse.sample.InvalidRangeException;
@@ -108,7 +112,7 @@ public class SampleFile {
 			newElement1.setText(sample.getSampleID().toString());
 			newElement.addContent(newElement1);
 			newElement1 = new Element("range");
-			SampleRange range = sample.getSampleRanges();
+			SampleRange range = sample.getSample().getSampleRanges();
 			ArrayList<Integer> startRange = range.getStarts();
 			
 			ArrayList<Integer> endRange = range.getEnds();
@@ -160,8 +164,15 @@ public class SampleFile {
 		return root;
 		
 	}
+	
 	public ArrayList<QualityIssue> getQualityIssues() {
 		return qualityIssues;
 	}
 	
+	public void updateClassificationResults(PhyloTree phylotree, Ranker ranker){
+		for(TestSample currentSample : testSamples.values())
+		{
+			currentSample.updateClassificationResults(phylotree, ranker);
+		}
+	}
 }

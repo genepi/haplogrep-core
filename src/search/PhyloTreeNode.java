@@ -36,5 +36,9 @@ public class PhyloTreeNode {
 
 	public List<PhyloTreeNode> getSubHaplogroups() {
 		return subHaplogroups;
+	}
+
+	public void addExpectedPoly(Polymorphism newExpectedPoly) {
+		expectedPolys.add(newExpectedPoly);	
 	}	
 }

@@ -4,8 +4,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
+import phylotree.PhyloTree;
+
 import qualityAssurance.QualityAssistent;
-import search.SearchResult;
+import search.ranking.Ranker;
+import search.results.Result;
 import exceptions.parse.sample.HsdFileSampleParseException;
 import exceptions.parse.sample.InvalidPolymorphismException;
 import exceptions.parse.sample.InvalidRangeException;
@@ -18,9 +21,9 @@ public class TestSample implements Comparable<TestSample>{
 	private Haplogroup expectedHaplogroup;
 	private Haplogroup detectedHaplogroup;
 	private Sample sample;
-	private SampleRange sampleRange = null;
 	
-	private TreeSet<SearchResult> allSearchResults;
+	
+	private ArrayList<Result> allSearchResults;
 	private QualityAssistent cerberus = null;
 	
 	private String state="n/a";
@@ -30,12 +33,11 @@ public class TestSample implements Comparable<TestSample>{
 		
 	}
 	
-	public TestSample (String sampleID, Haplogroup predefiniedHaplogroup,Sample sample, SampleRange sampleRange, String state) 
+	public TestSample (String sampleID, Haplogroup predefiniedHaplogroup,Sample sample, String state) 
 	{
 		this.testSampleID = sampleID;
 		this.expectedHaplogroup = predefiniedHaplogroup;
 		this.sample = sample;
-		this.sampleRange = sampleRange;
 		this.state=state;
 	}
 
@@ -63,7 +65,7 @@ public class TestSample implements Comparable<TestSample>{
 
 			//Parse range
 			columns[1] = columns[1].replaceAll("\"", "");
-			parsedSample.sampleRange = new SampleRange(columns[1]);
+			SampleRange sampleRange = new SampleRange(columns[1]);
 
 			//Parse expected haplogroup
 			if (columns[2].equals("?") || columns[2].equals("SEQ"))
@@ -77,7 +79,7 @@ public class TestSample implements Comparable<TestSample>{
 			for (int i = 3; i < columns.length; i++) {
 				sampleString.append(columns[i] + " ");
 			}
-			parsedSample.sample = new Sample(sampleString.toString(), 0);
+			parsedSample.sample = new Sample(sampleString.toString(),sampleRange, 0);
 		} 
 		
 		//Something went wrong during the parse process. Throw exception.
@@ -98,9 +100,7 @@ public class TestSample implements Comparable<TestSample>{
 		return sample.sample;
 	}
 
-	public SampleRange getSampleRanges() {
-		return sampleRange;
-	}
+	
 	
 	public Sample getSample() {
 		return sample;
@@ -154,17 +154,7 @@ public class TestSample implements Comparable<TestSample>{
 		return resultQuality;
 	}
 
-	public ArrayList<Polymorphism>getPolyNotinRange()
-	{
-		ArrayList<Polymorphism> notInRangePolys = new ArrayList<Polymorphism>();
-		for(Polymorphism currentPoly : getPolymorphismn())
-		{
-			if(!sampleRange.contains(currentPoly))
-				notInRangePolys.add(currentPoly);
-		}
-		
-		return notInRangePolys;
-	}
+	
 
 	@Override
 	public int compareTo(TestSample o) {
@@ -177,25 +167,33 @@ public class TestSample implements Comparable<TestSample>{
 			 return 0;
 	}
 
-	public void addRecommendedHaplogroups(Haplogroup hg, double rank) {
-		setDetectedHaplogroup(hg);
+//	public void addRecommendedHaplogroups(Haplogroup hg, double rank) {
+//		setDetectedHaplogroup(hg);
+//
+//		double firstRank = (rank);
+//		BigDecimal myDec = new BigDecimal(firstRank);
+//		myDec = myDec.setScale(1, BigDecimal.ROUND_HALF_UP);
+//		setResultQuality(myDec.doubleValue());
+//
+//		// set status for colors
+//		if (getExpectedHaplogroup().equals(getDetectedHaplogroup()))
+//			setState("identical");
+//		else if (getExpectedHaplogroup().isSuperHaplogroup(getDetectedHaplogroup()) || getDetectedHaplogroup().isSuperHaplogroup(getExpectedHaplogroup()))
+//			setState("similar");
+//		else
+//			setState("mismatch");
+//
+//	}
+	
+//	void addNewSearchResult(SearchResult newResult){
+//		allSearchResults.add(newResult);
+//	}
 
-		double firstRank = (rank);
-		BigDecimal myDec = new BigDecimal(firstRank);
-		myDec = myDec.setScale(1, BigDecimal.ROUND_HALF_UP);
-		setResultQuality(myDec.doubleValue());
-
-		// set status for colors
-		if (getExpectedHaplogroup().equals(getDetectedHaplogroup()))
-			setState("identical");
-		else if (getExpectedHaplogroup().isSuperHaplogroup(getDetectedHaplogroup()) || getDetectedHaplogroup().isSuperHaplogroup(getExpectedHaplogroup()))
-			setState("similar");
-		else
-			setState("mismatch");
-
+	public void updateClassificationResults(PhyloTree phylotree, Ranker usedRanker) {
+		phylotree.search(this, usedRanker);
+		detectedHaplogroup = usedRanker.getTopResult().getHaplogroup();
+		
 	}
 	
-	void addNewSearchResult(SearchResult newResult){
-		allSearchResults.add(newResult);
-	}
+	
 }

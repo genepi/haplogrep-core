@@ -26,8 +26,8 @@ import exceptions.parse.sample.InvalidPolymorphismException;
 import search.ClusteredSearchResult;
 import search.PhyloTreeNode;
 import search.SearchResultPerNode;
-import search.SearchResult;
-import search.SearchResultHamming;
+import search.ranking.Ranker;
+import search.results.ResultKylcinski;
 
 public class PhyloTree {
 	String name;
@@ -73,7 +73,7 @@ public class PhyloTree {
 			List<Element> polys = currentXMLElement.getChild("details").getChildren("poly");
 			for (Element currentPolyElement : polys) {
 				Polymorphism newExpectedPoly = new Polymorphism(currentPolyElement.getValue());
-				newNode.addExpectedPoly(newExpectedPoly,getPhylogeneticWeight(newExpectedPoly));		
+				newNode.addExpectedPoly(newExpectedPoly);		
 			}
 			buildPhylotree(newNode, currentChildElement);
 		}
@@ -130,22 +130,22 @@ public class PhyloTree {
 
 	}
 	
-	public List<ClusteredSearchResult> search(TestSample testSample) throws JDOMException, IOException, NumberFormatException, InvalidPolymorphismException {
-
-		// Remove all polymorphisms which don`t appear in the phylo tree (e.g
-		// unstable ones...)
-		//testSample.getSample().filter(searchManager.getAllPolysUsedInPhylotree());
-
-		// Start first search step
-		ArrayList<SearchResult> results = searchPhylotreeWrapper(testSample);
-
-		// Cluster search results with same rank together
-		ArrayList<ClusteredSearchResult> clusteredResult = ClusteredSearchResult.createClusteredSearchResult(results,testSample.getExpectedHaplogroup());
-		
-		//set results to null (>20) to save memory. 
-		results.clear();
-		return clusteredResult;
-	}
+//	public List<ClusteredSearchResult> search(TestSample testSample) throws JDOMException, IOException, NumberFormatException, InvalidPolymorphismException {
+//
+//		// Remove all polymorphisms which don`t appear in the phylo tree (e.g
+//		// unstable ones...)
+//		//testSample.getSample().filter(searchManager.getAllPolysUsedInPhylotree());
+//
+//		// Start first search step
+//		ArrayList<SearchResult> results = searchPhylotreeWrapper(testSample);
+//
+//		// Cluster search results with same rank together
+//		ArrayList<ClusteredSearchResult> clusteredResult = ClusteredSearchResult.createClusteredSearchResult(results,testSample.getExpectedHaplogroup());
+//		
+//		//set results to null (>20) to save memory. 
+//		results.clear();
+//		return clusteredResult;
+//	}
 
 
 
@@ -158,17 +158,17 @@ public class PhyloTree {
 	 * @throws InvalidBaseException
 	 * @throws InvalidFormatException
 	 */
-	private ArrayList<SearchResult> searchPhylotreeWrapper(TestSample sample) throws NumberFormatException, InvalidPolymorphismException {
-		ArrayList<SearchResultPerNode> results = new ArrayList<SearchResultPerNode>();
-		searchPhylotree(this.root, results, sample);
-
-		
-		return results;
+	public Ranker search(TestSample sample,Ranker usedRanker) {
+		usedRanker.setResults(this,sample,searchPhylotreeWrapper(this.root, sample));
+		return usedRanker;
 	}
 
-	private void searchPhylotree(PhyloTreeNode parent, ArrayList<SearchResultPerNode> results, TestSample sample){
+	private ArrayList<SearchResultPerNode> searchPhylotreeWrapper(PhyloTreeNode parent, TestSample sample){
+		ArrayList<SearchResultPerNode> results = new ArrayList<SearchResultPerNode>();
 		// First call to RECURSIVE search function
 		searchPhylotree(this.root,new SearchResultPerNode(), results, sample);
+		
+		return results;
 	}
 	/**
 	 * Traverses the complete phylo tree beginning at the phylo tree root. For each child a
@@ -197,35 +197,41 @@ public class PhyloTree {
 			// Check all expected polys of the current haplogroup
 			for (Polymorphism currentExpectedPoly : currentPhyloTreeNode.getExpectedPolys()) {		
 				// Check whether polymorphism is in range
-				if (sample.getSampleRanges().contains(currentExpectedPoly)) {
+				if (sample.getSample().getSampleRanges().contains(currentExpectedPoly)) {
 					//Poly is in range, thus we expect it to appear in the sample
 					searchResult.addExpectedPhyloWeight(getPhylogeneticWeight(currentExpectedPoly));		
 					
 					// In case of a backmutation we must correct the current
 					// result since a polymorhism is no longer expected
 					if (currentExpectedPoly.isBackMutation()) {
-						//TODO: Change the smample.contains function to check for backmutations
+						//TODO: Change the sample.contains function to check for backmutations
 						Polymorphism newPoly = new Polymorphism(currentExpectedPoly);
 						newPoly.setBackMutation(false);
 						
-						//The poly has back mutated. It's no longer expected to appear in sample
+						//The poly has mutated back. It's no longer expected to appear in sample
 						searchResult.removeExpectedPhyloWeight(getPhylogeneticWeight(newPoly));
 
 						//The poly does not appear in sample. We found a correct back mutation 
 						if (!sample.getSample().contains(newPoly))
 						{
 							searchResult.addCorrectPhyloWeight(getPhylogeneticWeight(currentExpectedPoly));
+							searchResult.removeMissingPhyloWeight(getPhylogeneticWeight(newPoly));
 						}
 						//The poly has not back mutated (it appears in the sample). Remove the correct status
 						//caused by earlier haplogroups
-						else
-							searchResult.removeCorrectPolyWeight(getPhylogeneticWeight(newPoly));	
+						else{
+							searchResult.removeCorrectPolyWeight(getPhylogeneticWeight(newPoly));
+							searchResult.addMissingPhyloWeight(getPhylogeneticWeight(currentExpectedPoly));
+						}
 					}
 
 					// The sample contains the right polymorphism for this group
 					else if (sample.getSample().contains(currentExpectedPoly)) {
 						searchResult.addCorrectPhyloWeight(getPhylogeneticWeight(currentExpectedPoly));
 					}	
+					// The sample doesn't contains the expected poly
+					else
+						searchResult.addMissingPhyloWeight(getPhylogeneticWeight(currentExpectedPoly));
 				}
 				
 				//Polymorphism is not in sample range
@@ -235,6 +241,7 @@ public class PhyloTree {
 			}
 			
 			results.add(searchResult);
+			searchResult.attach(currentPhyloTreeNode);
 			// RECURSIVE call
 			searchPhylotree(currentPhyloTreeNode,searchResult, results, sample);
 		}

@@ -6,17 +6,23 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import phylotree.PhyloTree;
+
 import exceptions.parse.sample.InvalidPolymorphismException;
 
 public class Sample {
+	private SampleRange ranges = null;
+	
+	
 	public ArrayList<Polymorphism> sample = new ArrayList<Polymorphism>();
 	//callMethod defines the call. callMethod=1 call from PhyloTree
-	public Sample(String sampleToParse,int callMethod) throws InvalidPolymorphismException {
+	public Sample(String sampleToParse,SampleRange ranges,int callMethod) throws InvalidPolymorphismException {
 	
 		String[] polyTokens = sampleToParse.trim().split("\\s+");
 		ArrayList<String> listOfSampleTokens = new ArrayList<String>(Arrays.asList(polyTokens));
 		
 		this.sample = parseSample(listOfSampleTokens, callMethod);
+		this.ranges = ranges;
 	}
 	
 	
@@ -146,5 +152,31 @@ public class Sample {
 		//System.out.println(filteredSample);
 		return filteredSample;
 	}
-	
+
+
+	public double calcSumPhyloWeightsInRange(PhyloTree phylotree) {
+		double sumWeights = 0;
+		for(Polymorphism currentPoly : sample)
+		{
+			if(ranges.contains(currentPoly))
+				sumWeights += phylotree.getPhylogeneticWeight(currentPoly);
+		}
+		
+		return sumWeights;
+	}
+	public SampleRange getSampleRanges() {
+		return ranges;
+	}
+
+	public ArrayList<Polymorphism>getPolyNotinRange()
+	{
+		ArrayList<Polymorphism> notInRangePolys = new ArrayList<Polymorphism>();
+		for(Polymorphism currentPoly : sample)
+		{
+			if(!ranges.contains(currentPoly))
+				notInRangePolys.add(currentPoly);
+		}
+		
+		return notInRangePolys;
+	}
 }

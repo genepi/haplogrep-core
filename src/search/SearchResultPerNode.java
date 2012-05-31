@@ -1,7 +1,10 @@
 package search;
 
+import core.Haplogroup;
+
 public class SearchResultPerNode {
 
+	PhyloTreeNode attachedNode;
 	private double usedWeightPolys = 0;
 	private double remainingPolysSumWeights = 0;
 	private double foundPolysSumWeights = 0;
@@ -47,5 +50,32 @@ public class SearchResultPerNode {
 		expectedPolsysSumWeight -= phylogeneticWeight;	
 	}
 
+	public double getSumCorrectWeights() {
+		return foundPolysSumWeights;
+	}
+
+	public double getSumExpectedPhyloWeights() {
+		return expectedPolsysSumWeight;
+	}
+
+	public double getSumMissingPhyloWeight() {
+		return missingPolysSumWeights;
+	}
+
+	public void addMissingPhyloWeight(double phylogeneticWeight) {
+		missingPolysSumWeights += phylogeneticWeight;
+	}
+	
+	public void removeMissingPhyloWeight(double phylogeneticWeight) {
+		missingPolysSumWeights -= phylogeneticWeight;
+	}
+
+	public Haplogroup getHaplogroup() {
+		return attachedNode.getHaplogroup();
+	}
+
+	public void attach(PhyloTreeNode node){
+		attachedNode = node;
+	}
 
 }
