@@ -1,65 +1,51 @@
 package search;
 
-
-import java.util.ArrayList;
-
-import core.Haplogroup;
-import core.Polymorphism;
-
 public class SearchResultPerNode {
-	PhyloTreeNode phylotreeNode = null; 
-	ArrayList<Polymorphism> foundPolys = new ArrayList<Polymorphism>();
-	ArrayList<Polymorphism> notInRangePolys = new ArrayList<Polymorphism>();
-	ArrayList<Polymorphism> correctedBackmutation = new ArrayList<Polymorphism>();
+
+	private double usedWeightPolys = 0;
+	private double remainingPolysSumWeights = 0;
+	private double foundPolysSumWeights = 0;
+	private double expectedPolsysSumWeight = 0;
+	private double missingPolysSumWeights = 0;
+	private double missingSumWeightsPolysOutOfRange = 0;
 	
-	public SearchResultPerNode(PhyloTreeNode phylotreeNode)
+	public SearchResultPerNode()
 	{
-		this.phylotreeNode = phylotreeNode;
 	}
+	
+	public SearchResultPerNode(SearchResultPerNode searchResultParent)
+	{
+		usedWeightPolys = searchResultParent.usedWeightPolys;
+		foundPolysSumWeights = searchResultParent.foundPolysSumWeights;
+		expectedPolsysSumWeight = searchResultParent.expectedPolsysSumWeight;
+		missingSumWeightsPolysOutOfRange = searchResultParent.missingSumWeightsPolysOutOfRange;
+		remainingPolysSumWeights = searchResultParent.remainingPolysSumWeights;
+		missingPolysSumWeights = searchResultParent.missingPolysSumWeights;
+	}
+	
 
-	public void addCorrectPoly(Polymorphism currentPoly) {
-		foundPolys.add(currentPoly);
+	public void addCorrectPhyloWeight(double phylogeneticWeight) {
+		foundPolysSumWeights += phylogeneticWeight;	
 		
 	}
 	
-	public void addNotInRangePoly(Polymorphism currentPoly) {
-		notInRangePolys.add(currentPoly);
+	public void removeCorrectPolyWeight(double phylogeneticWeight) {
+		foundPolysSumWeights -= phylogeneticWeight;	
 		
 	}
-
 	
-	
-	public void removeExpectedPoly(Polymorphism currentPoly) {
-		expectedPolys.remove(currentPoly);
-		//correctedBackmutation.add(currentPoly);
-	}
-
-	public void removeCorrectPoly(Polymorphism currentPoly) {
-		foundPolys.remove(currentPoly);
-		//correctedBackmutation.add(currentPoly);
-	}
-	
-	public ArrayList<Polymorphism> getFoundPolys() {
-		return foundPolys;
+	public void addNotInRangePhyloWeight(double phylogeneticWeight) {
+		missingSumWeightsPolysOutOfRange += phylogeneticWeight;	
 	}
 
 
-	public ArrayList<Polymorphism> getNotInRangePolys() {
-		return notInRangePolys;
+	public void addExpectedPhyloWeight(double phylogeneticWeight) {
+		expectedPolsysSumWeight += phylogeneticWeight;	
+	}
+
+	public void removeExpectedPhyloWeight(double phylogeneticWeight) {
+		expectedPolsysSumWeight -= phylogeneticWeight;	
 	}
 
 
-	public ArrayList<Polymorphism> getCorrectedBackmutation() {
-		return correctedBackmutation;
-	}
-
-
-	public void addCorrectedBackmutation(Polymorphism poly) {
-		
-		correctedBackmutation.add(poly);
-	}
-	
-	public Haplogroup getHaplogroup(){
-		return phylotreeNode.getHaplogroup();
-	}
 }

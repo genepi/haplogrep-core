@@ -72,9 +72,10 @@ public class PhyloTree {
 		for (Element currentChildElement : children) {		
 			List<Element> polys = currentXMLElement.getChild("details").getChildren("poly");
 			for (Element currentPolyElement : polys) {
-				newNode.addExpectedPoly(new Polymorphism(currentPolyElement.getValue()));
-				buildPhylotree(newNode, currentChildElement);
+				Polymorphism newExpectedPoly = new Polymorphism(currentPolyElement.getValue());
+				newNode.addExpectedPoly(newExpectedPoly,getPhylogeneticWeight(newExpectedPoly));		
 			}
+			buildPhylotree(newNode, currentChildElement);
 		}
 	}
 	/**
@@ -158,20 +159,19 @@ public class PhyloTree {
 	 * @throws InvalidFormatException
 	 */
 	private ArrayList<SearchResult> searchPhylotreeWrapper(TestSample sample) throws NumberFormatException, InvalidPolymorphismException {
-		ArrayList<SearchResult> results = new ArrayList<SearchResult>();
+		ArrayList<SearchResultPerNode> results = new ArrayList<SearchResultPerNode>();
+		searchPhylotree(this.root, results, sample);
 
-		// Start at root node
-		SearchResult rootResult = new SearchResult(this.root,this, sample);
-//		Element node = searchManager.getPhyloTree().getRootElement();
-
-		// First call to RECURSIVE search function
-		searchPhylotree(this.root, results, sample, rootResult);
-
+		
 		return results;
 	}
 
+	private void searchPhylotree(PhyloTreeNode parent, ArrayList<SearchResultPerNode> results, TestSample sample){
+		// First call to RECURSIVE search function
+		searchPhylotree(this.root,new SearchResultPerNode(), results, sample);
+	}
 	/**
-	 * Traverses the complete phylo tree beginning at the rCRS. For each child a
+	 * Traverses the complete phylo tree beginning at the phylo tree root. For each child a
 	 * new SerachResult object is created.
 	 * 
 	 * @param parent
@@ -186,89 +186,57 @@ public class PhyloTree {
 	 * @throws InvalidBaseException
 	 * @throws InvalidFormatException
 	 */
-	private void searchPhylotree(PhyloTreeNode parent, ArrayList<SearchResult> results, TestSample sample, SearchResult parentResult) throws NumberFormatException,
-	InvalidPolymorphismException {
+	private void searchPhylotree(PhyloTreeNode parent,SearchResultPerNode searchParent, ArrayList<SearchResultPerNode> results, TestSample sample){
+		
 		// Query all child haplogroup nodes
-		List<PhyloTreeNode> children = parent.getSubHaplogroups();
+		List<PhyloTreeNode> allSubHaplogroups = parent.getSubHaplogroups();
 
-		for (PhyloTreeNode currentElement : children) {
-			SearchResult newResult = new SearchResult(currentElement,parentResult);
+		for (PhyloTreeNode currentPhyloTreeNode : allSubHaplogroups) {
 
-			List<Element> polys = currentElement.getChild("details").getChildren("poly");
-			//H2a2a has no polys
-			//if(polys.size() > 0){
-			SearchResultPerNode newNode = new SearchResultPerNode(null,new Haplogroup(currentElement.getAttributeValue("name")));
+			SearchResultPerNode searchResult = new SearchResultPerNode(searchParent);
 			// Check all expected polys of the current haplogroup
-			for (Element currentPolyElement : polys) {
-				Polymorphism currentPoly = new Polymorphism(currentPolyElement.getValue());
-
+			for (Polymorphism currentExpectedPoly : currentPhyloTreeNode.getExpectedPolys()) {		
 				// Check whether polymorphism is in range
-				if (sample.getSampleRanges().contains(currentPoly)) {
+				if (sample.getSampleRanges().contains(currentExpectedPoly)) {
+					//Poly is in range, thus we expect it to appear in the sample
+					searchResult.addExpectedPhyloWeight(getPhylogeneticWeight(currentExpectedPoly));		
+					
 					// In case of a backmutation we must correct the current
-					// result.
-					// A polymorhism is no longer expected
-					if (currentPoly.isBackMutation()) {
-						newResult.removeExpectedPoly(currentPoly);
-						newResult.removeFoundPoly(currentPoly);
-						
-						newNode.removeExpectedPoly(currentPoly);
-						newNode.removeCorrectPoly(currentPoly);
-						
-						//Add correct backmutation poly					
-						newNode.addExpectedPoly(currentPoly);
-						///newResult.addExpectedPoly(currentPoly);
-						
-						Polymorphism newPoly = new Polymorphism(currentPoly);
+					// result since a polymorhism is no longer expected
+					if (currentExpectedPoly.isBackMutation()) {
+						//TODO: Change the smample.contains function to check for backmutations
+						Polymorphism newPoly = new Polymorphism(currentExpectedPoly);
 						newPoly.setBackMutation(false);
 						
-						if (!newResult.getSample().contains(newPoly))
+						//The poly has back mutated. It's no longer expected to appear in sample
+						searchResult.removeExpectedPhyloWeight(getPhylogeneticWeight(newPoly));
+
+						//The poly does not appear in sample. We found a correct back mutation 
+						if (!sample.getSample().contains(newPoly))
 						{
-							newNode.addCorrectPoly(currentPoly);
-							//newResult.addCorrectPoly(currentPoly);
+							searchResult.addCorrectPhyloWeight(getPhylogeneticWeight(currentExpectedPoly));
 						}
+						//The poly has not back mutated (it appears in the sample). Remove the correct status
+						//caused by earlier haplogroups
+						else
+							searchResult.removeCorrectPolyWeight(getPhylogeneticWeight(newPoly));	
 					}
 
 					// The sample contains the right polymorphism for this group
-					else if (newResult.getSample().contains(currentPoly)) {
-						newResult.addExpectedPoly(currentPoly);
-						newResult.addFoundPoly(currentPoly);
-						
-						newNode.addExpectedPoly(currentPoly);
-						newNode.addCorrectPoly(currentPoly);
-					}
-
-					// There is no fitting polymorphism in the sample though we
-					// expect one for this haplogroup
-					else {
-						if (currentPoly.isBackMutation()) {
-							newResult.removeMissingOutOfRangePoly(currentPoly);
-						}
-						
-						newResult.addExpectedPoly(currentPoly);
-						newNode.addExpectedPoly(currentPoly);	
-					}
-					
+					else if (sample.getSample().contains(currentExpectedPoly)) {
+						searchResult.addCorrectPhyloWeight(getPhylogeneticWeight(currentExpectedPoly));
+					}	
 				}
 				
 				//Polymorphism is not in sample range
-				else
-				{
-					newResult.addMissingOutOfRangePoly(currentPoly);
-					newNode.addNotInRangePoly(currentPoly);	
+				else{
+					searchResult.addNotInRangePhyloWeight(getPhylogeneticWeight(currentExpectedPoly));	
 				}
-				
-			//}
 			}
 			
-			newResult.setUnusedNotInRange(sample.getPolyNotinRange());
-			
-			
-			
-			// Add new result to the list of all results
-			results.add(newResult);
-			newResult.extendPath(newNode);
+			results.add(searchResult);
 			// RECURSIVE call
-			searchPhylotree(currentElement, results, sample, newResult);
+			searchPhylotree(currentPhyloTreeNode,searchResult, results, sample);
 		}
 	}
 }
