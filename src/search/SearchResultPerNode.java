@@ -1,6 +1,9 @@
 package search;
 
+import java.util.ArrayList;
+
 import core.Haplogroup;
+import core.Polymorphism;
 
 public class SearchResultPerNode {
 
@@ -26,6 +29,9 @@ public class SearchResultPerNode {
 		missingPolysSumWeights = searchResultParent.missingPolysSumWeights;
 	}
 	
+	public PhyloTreeNode getAttachedPhyloTreeNode(){
+		return attachedNode;
+	}
 
 	public void addCorrectPhyloWeight(double phylogeneticWeight) {
 		foundPolysSumWeights += phylogeneticWeight;	
@@ -77,5 +83,4 @@ public class SearchResultPerNode {
 	public void attach(PhyloTreeNode node){
 		attachedNode = node;
 	}
-
 }

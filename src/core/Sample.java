@@ -31,7 +31,10 @@ public class Sample {
 	}
 	
 	public boolean contains(Polymorphism polyToCheck) {
-		return sample.contains(polyToCheck);
+		if(!polyToCheck.isBackMutation())
+			return sample.contains(polyToCheck);
+		else
+			return !sample.contains(polyToCheck);
 	}
 
 	public String toString()

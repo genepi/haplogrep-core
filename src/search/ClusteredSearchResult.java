@@ -58,19 +58,7 @@ public class ClusteredSearchResult implements Comparable<ClusteredSearchResult>{
 		return rankedPosition;
 	}
 
-	//TODO only use JSON for client communication
-//	public Element getDetailsXML(String haplogroup)
-//	{
-//		for(Result currentResult : cluster)
-//		{
-//			if(currentResult.getHaplogroup().equals(new Haplogroup(haplogroup)))
-//			{
-//				return currentResult.toXML();
-//			}
-//		}
-//		
-//		return null;
-//	}
+
 	
 	public Haplogroup getHaplogroup()
 	{

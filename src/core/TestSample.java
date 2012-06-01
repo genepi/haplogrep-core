@@ -2,13 +2,22 @@ package core;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.TreeSet;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import phylotree.PhyloTree;
 
 import qualityAssurance.QualityAssistent;
+import search.ClusteredSearchResult;
+import search.PhyloTreeNode;
 import search.ranking.Ranker;
 import search.results.Result;
+import search.results.ResultPhyloPath;
 import exceptions.parse.sample.HsdFileSampleParseException;
 import exceptions.parse.sample.InvalidPolymorphismException;
 import exceptions.parse.sample.InvalidRangeException;
@@ -23,7 +32,7 @@ public class TestSample implements Comparable<TestSample>{
 	private Sample sample;
 	
 	
-	private ArrayList<Result> allSearchResults;
+	HashMap<String, Result> classificationResults = new HashMap<String, Result>();
 	private QualityAssistent cerberus = null;
 	
 	private String state="n/a";
@@ -193,7 +202,32 @@ public class TestSample implements Comparable<TestSample>{
 		phylotree.search(this, usedRanker);
 		detectedHaplogroup = usedRanker.getTopResult().getHaplogroup();
 		
+		for(Result currentResult : usedRanker.getResults()){
+			classificationResults.put(currentResult.getHaplogroup().toString(), currentResult);
+		}
 	}
 	
+	public ResultPhyloPath getResultPhyloPath(String  haplogroup){
+		ResultPhyloPath resultPath  = new ResultPhyloPath(this,classificationResults.get(haplogroup));
+
+		return resultPath;
+	}
+
+	public JSONArray getClusteredResults(Ranker usedRanker) {
+		JSONArray result = new JSONArray();
+
+		for (ClusteredSearchResult currentResult : ClusteredSearchResult.createClusteredSearchResult(usedRanker)) {
+
+			try {
+				JSONObject resultObject = currentResult.toJson();
+				result.put(resultObject);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+		return result;
+	}
 	
 }
