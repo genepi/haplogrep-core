@@ -1,4 +1,4 @@
-package tests;
+package core.tests;
 
 import junit.framework.Assert;
 

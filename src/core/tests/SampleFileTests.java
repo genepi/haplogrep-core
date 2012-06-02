@@ -1,4 +1,4 @@
-package tests;
+package core.tests;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ public class SampleFileTests {
 	public void ParseHSDSampleFormatTest() throws NumberFormatException, InvalidBaseException, IOException, HsdFileException, InvalidColumnCountException, UniqueKeyException
 	{
 		ArrayList<String> sampleTokens = new ArrayList<String>();
-		sampleTokens.add("1	1..576;16024..16569	H	249DEL 263G");
+		sampleTokens.add("1	1-576;16024-16569	H	249DEL 263G");
 		
 		SampleFile newSampleFile = new SampleFile(sampleTokens);
 		
@@ -26,7 +26,7 @@ public class SampleFileTests {
 		Assert.assertEquals( "1",newSampleFile.getTestSamples().get(0).getSampleID());
 		Assert.assertEquals( "1-576 ; 16024-16569 ;",newSampleFile.getTestSamples().get(0).getSampleRanges().toString());
 		Assert.assertEquals( "H",newSampleFile.getTestSamples().get(0).getExpectedHaplogroup().toString());
-		Assert.assertEquals( "249DEL 263G",newSampleFile.getTestSamples().get(0).getSample().toString());
+		Assert.assertEquals( "249d 263G",newSampleFile.getTestSamples().get(0).getSample().toString());
 		
 	}
 	
@@ -46,14 +46,14 @@ public class SampleFileTests {
 	public void ParseInvalidHSDFileTest() throws NumberFormatException, InvalidBaseException, IOException, HsdFileException, InvalidColumnCountException, UniqueKeyException
 	{
 		ArrayList<String> sampleTokens = new ArrayList<String>();
-		sampleTokens.add("1	1..576;16024..16569	HH	249DEL 263G");
+		sampleTokens.add("1	1-576;16024-16569	HH	249DEL 263G");
 		
 		SampleFile newSampleFile = new SampleFile(sampleTokens);
 	
 		Assert.assertEquals( "1",newSampleFile.getTestSamples().get(0).getSampleID());
-		Assert.assertEquals( "1..576 ; 16024..16569 ;",newSampleFile.getTestSamples().get(0).getSampleRanges().toString());
+		Assert.assertEquals( "1-576 ; 16024-16569 ;",newSampleFile.getTestSamples().get(0).getSampleRanges().toString());
 		Assert.assertEquals( "H",newSampleFile.getTestSamples().get(0).getExpectedHaplogroup().toString());
-		Assert.assertEquals( "249DEL 263G",newSampleFile.getTestSamples().get(0).getSample().toString());
+		Assert.assertEquals( "249d 263G",newSampleFile.getTestSamples().get(0).getSample().toString());
 		
 	}
 }
