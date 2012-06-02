@@ -8,14 +8,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.StringTokenizer;
 
 import org.jdom.Element;
-
-import phylotree.PhyloTree;
-
-import qualityAssurance.QualityIssue;
-import search.PhyloTreeNode;
-import search.ranking.Ranker;
 
 import exceptions.parse.sample.InvalidBaseException;
 import exceptions.parse.sample.InvalidRangeException;
@@ -27,8 +22,6 @@ import exceptions.parse.samplefile.UniqueKeyException;
 
 public class SampleFile {
 	Hashtable<String,TestSample> testSamples = new Hashtable<String,TestSample>();
-	ArrayList<QualityIssue> qualityIssues = new ArrayList<QualityIssue>();
-	
 	
 	public SampleFile(ArrayList<String> sampleLines) throws HsdFileException
 	{
@@ -79,6 +72,75 @@ public class SampleFile {
 		
 	}
 	
+
+	
+//	private  void parseNewTestSample(String line) throws IOException,
+//			NumberFormatException, InvalidBaseException, InvalidFormatException, InvalidHsdFileException {
+//	
+//			String[] tokens = line.split("\t");
+//			
+//			if(tokens.length != 4)
+//				throw new InvalidHsdFileException();
+//			
+//			String sampleID=tokens[0];
+//			SampleRange currentSampleRange = new SampleRange(tokens[1]);
+//			String expectedHaplogroup=tokens[3];
+//			String polymorphimn=tokens[4];
+//			
+//			TestSample newTestSample = new TestSample(sampleID, expectedHaplogroup, polymorphimn,currentSampleRange);
+//			
+//			/*// to ignore lines which start with #
+//			if (!line.contains("#")) { 
+//				StringTokenizer mainTokenizer = new StringTokenizer(line, "\t");
+//				if (mainTokenizer.hasMoreElements()) {
+//
+//					String sampleID = mainTokenizer.nextToken();
+//					Haplogroup haplogroup = new Haplogroup(mainTokenizer.nextToken());
+//					
+//					//frequency column
+//					String frequency= mainTokenizer.nextToken();
+//					
+//
+//					//if (!testSamples.containsKey(f.getName()))
+//					//	testSamples.put(f.getName(), new ArraTestSample>());
+//
+//					ArrayList<String> sample = new ArrayList<String>();
+//					while (mainTokenizer.hasMoreElements()) {
+//						sample.add(mainTokenizer.nextToken());
+//					}
+//
+//					Sample newSample = new Sample(sample, new SampleRange(range));
+//					TestSample newTestSample = new TestSample(sampleID, haplogroup, newSample,frequency);
+//					testSamples.put(newTestSample.getSampleID(), newTestSample);
+//				}
+//			}*/
+//		
+//	}
+
+	private SampleRange tryDetectRange(String line) {
+		// added for files in folder TestSamples. Ignore lines with #, but
+		// dynamically read range from files (= #!)
+		if (line.contains("#!")) {
+			SampleRange range = new SampleRange();
+			StringTokenizer rangeTokenizer = new StringTokenizer(line, " ");
+			rangeTokenizer.nextToken();
+			
+			while (rangeTokenizer.hasMoreElements()) {
+				String rangeToken = rangeTokenizer.nextToken().trim();
+				if (rangeToken.contains("-"))
+					range.addCustomRange(Integer.valueOf(rangeToken.substring(0, rangeToken.indexOf("-"))), Integer
+							.valueOf(rangeToken.substring(rangeToken.indexOf("-") + 1, rangeToken.length())));
+				else
+					// range has length 1
+					range.addCustomRange(Integer.valueOf(rangeToken), Integer.valueOf(rangeToken));
+			}
+			return range;
+		}
+		
+		else return null;
+	}
+	
+	
 	public TestSample getTestSample(String sampleID)
 	{
 		return testSamples.get(sampleID);
@@ -112,7 +174,7 @@ public class SampleFile {
 			newElement1.setText(sample.getSampleID().toString());
 			newElement.addContent(newElement1);
 			newElement1 = new Element("range");
-			SampleRange range = sample.getSample().getSampleRanges();
+			SampleRange range = sample.getSampleRanges();
 			ArrayList<Integer> startRange = range.getStarts();
 			
 			ArrayList<Integer> endRange = range.getEnds();
@@ -163,16 +225,5 @@ public class SampleFile {
 		
 		return root;
 		
-	}
-	
-	public ArrayList<QualityIssue> getQualityIssues() {
-		return qualityIssues;
-	}
-	
-	public void updateClassificationResults(PhyloTree phylotree, Ranker ranker){
-		for(TestSample currentSample : testSamples.values())
-		{
-			currentSample.updateClassificationResults(phylotree, ranker);
-		}
 	}
 }
