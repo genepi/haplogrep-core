@@ -8,8 +8,8 @@ import core.TestSample;
 
 public class SearchResultHamming extends SearchResult {
 
-	public SearchResultHamming(String haplogroup, String phyolTreeString, TestSample polysInTestSample) {
-		super(haplogroup,phyolTreeString, polysInTestSample);
+	public SearchResultHamming(HaploSearchManager searchManager,String haplogroup, TestSample polysInTestSample) {
+		super(searchManager,haplogroup, polysInTestSample);
 	}
 
 	
@@ -46,11 +46,11 @@ public class SearchResultHamming extends SearchResult {
 		Iterator<Polymorphism> missing = this.getIterMissingPolys();
 		
 		while(missing.hasNext()){
-			distance += missing.next().getMutationRate(phyolTreeString);
+			distance += searchManager.getMutationRate(missing.next());
 		}
 		
 		for(Polymorphism remainingPoly : this.getUnusedPolys())
-			distance += remainingPoly.getMutationRate(phyolTreeString);
+			distance += searchManager.getMutationRate(remainingPoly);
 		
 		return distance;
 	}

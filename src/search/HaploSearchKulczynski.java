@@ -2,14 +2,17 @@ package search;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.jdom.Element;
 import org.jdom.JDOMException;
 
-import search.ranking.HammingRanker;
-import search.ranking.KychinskyRanker;
-import search.ranking.Ranker;
+import phylotree.PhyloTreeNode;
+
+import search.ranking.HammingRanking;
+import search.ranking.KychinskyRanking;
+import search.ranking.RankingMethod;
 
 import com.sun.media.sound.InvalidFormatException;
 
@@ -19,7 +22,7 @@ import core.TestSample;
 import exceptions.parse.sample.InvalidBaseException;
 import exceptions.parse.sample.InvalidPolymorphismException;
 
-public class HaploSearchKulczynski implements IHaploSearch 
+public class HaploSearchKulczynski 
 {
 	HaploSearchManager searchManager = null;
 	
@@ -31,8 +34,8 @@ public class HaploSearchKulczynski implements IHaploSearch
 	/* (non-Javadoc)
 	 * @see haploClassification.IHaploSearch#search(genetools.TestSample)
 	 */
-	@Override
-	public List<ClusteredSearchResult> search(TestSample testSample) throws JDOMException, IOException, NumberFormatException, InvalidPolymorphismException {
+
+	public List<ClusteredSearchResult> search(TestSample testSample,boolean rankingMethod) throws JDOMException, IOException, NumberFormatException, InvalidPolymorphismException {
 
 		// Remove all polymorphismn which don`t appear in the phylo tree (e.g
 		// unstable ones...)
@@ -40,18 +43,38 @@ public class HaploSearchKulczynski implements IHaploSearch
 
 		// Start first search step
 		ArrayList<SearchResult> results = searchPhylotreeWrapper(testSample);
-
-		Ranker kulczynskiRanker = new KychinskyRanker();
-		kulczynskiRanker.setResults(testSample, results);
+		RankingMethod ranking = null;
+		
+		if(rankingMethod)
+			ranking =  new HammingRanking();
+		else
+			ranking = new KychinskyRanking();
+		
+		ranking.setResults(testSample, results);
 		
 		// Cluster search results with same rank together
-		ArrayList<ClusteredSearchResult> clusteredResult = ClusteredSearchResult.createClusteredSearchResult(kulczynskiRanker.getResults(),testSample.getExpectedHaplogroup(),searchManager.getPhylotreeString());
+		ArrayList<ClusteredSearchResult> clusteredResult = ClusteredSearchResult.createClusteredSearchResult(ranking.getResults(),testSample.getExpectedHaplogroup(),searchManager.getPhylotreeString());
 		
 		//set results to null (>20) to save memory. 
 		results.clear();
 		return clusteredResult;
 	}
 
+//	public double getMutationRate(Polymorphism poly)
+//	{
+//		if(phyloGeneticWeights.containsKey(poly))
+//			return phyloGeneticWeights.get(poly);
+//		
+//		else
+//			return 0;
+//
+//	}
+//	
+////	public static void changePhyloGeneticWeight(Polymorphism poly, String phylotreeString, double newPhylogeneticWeight)
+////	{		
+//		phyloGeneticWeights.put(phylotreeString+poly.toString(), newPhylogeneticWeight);
+//
+//	}
 //	public void addRecommendedHaplogroups(List<ClusteredSearchResult> result, TestSample sample) {
 //		sample.setRecognizedHaplogroup(new Haplogroup(result.get(0).getHaplogroup()));
 //
@@ -88,8 +111,8 @@ public class HaploSearchKulczynski implements IHaploSearch
 		ArrayList<SearchResult> results = new ArrayList<SearchResult>();
 
 		// Start at root node (mt dna reference NC_012920)
-		SearchResult rootResult = new SearchResult("rCRS, NC_012920", searchManager.getPhylotreeString(), sample);
-		Element node = searchManager.getPhyloTree().getRootElement();
+		SearchResult rootResult = new SearchResult(searchManager,"rCRS, NC_012920", sample);
+		PhyloTreeNode node = searchManager.getPhyloTree();
 
 		// First call to RECURSIVE search function
 		searchPhylotree(node, results, sample, rootResult);
@@ -113,21 +136,21 @@ public class HaploSearchKulczynski implements IHaploSearch
 	 * @throws InvalidBaseException
 	 * @throws InvalidFormatException
 	 */
-	private void searchPhylotree(Element parent, ArrayList<SearchResult> results, TestSample sample, SearchResult parentResult) throws NumberFormatException,
+	private void searchPhylotree(PhyloTreeNode parent, ArrayList<SearchResult> results, TestSample sample, SearchResult parentResult) throws NumberFormatException,
 	InvalidPolymorphismException {
 		// Query all child haplogroup nodes
-		List<Element> children = (List<Element>) parent.getChildren("haplogroup");
+		List<PhyloTreeNode> children = (List<PhyloTreeNode>) parent.getSubHaplogroups();//.getChildren("haplogroup");
 
-		for (Element currentElement : children) {
-			SearchResult newResult = new SearchResult(currentElement.getAttributeValue("name"),searchManager.getPhylotreeString(), parentResult);
+		for (PhyloTreeNode currentElement : children) {
+			SearchResult newResult = new SearchResult(currentElement.getHaplogroup().toString()/*.getAttributeValue("name")*/,searchManager.getPhylotreeString(), parentResult);
 
-			List<Element> polys = currentElement.getChild("details").getChildren("poly");
+			List<Polymorphism> polys = currentElement.getExpectedPolys();//.getChild("details").getChildren("poly");
 			//H2a2a has no polys
 			//if(polys.size() > 0){
-			PhyloTreeNode newNode = new PhyloTreeNode(new Haplogroup(currentElement.getAttributeValue("name")));
+			SearchResultTreeNode newNode = new SearchResultTreeNode(currentElement.getHaplogroup()/*new Haplogroup(currentElement.getAttributeValue("name"))*/);
 			// Check all expected polys of the current haplogroup
-			for (Element currentPolyElement : polys) {
-				Polymorphism currentPoly = new Polymorphism(currentPolyElement.getValue());
+			for (Polymorphism currentPoly : polys) {
+//				Polymorphism currentPoly = new Polymorphism(currentPolyElement.getValue());
 
 				// Check whether polymorphism is in range
 				if (sample.getSampleRanges().contains(currentPoly)) {

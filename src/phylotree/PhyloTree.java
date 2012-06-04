@@ -24,9 +24,9 @@ import exceptions.parse.sample.InvalidBaseException;
 import exceptions.parse.sample.InvalidPolymorphismException;
 
 import search.ClusteredSearchResult;
-import search.PhyloTreeNode;
+import search.SearchResultTreeNode;
 import search.SearchResultPerNode;
-import search.ranking.Ranker;
+import search.ranking.RankingMethod;
 import search.results.ResultKylcinski;
 
 public class PhyloTree {
@@ -41,7 +41,7 @@ public class PhyloTree {
 			InputStream polyGeneticWeightsFileStream = this.getClass().getClassLoader().getResourceAsStream(phyloWeights);
 			try {
 				Document phyloTreeDoc = builder.build(phyloTreeFileStream);
-				buildPhylotree(root,phyloTreeDoc.getRootElement());		
+				buildPhylotree(root,phyloTreeDoc.getRootElement().getChild("haplogroup"));		
 				// parses and sets the polygenetic weights
 				setPolygeneticWeights(polyGeneticWeightsFileStream);
 			} catch (JDOMException e) {
@@ -158,12 +158,12 @@ public class PhyloTree {
 	 * @throws InvalidBaseException
 	 * @throws InvalidFormatException
 	 */
-	public Ranker search(TestSample sample,Ranker usedRanker) {
+	public RankingMethod search(TestSample sample,RankingMethod usedRanker) {
 		usedRanker.setResults(this,sample,searchPhylotreeWrapper(this.root, sample));
 		return usedRanker;
 	}
 
-	private ArrayList<SearchResultPerNode> searchPhylotreeWrapper(PhyloTreeNode parent, TestSample sample){
+	private ArrayList<SearchResult> searchPhylotreeWrapper(PhyloTreeNode parent, TestSample sample){
 		ArrayList<SearchResultPerNode> results = new ArrayList<SearchResultPerNode>();
 		// First call to RECURSIVE search function
 		searchPhylotree(this.root,new SearchResultPerNode(), results, sample);
@@ -189,9 +189,9 @@ public class PhyloTree {
 	private void searchPhylotree(PhyloTreeNode parent,SearchResultPerNode searchParent, ArrayList<SearchResultPerNode> results, TestSample sample){
 		
 		// Query all child haplogroup nodes
-		List<PhyloTreeNode> allSubHaplogroups = parent.getSubHaplogroups();
+		List<SearchResultTreeNode> allSubHaplogroups = parent.getSubHaplogroups();
 
-		for (PhyloTreeNode currentPhyloTreeNode : allSubHaplogroups) {
+		for (SearchResultTreeNode currentPhyloTreeNode : allSubHaplogroups) {
 
 			SearchResultPerNode searchResult = new SearchResultPerNode(searchParent);
 			// Check all expected polys of the current haplogroup

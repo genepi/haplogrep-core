@@ -7,12 +7,12 @@ import search.results.Result;
 
 import core.TestSample;
 
-public abstract class Ranker {
+public abstract class RankingMethod {
 	ArrayList<Result> results;
 	
 	public abstract void setResults(TestSample sample, ArrayList<SearchResult> searchPhylotreeWrapper);
 
-	public Ranker(){
+	public RankingMethod(){
 		results = new ArrayList<Result>();
 	}
 	

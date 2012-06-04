@@ -7,7 +7,7 @@ import core.Polymorphism;
 
 public class SearchResultPerNode {
 
-	PhyloTreeNode attachedNode;
+	SearchResultTreeNode attachedNode;
 	private double usedWeightPolys = 0;
 	private double remainingPolysSumWeights = 0;
 	private double foundPolysSumWeights = 0;
@@ -29,7 +29,7 @@ public class SearchResultPerNode {
 		missingPolysSumWeights = searchResultParent.missingPolysSumWeights;
 	}
 	
-	public PhyloTreeNode getAttachedPhyloTreeNode(){
+	public SearchResultTreeNode getAttachedPhyloTreeNode(){
 		return attachedNode;
 	}
 
@@ -80,7 +80,7 @@ public class SearchResultPerNode {
 		return attachedNode.getHaplogroup();
 	}
 
-	public void attach(PhyloTreeNode node){
+	public void attach(SearchResultTreeNode node){
 		attachedNode = node;
 	}
 }

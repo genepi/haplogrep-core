@@ -195,7 +195,7 @@ public class ClusteredSearchResult implements Comparable<ClusteredSearchResult>{
 			for(Polymorphism current : currentResult.getCheckedPolys())
 			{
 				
-				String fluctString = df.format( current.getMutationRate(phyolTreeString));
+				String fluctString = df.format( currentResult.getSearchMananger().getMutationRate(current));
 				
 				
 				result +=  "\t\t"+ current.toString();
@@ -224,7 +224,7 @@ public class ClusteredSearchResult implements Comparable<ClusteredSearchResult>{
 			//Write unused polymorphismn in this haplogroup
 			for(Polymorphism current : unusedPolys)
 			{
-				String fluctString = df.format( current.getMutationRate(phyolTreeString));
+				String fluctString = df.format( currentResult.getSearchMananger().getMutationRate(current));
 				result +=  "\t\t\t\t\t\t" + current; 
 				result += "\t\t" + fluctString + "\n";
 			}

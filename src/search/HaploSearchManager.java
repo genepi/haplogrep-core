@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -15,33 +16,40 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
 
+import phylotree.PhyloTreeNode;
+
 import com.sun.media.sound.InvalidFormatException;
 
 import core.Haplogroup;
 import core.Polymorphism;
 import exceptions.PolyDoesNotExistException;
 import exceptions.parse.sample.InvalidBaseException;
+import exceptions.parse.sample.InvalidPolymorphismException;
 
 public final class HaploSearchManager {
 
 	
 	private ArrayList<Polymorphism> allPolysUsedinPhylotree = null;
-	private Document phyloTree= null;
+//	private Document phyloTree= null;
+	PhyloTreeNode root;
 	private String phylotreeString;
 	private String fluctRates;
+	private HashMap<Polymorphism, Double>  phyloGeneticWeights = new HashMap<Polymorphism, Double>();
+	
 	
 	public HaploSearchManager(String phylotree, String weights)
 	{
 		this.phylotreeString=phylotree;
 		allPolysUsedinPhylotree = new ArrayList<Polymorphism>();
-			  
+		 root= new PhyloTreeNode();
 		// Create a JDOM document out of the phylotree XML
 			SAXBuilder builder = new SAXBuilder();
 			try {
 				//for CLAP protocol:
 				InputStream phyloFile = this.getClass().getClassLoader().getResourceAsStream(phylotree);
 				InputStream flucRates = this.getClass().getClassLoader().getResourceAsStream(weights);
-				phyloTree = builder.build(phyloFile);
+				Document phyloTree = builder.build(phyloFile);
+				buildPhylotree(root,phyloTree.getRootElement().getChild("haplogroup"));		
 				// parses and sets the polygenetic weights
 				setPolygeneticWeights(flucRates);
 				
@@ -58,11 +66,28 @@ public final class HaploSearchManager {
 			} catch (InvalidBaseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} catch (InvalidPolymorphismException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			} 
 		
 	}
 	
-
+	private void buildPhylotree(PhyloTreeNode parentNode, Element currentXMLElement) throws NumberFormatException, InvalidPolymorphismException{
+		PhyloTreeNode newNode =  new PhyloTreeNode(parentNode, new Haplogroup(currentXMLElement.getAttribute("name").getValue()));
+		parentNode.addSubHaplogroup(newNode);
+		
+		List<Element> polys = currentXMLElement.getChild("details").getChildren("poly");
+		for (Element currentPolyElement : polys) {
+			Polymorphism newExpectedPoly = new Polymorphism(currentPolyElement.getValue());
+			newNode.addExpectedPoly(newExpectedPoly);		
+		}
+		
+		List<Element> children = (List<Element>) currentXMLElement.getChildren("haplogroup");
+		for (Element currentChildElement : children) {				
+			buildPhylotree(newNode, currentChildElement);
+		}
+	}
 	/**
 	 * Traverses the whole phylo tree and saves all appearing phylo types
 	 * @throws JDOMException
@@ -106,11 +131,9 @@ public final class HaploSearchManager {
 			double phyloGeneticWeight = Double.parseDouble(mainTokenizer.nextToken());
 			
 			
-			Polymorphism poly;
 			//TODO remove with fixed phylotree 8 BUG 2232.12A
 			try {
-				poly = new Polymorphism(polyString);
-				Polymorphism.changePhyloGeneticWeight(poly,phylotreeString ,phyloGeneticWeight);
+				changePhyloGeneticWeight(new Polymorphism(polyString) ,phyloGeneticWeight);
 			} catch (Exception e) {
 				// TODO: handle exception
 			}
@@ -126,27 +149,42 @@ public final class HaploSearchManager {
 	 * @throws JDOMException
 	 */
 
-	public void changePoly(Haplogroup hg, Polymorphism polyOld,Polymorphism polyNew) throws JDOMException, PolyDoesNotExistException
+//	public void changePoly(Haplogroup hg, Polymorphism polyOld,Polymorphism polyNew) throws JDOMException, PolyDoesNotExistException
+//	{
+//		List<Element> e = getPolysOfHg(hg);
+//		
+//		for (Element ce : e) {
+//			if (ce.getText().equals(polyOld.toString())) {
+//				ce.setText(polyNew.toString());
+//				return;
+//			}
+//		}
+//		
+//		throw new PolyDoesNotExistException();
+//	}
+
+//	public List<Element> getPolysOfHg(Haplogroup hg) throws JDOMException {
+//		Element titleNode =  (Element) XPath.selectSingleNode( phyloTree, "//haplogroup[@name=\""+ hg.toString()+"\"]/details");
+//		
+//		List<Element> e = titleNode.getChildren("poly");
+//		return e;
+//	}
+
+	public double getMutationRate(Polymorphism poly)
 	{
-		List<Element> e = getPolysOfHg(hg);
+		if(phyloGeneticWeights.containsKey(poly))
+			return phyloGeneticWeights.get(poly);
 		
-		for (Element ce : e) {
-			if (ce.getText().equals(polyOld.toString())) {
-				ce.setText(polyNew.toString());
-				return;
-			}
-		}
-		
-		throw new PolyDoesNotExistException();
-	}
+		else
+			return 0;
 
-	public List<Element> getPolysOfHg(Haplogroup hg) throws JDOMException {
-		Element titleNode =  (Element) XPath.selectSingleNode( phyloTree, "//haplogroup[@name=\""+ hg.toString()+"\"]/details");
-		
-		List<Element> e = titleNode.getChildren("poly");
-		return e;
 	}
-
+	
+	public void changePhyloGeneticWeight(Polymorphism poly, double newPhylogeneticWeight)
+	{		
+		phyloGeneticWeights.put(poly, newPhylogeneticWeight);
+	}
+	
 	/*
 	public final HaploSearch createNewSearch()
 	{
@@ -158,13 +196,13 @@ public final class HaploSearchManager {
         return new HaploSearchManager();
     }*/
 
-	public Document getPhyloTree() {
-		return phyloTree;
+	public PhyloTreeNode getPhyloTree() {
+		return root;
 	}
 	
-	public void setPhyloTree(Document phylotree) {
-		this.phyloTree= phylotree;
-	}
+//	public void setPhyloTree(Document phylotree) {
+//		this.phyloTree= phylotree;
+//	}
 
 	public void setPhylotreeString(String phylotree) {
 		this.phylotreeString = phylotree;

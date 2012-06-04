@@ -6,14 +6,14 @@ import java.util.ArrayList;
 import core.Haplogroup;
 import core.Polymorphism;
 
-public class PhyloTreeNode {
+public class SearchResultTreeNode {
 	Haplogroup haplogroup = null;
 	ArrayList<Polymorphism> expectedPolys = new ArrayList<Polymorphism>();
 	ArrayList<Polymorphism> foundPolys = new ArrayList<Polymorphism>();
 	ArrayList<Polymorphism> notInRangePolys = new ArrayList<Polymorphism>();
 	ArrayList<Polymorphism> correctedBackmutation = new ArrayList<Polymorphism>();
 	
-	public PhyloTreeNode(Haplogroup haplogroup)
+	public SearchResultTreeNode(Haplogroup haplogroup)
 	{
 		this.haplogroup = haplogroup;
 	}

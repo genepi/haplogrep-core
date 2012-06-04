@@ -39,32 +39,32 @@ public class SearchResult implements Comparable<SearchResult> {
 	private double missingPolysSumWeights = 0;
 	private double missingSumWeightsPolysOutOfRange = 0;
 
-	protected String phyolTreeString;
-	
+//	protected String phyolTreeString;
+	protected HaploSearchManager searchManager;
 	/**
 	 * Creates a new SeachResult object with given haplogroup and test sample
 	 * @param haplogroup The detected haplogroup
 	 * @param polysInTestSample
 	 */
-	public SearchResult(String haplogroup, String phyolTreeString, TestSample polysInTestSample) {
+	public SearchResult(HaploSearchManager searchManager,String haplogroup, TestSample polysInTestSample) {
 		this.haplogroup = new Haplogroup(haplogroup);
 		this.usedPolysInSample = polysInTestSample.getSample();
-		this.phyolTreeString = phyolTreeString;
+		this.searchManager = searchManager;
 		
 		
 		remainingPolys.addAll(usedPolysInSample.getPolymorphismn());
 		
 		for (Polymorphism currentPoly : usedPolysInSample.getPolymorphismn()) {
-			usedWeightPolys += currentPoly.getMutationRate(phyolTreeString);
+			usedWeightPolys += searchManager.getMutationRate(currentPoly);
 			
 			if(polysInTestSample.getSampleRanges().contains(currentPoly)){
-				remainingPolysSumWeights += currentPoly.getMutationRate(phyolTreeString);
+				remainingPolysSumWeights += searchManager.getMutationRate(currentPoly);
 			}
 		}
 		
 		
 		
-		PhyloTreeNode rootNode = new PhyloTreeNode(this.haplogroup);
+		SearchResultTreeNode rootNode = new SearchResultTreeNode(this.haplogroup);
 		usedPath.add(rootNode);
 	}
 
@@ -85,7 +85,7 @@ public class SearchResult implements Comparable<SearchResult> {
 		this.missingPolysOutOfRange.addAll(resultToCopy.missingPolysOutOfRange);
 		this.missingPolys.addAll(resultToCopy.missingPolys);
 		this.usedPath =  new PhyloTreePath(resultToCopy.usedPath);
-		this.phyolTreeString=phyolTreeString;
+		this.searchManager=resultToCopy.searchManager;
 		
 		usedWeightPolys = resultToCopy.usedWeightPolys;
 		foundPolysSumWeights = resultToCopy.foundPolysSumWeights;
@@ -163,21 +163,21 @@ public class SearchResult implements Comparable<SearchResult> {
 	}
 
 	public void addFoundPoly(Polymorphism newFoundPoly) {
-		foundPolysSumWeights += newFoundPoly.getMutationRate(phyolTreeString);
+		foundPolysSumWeights += searchManager.getMutationRate(newFoundPoly);
 		foundPolys.add(newFoundPoly);
 		remainingPolys.remove(newFoundPoly);
-		remainingPolysSumWeights -= newFoundPoly.getMutationRate(phyolTreeString);;
+		remainingPolysSumWeights -= searchManager.getMutationRate(newFoundPoly);;
 		
 		missingPolys.remove(newFoundPoly);
-		missingPolysSumWeights -= newFoundPoly.getMutationRate(phyolTreeString);
+		missingPolysSumWeights -= searchManager.getMutationRate(newFoundPoly);
 	}
 
 	public void addExpectedPoly(Polymorphism newExpectedPoly) {
-		expectedPolsysSumWeight += newExpectedPoly.getMutationRate(phyolTreeString);
+		expectedPolsysSumWeight += searchManager.getMutationRate(newExpectedPoly);
 		expectedPolys.add(newExpectedPoly);
 		
 		missingPolys.add(newExpectedPoly);
-		missingPolysSumWeights += newExpectedPoly.getMutationRate(phyolTreeString);
+		missingPolysSumWeights += searchManager.getMutationRate(newExpectedPoly);
 	}
 
 	public void removeExpectedPoly(Polymorphism currentPoly) {
@@ -186,7 +186,7 @@ public class SearchResult implements Comparable<SearchResult> {
 		for(Polymorphism poly : expectedPolys)
 		{
 			if(poly.getPosition() == currentPoly.getPosition() && poly.getMutation() == currentPoly.getMutation()){
-				expectedPolsysSumWeight -= expectedPolys.get(expectedPolys.indexOf(poly)).getMutationRate(phyolTreeString);
+				expectedPolsysSumWeight -= searchManager.getMutationRate(expectedPolys.get(expectedPolys.indexOf(poly)));
 				found = poly;
 				
 				Polymorphism newPoly = new Polymorphism(currentPoly);
@@ -205,7 +205,7 @@ public class SearchResult implements Comparable<SearchResult> {
 		
 		for(Polymorphism poly : foundPolys){
 		if(poly.getPosition() == foundPoly.getPosition() && poly.getMutation() == foundPoly.getMutation()){
-			foundPolysSumWeights -= foundPolys.get(foundPolys.indexOf(poly)).getMutationRate(phyolTreeString);		
+			foundPolysSumWeights -= searchManager.getMutationRate(foundPolys.get(foundPolys.indexOf(poly)));		
 			
 			if(!foundPoly.isBackMutation())
 				remainingPolys.add(foundPoly);
@@ -223,12 +223,12 @@ public class SearchResult implements Comparable<SearchResult> {
 	
 
 	public void addMissingOutOfRangePoly(Polymorphism correctPoly) {
-		missingSumWeightsPolysOutOfRange += correctPoly.getMutationRate(phyolTreeString);
+		missingSumWeightsPolysOutOfRange += searchManager.getMutationRate(correctPoly);
 		missingPolysOutOfRange.add(correctPoly);
 	}
 
 	public void removeMissingOutOfRangePoly(Polymorphism correctPoly) {
-		missingSumWeightsPolysOutOfRange -= correctPoly.getMutationRate(phyolTreeString);
+		missingSumWeightsPolysOutOfRange -= searchManager.getMutationRate(correctPoly);
 		missingPolysOutOfRange.add(correctPoly);
 	}
 
@@ -299,7 +299,7 @@ public class SearchResult implements Comparable<SearchResult> {
 			Element reasonUnusedPoly = new Element("reasonUnused");
 			
 			
-			if(currentPoly.getMutationRate(phyolTreeString) == 0)
+			if(searchManager.getMutationRate(currentPoly) == 0)
 			{
 				if(currentPoly.isBackMutation()){
 					reasonUnusedPoly.setText("globalPrivateMutation");
@@ -516,7 +516,7 @@ public class SearchResult implements Comparable<SearchResult> {
 			result.addContent(newUnusedPoly);
 			
 			Element weightUnusedPoly = new Element("weight");
-			weightUnusedPoly.setText(String.valueOf(currentPoly.getMutationRate(phyolTreeString)));
+			weightUnusedPoly.setText(String.valueOf(searchManager.getMutationRate(currentPoly)));
 			result.addContent(weightUnusedPoly);
 			
 			
@@ -538,7 +538,7 @@ public class SearchResult implements Comparable<SearchResult> {
 	}
 
 
-	public void extendPath(PhyloTreeNode newNode) {
+	public void extendPath(SearchResultTreeNode newNode) {
 		usedPath.add(newNode);
 		
 	}
@@ -578,5 +578,10 @@ public class SearchResult implements Comparable<SearchResult> {
 	}
 	public double getWeightRemainingPolys(){
 		return remainingPolysSumWeights;
+	}
+
+
+	public HaploSearchManager getSearchMananger() {
+		return searchManager;
 	}
 }

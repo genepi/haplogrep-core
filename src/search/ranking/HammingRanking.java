@@ -4,22 +4,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import search.SearchResult;
-import search.results.ResultKylcinski;
+import search.results.Result;
+import search.results.ResultHamming;
 import core.TestSample;
 
-public class KychinskyRanker extends Ranker {
+public class HammingRanking extends RankingMethod {
 	
-	public KychinskyRanker(){
+	
+	public HammingRanking(){
 		super();
 	}
 	
-
+	
 	public void setResults(TestSample sample, ArrayList<SearchResult> searchPhylotreeWrapper) {
-
 		for(SearchResult currentResult : searchPhylotreeWrapper){
-			results.add(new ResultKylcinski(currentResult,sample.getExpectedHaplogroup()));
+			results.add(new ResultHamming(currentResult,sample.getExpectedHaplogroup()));
 		}
 		
 		Collections.sort(results);
 	}
+	
 }
