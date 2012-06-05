@@ -24,7 +24,7 @@ public class SampleFileTests {
 		
 
 		Assert.assertEquals( "1",newSampleFile.getTestSamples().get(0).getSampleID());
-		Assert.assertEquals( "1-576 ; 16024-16569 ;",newSampleFile.getTestSamples().get(0).getSampleRanges().toString());
+		Assert.assertEquals( "1-576 ; 16024-16569 ;",newSampleFile.getTestSamples().get(0).getSample().getSampleRanges().toString());
 		Assert.assertEquals( "H",newSampleFile.getTestSamples().get(0).getExpectedHaplogroup().toString());
 		Assert.assertEquals( "249d 263G",newSampleFile.getTestSamples().get(0).getSample().toString());
 		
@@ -51,7 +51,7 @@ public class SampleFileTests {
 		SampleFile newSampleFile = new SampleFile(sampleTokens);
 	
 		Assert.assertEquals( "1",newSampleFile.getTestSamples().get(0).getSampleID());
-		Assert.assertEquals( "1-576 ; 16024-16569 ;",newSampleFile.getTestSamples().get(0).getSampleRanges().toString());
+		Assert.assertEquals( "1-576 ; 16024-16569 ;",newSampleFile.getTestSamples().get(0).getSample().getSampleRanges().toString());
 		Assert.assertEquals( "H",newSampleFile.getTestSamples().get(0).getExpectedHaplogroup().toString());
 		Assert.assertEquals( "249d 263G",newSampleFile.getTestSamples().get(0).getSample().toString());
 		

@@ -3,12 +3,13 @@ package phylotree;
 import java.util.HashMap;
 import java.util.Map;
 
+
 public class PhylotreeManager {
-	private Map<String, PhyloTree> phylotreeMap;
+	private Map<String, Phylotree> phylotreeMap;
 	static PhylotreeManager instance = null;
 
 	private PhylotreeManager() {
-		phylotreeMap = new HashMap<String, PhyloTree>();
+		phylotreeMap = new HashMap<String, Phylotree>();
 	}
 
 	public static PhylotreeManager getInstance() {
@@ -18,17 +19,13 @@ public class PhylotreeManager {
 		return instance;
 	}
 
-	/** Returns the instance of the phylotree version given by filename. 
-	 *  If the instance doesn't exist, it's created beforehand.
-	 * @param phylotree Name of xml file which contains the phylotree
-	 * @param phyloWeights Name of file with polygenetic weights
-	 */
-	public PhyloTree getPhylotree(String phylotree, String phyloWeights) {
-		if (phylotreeMap.containsKey(phylotree))
-			return phylotreeMap.get(phylotree);
+	public Phylotree getPhylotree(String key, String weights) {
+		if (phylotreeMap.containsKey(key))
+			return phylotreeMap.get(key);
 		else {
-			PhyloTree searchMananger = new PhyloTree(phylotree,phyloWeights);
-			phylotreeMap.put(phylotree, searchMananger);
+			Phylotree searchMananger = new Phylotree(key,
+					weights);
+			phylotreeMap.put(key, searchMananger);
 			return searchMananger;
 		}
 	}

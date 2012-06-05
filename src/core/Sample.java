@@ -10,13 +10,16 @@ import exceptions.parse.sample.InvalidPolymorphismException;
 
 public class Sample {
 	public ArrayList<Polymorphism> sample = new ArrayList<Polymorphism>();
+	private SampleRange sampleRange = null;
+	
 	//callMethod defines the call. callMethod=1 call from PhyloTree
-	public Sample(String sampleToParse,int callMethod) throws InvalidPolymorphismException {
+	public Sample(String sampleToParse, SampleRange sampleRange,int callMethod) throws InvalidPolymorphismException {
 	
 		String[] polyTokens = sampleToParse.trim().split("\\s+");
 		ArrayList<String> listOfSampleTokens = new ArrayList<String>(Arrays.asList(polyTokens));
 		
 		this.sample = parseSample(listOfSampleTokens, callMethod);
+		this.sampleRange = sampleRange;
 	}
 	
 	
@@ -26,6 +29,19 @@ public class Sample {
 	
 	public boolean contains(Polymorphism polyToCheck) {
 		return sample.contains(polyToCheck);
+	}
+	
+	public boolean containsWithBackmutation(Polymorphism polyToCheck) {
+		
+		boolean contains =  sample.contains(polyToCheck);
+		
+		if(!contains && polyToCheck.isBackMutation || contains && !polyToCheck.isBackMutation)
+			return true;
+		
+		else if(!contains && !polyToCheck.isBackMutation)
+			return false;
+				
+		return false;
 	}
 
 	public String toString()
@@ -146,5 +162,19 @@ public class Sample {
 		//System.out.println(filteredSample);
 		return filteredSample;
 	}
+	public SampleRange getSampleRanges() {
+		return sampleRange;
+	}
 	
+	public ArrayList<Polymorphism>getPolyNotinRange()
+	{
+		ArrayList<Polymorphism> notInRangePolys = new ArrayList<Polymorphism>();
+		for(Polymorphism currentPoly : getPolymorphismn())
+		{
+			if(!sampleRange.contains(currentPoly))
+				notInRangePolys.add(currentPoly);
+		}
+		
+		return notInRangePolys;
+	}
 }

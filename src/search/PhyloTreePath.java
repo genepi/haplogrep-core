@@ -1,14 +1,20 @@
 package search;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 import org.jdom.Element;
 
 import core.Polymorphism;
 
-public class PhyloTreePath {
+public class PhyloTreePath implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8785488762712398581L;
 	private ArrayList<SearchResultTreeNode> path = new ArrayList<SearchResultTreeNode>();
 	
 	public PhyloTreePath(PhyloTreePath usedPath) {
@@ -88,6 +94,14 @@ public class PhyloTreePath {
 		path.add(newNode);		
 	}
 
-	
+	public boolean equals(Object other){
+		if(!(other instanceof PhyloTreePath))
+			return false;
+		Collections.reverse(path);
+		if(!Arrays.equals(path.toArray(), ((PhyloTreePath)other).path.toArray()))
+			return false;	
+		Collections.reverse(path);	
+		return true;
+	}
 	
 }

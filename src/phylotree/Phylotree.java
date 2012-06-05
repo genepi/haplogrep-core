@@ -1,4 +1,4 @@
-package search;
+package phylotree;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -16,31 +16,36 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
 
-import phylotree.PhyloTreeNode;
+import search.ClusteredSearchResult;
+import search.SearchResult;
+import search.SearchResultTreeNode;
+import search.ranking.HammingRanking;
+import search.ranking.KychinskyRanking;
+import search.ranking.RankingMethod;
+import search.results.Result;
+
 
 import com.sun.media.sound.InvalidFormatException;
 
 import core.Haplogroup;
 import core.Polymorphism;
+import core.TestSample;
 import exceptions.PolyDoesNotExistException;
 import exceptions.parse.sample.InvalidBaseException;
 import exceptions.parse.sample.InvalidPolymorphismException;
 
-public final class HaploSearchManager {
+public final class Phylotree {
 
-	
-	private ArrayList<Polymorphism> allPolysUsedinPhylotree = null;
-//	private Document phyloTree= null;
 	PhyloTreeNode root;
 	private String phylotreeString;
 	private String fluctRates;
 	private HashMap<Polymorphism, Double>  phyloGeneticWeights = new HashMap<Polymorphism, Double>();
 	
 	
-	public HaploSearchManager(String phylotree, String weights)
+	public Phylotree(String phylotree, String weights)
 	{
 		this.phylotreeString=phylotree;
-		allPolysUsedinPhylotree = new ArrayList<Polymorphism>();
+//		allPolysUsedinPhylotree = new ArrayList<Polymorphism>();
 		 root= new PhyloTreeNode();
 		// Create a JDOM document out of the phylotree XML
 			SAXBuilder builder = new SAXBuilder();
@@ -88,6 +93,161 @@ public final class HaploSearchManager {
 			buildPhylotree(newNode, currentChildElement);
 		}
 	}
+	
+	
+	public List<Result> search(TestSample testSample,RankingMethod rankingMethodToUse) throws JDOMException, IOException, NumberFormatException, InvalidPolymorphismException {
+
+	
+		// Start first search step
+		ArrayList<SearchResult> results = new ArrayList<SearchResult>();
+
+		// Start at root node 
+		SearchResult rootResult = new SearchResult(this,root, testSample);
+		// First call to RECURSIVE search function
+		searchPhylotree(root, results, testSample, rootResult);
+		
+		rankingMethodToUse.setResults(testSample, results);
+		
+		// Cluster search results with same rank together
+//		ArrayList<ClusteredSearchResult> clusteredResult = ClusteredSearchResult.createClusteredSearchResult(rankingMethodToUse.getResults(),testSample.getExpectedHaplogroup());
+		
+		//set results to null (>20) to save memory. 
+		results.clear();
+		return rankingMethodToUse.getResults();
+	}
+
+
+
+	/**
+	 * First step (wrapper) of recursive search function
+	 * 
+	 * @param sample
+	 * @return
+	 * @throws NumberFormatException
+	 * @throws InvalidBaseException
+	 * @throws InvalidFormatException
+	 */
+	private ArrayList<SearchResult> searchPhylotreeWrapper(TestSample sample) throws NumberFormatException, InvalidPolymorphismException {
+		ArrayList<SearchResult> results = new ArrayList<SearchResult>();
+
+		// Start at root node (mt dna reference NC_012920)
+		SearchResult rootResult = new SearchResult(this,root, sample);
+//		PhyloTreeNode node = root;
+
+		// First call to RECURSIVE search function
+		searchPhylotree(root, results, sample, rootResult);
+
+		return results;
+	}
+
+	/**
+	 * Traverses the complete phylo tree beginning at the rCRS. For each child a
+	 * new SerachResult object is created.
+	 * 
+	 * @param parent
+	 *            The XML parent node
+	 * @param results
+	 *            The list of all results
+	 * @param sample
+	 *            The test sample
+	 * @param parentResult
+	 *            SearchResult of the parent
+	 * @throws NumberFormatException
+	 * @throws InvalidBaseException
+	 * @throws InvalidFormatException
+	 */
+	private void searchPhylotree(PhyloTreeNode parent, ArrayList<SearchResult> results, TestSample sample, SearchResult parentResult) throws NumberFormatException,
+	InvalidPolymorphismException {
+		// Query all child haplogroup nodes
+		List<PhyloTreeNode> children = (List<PhyloTreeNode>) parent.getSubHaplogroups();//.getChildren("haplogroup");
+
+		for (PhyloTreeNode currentElement : children) {
+			SearchResult newResult = new SearchResult(currentElement.getHaplogroup().toString(),currentElement,/*.getAttributeValue("name")*/ parentResult);
+
+			List<Polymorphism> polys = currentElement.getExpectedPolys();//.getChild("details").getChildren("poly");
+			//H2a2a has no polys
+			//if(polys.size() > 0){
+			SearchResultTreeNode newNode = new SearchResultTreeNode(currentElement/*new Haplogroup(currentElement.getAttributeValue("name"))*/);
+			// Check all expected polys of the current haplogroup
+			for (Polymorphism currentPoly : polys) {
+//				Polymorphism currentPoly = new Polymorphism(currentPolyElement.getValue());
+
+				// Check whether polymorphism is in range
+				if (sample.getSample().getSampleRanges().contains(currentPoly)) {
+					// In case of a backmutation we must correct the current
+					// result.
+					// A polymorhism is no longer expected
+					if (currentPoly.isBackMutation()) {
+						newResult.removeExpectedPoly(currentPoly);
+//						newResult.removeExpectedPolyWeight(currentPoly);
+						newResult.removeFoundPoly(currentPoly);
+						newResult.removeFoundPolyWeight(currentPoly,sample.getSample());
+						
+						
+						
+						//Add correct backmutation poly					
+						newNode.addExpectedPoly(currentPoly);
+						///newResult.addExpectedPoly(currentPoly);
+						
+						Polymorphism newPoly = new Polymorphism(currentPoly);
+						newPoly.setBackMutation(false);
+//						
+//						newNode.removeExpectedPoly(newPoly);
+//						newNode.removeFoundPoly(newPoly);
+						
+						if (!newResult.getSample().contains(newPoly))
+						{
+							newNode.addFoundPoly(currentPoly);
+							//newResult.addCorrectPoly(currentPoly);
+						}
+					}
+
+					// The sample contains the right polymorphism for this group
+					else if (newResult.getSample().contains(currentPoly)) {
+						newResult.addExpectedPoly(currentPoly);
+						newResult.addExpectedPolyWeight(currentPoly);
+						newResult.addFoundPoly(currentPoly);
+						newResult.addFoundPolyWeight(currentPoly);
+						
+						newNode.addExpectedPoly(currentPoly);
+						newNode.addFoundPoly(currentPoly);
+					}
+
+					// There is no fitting polymorphism in the sample though we
+					// expect one for this haplogroup
+					else {
+						if (currentPoly.isBackMutation()) {
+							newResult.removeMissingOutOfRangePoly(currentPoly);
+						}
+						
+						newResult.addExpectedPoly(currentPoly);
+						newResult.addExpectedPolyWeight(currentPoly);
+						newNode.addExpectedPoly(currentPoly);	
+					}
+					
+				}
+				
+				//Polymorphism is not in sample range
+				else
+				{
+					newResult.addMissingOutOfRangePoly(currentPoly);
+					newNode.addNotInRangePoly(currentPoly);	
+				}
+				
+			//}
+			}
+			
+			newResult.setUnusedNotInRange(sample.getSample().getPolyNotinRange());
+			
+			
+			
+			// Add new result to the list of all results
+			results.add(newResult);
+			newResult.extendPath(newNode);
+			// RECURSIVE call
+			searchPhylotree(currentElement, results, sample, newResult);
+		}
+	}
 	/**
 	 * Traverses the whole phylo tree and saves all appearing phylo types
 	 * @throws JDOMException
@@ -120,7 +280,7 @@ public final class HaploSearchManager {
 		//Read in the fluctuation rates
 		BufferedReader flucFile = new BufferedReader ( new InputStreamReader ( pathToPhyloWeightsFile ) ); 	
 		String line = flucFile.readLine();
-		System.out.println(line);
+	
 		//Read-in each line
 		int i=0;
 		while(line != null)

@@ -18,7 +18,7 @@ public class TestSample implements Comparable<TestSample>{
 	private Haplogroup expectedHaplogroup;
 	private Haplogroup detectedHaplogroup;
 	private Sample sample;
-	private SampleRange sampleRange = null;
+	
 	
 	private TreeSet<SearchResult> allSearchResults;
 	private Cerberus cerberus = null;
@@ -30,12 +30,11 @@ public class TestSample implements Comparable<TestSample>{
 		
 	}
 	
-	public TestSample (String sampleID, Haplogroup predefiniedHaplogroup,Sample sample, SampleRange sampleRange, String state) 
+	public TestSample (String sampleID, Haplogroup predefiniedHaplogroup,Sample sample, String state) 
 	{
 		this.testSampleID = sampleID;
 		this.expectedHaplogroup = predefiniedHaplogroup;
 		this.sample = sample;
-		this.sampleRange = sampleRange;
 		this.state=state;
 	}
 
@@ -49,7 +48,7 @@ public class TestSample implements Comparable<TestSample>{
 	 */
 	public static TestSample parse(String inputString) throws HsdFileException {
 		TestSample parsedSample = new TestSample();
-
+		SampleRange sampleRange = null;
 		try {
 			//Split the input string in separate column strings 
 			String[] columns = inputString.split("\t");
@@ -63,7 +62,7 @@ public class TestSample implements Comparable<TestSample>{
 
 			//Parse range
 			columns[1] = columns[1].replaceAll("\"", "");
-			parsedSample.sampleRange = new SampleRange(columns[1]);
+			sampleRange = new SampleRange(columns[1]);
 
 			//Parse expected haplogroup
 			if (columns[2].equals("?") || columns[2].equals("SEQ"))
@@ -77,7 +76,7 @@ public class TestSample implements Comparable<TestSample>{
 			for (int i = 3; i < columns.length; i++) {
 				sampleString.append(columns[i] + " ");
 			}
-			parsedSample.sample = new Sample(sampleString.toString(), 0);
+			parsedSample.sample = new Sample(sampleString.toString(),sampleRange, 0);
 		} 
 		
 		//Something went wrong during the parse process. Throw exception.
@@ -98,9 +97,7 @@ public class TestSample implements Comparable<TestSample>{
 		return sample.sample;
 	}
 
-	public SampleRange getSampleRanges() {
-		return sampleRange;
-	}
+	
 	
 	public Sample getSample() {
 		return sample;
@@ -154,17 +151,7 @@ public class TestSample implements Comparable<TestSample>{
 		return resultQuality;
 	}
 
-	public ArrayList<Polymorphism>getPolyNotinRange()
-	{
-		ArrayList<Polymorphism> notInRangePolys = new ArrayList<Polymorphism>();
-		for(Polymorphism currentPoly : getPolymorphismn())
-		{
-			if(!sampleRange.contains(currentPoly))
-				notInRangePolys.add(currentPoly);
-		}
-		
-		return notInRangePolys;
-	}
+	
 
 	@Override
 	public int compareTo(TestSample o) {

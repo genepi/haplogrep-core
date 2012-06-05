@@ -22,4 +22,8 @@ public class KychinskyRanking extends RankingMethod {
 		
 		Collections.sort(results);
 	}
+	
+	public RankingMethod clone(){
+		return new KychinskyRanking();
+	}
 }

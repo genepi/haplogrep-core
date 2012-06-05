@@ -22,21 +22,26 @@ import core.Polymorphism;
 public class ClusteredSearchResult implements Comparable<ClusteredSearchResult>{
 	private int rankedPosition = -1;
 	private ArrayList<SearchResult> cluster =  new ArrayList<SearchResult>();
-	private String phyolTreeString;
 	
-	public ClusteredSearchResult(int position, String phyolTreeString) {
+	public ClusteredSearchResult(int position) {
 		rankedPosition = position;
-		this.phyolTreeString = phyolTreeString;
 	}
 
-	public static ArrayList<ClusteredSearchResult> createClusteredSearchResult(ArrayList<Result> unclusteredResults,Haplogroup hg, String phyolTreeString)
+	public static ArrayList<ClusteredSearchResult> createClusteredSearchResult(List<Result> unclusteredResults,Haplogroup hg)
 	{
 		 ArrayList<ClusteredSearchResult> clusteredSearchResult = new ArrayList<ClusteredSearchResult>();
 		 
 		 int i = -1;
 		 double currentRank = -100;
+		 
 		 for(Result currentResult : unclusteredResults)
 		 {
+		 currentResult.getPhyloSearchData().getDetailedResult().updateResult();
+		 }
+		 for(Result currentResult : unclusteredResults)
+		 {
+			
+			 
 			 //Only process the top rated results
 			 if(i == 50)
 				 break;
@@ -47,7 +52,7 @@ public class ClusteredSearchResult implements Comparable<ClusteredSearchResult>{
 				  
 				 currentRank = currentResult.getDistance();
 								 
-				 clusteredSearchResult.add(new ClusteredSearchResult(i,phyolTreeString));
+				 clusteredSearchResult.add(new ClusteredSearchResult(i));
 				 clusteredSearchResult.get(i).getCluster().add(currentResult.getPhyloSearchData());
 			 }
 			 else

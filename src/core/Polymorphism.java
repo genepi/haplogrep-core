@@ -1,6 +1,7 @@
 package core;
 
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
@@ -10,7 +11,7 @@ import exceptions.parse.sample.InvalidBaseException;
 import exceptions.parse.sample.InvalidPolymorphismException;
 
 
-public class Polymorphism implements Comparable<Polymorphism>{
+public class Polymorphism implements Comparable<Polymorphism>, Serializable{
 	protected int position;
 	protected Mutations mutation;
 	

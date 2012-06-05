@@ -24,5 +24,5 @@ public abstract class RankingMethod {
 		return results;
 	}
 	
-	
+	public abstract RankingMethod clone();
 }

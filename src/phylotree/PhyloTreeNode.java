@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import phylotree.PhyloTree;
-
 import core.Haplogroup;
 import core.Polymorphism;
 
@@ -14,7 +12,6 @@ public class PhyloTreeNode {
 	protected Haplogroup haplogroup = null;
 	protected ArrayList<Polymorphism> expectedPolys = new ArrayList<Polymorphism>();
 
-	protected PhyloTree tree = null;
 	protected PhyloTreeNode parent = null;
 	protected ArrayList<PhyloTreeNode> subHaplogroups = new ArrayList<PhyloTreeNode>(); 
 	
@@ -23,7 +20,6 @@ public class PhyloTreeNode {
 	}
 	
 	public PhyloTreeNode(PhyloTreeNode parent,Haplogroup haplogroup) {
-		 this.tree = parent.tree;
 		 this.parent = parent;
 		 this.haplogroup = haplogroup;
 //		 this.expectedPolys.addAll(parent.expectedPolys);
@@ -49,8 +45,9 @@ public class PhyloTreeNode {
 	public void addExpectedPoly(Polymorphism newExpectedPoly) {
 		expectedPolys.add(newExpectedPoly);	
 	}	
-	public PhyloTree getTree(){
-		return tree;
+	
+	public PhyloTreeNode getParent(){
+		return parent;
 	}
 	
 }

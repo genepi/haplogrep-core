@@ -8,6 +8,9 @@ import java.util.Iterator;
 
 import org.jdom.Element;
 
+import phylotree.PhyloTreeNode;
+import phylotree.Phylotree;
+
 import core.Haplogroup;
 import core.Polymorphism;
 import core.Sample;
@@ -20,16 +23,7 @@ import core.TestSample;
 
 public class SearchResult implements Comparable<SearchResult> {
 	private Haplogroup haplogroup;
-	private ArrayList<Polymorphism> expectedPolys = new ArrayList<Polymorphism>();
-	private ArrayList<Polymorphism> foundPolys = new ArrayList<Polymorphism>();
-	private ArrayList<Polymorphism> remainingPolys = new ArrayList<Polymorphism>();
-	private ArrayList<Polymorphism> remainingPolysNotInRange = new ArrayList<Polymorphism>();
-	private ArrayList<Polymorphism> correctedBackmutations = new ArrayList<Polymorphism>();	
-	private ArrayList<Polymorphism> missingPolysOutOfRange = new ArrayList<Polymorphism>();
-	private HashSet<Polymorphism> missingPolys = new  HashSet<Polymorphism>();
-	
-	private PhyloTreePath usedPath = new PhyloTreePath();
-	
+	private SearchResultDetailed detailedResult = new SearchResultDetailed(this);
 	private Sample usedPolysInSample = null;
 
 	private double usedWeightPolys = 0;
@@ -40,32 +34,33 @@ public class SearchResult implements Comparable<SearchResult> {
 	private double missingSumWeightsPolysOutOfRange = 0;
 
 //	protected String phyolTreeString;
-	protected HaploSearchManager searchManager;
+	protected Phylotree searchManager;
 	/**
 	 * Creates a new SeachResult object with given haplogroup and test sample
-	 * @param haplogroup The detected haplogroup
-	 * @param polysInTestSample
+	 * @param phyloNode The detected haplogroup
+	 * @param parentResult
 	 */
-	public SearchResult(HaploSearchManager searchManager,String haplogroup, TestSample polysInTestSample) {
-		this.haplogroup = new Haplogroup(haplogroup);
-		this.usedPolysInSample = polysInTestSample.getSample();
-		this.searchManager = searchManager;
+	public SearchResult(Phylotree phyloTree,PhyloTreeNode phyloNode, TestSample parentResult) {
+		this.haplogroup = phyloNode.getHaplogroup();
+		this.usedPolysInSample = parentResult.getSample();
+		this.searchManager = phyloTree;
 		
 		
-		remainingPolys.addAll(usedPolysInSample.getPolymorphismn());
+		detailedResult.remainingPolys.addAll(usedPolysInSample.getPolymorphismn());
 		
 		for (Polymorphism currentPoly : usedPolysInSample.getPolymorphismn()) {
-			usedWeightPolys += searchManager.getMutationRate(currentPoly);
+			usedWeightPolys += phyloTree.getMutationRate(currentPoly);
 			
-			if(polysInTestSample.getSampleRanges().contains(currentPoly)){
-				remainingPolysSumWeights += searchManager.getMutationRate(currentPoly);
+			if(parentResult.getSample().getSampleRanges().contains(currentPoly)){
+				remainingPolysSumWeights += phyloTree.getMutationRate(currentPoly);
 			}
 		}
 		
 		
 		
-		SearchResultTreeNode rootNode = new SearchResultTreeNode(this.haplogroup);
-		usedPath.add(rootNode);
+		SearchResultTreeNode rootNode = new SearchResultTreeNode(phyloNode);
+		detailedResult.usedPath.add(rootNode);
+		detailedResult.phyloNode = phyloNode;
 	}
 
 	
@@ -74,18 +69,19 @@ public class SearchResult implements Comparable<SearchResult> {
 	 * @param newHaplogroup
 	 * @param resultToCopy
 	 */
-	public SearchResult(String newHaplogroup, String phyolTreeString, SearchResult resultToCopy) {
+	public SearchResult(String newHaplogroup,PhyloTreeNode phyloNode, SearchResult resultToCopy) {
 		this.haplogroup = new Haplogroup(newHaplogroup);
 		this.usedPolysInSample = resultToCopy.usedPolysInSample;
-		this.expectedPolys.addAll(resultToCopy.expectedPolys);
-		this.foundPolys.addAll(resultToCopy.foundPolys);
-		this.remainingPolys.addAll(resultToCopy.remainingPolys);
-		this.correctedBackmutations.addAll(resultToCopy.correctedBackmutations);
-		this.remainingPolysNotInRange.addAll(resultToCopy.remainingPolysNotInRange);
-		this.missingPolysOutOfRange.addAll(resultToCopy.missingPolysOutOfRange);
-		this.missingPolys.addAll(resultToCopy.missingPolys);
-		this.usedPath =  new PhyloTreePath(resultToCopy.usedPath);
+		this.detailedResult.expectedPolys.addAll(resultToCopy.detailedResult.expectedPolys);
+		this.detailedResult.foundPolys.addAll(resultToCopy.detailedResult.foundPolys);
+		this.detailedResult.remainingPolys.addAll(resultToCopy.detailedResult.remainingPolys);
+		this.detailedResult.correctedBackmutations.addAll(resultToCopy.detailedResult.correctedBackmutations);
+		this.detailedResult.remainingPolysNotInRange.addAll(resultToCopy.detailedResult.remainingPolysNotInRange);
+		this.detailedResult.missingPolysOutOfRange.addAll(resultToCopy.detailedResult.missingPolysOutOfRange);
+//		this.detailedResult.missingPolys.addAll(resultToCopy.detailedResult.missingPolys);
+		this.detailedResult.usedPath =  new PhyloTreePath(resultToCopy.detailedResult.usedPath);
 		this.searchManager=resultToCopy.searchManager;
+		detailedResult.phyloNode = phyloNode;
 		
 		usedWeightPolys = resultToCopy.usedWeightPolys;
 		foundPolysSumWeights = resultToCopy.foundPolysSumWeights;
@@ -106,7 +102,7 @@ public class SearchResult implements Comparable<SearchResult> {
 	 * @return A list of all polys checked in the phylo xml tree
 	 */
 	public ArrayList<Polymorphism> getCheckedPolys() {
-		return expectedPolys;
+		return detailedResult.expectedPolys;
 	}
 
 	/**
@@ -131,11 +127,11 @@ public class SearchResult implements Comparable<SearchResult> {
 	 * @return A list of all correctly found polys of the detected haplogroup
 	 */
 	public ArrayList<Polymorphism> getFoundPolys() {
-		return foundPolys;
+		return detailedResult.foundPolys;
 	}
 
 	public ArrayList<Polymorphism> getMissingPolysOutOfRange() {
-		return missingPolysOutOfRange;
+		return detailedResult.missingPolysOutOfRange;
 	}
 	
 	/**
@@ -162,74 +158,103 @@ public class SearchResult implements Comparable<SearchResult> {
 		return remainingPolysSumWeights + missingPolysSumWeights;
 	}
 
-	public void addFoundPoly(Polymorphism newFoundPoly) {
-		foundPolysSumWeights += searchManager.getMutationRate(newFoundPoly);
-		foundPolys.add(newFoundPoly);
-		remainingPolys.remove(newFoundPoly);
-		remainingPolysSumWeights -= searchManager.getMutationRate(newFoundPoly);;
-		
-		missingPolys.remove(newFoundPoly);
+	public void addFoundPoly(Polymorphism newFoundPoly) {	
+		detailedResult.foundPolys.add(newFoundPoly);
+		detailedResult.remainingPolys.remove(newFoundPoly);
+	}
+	
+	public void addFoundPolyWeight(Polymorphism newFoundPoly) {
+		foundPolysSumWeights += searchManager.getMutationRate(newFoundPoly);	
+		remainingPolysSumWeights -= searchManager.getMutationRate(newFoundPoly);
 		missingPolysSumWeights -= searchManager.getMutationRate(newFoundPoly);
 	}
 
 	public void addExpectedPoly(Polymorphism newExpectedPoly) {
+		detailedResult.expectedPolys.add(newExpectedPoly);
+	}
+	
+	public void addExpectedPolyWeight(Polymorphism newExpectedPoly) {
 		expectedPolsysSumWeight += searchManager.getMutationRate(newExpectedPoly);
-		expectedPolys.add(newExpectedPoly);
-		
-		missingPolys.add(newExpectedPoly);
 		missingPolysSumWeights += searchManager.getMutationRate(newExpectedPoly);
 	}
 
 	public void removeExpectedPoly(Polymorphism currentPoly) {
 		
 		Polymorphism found = null;
-		for(Polymorphism poly : expectedPolys)
+		boolean foundPoly = false;
+		for(Polymorphism poly : detailedResult.expectedPolys)
 		{
 			if(poly.getPosition() == currentPoly.getPosition() && poly.getMutation() == currentPoly.getMutation()){
-				expectedPolsysSumWeight -= searchManager.getMutationRate(expectedPolys.get(expectedPolys.indexOf(poly)));
+				//expectedPolsysSumWeight -= searchManager.getMutationRate(detailedResult.expectedPolys.get(detailedResult.expectedPolys.indexOf(poly)));
+				removeExpectedPolyWeight(currentPoly);
 				found = poly;
-				
+				foundPoly = true;
 				Polymorphism newPoly = new Polymorphism(currentPoly);
 				newPoly.setBackMutation(false);
 				
-				correctedBackmutations.add(new Polymorphism(newPoly));
+				detailedResult.correctedBackmutations.add(new Polymorphism(newPoly));
 			}
 		}
-		
-		expectedPolys.remove(found);
+//		if(!foundPoly)
+//			System.out.println("Hansi: " + currentPoly);
+		detailedResult.expectedPolys.remove(found);
 		
 	}
 
+	public void removeExpectedPolyWeight(Polymorphism polyToRemove){
+		if(polyToRemove.isBackMutation())
+		{
+			Polymorphism newPoly = new Polymorphism(polyToRemove);
+			newPoly.setBackMutation(false);
+//			double expectedPolsysSumWeight2= expectedPolsysSumWeight;
+			expectedPolsysSumWeight -= searchManager.getMutationRate(newPoly);
+		}
+//		else
+//			expectedPolsysSumWeight -= searchManager.getMutationRate(polyToRemove);
+	}
 	public void removeFoundPoly(Polymorphism foundPoly) {
 		Polymorphism found = null;
 		
-		for(Polymorphism poly : foundPolys){
+		for(Polymorphism poly : detailedResult.foundPolys){
 		if(poly.getPosition() == foundPoly.getPosition() && poly.getMutation() == foundPoly.getMutation()){
-			foundPolysSumWeights -= searchManager.getMutationRate(foundPolys.get(foundPolys.indexOf(poly)));		
+//			foundPolysSumWeights -= searchManager.getMutationRate(detailedResult.foundPolys.get(detailedResult.foundPolys.indexOf(poly)));		
 			
 			if(!foundPoly.isBackMutation())
-				remainingPolys.add(foundPoly);
+				detailedResult.remainingPolys.add(foundPoly);
 			found = poly;
 			
 			Polymorphism newPoly = new Polymorphism(foundPoly);
 			newPoly.setBackMutation(false);
 			
-			correctedBackmutations.add(newPoly);
+			detailedResult.correctedBackmutations.add(newPoly);
 		}
 		}
-		foundPolys.remove(found);
+		detailedResult.foundPolys.remove(found);
 		
 	}
-	
+	public void removeFoundPolyWeight(Polymorphism foundPoly,Sample sample){
+		if(foundPoly.isBackMutation())
+		{
+			Polymorphism newPoly = new Polymorphism(foundPoly);
+			newPoly.setBackMutation(false);
+			if(sample.contains(newPoly)){
+				foundPolysSumWeights -= searchManager.getMutationRate(newPoly);		
+				
+			}
+		}
+		else
+			foundPolysSumWeights -= searchManager.getMutationRate(foundPoly);		
+		
+	}
 
 	public void addMissingOutOfRangePoly(Polymorphism correctPoly) {
 		missingSumWeightsPolysOutOfRange += searchManager.getMutationRate(correctPoly);
-		missingPolysOutOfRange.add(correctPoly);
+		detailedResult.missingPolysOutOfRange.add(correctPoly);
 	}
 
 	public void removeMissingOutOfRangePoly(Polymorphism correctPoly) {
 		missingSumWeightsPolysOutOfRange -= searchManager.getMutationRate(correctPoly);
-		missingPolysOutOfRange.add(correctPoly);
+		detailedResult.missingPolysOutOfRange.add(correctPoly);
 	}
 
 	/*
@@ -238,7 +263,7 @@ public class SearchResult implements Comparable<SearchResult> {
 	}*/
 	
 	public void setUnusedNotInRange(ArrayList<Polymorphism> polyNotinRange) {
-		remainingPolysNotInRange = polyNotinRange;
+		detailedResult.remainingPolysNotInRange = polyNotinRange;
 		
 	}
 	
@@ -260,7 +285,7 @@ public class SearchResult implements Comparable<SearchResult> {
 	public Element getUnusedPolysXML(PhyloTreePath phyloTreePath, boolean includeHotspots)
 	{
 		Element results = new Element("DetailedResults");
-		Collections.sort(remainingPolys);
+		Collections.sort(detailedResult.remainingPolys);
 		
 		ArrayList<Polymorphism> expectedPolysSuperGroup = new ArrayList<Polymorphism>();
 		
@@ -269,10 +294,10 @@ public class SearchResult implements Comparable<SearchResult> {
 		
 		
 		ArrayList<Polymorphism> unusedPolysWithBackmutations = new ArrayList<Polymorphism>();
-		unusedPolysWithBackmutations.addAll(remainingPolys);
+		unusedPolysWithBackmutations.addAll(detailedResult.remainingPolys);
 		
-		for(Polymorphism currentPoly : expectedPolys){
-			if(!foundPolys.contains(currentPoly)){
+		for(Polymorphism currentPoly : detailedResult.expectedPolys){
+			if(!detailedResult.foundPolys.contains(currentPoly)){
 				if(expectedPolysSuperGroup.contains(currentPoly)){
 					Polymorphism p = new Polymorphism(currentPoly);
 					p.setBackMutation(true);
@@ -331,7 +356,7 @@ public class SearchResult implements Comparable<SearchResult> {
 			
 			else
 			{
-				if(this.remainingPolysNotInRange.contains(currentPoly))
+				if(this.detailedResult.remainingPolysNotInRange.contains(currentPoly))
 					reasonUnusedPoly.setText("polyoutofrange");
 				else
 				reasonUnusedPoly.setText("localPrivateMutation");
@@ -445,18 +470,18 @@ public class SearchResult implements Comparable<SearchResult> {
 	{
 		
 		Element results = new Element("DetailedResults");
-		Collections.sort(expectedPolys);
+		Collections.sort(detailedResult.expectedPolys);
 		
 		
 		ArrayList<Polymorphism> unusedPolysArray = new ArrayList<Polymorphism>();
 		unusedPolysArray.addAll(usedPolysInSample.getPolymorphismn());
 		
-		for(Polymorphism current : expectedPolys)
+		for(Polymorphism current : detailedResult.expectedPolys)
 		{
 			
 			
 			//The polymorphism is contained in this haplogroup
-			if(!foundPolys.contains(current))
+			if(!detailedResult.foundPolys.contains(current))
 			{
 				Element result = new Element("DetailedResult");
 				
@@ -475,11 +500,11 @@ public class SearchResult implements Comparable<SearchResult> {
 		
 		
 		
-		for(Polymorphism current : expectedPolys)
+		for(Polymorphism current : detailedResult.expectedPolys)
 		{
 			
 			//The polymorphism is  contained in this haplogroup
-			if(foundPolys.contains(current))
+			if(detailedResult.foundPolys.contains(current))
 			{
 				Element result = new Element("DetailedResult");
 				
@@ -505,10 +530,10 @@ public class SearchResult implements Comparable<SearchResult> {
 
 	public Element getNotInRangePolysXML() {
 		Element results = new Element("OutOfRangePolys");
-		Collections.sort(missingPolysOutOfRange);
+		Collections.sort(detailedResult.missingPolysOutOfRange);
 		
 			
-		for (Polymorphism currentPoly : missingPolysOutOfRange) {
+		for (Polymorphism currentPoly : detailedResult.missingPolysOutOfRange) {
 
 			Element result = new Element("OutOfRangePoly");
 			Element newUnusedPoly = new Element("poly");
@@ -533,24 +558,24 @@ public class SearchResult implements Comparable<SearchResult> {
 
 	public PhyloTreePath getUsedPath() {
 		
-		return usedPath;
+		return detailedResult.usedPath;
 		
 	}
 
 
 	public void extendPath(SearchResultTreeNode newNode) {
-		usedPath.add(newNode);
+		detailedResult.usedPath.add(newNode);
 		
 	}
 
 
 	public ArrayList<Polymorphism> getCorrectedBackmutations() {
-		return correctedBackmutations;
+		return detailedResult.correctedBackmutations;
 	}
 
 
 	public PhyloTreePath getPhyloTreePath() {
-		return usedPath;
+		return detailedResult.usedPath;
 	}
 	
 	protected void finalize() throws Throwable {
@@ -565,11 +590,11 @@ public class SearchResult implements Comparable<SearchResult> {
 
 
 	public Iterator<Polymorphism> getIterExpectedPolys() {
-		return expectedPolys.iterator();	
+		return detailedResult.expectedPolys.iterator();	
 	}
 	
 	public ArrayList<Polymorphism> getUnusedPolys(){
-		return remainingPolys;
+		return detailedResult.remainingPolys;
 	}
 
 
@@ -581,7 +606,14 @@ public class SearchResult implements Comparable<SearchResult> {
 	}
 
 
-	public HaploSearchManager getSearchMananger() {
+	public Phylotree getSearchMananger() {
 		return searchManager;
 	}
+
+
+	public SearchResultDetailed getDetailedResult() {
+		return detailedResult;
+	}
+	
+	
 }

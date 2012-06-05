@@ -34,4 +34,6 @@ public abstract class Result  implements Comparable<Result>{
 		
 		return delta;
 	}
+	
+	
 }
