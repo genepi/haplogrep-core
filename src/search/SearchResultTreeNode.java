@@ -4,7 +4,7 @@ package search;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import phylotree.PhyloTreeNode;
+import phylotree.PhyloTreeNode2;
 import core.Haplogroup;
 import core.Polymorphism;
 
@@ -20,7 +20,7 @@ public class SearchResultTreeNode implements Serializable{
 	ArrayList<Polymorphism> notInRangePolys = new ArrayList<Polymorphism>();
 	ArrayList<Polymorphism> correctedBackmutation = new ArrayList<Polymorphism>();
 	
-	public SearchResultTreeNode(PhyloTreeNode treeNode)
+	public SearchResultTreeNode(PhyloTreeNode2 treeNode)
 	{
 		this.haplogroup = treeNode.getHaplogroup();
 	}

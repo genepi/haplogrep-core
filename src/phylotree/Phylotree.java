@@ -29,14 +29,14 @@ import exceptions.parse.sample.InvalidPolymorphismException;
 
 public final class Phylotree {
 
-	PhyloTreeNode root;
+	PhyloTreeNode2 root;
 	private HashMap<Polymorphism, Double>  phyloGeneticWeights = new HashMap<Polymorphism, Double>();
-	private HashMap<Haplogroup, PhyloTreeNode>  haplogroupLookup = new HashMap<Haplogroup, PhyloTreeNode>();
+	private HashMap<Haplogroup, PhyloTreeNode2>  haplogroupLookup = new HashMap<Haplogroup, PhyloTreeNode2>();
 	
 	public Phylotree(InputStream phylotreeFile, InputStream phylogeneticWeightsFile)
 	{
 
-		 root= new PhyloTreeNode(this);
+		 root= new PhyloTreeNode2(this);
 		// Create a JDOM document out of the phylotree XML
 			SAXBuilder builder = new SAXBuilder();
 			try {
@@ -66,8 +66,8 @@ public final class Phylotree {
 		
 	}
 	
-	private void buildPhylotree(PhyloTreeNode parentNode, Element currentXMLElement) throws NumberFormatException, InvalidPolymorphismException{
-		PhyloTreeNode newNode =  new PhyloTreeNode(this,parentNode, new Haplogroup(currentXMLElement.getAttribute("name").getValue()));
+	private void buildPhylotree(PhyloTreeNode2 parentNode, Element currentXMLElement) throws NumberFormatException, InvalidPolymorphismException{
+		PhyloTreeNode2 newNode =  new PhyloTreeNode2(this,parentNode, new Haplogroup(currentXMLElement.getAttribute("name").getValue()));
 		parentNode.addSubHaplogroup(newNode);
 		//Update index	
 		haplogroupLookup.put(newNode.getHaplogroup(), newNode);
@@ -143,12 +143,12 @@ public final class Phylotree {
 	 * @throws InvalidBaseException
 	 * @throws InvalidFormatException
 	 */
-	private void searchPhylotree(PhyloTreeNode parent, ArrayList<SearchResult> results, TestSample sample, SearchResult parentResult) throws NumberFormatException,
+	private void searchPhylotree(PhyloTreeNode2 parent, ArrayList<SearchResult> results, TestSample sample, SearchResult parentResult) throws NumberFormatException,
 	InvalidPolymorphismException {
 		// Query all child haplogroup nodes
-		List<PhyloTreeNode> children = (List<PhyloTreeNode>) parent.getSubHaplogroups();
+		List<PhyloTreeNode2> children = (List<PhyloTreeNode2>) parent.getSubHaplogroups();
 
-		for (PhyloTreeNode currentElement : children) {
+		for (PhyloTreeNode2 currentElement : children) {
 			SearchResult newResult = new SearchResult(currentElement.getHaplogroup().toString(),currentElement,parentResult);
 
 			List<Polymorphism> polys = currentElement.getExpectedPolys();
@@ -303,12 +303,12 @@ public final class Phylotree {
         return new HaploSeachManager();
     }*/
 
-	public PhyloTreeNode getPhyloTree() {
+	public PhyloTreeNode2 getPhyloTree() {
 		return root;
 	}
 
 	public boolean isSuperHaplogroup(Haplogroup startHg, Haplogroup hgToCheck) {
-		PhyloTreeNode currentNode = haplogroupLookup.get(startHg);
+		PhyloTreeNode2 currentNode = haplogroupLookup.get(startHg);
 		
 		if(startHg == null)
 			return false;

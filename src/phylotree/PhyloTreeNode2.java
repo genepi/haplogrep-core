@@ -8,7 +8,7 @@ import java.util.List;
 import core.Haplogroup;
 import core.Polymorphism;
 
-public class PhyloTreeNode implements Serializable{
+public class PhyloTreeNode2 implements Serializable{
 
 	/**
 	 * 
@@ -18,15 +18,15 @@ public class PhyloTreeNode implements Serializable{
 	protected ArrayList<Polymorphism> expectedPolys = new ArrayList<Polymorphism>();
 
 	protected Phylotree tree = null;
-	protected PhyloTreeNode parent = null;
-	protected ArrayList<PhyloTreeNode> subHaplogroups = new ArrayList<PhyloTreeNode>(); 
+	protected PhyloTreeNode2 parent = null;
+	protected ArrayList<PhyloTreeNode2> subHaplogroups = new ArrayList<PhyloTreeNode2>(); 
 	
-	public PhyloTreeNode(Phylotree tree) {
+	public PhyloTreeNode2(Phylotree tree) {
 		this.tree = tree;
 		haplogroup = new Haplogroup("unkown");
 	}
 	
-	public PhyloTreeNode(Phylotree tree, PhyloTreeNode parent, Haplogroup haplogroup) {
+	public PhyloTreeNode2(Phylotree tree, PhyloTreeNode2 parent, Haplogroup haplogroup) {
 		this.tree = tree;
 		this.parent = parent;
 		this.haplogroup = haplogroup;
@@ -41,11 +41,11 @@ public class PhyloTreeNode implements Serializable{
 		return expectedPolys;
 	}
 
-	public void addSubHaplogroup(PhyloTreeNode newSubGroup){
+	public void addSubHaplogroup(PhyloTreeNode2 newSubGroup){
 		subHaplogroups.add(newSubGroup);
 	}
 
-	public List<PhyloTreeNode> getSubHaplogroups() {
+	public List<PhyloTreeNode2> getSubHaplogroups() {
 		return subHaplogroups;
 	}
 
@@ -53,7 +53,7 @@ public class PhyloTreeNode implements Serializable{
 		expectedPolys.add(newExpectedPoly);	
 	}	
 	
-	public PhyloTreeNode getParent(){
+	public PhyloTreeNode2 getParent(){
 		return parent;
 	}
 

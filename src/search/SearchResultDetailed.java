@@ -8,7 +8,7 @@ import java.util.Iterator;
 
 import org.jdom.Element;
 
-import phylotree.PhyloTreeNode;
+import phylotree.PhyloTreeNode2;
 import core.Polymorphism;
 
 public class SearchResultDetailed implements Serializable{
@@ -45,7 +45,7 @@ public class SearchResultDetailed implements Serializable{
 		correctedBackmutations.clear();
 		foundPolys.clear();
 		
-		PhyloTreeNode startNode = searchResult.getAttachedPhyloTreeNode();
+		PhyloTreeNode2 startNode = searchResult.getAttachedPhyloTreeNode();
 		while (startNode != null) {
 			SearchResultTreeNode newNode = new SearchResultTreeNode(startNode);
 			for (Polymorphism currentPoly : startNode.getExpectedPolys()) {
