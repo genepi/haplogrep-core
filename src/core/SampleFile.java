@@ -24,7 +24,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import phylotree.Phylotree2;
+import phylotree.Phylotree;
 import search.ClusteredSearchResult;
 import search.OverviewTreePath;
 import search.SearchResult;
@@ -178,7 +178,7 @@ public class SampleFile {
 		return classificationResults.get(sampleID);
 	}
 
-	public void updateClassificationResults(Phylotree2 phylotree, RankingMethod rankingMethod) throws NumberFormatException, InvalidPolymorphismException,
+	public void updateClassificationResults(Phylotree phylotree, RankingMethod rankingMethod) throws NumberFormatException, InvalidPolymorphismException,
 			JDOMException, IOException {
 		for (TestSample currenTestSample : testSamples.values()) {
 			List<RankedResult> results = phylotree.search(currenTestSample, rankingMethod.clone());

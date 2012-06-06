@@ -17,16 +17,16 @@ public class PhyloTreeNode implements Serializable{
 	protected Haplogroup haplogroup = null;
 	protected ArrayList<Polymorphism> expectedPolys = new ArrayList<Polymorphism>();
 
-	protected Phylotree2 tree = null;
+	protected Phylotree tree = null;
 	protected PhyloTreeNode parent = null;
 	protected ArrayList<PhyloTreeNode> subHaplogroups = new ArrayList<PhyloTreeNode>(); 
 	
-	public PhyloTreeNode(Phylotree2 tree) {
+	public PhyloTreeNode(Phylotree tree) {
 		this.tree = tree;
 		haplogroup = new Haplogroup("unkown");
 	}
 	
-	public PhyloTreeNode(Phylotree2 tree, PhyloTreeNode parent, Haplogroup haplogroup) {
+	public PhyloTreeNode(Phylotree tree, PhyloTreeNode parent, Haplogroup haplogroup) {
 		this.tree = tree;
 		this.parent = parent;
 		this.haplogroup = haplogroup;
@@ -57,7 +57,7 @@ public class PhyloTreeNode implements Serializable{
 		return parent;
 	}
 
-	public Phylotree2 getTree() {
+	public Phylotree getTree() {
 		return tree;	
 	}
 	

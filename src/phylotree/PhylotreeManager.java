@@ -9,11 +9,11 @@ import java.util.Map;
 
 
 public class PhylotreeManager {
-	private Map<String, Phylotree2> phylotreeMap;
+	private Map<String, Phylotree> phylotreeMap;
 	static PhylotreeManager instance = null;
 
 	private PhylotreeManager() {
-		phylotreeMap = new HashMap<String, Phylotree2>();
+		phylotreeMap = new HashMap<String, Phylotree>();
 	}
 
 	public static PhylotreeManager getInstance() {
@@ -23,7 +23,7 @@ public class PhylotreeManager {
 		return instance;
 	}
 
-	public Phylotree2 getPhylotree(String phylotree, String weights) {
+	public Phylotree getPhylotree(String phylotree, String weights) {
 		if (phylotreeMap.containsKey(phylotree))
 			return phylotreeMap.get(phylotree);
 		else {
@@ -39,7 +39,7 @@ public class PhylotreeManager {
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
-			Phylotree2 searchMananger = new Phylotree2(phyloFile,flucRates);
+			Phylotree searchMananger = new Phylotree(phyloFile,flucRates);
 			phylotreeMap.put(phylotree, searchMananger);
 			return searchMananger;
 		}
