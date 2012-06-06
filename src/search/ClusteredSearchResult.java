@@ -58,51 +58,7 @@ public class ClusteredSearchResult implements Comparable<ClusteredSearchResult>{
 			 clusteredSearchResult.get(i).getCluster().add(currentResult.getPhyloSearchData());
 			 
 			
-		 }
-		 
-//		
-//		 Collections.sort(unclusteredResults);
-//		 
-//		 int i = 0;
-//		 double currentRank = -1;
-//		 boolean foundPredefinedHG = false;
-//		 
-//		 for(Result currentNewResult : unclusteredResults)
-//		 {
-//			 SearchResult currentResult = currentNewResult.getPhyloSearchData();
-//			 //Only process the top rated results
-//			 if(i == 50)
-//				 break;
-//			 
-//			 if(currentRank != currentResult.getRank()) 
-//			 {
-//				 clusteredSearchResult.add(new ClusteredSearchResult(i+1, phyolTreeString));
-//				 i++;
-//				 currentRank = currentResult.getRank();
-//			 }
-//			 clusteredSearchResult.get(i-1).getCluster().add(currentResult);
-//			
-//			 if(currentResult.getHaplogroup().equals(hg))
-//				 foundPredefinedHG = true;
-//		 }
-//		 
-//		 //add predefined HG as a result (21 results now)
-//		 if(!foundPredefinedHG && !hg.toString().equals("")){
-//			 int pos = 1;
-//		 for(Result currentNewResult : unclusteredResults)
-//		 {
-//			 SearchResult currentResult = currentNewResult.getPhyloSearchData();
-//			 if(currentResult.getHaplogroup().equals(hg)) 
-//			 {
-//				 clusteredSearchResult.add(new ClusteredSearchResult(pos,phyolTreeString));
-//				 clusteredSearchResult.get(i).getCluster().add(currentResult);
-//				 break;
-//			 }
-//			 pos++;
-//			
-//		 }
-//		 }
-		 
+		 }		 
 		return clusteredSearchResult;	
 	}
 	

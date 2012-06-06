@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import search.SearchResult;
+import search.ranking.results.RankedResult;
 import search.ranking.results.RankedResultKylczynski;
 import core.TestSample;
 
@@ -13,6 +14,9 @@ public class KylczynskiRanking extends RankingMethod {
 		super();
 	}
 	
+	public KylczynskiRanking(int maxTopResults){
+		super(maxTopResults);
+	}
 
 	public void setResults(TestSample sample, ArrayList<SearchResult> searchPhylotreeWrapper) {
 
@@ -21,9 +25,11 @@ public class KylczynskiRanking extends RankingMethod {
 		}
 		
 		Collections.sort(results);
+		
+		cutResultSetToTopHits();
 	}
 	
 	public RankingMethod clone(){
-		return new KylczynskiRanking();
+		return new KylczynskiRanking(maxTopResults);
 	}
 }

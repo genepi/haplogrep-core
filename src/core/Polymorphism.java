@@ -22,7 +22,8 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	boolean isBackMutation = false;
 	String numberOfIns = "";
 	String insertedPolys = "";
-
+	int hashCode;
+	
 	/**
 	 * rCRS reference sequence
 	 */
@@ -39,6 +40,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	public Polymorphism(int newPosition, Mutations mutatedBase) {
 		this.mutation = mutatedBase;
 		this.position = newPosition;
+		hashCode = toString().hashCode();
 	}
 
 	/**
@@ -51,6 +53,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	 */
 	public Polymorphism(String phyloString) throws InvalidPolymorphismException {
 		parse(phyloString);
+		hashCode = toString().hashCode();
 	}
 
 	/**
@@ -65,6 +68,8 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		this.isBackMutation = polyToCopy.isBackMutation;
 		this.numberOfIns = polyToCopy.numberOfIns;
 		this.insertedPolys = polyToCopy.insertedPolys;
+		
+		hashCode = toString().hashCode();
 	}
 
 	/* 
@@ -145,7 +150,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	}
 
 	/**
-	 * Reformat a string representation of a polymorhism with back mutation 
+	 * Reformat a string representation of a polymorphism with back mutation 
 	 * from '!' to '@' e.g. 185! to '@185' 
 	 * @param poly
 	 * @return The reformatted string
@@ -209,7 +214,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		// BACKMUTATION
 		if (stringToParse.contains("!")) {
 			stringToParse = stringToParse.replace("!", "");
-			this.setBackMutation(true);
+			isBackMutation = true;
 		}
 
 		// DELETIONS
@@ -365,7 +370,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		return this.toString().hashCode();
+		return hashCode;
 	}
 
 	// TODO hotspots depend on phylotree version! Move somewhere better
@@ -430,5 +435,6 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	 */
 	public void setBackMutation(boolean isBackMutation) {
 		this.isBackMutation = isBackMutation;
+		hashCode = toString().hashCode();
 	}
 }
