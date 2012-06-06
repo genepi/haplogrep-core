@@ -12,8 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import search.results.Result;
-
+import search.ranking.results.RankedResult;
 import core.Haplogroup;
 import core.Polymorphism;
 
@@ -27,18 +26,18 @@ public class ClusteredSearchResult implements Comparable<ClusteredSearchResult>{
 		rankedPosition = position;
 	}
 
-	public static ArrayList<ClusteredSearchResult> createClusteredSearchResult(List<Result> unclusteredResults,Haplogroup hg)
+	public static ArrayList<ClusteredSearchResult> createClusteredSearchResult(List<RankedResult> unclusteredResults,Haplogroup hg)
 	{
 		 ArrayList<ClusteredSearchResult> clusteredSearchResult = new ArrayList<ClusteredSearchResult>();
 		 
 		 int i = -1;
 		 double currentRank = -100;
 		 
-		 for(Result currentResult : unclusteredResults)
+		 for(RankedResult currentResult : unclusteredResults)
 		 {
 		 currentResult.getPhyloSearchData().getDetailedResult().updateResult();
 		 }
-		 for(Result currentResult : unclusteredResults)
+		 for(RankedResult currentResult : unclusteredResults)
 		 {
 			
 			 
@@ -125,7 +124,7 @@ public class ClusteredSearchResult implements Comparable<ClusteredSearchResult>{
 		{
 			if(currentResult.getHaplogroup().equals(new Haplogroup(haplogroup)))
 			{
-				return currentResult.toXML();
+				return currentResult.getDetailedResult().toXML();
 			}
 		}
 		
@@ -192,15 +191,15 @@ public class ClusteredSearchResult implements Comparable<ClusteredSearchResult>{
 			
 			result += "\t\tExpected\tCorrect\t\tUsed polys\tWeight\n";
 			
-			Collections.sort(currentResult.getCheckedPolys());
+			Collections.sort(currentResult.getDetailedResult().getCheckedPolys());
 			
 			
 			ArrayList<Polymorphism> unusedPolys = new ArrayList<Polymorphism>();
 			unusedPolys.addAll(currentResult.getSample().getPolymorphismn());
-			for(Polymorphism current : currentResult.getCheckedPolys())
+			for(Polymorphism current : currentResult.getDetailedResult().getCheckedPolys())
 			{
 				
-				String fluctString = df.format( currentResult.getSearchMananger().getMutationRate(current));
+				String fluctString = df.format( currentResult.getSearchManager().getMutationRate(current));
 				
 				
 				result +=  "\t\t"+ current.toString();
@@ -229,7 +228,7 @@ public class ClusteredSearchResult implements Comparable<ClusteredSearchResult>{
 			//Write unused polymorphismn in this haplogroup
 			for(Polymorphism current : unusedPolys)
 			{
-				String fluctString = df.format( currentResult.getSearchMananger().getMutationRate(current));
+				String fluctString = df.format( currentResult.getSearchManager().getMutationRate(current));
 				result +=  "\t\t\t\t\t\t" + current; 
 				result += "\t\t" + fluctString + "\n";
 			}
@@ -302,38 +301,38 @@ public JSONObject toJson() throws JSONException {
 		return child;
 	}
 	
-public PhyloTreePath getPhyloTreePath(Haplogroup haplogroup) {
-	for(SearchResult currentResult : cluster)
-	{
-		if(currentResult.getHaplogroup().equals(haplogroup))
-		{
-			return currentResult.getUsedPath();
-		}
-	}
-	
-	return null;
-}
-
-public PhyloTreePath getPhyloTreePath(int index) {
-	
-	return cluster.get(index).getUsedPath();
-	/*for(SearchResult currentResult : cluster)
-	{
-		if(currentResult.getHaplogroup().equals(haplogroup))
-		{
-			return currentResult.getUsedPath();
-		}
-	}
-	
-	return null;*/
-}
+//public PhyloTreePath getPhyloTreePath(Haplogroup haplogroup) {
+//	for(SearchResult currentResult : cluster)
+//	{
+//		if(currentResult.getHaplogroup().equals(haplogroup))
+//		{
+//			return currentResult.getUsedPath();
+//		}
+//	}
+//	
+//	return null;
+//}
+//
+//public PhyloTreePath getPhyloTreePath(int index) {
+//	
+//	return cluster.get(index).getUsedPath();
+//	/*for(SearchResult currentResult : cluster)
+//	{
+//		if(currentResult.getHaplogroup().equals(haplogroup))
+//		{
+//			return currentResult.getUsedPath();
+//		}
+//	}
+//	
+//	return null;*/
+//}
 
 	public Element getUnusedPolysXML(String haplogroup) {
 		for(SearchResult currentResult : cluster)
 		{
 			if(currentResult.getHaplogroup().equals(new Haplogroup(haplogroup)))
 			{
-				return currentResult.getUnusedPolysXML(currentResult.getPhyloTreePath(),true);
+				return currentResult.getDetailedResult().getUnusedPolysXML(true);
 			}
 		}
 		

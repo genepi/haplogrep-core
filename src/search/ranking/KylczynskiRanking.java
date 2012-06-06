@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import search.SearchResult;
-import search.results.ResultKylcinski;
+import search.ranking.results.RankedResultKylczynski;
 import core.TestSample;
 
-public class KychinskyRanking extends RankingMethod {
+public class KylczynskiRanking extends RankingMethod {
 	
-	public KychinskyRanking(){
+	public KylczynskiRanking(){
 		super();
 	}
 	
@@ -17,13 +17,13 @@ public class KychinskyRanking extends RankingMethod {
 	public void setResults(TestSample sample, ArrayList<SearchResult> searchPhylotreeWrapper) {
 
 		for(SearchResult currentResult : searchPhylotreeWrapper){
-			results.add(new ResultKylcinski(currentResult,sample.getExpectedHaplogroup()));
+			results.add(new RankedResultKylczynski(currentResult,sample.getExpectedHaplogroup()));
 		}
 		
 		Collections.sort(results);
 	}
 	
 	public RankingMethod clone(){
-		return new KychinskyRanking();
+		return new KylczynskiRanking();
 	}
 }

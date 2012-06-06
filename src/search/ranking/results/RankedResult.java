@@ -1,13 +1,13 @@
-package search.results;
+package search.ranking.results;
 
-import core.Haplogroup;
 import search.SearchResult;
+import core.Haplogroup;
 
-public abstract class Result  implements Comparable<Result>{
+public abstract class RankedResult  implements Comparable<RankedResult>{
 	SearchResult phyloSearchData;
 	Haplogroup expectedHaplogroup;
 	
-	public Result(SearchResult phyloSearchData, Haplogroup expectedHaplogroup){
+	public RankedResult(SearchResult phyloSearchData, Haplogroup expectedHaplogroup){
 		this.phyloSearchData = phyloSearchData;
 		this.expectedHaplogroup = expectedHaplogroup;
 	}
@@ -22,7 +22,7 @@ public abstract class Result  implements Comparable<Result>{
 	
 	public abstract double getDistance();
 	
-	public int compareTo(Result o) {
+	public int compareTo(RankedResult o) {
 		int delta = 0;
 	
 		if(o.phyloSearchData.getHaplogroup().equals(expectedHaplogroup) &&

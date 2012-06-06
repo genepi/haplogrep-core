@@ -4,11 +4,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.Iterator;
+
+import org.jdom.Element;
 
 import phylotree.PhyloTreeNode;
-
-import core.Haplogroup;
 import core.Polymorphism;
 
 public class SearchResultDetailed implements Serializable{
@@ -16,41 +16,36 @@ public class SearchResultDetailed implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 3578717605511291419L;
-	public ArrayList<Polymorphism> expectedPolys;
-	public ArrayList<Polymorphism> expectedPolys2;
+	
+	private ArrayList<Polymorphism> expectedPolys;
 	public ArrayList<Polymorphism> foundPolys;
-	public ArrayList<Polymorphism> foundPolys2;
 	public ArrayList<Polymorphism> remainingPolys;
-	public ArrayList<Polymorphism> remainingPolys2;
 	public ArrayList<Polymorphism> remainingPolysNotInRange;
 	public ArrayList<Polymorphism> correctedBackmutations;
-	public ArrayList<Polymorphism> correctedBackmutations2;
 	public ArrayList<Polymorphism> missingPolysOutOfRange;
-	public ArrayList<Polymorphism> missingPolysOutOfRange2;
-//	public HashSet<Polymorphism> missingPolys;
-	public PhyloTreePath usedPath = new PhyloTreePath();
-	private SearchResult searchResult;
-	public PhyloTreeNode phyloNode;
+
+	private ArrayList<SearchResultTreeNode> path = new ArrayList<SearchResultTreeNode>();
+	transient private SearchResult searchResult;
 	
-	public SearchResultDetailed(SearchResult searchResult){
-		
+	public SearchResultDetailed(SearchResult searchResult){	
+		this.searchResult = searchResult;
 		this.expectedPolys = new ArrayList<Polymorphism>();
-		this.expectedPolys2 = new ArrayList<Polymorphism>();
 		this.foundPolys = new ArrayList<Polymorphism>();
-		this.foundPolys2 = new ArrayList<Polymorphism>();
 		this.remainingPolys = new ArrayList<Polymorphism>();
-		this.remainingPolys2 = new ArrayList<Polymorphism>();
 		this.remainingPolysNotInRange = new ArrayList<Polymorphism>();
 		this.correctedBackmutations = new ArrayList<Polymorphism>();
 		this.missingPolysOutOfRange = new ArrayList<Polymorphism>();
-		this.missingPolysOutOfRange2 = new ArrayList<Polymorphism>();
-		this.correctedBackmutations2 = new ArrayList<Polymorphism>();
-		this.searchResult = searchResult;
 	}
 	
 	public void updateResult(){
-		usedPath.getNodes().clear();
-		PhyloTreeNode startNode = phyloNode;//usedPath.getNodes().get(usedPath.getNodes().size()-1);
+		path.clear();
+		expectedPolys.clear();
+		correctedBackmutations.clear();
+		remainingPolysNotInRange.clear();
+		correctedBackmutations.clear();
+		foundPolys.clear();
+		
+		PhyloTreeNode startNode = searchResult.getAttachedPhyloTreeNode();
 		while (startNode != null) {
 			SearchResultTreeNode newNode = new SearchResultTreeNode(startNode);
 			for (Polymorphism currentPoly : startNode.getExpectedPolys()) {
@@ -61,10 +56,10 @@ public class SearchResultDetailed implements Serializable{
 
 						Polymorphism newPoly = new Polymorphism(currentPoly);
 						newPoly.setBackMutation(!currentPoly.isBackMutation());
-						if (!expectedPolys2.contains(currentPoly) && !expectedPolys2.contains(newPoly))
-							expectedPolys2.add(currentPoly);
+						if (!expectedPolys.contains(currentPoly) && !expectedPolys.contains(newPoly))
+							expectedPolys.add(currentPoly);
 						 else{
-							 correctedBackmutations2.add(currentPoly);
+							 correctedBackmutations.add(currentPoly);
 							 newNode.addCorrectedBackmutation(currentPoly);
 						 }
 					} else {
@@ -72,8 +67,8 @@ public class SearchResultDetailed implements Serializable{
 
 						Polymorphism newPoly = new Polymorphism(currentPoly);
 						newPoly.setBackMutation(!currentPoly.isBackMutation());
-						if (!expectedPolys2.contains(currentPoly) && !expectedPolys2.contains(newPoly))
-							expectedPolys2.add(currentPoly);
+						if (!expectedPolys.contains(currentPoly) && !expectedPolys.contains(newPoly))
+							expectedPolys.add(currentPoly);
 //						 else{
 //							 correctedBackmutations2.add(currentPoly);
 //						 newNode.addCorrectedBackmutation(currentPoly);
@@ -82,48 +77,26 @@ public class SearchResultDetailed implements Serializable{
 				} 
 				else{
 					newNode.addNotInRangePoly(currentPoly);
-					missingPolysOutOfRange2.add(currentPoly);
+					missingPolysOutOfRange.add(currentPoly);
 				}
 			}
-			usedPath.add(newNode);
+			path.add(newNode);
 			startNode = startNode.getParent();
 		}
 		
-		remainingPolys2.addAll(searchResult.getSample().getPolymorphismn());
-		for(SearchResultTreeNode currentNode : usedPath.getNodes()){
+		remainingPolys.addAll(searchResult.getSample().getPolymorphismn());
+		for(SearchResultTreeNode currentNode : path){
 			for(Polymorphism currentPoly : currentNode.foundPolys){
 				Polymorphism newPoly = new Polymorphism(currentPoly);
 				newPoly.setBackMutation(!currentPoly.isBackMutation());
-				if(!foundPolys2.contains(currentPoly) && !foundPolys2.contains(newPoly)){
-					foundPolys2.add(currentPoly);
-					remainingPolys2.remove(currentPoly);
+				if(!foundPolys.contains(currentPoly) && !foundPolys.contains(newPoly)){
+					foundPolys.add(currentPoly);
+					remainingPolys.remove(currentPoly);
 				}
 				
 			}
-//				if(!currentPoly.isBackMutation())
-//					foundPolys2.add(currentPoly);
-//				else{
-//					Polymorphism newPoly = new Polymorphism(currentPoly);
-//					newPoly.setBackMutation(false);
-//					foundPolys2.remove(newPoly);
-//				}
+
 		}
-		
-//		int x = 0;
-//		if(usedPath.getNodes().get(0).haplogroup.equals(new Haplogroup("C5a2")))
-//			x++;
-//			
-//		for(SearchResultTreeNode currentNode : usedPath.getNodes()){
-//			for(Polymorphism currentPoly : currentNode.expectedPolys)
-//				if(!currentPoly.isBackMutation())
-//					expectedPolys2.add(currentPoly);
-//				else{
-//					Polymorphism newPoly = new Polymorphism(currentPoly);
-//					newPoly.setBackMutation(false);
-//					expectedPolys2.remove(newPoly);
-//					foundPolys2.remove(newPoly);
-//				}
-//		}
 		
 		
 	}
@@ -132,10 +105,10 @@ public class SearchResultDetailed implements Serializable{
 		if(!(other instanceof SearchResultDetailed))
 			return false;
 		
-		if(!arrayEqualsHelper(expectedPolys2, ((SearchResultDetailed)other).expectedPolys))
+		if(!arrayEqualsHelper(expectedPolys, ((SearchResultDetailed)other).expectedPolys))
 			return false;
 		
-		if(!arrayEqualsHelper(foundPolys2, ((SearchResultDetailed)other).foundPolys))
+		if(!arrayEqualsHelper(foundPolys, ((SearchResultDetailed)other).foundPolys))
 			return false;
 		if(!arrayEqualsHelper(remainingPolys, ((SearchResultDetailed)other).remainingPolys))
 			return false;
@@ -145,7 +118,7 @@ public class SearchResultDetailed implements Serializable{
 			return false;
 		if(!arrayEqualsHelper(missingPolysOutOfRange, ((SearchResultDetailed)other).missingPolysOutOfRange))
 			return false;
-		if(!usedPath.equals(((SearchResultDetailed)other).usedPath))
+		if(!Arrays.equals(path.toArray(), ((SearchResultDetailed)other).path.toArray()))
 			return false;
 		
 		return true;
@@ -157,5 +130,240 @@ public class SearchResultDetailed implements Serializable{
 				return false;
 		}
 		return true;
+	}
+
+	/**
+	 * @param searchResult TODO
+	 * @return A list of all polys checked in the phylo xml tree
+	 */
+	public ArrayList<Polymorphism> getCheckedPolys() {
+		return expectedPolys;
+	}
+
+	public Element getUnusedPolysXML( boolean includeHotspots)
+	{
+		Element results = new Element("DetailedResults");
+		Collections.sort(remainingPolys);
+		
+		ArrayList<Polymorphism> expectedPolysSuperGroup = new ArrayList<Polymorphism>();
+		
+		for(int i = 0; i < path.size()-1;i++)
+		 expectedPolysSuperGroup.addAll(path.get(i).getExpectedPolys());
+		
+		
+		ArrayList<Polymorphism> unusedPolysWithBackmutations = new ArrayList<Polymorphism>();
+		unusedPolysWithBackmutations.addAll(remainingPolys);
+		
+		for(Polymorphism currentPoly : expectedPolys){
+			if(!foundPolys.contains(currentPoly)){
+				if(expectedPolysSuperGroup.contains(currentPoly)){
+					Polymorphism p = new Polymorphism(currentPoly);
+					p.setBackMutation(true);
+					unusedPolysWithBackmutations.add(p);
+				}
+			}
+		}
+		
+		Collections.sort(unusedPolysWithBackmutations);
+		
+			
+		for (Polymorphism currentPoly : unusedPolysWithBackmutations) {
+	
+			Element result = new Element("DetailedResult");
+			Element newUnusedPoly = new Element("unused");
+			newUnusedPoly.setText(currentPoly.toStringShortVersion());
+			
+			
+			
+			/*Element weightUnusedPoly = new Element("weight");
+			weightUnusedPoly.setText(String.valueOf(currentPoly.getMutationRate()));
+			result.addContent(weightUnusedPoly);*/
+			
+			Element reasonUnusedPoly = new Element("reasonUnused");
+			
+			
+			if(searchResult.getSearchManager().getMutationRate(currentPoly) == 0)
+			{
+				if(currentPoly.isBackMutation()){
+					reasonUnusedPoly.setText("globalPrivateMutation");
+					newUnusedPoly.setText(Polymorphism.convertToATBackmutation(currentPoly.toStringShortVersion()));
+					result.addContent(reasonUnusedPoly);
+					result.addContent(newUnusedPoly);
+					results.addContent(result);
+				}
+				
+				else if(currentPoly.isMTHotspot()){
+					
+					if(includeHotspots){
+					reasonUnusedPoly.setText("hotspot");
+					result.addContent(reasonUnusedPoly);
+					result.addContent(newUnusedPoly);
+					results.addContent(result);
+					}
+				}
+				
+				else{
+					reasonUnusedPoly.setText("globalPrivateMutation");
+							
+					result.addContent(reasonUnusedPoly);
+					result.addContent(newUnusedPoly);
+					results.addContent(result);
+				}
+				
+			}
+			
+			else
+			{
+				if(remainingPolysNotInRange.contains(currentPoly))
+					reasonUnusedPoly.setText("polyoutofrange");
+				else
+				reasonUnusedPoly.setText("localPrivateMutation");
+				
+				result.addContent(newUnusedPoly);
+				result.addContent(reasonUnusedPoly);
+				results.addContent(result);
+			}
+			
+			
+			
+			
+			
+		}
+		
+		
+		
+		return results;
+	
+	}
+
+	public Element toXML()
+	{
+		
+		Element results = new Element("DetailedResults");
+		Collections.sort(expectedPolys);
+		
+		
+		ArrayList<Polymorphism> unusedPolysArray = new ArrayList<Polymorphism>();
+		unusedPolysArray.addAll(searchResult.getSample().getPolymorphismn());
+		
+		for(Polymorphism current : expectedPolys)
+		{
+			
+			
+			//The polymorphism is contained in this haplogroup
+			if(!foundPolys.contains(current))
+			{
+				Element result = new Element("DetailedResult");
+				
+				Element newExpectedPoly = new Element("expected");				
+				newExpectedPoly.setText(current.toString());
+				result.addContent(newExpectedPoly);
+				
+				Element newCorrectPoly = new Element("correct");				
+				newCorrectPoly.setText("no");
+				result.addContent(newCorrectPoly);
+				
+				results.addContent(result);
+			}	
+						
+		}
+		
+		
+		
+		for(Polymorphism current : expectedPolys)
+		{
+			
+			//The polymorphism is  contained in this haplogroup
+			if(foundPolys.contains(current))
+			{
+				Element result = new Element("DetailedResult");
+				
+				Element newExpectedPoly = new Element("expected");				
+				newExpectedPoly.setText(current.toString());
+				result.addContent(newExpectedPoly);
+				
+				Element newCorrectPoly = new Element("correct");				
+				newCorrectPoly.setText("yes");
+				result.addContent(newCorrectPoly);
+				unusedPolysArray.remove(current);
+				results.addContent(result);
+			}	
+	
+			
+		}
+		
+		
+		
+		return results;
+	}
+
+	public Element getPhyloTreePathXML(boolean includeMissingPolys)	{
+		if(path.size() == 0)
+			return null;
+		
+		Element root =null;
+		Element currentEndNode = null;
+		
+		for(SearchResultTreeNode currentNode : path){
+			if(root == null){
+				currentEndNode = root = new Element("TreeNode");
+				root.setAttribute("name", currentNode.getHaplogroup().toString());
+				root.setAttribute("type", "Haplogroup");
+				//root.addContent(currentNode.getHaplogroup().toString());
+				}
+			else{
+				Element newChildElement =  new Element("TreeNode");
+				newChildElement.setAttribute("name", currentNode.getHaplogroup().toString());
+				newChildElement.setAttribute("type", "Haplogroup");
+				//newChildElement.setText(currentNode.getHaplogroup().toString());
+				currentEndNode.addContent(newChildElement);
+				currentEndNode = newChildElement;
+				
+			}
+			
+			Collections.sort(currentNode.getExpectedPolys());
+			
+			
+//			for(Polymorphism currentPoly :currentNode.getFoundPolys()){
+//				Element newChildElement =  new Element("Poly");
+//				newChildElement.setText(Polymorphism.convertToATBackmutation(currentPoly.toStringShortVersion()));
+//				currentEndNode.addContent(newChildElement);
+//			}
+//			
+			for(Polymorphism currentPoly :currentNode.getExpectedPolys()){
+				if(!currentNode.getFoundPolys().contains(currentPoly)){
+					if(includeMissingPolys){
+					Element newChildElement =  new Element("Poly");
+					newChildElement.setText("mis" + currentPoly.toStringShortVersion());
+					currentEndNode.addContent(newChildElement);
+					}
+				}
+				else{
+					Element newChildElement =  new Element("Poly");
+					newChildElement.setText(Polymorphism.convertToATBackmutation(currentPoly.toStringShortVersion()));
+					currentEndNode.addContent(newChildElement);
+				}
+			}
+			
+			
+			
+			}
+		
+		
+		
+		
+		return root;
+		
+	}
+	public MissingPolysIterator getIterMissingPolys(){
+		return new MissingPolysIterator(searchResult);
+	}
+	
+	public Iterator<Polymorphism> getIterExpectedPolys() {
+		return expectedPolys.iterator();	
+	}
+	
+	public ArrayList<SearchResultTreeNode> getPhyloTreePath() {	
+		return path;
 	}
 }

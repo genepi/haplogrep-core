@@ -1,18 +1,18 @@
-package search.results;
+package search.ranking.results;
 
-import core.Haplogroup;
 import search.SearchResult;
+import core.Haplogroup;
 
-public class ResultKylcinski extends Result {
+public class RankedResultKylczynski extends RankedResult {
 
 	double kylcinskiDistance;
-	public ResultKylcinski( SearchResult phyloSearchData,Haplogroup expectedHaplogroup) {
+	public RankedResultKylczynski( SearchResult phyloSearchData,Haplogroup expectedHaplogroup) {
 		super(phyloSearchData,expectedHaplogroup);
 		kylcinskiDistance = calcDistance();
 	}
 
-	public int compareTo(Result o) {
-		int delta = (int) Math.signum(((ResultKylcinski)o).kylcinskiDistance - kylcinskiDistance);
+	public int compareTo(RankedResult o) {
+		int delta = (int) Math.signum(((RankedResultKylczynski)o).kylcinskiDistance - kylcinskiDistance);
 			
 		if(delta == 0)
 			delta = super.compareTo(o);

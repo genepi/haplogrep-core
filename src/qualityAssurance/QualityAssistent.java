@@ -3,7 +3,6 @@ package qualityAssurance;
 import java.util.ArrayList;
 
 import qualityAssurance.rules.HaplogrepRule;
-
 import core.SampleFile;
 import core.TestSample;
 

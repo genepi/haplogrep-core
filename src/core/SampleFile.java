@@ -24,16 +24,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import dataVisualizers.PhylotreeRenderer;
-
 import phylotree.Phylotree;
 import search.ClusteredSearchResult;
 import search.OverviewTreePath;
-import search.PhyloTreePath;
 import search.SearchResult;
+import search.SearchResultTreeNode;
 import search.ranking.RankingMethod;
-import search.results.Result;
-
+import search.ranking.results.RankedResult;
+import dataVisualizers.PhylotreeRenderer;
 import exceptions.parse.sample.InvalidBaseException;
 import exceptions.parse.sample.InvalidPolymorphismException;
 import exceptions.parse.sample.InvalidRangeException;
@@ -257,7 +255,7 @@ public class SampleFile {
 	public void updateClassificationResults(Phylotree phylotree, RankingMethod rankingMethod) throws NumberFormatException, InvalidPolymorphismException, JDOMException, IOException {
 		for(TestSample currenTestSample : testSamples.values())
 		{
-			List<Result> results = phylotree.search(currenTestSample,rankingMethod.clone());
+			List<RankedResult> results = phylotree.search(currenTestSample,rankingMethod.clone());
 			classificationResults.put(currenTestSample.getSampleID(), ClusteredSearchResult.createClusteredSearchResult(results, currenTestSample.getExpectedHaplogroup()));
 		}
 
@@ -287,9 +285,9 @@ private Element combinePathsToXMLTree( HashMap<String, List<ClusteredSearchResul
 			 SearchResult resultToExport = ClusteredSearchResult.getSearchResultByHaplogroup(allResults, assignedHaplogroup);
 			
 			//ClusteredSearchResult firstResult = classificationResults.get(currentSampleID).get(0);
-			combinedResultTree = resultToExport.getPhyloTreePath().toXML(includeMissingPolys);
+			combinedResultTree = resultToExport.getDetailedResult().getPhyloTreePathXML(includeMissingPolys);
 	
-			OverviewTreePath op = new OverviewTreePath(combinedResultTree,currentSampleID,resultToExport.getUnusedPolysXML(resultToExport.getPhyloTreePath(),includeHotspots));
+			OverviewTreePath op = new OverviewTreePath(combinedResultTree,currentSampleID,resultToExport.getDetailedResult().getUnusedPolysXML(includeHotspots));
 			combinedResultTree = op.toXML();
 			
 		}	
@@ -300,8 +298,8 @@ private Element combinePathsToXMLTree( HashMap<String, List<ClusteredSearchResul
 			 SearchResult resultToExport = ClusteredSearchResult.getSearchResultByHaplogroup(allResults, assignedHaplogroup);
 		
 			 
-			Element additionalPath = resultToExport.getPhyloTreePath().toXML(includeMissingPolys);		
-			OverviewTreePath op = new OverviewTreePath(additionalPath,currentSampleID,resultToExport.getUnusedPolysXML(resultToExport.getPhyloTreePath(),includeHotspots));	
+			Element additionalPath = resultToExport.getDetailedResult().getPhyloTreePathXML(includeMissingPolys);		
+			OverviewTreePath op = new OverviewTreePath(additionalPath,currentSampleID,resultToExport.getDetailedResult().getUnusedPolysXML(includeHotspots));	
 			combinePathRec(combinedResultTree, op.toXML());	
 		}
 		
@@ -599,7 +597,7 @@ public JSONArray getClassificationResultJson(String sampleID){
 		}
 	public JSONObject getSelectetHaplogroupSubtree(String sampleID,ArrayList<String> selectedHaplogroups) 
 	{
-		ArrayList<PhyloTreePath> paths = new ArrayList<PhyloTreePath>(); 
+		ArrayList<ArrayList<SearchResultTreeNode>> paths = new ArrayList<ArrayList<SearchResultTreeNode>>(); 
 		for(ClusteredSearchResult currentResult : classificationResults.get(sampleID))
 		{
 			
@@ -609,7 +607,7 @@ public JSONArray getClassificationResultJson(String sampleID){
 				
 				if(selectedHaplogroups.contains(currentSearchResult.getHaplogroup().toString())){
 					for(SearchResult currentSearchResult2 : currentResult.getCluster()){
-				PhyloTreePath newPath = currentSearchResult2.getPhyloTreePath();
+						ArrayList<SearchResultTreeNode> newPath = currentSearchResult2.getDetailedResult().getPhyloTreePath();
 				paths.add(newPath);}
 				}
 			}
@@ -633,7 +631,7 @@ public JSONArray getClassificationResultJson(String sampleID){
 	}
 	
 
-private JSONObject combinePathsToTree(ArrayList<PhyloTreePath> paths, ClusteredSearchResult list) throws JSONException {
+private JSONObject combinePathsToTree(ArrayList<ArrayList<SearchResultTreeNode>> paths, ClusteredSearchResult list) throws JSONException {
 		
 		JSONObject currentNode = new JSONObject();
 		JSONObject result = currentNode;
@@ -649,7 +647,7 @@ private JSONObject combinePathsToTree(ArrayList<PhyloTreePath> paths, ClusteredS
 		//PhyloTreePath longestPath = paths.get(0);
 		int ipath = 0;
 		boolean step = false;
-		for(PhyloTreePath currentPath : paths)
+		for(ArrayList<SearchResultTreeNode> currentPath : paths)
 		{
 			currentNode = result;
 			if(currentNode.has("children"))
@@ -660,10 +658,10 @@ private JSONObject combinePathsToTree(ArrayList<PhyloTreePath> paths, ClusteredS
 				//For each child
 				while( i< currentChildren.length())
 				{
-					if(ipath < currentPath.getNodes().size()){
+					if(ipath < currentPath.size()){
 						JSONObject childNode = currentChildren.getJSONObject(i);
 						
-						if(childNode.get("name").toString().equals(currentPath.getNodes().get(ipath).getHaplogroup() + "_Polys"))
+						if(childNode.get("name").toString().equals(currentPath.get(ipath).getHaplogroup() + "_Polys"))
 						{
 							currentNode = childNode;
 									currentChildren = currentNode.getJSONArray("children");
@@ -672,9 +670,9 @@ private JSONObject combinePathsToTree(ArrayList<PhyloTreePath> paths, ClusteredS
 							
 						else 
 						{
-							if(childNode.get("name").equals(currentPath.getNodes().get(ipath).getHaplogroup()))
+							if(childNode.get("name").equals(currentPath.get(ipath).getHaplogroup()))
 								{
-								System.out.print(currentPath.getNodes().get(ipath).getHaplogroup() + " ");	
+								System.out.print(currentPath.get(ipath).getHaplogroup() + " ");	
 								//step = true;
 									currentNode = childNode;
 									currentChildren = currentNode.getJSONArray("children");
@@ -701,18 +699,18 @@ private JSONObject combinePathsToTree(ArrayList<PhyloTreePath> paths, ClusteredS
 					
 				
 					
-					for(int i1 = ipath; i1< currentPath.getNodes().size();i1++)
+					for(int i1 = ipath; i1< currentPath.size();i1++)
 					{
 						 dataNode = new JSONObject();	
 						dataNode.put("type", "poly");
-						for(Polymorphism currentPoly : currentPath.getNodes().get(i1).getExpectedPolys())
+						for(Polymorphism currentPoly : currentPath.get(i1).getExpectedPolys())
 						{
 							JSONObject poly = new JSONObject();	
 							poly.put("name", currentPoly);
 							
 							
 							
-							if(currentPath.getNodes().get(i1).getFoundPolys().contains(currentPoly))
+							if(currentPath.get(i1).getFoundPolys().contains(currentPoly))
 							{
 								poly.put("state", "found");		
 							}
@@ -731,9 +729,9 @@ private JSONObject combinePathsToTree(ArrayList<PhyloTreePath> paths, ClusteredS
 							
 						}
 						
-						System.out.print("Neu " +  currentPath.getNodes().get(i1).getHaplogroup() + " ");	
+						System.out.print("Neu " +  currentPath.get(i1).getHaplogroup() + " ");	
 						
-						for(Polymorphism currentPoly : currentPath.getNodes().get(i1).getNotInRangePolys())
+						for(Polymorphism currentPoly : currentPath.get(i1).getNotInRangePolys())
 						{
 							JSONObject poly = new JSONObject();	
 							poly.put("name", currentPoly);
@@ -742,25 +740,25 @@ private JSONObject combinePathsToTree(ArrayList<PhyloTreePath> paths, ClusteredS
 							dataNode.append("polys", poly);
 						}
 						
-						int numAllPolys =  currentPath.getNodes().get(i1).getExpectedPolys().size() + 
-						currentPath.getNodes().get(i1).getNotInRangePolys().size();
+						int numAllPolys =  currentPath.get(i1).getExpectedPolys().size() + 
+						currentPath.get(i1).getNotInRangePolys().size();
 						
 						dataNode.put("$height", numAllPolys * 13 + 10);
 						dataNode.put("$width", 50);
 						
 						JSONObject newPolyNode = new JSONObject();	
-						newPolyNode.put("id", currentPath.getNodes().get(i1).getHaplogroup() + "_Polys");
+						newPolyNode.put("id", currentPath.get(i1).getHaplogroup() + "_Polys");
 						newPolyNode.put("data", dataNode);
-						newPolyNode.put("name", currentPath.getNodes().get(i1).getHaplogroup() + "_Polys");
+						newPolyNode.put("name", currentPath.get(i1).getHaplogroup() + "_Polys");
 						
 						dataNode = new JSONObject();	
 						dataNode.put("type", "hg");
 						//dataNode.put("$width", longestPath.getNodes().get(i).getHaplogroup().toString().length() * 10 + 10);
 						
 						JSONObject newNode = new JSONObject();	
-						newNode.put("id", currentPath.getNodes().get(i1).getHaplogroup());
+						newNode.put("id", currentPath.get(i1).getHaplogroup());
 						newNode.put("data", dataNode);
-						newNode.put("name", currentPath.getNodes().get(i1).getHaplogroup());
+						newNode.put("name", currentPath.get(i1).getHaplogroup());
 						newNode.put("children", new JSONArray());
 						//dataNode.put("$width", longestPath.getNodes().get(i).getHaplogroup().toString().length() * 5 + 10);
 						//dataNode.put("$height", longestPath.getNodes().get(i).getHaplogroup().toString().length() * 5 + 10);

@@ -3,10 +3,8 @@ package search;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import phylotree.PhyloTreeNode;
-
 import core.Haplogroup;
 import core.Polymorphism;
 
@@ -30,8 +28,8 @@ public class SearchResultTreeNode implements Serializable{
 	public boolean equals(Object other){
 		if(!(other instanceof SearchResultTreeNode))
 			return false;
-		if(haplogroup != null && !haplogroup.equals( ((SearchResultTreeNode)other).haplogroup))
-			return false;	
+//		if(haplogroup != null && !haplogroup.equals( ((SearchResultTreeNode)other).haplogroup))
+//			return false;	
 		
 		if(!arrayEqualsHelper(expectedPolys, ((SearchResultTreeNode)other).expectedPolys))
 			return false;	
@@ -101,6 +99,7 @@ public class SearchResultTreeNode implements Serializable{
 		
 		correctedBackmutation.add(poly);
 	}
+	
 	private boolean arrayEqualsHelper(ArrayList<Polymorphism> a1,ArrayList<Polymorphism> a2){
 		for(Polymorphism currentPoly : a1){
 			if(!a2.contains(currentPoly) && !currentPoly.isBackMutation())

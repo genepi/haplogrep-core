@@ -1,19 +1,19 @@
-package search.results;
+package search.ranking.results;
 
-import core.Haplogroup;
 import search.SearchResult;
+import core.Haplogroup;
 
-public class ResultHamming extends Result {
+public class RankedResultHamming extends RankedResult {
 
 
 	double hammingDistance;
-	public ResultHamming(SearchResult result,Haplogroup expectedHaplogroup) {
+	public RankedResultHamming(SearchResult result,Haplogroup expectedHaplogroup) {
 		super(result,expectedHaplogroup);
 		hammingDistance = calcDistance();
 	}
 
-	public int compareTo(Result o) {
-		int delta = (int)Math.signum(hammingDistance - ((ResultHamming)o).hammingDistance);
+	public int compareTo(RankedResult o) {
+		int delta = (int)Math.signum(hammingDistance - ((RankedResultHamming)o).hammingDistance);
 		if(delta == 0)
 			return super.compareTo(o);
 		

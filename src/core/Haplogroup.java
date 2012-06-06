@@ -1,21 +1,16 @@
 package core;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Haplogroup implements Serializable{
 /**
 	 * 
 	 */
 	private static final long serialVersionUID = 8902692095026305359L;
-	//	ArrayList<Object> subParts = new  ArrayList<Object>();
+
 	String haplogroup;
 	public Haplogroup(String _haploGroup){
 		this.haplogroup=_haploGroup;
-//		subParts.add(_haploGroup);
-		
 	}
 	
 //	public void changeHaplogroupFormat(String haploGroup) {

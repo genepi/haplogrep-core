@@ -2,7 +2,6 @@ package core;
 
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

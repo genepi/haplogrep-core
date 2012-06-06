@@ -13,7 +13,7 @@ public class MissingPolysIterator implements Iterator<Polymorphism> {
 	boolean hasNext = false;
 	public MissingPolysIterator(SearchResult searchResult) {
 		this.searchResult = searchResult;
-		this.iterExpectedPolysIter = searchResult.getIterExpectedPolys();
+		this.iterExpectedPolysIter = searchResult.getDetailedResult().getIterExpectedPolys();
 		
 		searchNextMissingPoly();
 	}

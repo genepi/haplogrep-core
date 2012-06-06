@@ -3,24 +3,23 @@ package search.ranking;
 import java.util.ArrayList;
 
 import search.SearchResult;
-import search.results.Result;
-
+import search.ranking.results.RankedResult;
 import core.TestSample;
 
 public abstract class RankingMethod {
-	ArrayList<Result> results;
+	ArrayList<RankedResult> results;
 	
 	public abstract void setResults(TestSample sample, ArrayList<SearchResult> searchPhylotreeWrapper);
 
 	public RankingMethod(){
-		results = new ArrayList<Result>();
+		results = new ArrayList<RankedResult>();
 	}
 	
-	public Result getTopResult() {
+	public RankedResult getTopResult() {
 		return results.get(0);
 	}
 	
-	public ArrayList<Result> getResults(){
+	public ArrayList<RankedResult> getResults(){
 		return results;
 	}
 	
