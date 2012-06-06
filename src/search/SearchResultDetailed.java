@@ -98,7 +98,7 @@ public class SearchResultDetailed implements Serializable{
 
 		}
 		
-		
+		Collections.reverse(path);
 	}
 	
 	public boolean equals(Object other){
