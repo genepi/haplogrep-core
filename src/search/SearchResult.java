@@ -7,7 +7,7 @@ import java.util.Iterator;
 
 import org.jdom.Element;
 
-import phylotree.PhyloTreeNode2;
+import phylotree.PhyloTreeNode;
 import phylotree.Phylotree;
 
 import core.Haplogroup;
@@ -22,7 +22,7 @@ import core.TestSample;
 
 public class SearchResult implements Comparable<SearchResult>{
 
-	private PhyloTreeNode2 attachedPhyloTreeNode;
+	private PhyloTreeNode attachedPhyloTreeNode;
 	private Sample sampleChecked = null;
 	private SearchResultDetailed detailedResult = new SearchResultDetailed(this);
 	
@@ -40,7 +40,7 @@ public class SearchResult implements Comparable<SearchResult>{
 	 * @param phyloNode The detected haplogroup
 	 * @param parentResult
 	 */
-	public SearchResult(PhyloTreeNode2 phyloNode, TestSample parentResult) {
+	public SearchResult(PhyloTreeNode phyloNode, TestSample parentResult) {
 		this.sampleChecked = parentResult.getSample();
 		this.attachedPhyloTreeNode = phyloNode;
 		
@@ -67,7 +67,7 @@ public class SearchResult implements Comparable<SearchResult>{
 	 * @param newHaplogroup
 	 * @param resultToCopy
 	 */
-	public SearchResult(String newHaplogroup,PhyloTreeNode2 phyloNode, SearchResult resultToCopy) {
+	public SearchResult(String newHaplogroup,PhyloTreeNode phyloNode, SearchResult resultToCopy) {
 		this.attachedPhyloTreeNode = phyloNode;
 		this.sampleChecked = resultToCopy.sampleChecked;
 		this.detailedResult.foundPolys.addAll(resultToCopy.detailedResult.foundPolys);
@@ -346,7 +346,7 @@ public class SearchResult implements Comparable<SearchResult>{
 	}
 
 
-	public PhyloTreeNode2 getAttachedPhyloTreeNode() {
+	public PhyloTreeNode getAttachedPhyloTreeNode() {
 		return attachedPhyloTreeNode;
 	}	
 	
