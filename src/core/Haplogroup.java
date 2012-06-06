@@ -1,152 +1,57 @@
 package core;
 
 import java.io.Serializable;
+import phylotree.Phylotree;
 
-public class Haplogroup implements Serializable{
 /**
-	 * 
-	 */
+ * Represents a single haplogroup.
+ * 
+ * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * 
+ */
+public class Haplogroup implements Serializable {
+
 	private static final long serialVersionUID = 8902692095026305359L;
 
 	String haplogroup;
-	public Haplogroup(String _haploGroup){
-		this.haplogroup=_haploGroup;
+
+	public Haplogroup(String haplogroup) {
+		this.haplogroup = haplogroup;
 	}
-	
-//	public void changeHaplogroupFormat(String haploGroup) {
-//		int position = 0;
-//		Pattern p = Pattern.compile("\\d+|'");
-//		boolean toggle = true;
-//	
-//		int pos = haploGroup.indexOf("+");
-//		String specialEnd = "";
-//		if(pos > -1)
-//		{
-//			specialEnd = haploGroup.substring(pos);
-//			haploGroup = haploGroup.substring(0, pos);
-//		}
-//		
-//		while(position < haploGroup.length())
-//		{
-//			if(toggle)
-//			{
-//				char c = haploGroup.charAt(position);
-//				if(haploGroup.length() > position + 1 && c == 'H' && haploGroup.charAt(position + 1) == 'V')
-//				{
-//					subParts.add("HV");
-//					position += 2;
-//					toggle = false;
-//				}
-//				
-//				else if(haploGroup.length() > position + 1 && c == 'C' && haploGroup.charAt(position + 1) == 'Z')
-//				{
-//					subParts.add("CZ");
-//					position += 2;
-//					toggle = false;
-//				}
-//				
-//				else
-//				{
-//					subParts.add(haploGroup.charAt(position));
-//					position++;
-//					toggle = false;
-//				}
-//			}
-//			
-//			else
-//			{
-//				
-//				Matcher m = p.matcher(haploGroup.substring(position, haploGroup.length()));
-//				
-//				if(m.find())
-//				{
-//					Character c = haploGroup.charAt(position + m.start());
-//					if(c.toString().equals("'"))
-//						subParts.add("'");
-//					else
-//					{
-//						subParts.add(Integer.parseInt(haploGroup.substring(position + m.start(),position + m.end())));
-//						
-//					}
-//					position = position + m.end();
-//					toggle = true;
-//				}
-//				else 
-//				{
-//					subParts.add("'");
-//					toggle = true;
-//				}
-//				
-//				
-//			}
-//		}	
-//		
-//		if(pos > -1)
-//			subParts.add(specialEnd);
-//		
-//	}
-	
-	public boolean equals(Object haplogroup)
-	{
-		if(!(haplogroup instanceof Haplogroup))
+
+	public boolean equals(Object haplogroup) {
+		if (!(haplogroup instanceof Haplogroup))
 			return false;
-		
-		Haplogroup c = (Haplogroup)haplogroup;
-		if(!this.haplogroup.equals(c.haplogroup))
+
+		Haplogroup c = (Haplogroup) haplogroup;
+		if (!this.haplogroup.equals(c.haplogroup))
 			return false;
-		
-		/*
-		 *  needed for subParts distinction:
-		if(this.subParts.size() != c.subParts.size())
-			return false;
-		
-		int i = 0;
-		for(Object current : subParts)
-		{
-			if(!current.equals(c.subParts.get(i)))
-				return false;
-			
-			i++;
-		}
-		*/
+
 		return true;
 	}
-	public boolean isSuperHaplogroup(Haplogroup hgToCheck)
-	{
-		if(!(hgToCheck instanceof Haplogroup))
+
+	/**
+	 * Checks if the haplogroup is a super group of another haplogroup
+	 * 
+	 * @param phylotree
+	 *            The version of the phylotree the check should use
+	 * @param hgToCheck
+	 *            The haplogroup to check
+	 * @return True if this haplogroup instance is a super group, false
+	 *         otherwise
+	 */
+	public boolean isSuperHaplogroup(Phylotree phylotree, Haplogroup hgToCheck) {
+		if (!(hgToCheck instanceof Haplogroup))
 			return false;
-		
-		Haplogroup c = (Haplogroup)hgToCheck;
-		if(!c.haplogroup.contains(this.haplogroup))
-			return false;
-		/*
-		 needed for subParts distinction:
-		 
-		if(this.subParts.size() > c.subParts.size())
-			return false;
-		
-		int i = 0;
-		for(Object current : subParts)
-		{
-			if(!current.equals(c.subParts.get(i)))
-				return false;		
-			
-			i++;
-		}*/
-		
-		return true;
+
+		return phylotree.isSuperHaplogroup(this, hgToCheck);
 	}
-	
-	public String toString()
-	{
-//		String result = "";
-//		
-//		for(Object current : subParts)
-//		{
-//			result += current.toString();
-//		}
-//		
-//		return result;
+
+	public int hashCode() {
+		return haplogroup.hashCode();
+	}
+
+	public String toString() {
 		return haplogroup;
 	}
 }

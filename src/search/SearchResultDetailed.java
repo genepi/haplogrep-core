@@ -182,7 +182,7 @@ public class SearchResultDetailed implements Serializable{
 			Element reasonUnusedPoly = new Element("reasonUnused");
 			
 			
-			if(searchResult.getSearchManager().getMutationRate(currentPoly) == 0)
+			if(searchResult.getPhyloTree().getMutationRate(currentPoly) == 0)
 			{
 				if(currentPoly.isBackMutation()){
 					reasonUnusedPoly.setText("globalPrivateMutation");

@@ -4,6 +4,9 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
+import phylotree.Phylotree;
+import phylotree.PhylotreeManager;
+
 import core.Haplogroup;
 
 
@@ -43,8 +46,9 @@ public class HaplogroupTests {
 	@Test
 	public void IsSuperhaplogroupTest()
 	{
-		Haplogroup h =  new Haplogroup("M16");
-		Assert.assertTrue( h.isSuperHaplogroup(new Haplogroup("M16a")));
+		Phylotree tree = PhylotreeManager.getInstance().getPhylotree("phylotree14.xml","fluctRates14.txt");
+		Haplogroup h =  new Haplogroup("C1c4");
+		Assert.assertTrue("No super group", h.isSuperHaplogroup(tree,new Haplogroup("H2")));
 		
 	}
 	

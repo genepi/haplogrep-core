@@ -16,7 +16,7 @@ import core.Sample;
 import core.TestSample;
 
 /**
- * @author Dominic Pacher, Sebastian Schï¿½nherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
  *
  */
 
@@ -47,10 +47,10 @@ public class SearchResult implements Comparable<SearchResult>{
 		detailedResult.remainingPolys.addAll(sampleChecked.getPolymorphismn());
 		
 		for (Polymorphism currentPoly : sampleChecked.getPolymorphismn()) {
-			usedWeightPolys += getSearchManager().getMutationRate(currentPoly);
+			usedWeightPolys += getPhyloTree().getMutationRate(currentPoly);
 			
 			if(parentResult.getSample().getSampleRanges().contains(currentPoly)){
-				remainingPolysSumWeights += getSearchManager().getMutationRate(currentPoly);
+				remainingPolysSumWeights += getPhyloTree().getMutationRate(currentPoly);
 			}
 		}
 		
@@ -149,9 +149,9 @@ public class SearchResult implements Comparable<SearchResult>{
 	}
 	
 	public void addFoundPolyWeight(Polymorphism newFoundPoly) {
-		foundPolysSumWeights += getSearchManager().getMutationRate(newFoundPoly);	
-		remainingPolysSumWeights -= getSearchManager().getMutationRate(newFoundPoly);
-		missingPolysSumWeights -= getSearchManager().getMutationRate(newFoundPoly);
+		foundPolysSumWeights += getPhyloTree().getMutationRate(newFoundPoly);	
+		remainingPolysSumWeights -= getPhyloTree().getMutationRate(newFoundPoly);
+		missingPolysSumWeights -= getPhyloTree().getMutationRate(newFoundPoly);
 	}
 
 //	public void addExpectedPoly(Polymorphism newExpectedPoly) {
@@ -159,8 +159,8 @@ public class SearchResult implements Comparable<SearchResult>{
 //	}
 	
 	public void addExpectedPolyWeight(Polymorphism newExpectedPoly) {
-		expectedPolsysSumWeight += getSearchManager().getMutationRate(newExpectedPoly);
-		missingPolysSumWeights += getSearchManager().getMutationRate(newExpectedPoly);
+		expectedPolsysSumWeight += getPhyloTree().getMutationRate(newExpectedPoly);
+		missingPolysSumWeights += getPhyloTree().getMutationRate(newExpectedPoly);
 	}
 	//TODO Move to test getSearchManager() for incorrect backmutations
 //	private void removeExpectedPoly(Polymorphism currentPoly, PhyloTreeNode currentElement) {
@@ -200,7 +200,7 @@ public class SearchResult implements Comparable<SearchResult>{
 	public void removeExpectedPolyWeight(Polymorphism polyToRemove) {
 		Polymorphism newPoly = new Polymorphism(polyToRemove);
 		newPoly.setBackMutation(false);
-		expectedPolsysSumWeight -= getSearchManager().getMutationRate(newPoly);
+		expectedPolsysSumWeight -= getPhyloTree().getMutationRate(newPoly);
 	}
 	
 
@@ -230,21 +230,21 @@ public class SearchResult implements Comparable<SearchResult>{
 			Polymorphism newPoly = new Polymorphism(foundPoly);
 			newPoly.setBackMutation(false);
 			if(sample.contains(newPoly)){
-				foundPolysSumWeights -= getSearchManager().getMutationRate(newPoly);		
+				foundPolysSumWeights -= getPhyloTree().getMutationRate(newPoly);		
 				
 			}
 		}
 		else
-			foundPolysSumWeights -= getSearchManager().getMutationRate(foundPoly);		
+			foundPolysSumWeights -= getPhyloTree().getMutationRate(foundPoly);		
 		
 	}
 
 	public void addMissingOutOfRangeWeight(Polymorphism correctPoly) {
-		missingSumWeightsPolysOutOfRange += getSearchManager().getMutationRate(correctPoly);
+		missingSumWeightsPolysOutOfRange += getPhyloTree().getMutationRate(correctPoly);
 	}
 
 	public void removeMissingOutOfRangeWeight(Polymorphism correctPoly) {
-		missingSumWeightsPolysOutOfRange -= getSearchManager().getMutationRate(correctPoly);
+		missingSumWeightsPolysOutOfRange -= getPhyloTree().getMutationRate(correctPoly);
 	}
 	
 	public void addMissingOutOfRangePoly(Polymorphism correctPoly) {
@@ -293,7 +293,7 @@ public class SearchResult implements Comparable<SearchResult>{
 			result.addContent(newUnusedPoly);
 			
 			Element weightUnusedPoly = new Element("weight");
-			weightUnusedPoly.setText(String.valueOf(getSearchManager().getMutationRate(currentPoly)));
+			weightUnusedPoly.setText(String.valueOf(getPhyloTree().getMutationRate(currentPoly)));
 			result.addContent(weightUnusedPoly);
 			
 			
@@ -350,7 +350,7 @@ public class SearchResult implements Comparable<SearchResult>{
 		return attachedPhyloTreeNode;
 	}	
 	
-	public Phylotree getSearchManager(){
+	public Phylotree getPhyloTree(){
 		return attachedPhyloTreeNode.getTree();
 	}
 }

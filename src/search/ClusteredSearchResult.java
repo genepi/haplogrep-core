@@ -147,7 +147,7 @@ public class ClusteredSearchResult implements Comparable<ClusteredSearchResult>{
 		 }*/
 		
 		//}
-		if(haplogroup.isSuperHaplogroup(getCluster().get(0).getHaplogroup()))
+		if(haplogroup.isSuperHaplogroup(getCluster().get(0).getPhyloTree(),getCluster().get(0).getHaplogroup()))
 			return true;
 		
 		 return false;
@@ -199,7 +199,7 @@ public class ClusteredSearchResult implements Comparable<ClusteredSearchResult>{
 			for(Polymorphism current : currentResult.getDetailedResult().getCheckedPolys())
 			{
 				
-				String fluctString = df.format( currentResult.getSearchManager().getMutationRate(current));
+				String fluctString = df.format( currentResult.getPhyloTree().getMutationRate(current));
 				
 				
 				result +=  "\t\t"+ current.toString();
@@ -228,7 +228,7 @@ public class ClusteredSearchResult implements Comparable<ClusteredSearchResult>{
 			//Write unused polymorphismn in this haplogroup
 			for(Polymorphism current : unusedPolys)
 			{
-				String fluctString = df.format( currentResult.getSearchManager().getMutationRate(current));
+				String fluctString = df.format( currentResult.getPhyloTree().getMutationRate(current));
 				result +=  "\t\t\t\t\t\t" + current; 
 				result += "\t\t" + fluctString + "\n";
 			}

@@ -23,6 +23,7 @@ public class PhyloTreeNode implements Serializable{
 	
 	public PhyloTreeNode(Phylotree tree) {
 		this.tree = tree;
+		haplogroup = new Haplogroup("unkown");
 	}
 	
 	public PhyloTreeNode(Phylotree tree, PhyloTreeNode parent, Haplogroup haplogroup) {

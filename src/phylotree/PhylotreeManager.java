@@ -1,5 +1,9 @@
 package phylotree;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,13 +23,24 @@ public class PhylotreeManager {
 		return instance;
 	}
 
-	public Phylotree getPhylotree(String key, String weights) {
-		if (phylotreeMap.containsKey(key))
-			return phylotreeMap.get(key);
+	public Phylotree getPhylotree(String phylotree, String weights) {
+		if (phylotreeMap.containsKey(phylotree))
+			return phylotreeMap.get(phylotree);
 		else {
-			Phylotree searchMananger = new Phylotree(key,
-					weights);
-			phylotreeMap.put(key, searchMananger);
+			//for CLAP protocol:
+			InputStream phyloFile = this.getClass().getClassLoader().getResourceAsStream(phylotree);
+			InputStream flucRates = this.getClass().getClassLoader().getResourceAsStream(weights);
+			try {
+				if (phyloFile == null) {
+					phyloFile = new FileInputStream(new File("../HaplogrepServer/phylotree/" + phylotree));
+					flucRates = new FileInputStream(new File("../HaplogrepServer/polyGeneticWeights/" + weights));
+				}
+
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+			Phylotree searchMananger = new Phylotree(phyloFile,flucRates);
+			phylotreeMap.put(phylotree, searchMananger);
 			return searchMananger;
 		}
 	}

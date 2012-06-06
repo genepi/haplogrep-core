@@ -31,22 +31,20 @@ public final class Phylotree {
 
 	PhyloTreeNode root;
 	private HashMap<Polymorphism, Double>  phyloGeneticWeights = new HashMap<Polymorphism, Double>();
+	private HashMap<Haplogroup, PhyloTreeNode>  haplogroupLookup = new HashMap<Haplogroup, PhyloTreeNode>();
 	
-	
-	public Phylotree(String phylotree, String weights)
+	public Phylotree(InputStream phylotreeFile, InputStream phylogeneticWeightsFile)
 	{
 
 		 root= new PhyloTreeNode(this);
 		// Create a JDOM document out of the phylotree XML
 			SAXBuilder builder = new SAXBuilder();
 			try {
-				//for CLAP protocol:
-				InputStream phyloFile = this.getClass().getClassLoader().getResourceAsStream(phylotree);
-				InputStream flucRates = this.getClass().getClassLoader().getResourceAsStream(weights);
-				Document phyloTree = builder.build(phyloFile);
+				
+				Document phyloTree = builder.build(phylotreeFile);
 				buildPhylotree(root,phyloTree.getRootElement().getChild("haplogroup"));		
 				// parses and sets the polygenetic weights
-				setPolygeneticWeights(flucRates);
+				setPolygeneticWeights(phylogeneticWeightsFile);
 				
 				
 			} catch (JDOMException e) {
@@ -71,6 +69,8 @@ public final class Phylotree {
 	private void buildPhylotree(PhyloTreeNode parentNode, Element currentXMLElement) throws NumberFormatException, InvalidPolymorphismException{
 		PhyloTreeNode newNode =  new PhyloTreeNode(this,parentNode, new Haplogroup(currentXMLElement.getAttribute("name").getValue()));
 		parentNode.addSubHaplogroup(newNode);
+		//Update index	
+		haplogroupLookup.put(newNode.getHaplogroup(), newNode);
 		
 		List<Element> polys = currentXMLElement.getChild("details").getChildren("poly");
 		for (Element currentPolyElement : polys) {
@@ -300,25 +300,26 @@ public final class Phylotree {
 	/*
 	public static HaploSearchManager getInstance() 
     {
-        return new HaploSearchManager();
+        return new HaploSeachManager();
     }*/
 
 	public PhyloTreeNode getPhyloTree() {
 		return root;
 	}
-	
-//	public void setPhyloTree(Document phylotree) {
-//		this.phyloTree= phylotree;
-//	}
 
+	public boolean isSuperHaplogroup(Haplogroup startHg, Haplogroup hgToCheck) {
+		PhyloTreeNode currentNode = haplogroupLookup.get(startHg);
+		
+		if(startHg == null)
+			return false;
+		
+		while(currentNode != null){
+			if(currentNode.getHaplogroup().equals(hgToCheck))
+				return true;
+			
+			currentNode = currentNode.getParent();
+		}
+		return false;
+	}
 
-//	public void setFluctRates(String fluctRates) {
-//		this.fluctRates = fluctRates;
-//	}
-//
-//
-//	public String getFluctRates() {
-//		return fluctRates;
-//	}
-	
 }

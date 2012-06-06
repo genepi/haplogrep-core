@@ -164,23 +164,23 @@ public class TestSample implements Comparable<TestSample>{
 			 return 0;
 	}
 
-	public void addRecommendedHaplogroups(Haplogroup hg, double rank) {
-		setDetectedHaplogroup(hg);
-
-		double firstRank = (rank);
-		BigDecimal myDec = new BigDecimal(firstRank);
-		myDec = myDec.setScale(1, BigDecimal.ROUND_HALF_UP);
-		setResultQuality(myDec.doubleValue());
-
-		// set status for colors
-		if (getExpectedHaplogroup().equals(getDetectedHaplogroup()))
-			setState("identical");
-		else if (getExpectedHaplogroup().isSuperHaplogroup(getDetectedHaplogroup()) || getDetectedHaplogroup().isSuperHaplogroup(getExpectedHaplogroup()))
-			setState("similar");
-		else
-			setState("mismatch");
-
-	}
+//	public void addRecommendedHaplogroups(Haplogroup hg, double rank) {
+//		setDetectedHaplogroup(hg);
+//
+//		double firstRank = (rank);
+//		BigDecimal myDec = new BigDecimal(firstRank);
+//		myDec = myDec.setScale(1, BigDecimal.ROUND_HALF_UP);
+//		setResultQuality(myDec.doubleValue());
+//
+//		// set status for colors
+//		if (getExpectedHaplogroup().equals(getDetectedHaplogroup()))
+//			setState("identical");
+//		else if (getExpectedHaplogroup().isSuperHaplogroup(getDetectedHaplogroup()) || getDetectedHaplogroup().isSuperHaplogroup(getExpectedHaplogroup()))
+//			setState("similar");
+//		else
+//			setState("mismatch");
+//
+//	}
 	
 	void addNewSearchResult(SearchResult newResult){
 		allSearchResults.add(newResult);
