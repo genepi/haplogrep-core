@@ -27,13 +27,13 @@ import core.TestSample;
 import exceptions.parse.sample.InvalidBaseException;
 import exceptions.parse.sample.InvalidPolymorphismException;
 
-public final class Phylotree {
+public final class Phylotree2 {
 
 	PhyloTreeNode root;
 	private HashMap<Polymorphism, Double>  phyloGeneticWeights = new HashMap<Polymorphism, Double>();
 	private HashMap<Haplogroup, PhyloTreeNode>  haplogroupLookup = new HashMap<Haplogroup, PhyloTreeNode>();
 	
-	public Phylotree(InputStream phylotreeFile, InputStream phylogeneticWeightsFile)
+	public Phylotree2(InputStream phylotreeFile, InputStream phylogeneticWeightsFile)
 	{
 
 		 root= new PhyloTreeNode(this);

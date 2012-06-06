@@ -1,7 +1,7 @@
 package core;
 
 import java.io.Serializable;
-import phylotree.Phylotree;
+import phylotree.Phylotree2;
 
 /**
  * Represents a single haplogroup.
@@ -40,7 +40,7 @@ public class Haplogroup implements Serializable {
 	 * @return True if this haplogroup instance is a super group, false
 	 *         otherwise
 	 */
-	public boolean isSuperHaplogroup(Phylotree phylotree, Haplogroup hgToCheck) {
+	public boolean isSuperHaplogroup(Phylotree2 phylotree, Haplogroup hgToCheck) {
 		if (!(hgToCheck instanceof Haplogroup))
 			return false;
 

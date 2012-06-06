@@ -8,7 +8,7 @@ import java.util.Iterator;
 import org.jdom.Element;
 
 import phylotree.PhyloTreeNode;
-import phylotree.Phylotree;
+import phylotree.Phylotree2;
 
 import core.Haplogroup;
 import core.Polymorphism;
@@ -350,7 +350,7 @@ public class SearchResult implements Comparable<SearchResult>{
 		return attachedPhyloTreeNode;
 	}	
 	
-	public Phylotree getPhyloTree(){
+	public Phylotree2 getPhyloTree(){
 		return attachedPhyloTreeNode.getTree();
 	}
 }
