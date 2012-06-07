@@ -9,41 +9,36 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import phylotree.Phylotree;
-import search.ClusteredSearchResult;
 import search.OverviewTreePath;
 import search.SearchResult;
-import search.SearchResultTreeNode;
 import search.ranking.RankingMethod;
-import search.ranking.results.RankedResult;
 import dataVisualizers.PhylotreeRenderer;
-import exceptions.parse.sample.InvalidBaseException;
-import exceptions.parse.sample.InvalidPolymorphismException;
-import exceptions.parse.sample.InvalidRangeException;
 import exceptions.parse.samplefile.HsdFileException;
-import exceptions.parse.samplefile.InvalidColumnCountException;
 import exceptions.parse.samplefile.UniqueKeyException;
 
+/**
+ * Represents the entire file of test sample. Used as main object in haplogrep.
+ * 
+ * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * 
+ */
 public class SampleFile {
 	Hashtable<String, TestSample> testSamples = new Hashtable<String, TestSample>();
-	
-	
-	
+
+	/**
+	 * Main constructor of SampleFile class. Creates a new test sample instance. 
+	 * @param sampleLines An array of strings representing each line of the hsd file
+	 * @throws HsdFileException thrown if the hsd file cannot be parsed correctly 
+	 */
 	public SampleFile(ArrayList<String> sampleLines) throws HsdFileException {
 		int lineIndex = 1;
 		for (String currentLine : sampleLines) {
@@ -64,13 +59,22 @@ public class SampleFile {
 				}
 			else
 				testSamples.put(newSample.getSampleID(), newSample);
+			
 			lineIndex++;
 		}
 	}
 
-	// depends on the read in method
-	public SampleFile(String pathToSampleFile, boolean testCase) throws IOException, NumberFormatException, HsdFileException, InvalidBaseException,
-			InvalidRangeException, InvalidColumnCountException {
+
+	/**
+	 * Creates a new instance of a disk based hsd file
+	 * @param pathToSampleFile The path to the hsd file
+	 * @param testCase	
+	 * @throws HsdFileException
+	 * @throws IOException
+	 */
+	//TODO:Try to get rid of the ugly boolean testCase parameter
+	public SampleFile(String pathToSampleFile, boolean testCase) throws HsdFileException, IOException
+		{
 		BufferedReader sampleFileStream;
 		if (testCase) { // for test cases
 			File sampleFile = new File(pathToSampleFile);
@@ -88,19 +92,28 @@ public class SampleFile {
 
 			currentLine = sampleFileStream.readLine();
 		}
-
 	}
 
-	
+	/**
+	 * Returns a test sample.
+	 * @param sampleID The unique sampleID of the sample
+	 * @return
+	 */
 	public TestSample getTestSample(String sampleID) {
 		return testSamples.get(sampleID);
 	}
 
+	/**
+	 * Returns all test sample
+	 * @return The array of test samples
+	 */
 	public ArrayList<TestSample> getTestSamples() {
 		return new ArrayList<TestSample>(testSamples.values());
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
@@ -113,16 +126,25 @@ public class SampleFile {
 		return result;
 	}
 
+	/**
+	 * Converts all data of test samples in a xml file. Used to display grid data on the web gui.
+	 * @return The root element of the xml file.
+	 */
 	public Element toXMLString() {
 		Element root = new Element("catalog");
 
 		for (TestSample sample : testSamples.values()) {
-			Element newElement = new Element("mtDNA_lines");
-			Element newElement1 = new Element("sample_name");
-			newElement1.setText(sample.getSampleID().toString());
-			newElement.addContent(newElement1);
-			newElement1 = new Element("range");
-			SampleRange range = sample.getSample().getSampleRanges();
+			//Create new sample row
+			Element sampleRowElement = new Element("mtDNA_lines");
+			
+			//Sample Name (=ID)
+			Element newElement = new Element("sample_name");
+			newElement.setText(sample.getSampleID().toString());
+			sampleRowElement.addContent(newElement);
+			
+			//sample sange
+			newElement = new Element("range");
+			SampleRanges range = sample.getSample().getSampleRanges();
 			ArrayList<Integer> startRange = range.getStarts();
 
 			ArrayList<Integer> endRange = range.getEnds();
@@ -134,199 +156,145 @@ public class SampleFile {
 					result.append(startRange.get(i) + "-" + endRange.get(i) + "; ");
 				}
 			}
-			newElement1.setText(result.toString());
-			newElement.addContent(newElement1);
-			// if(sample.getExpectedHaplogroup().toString().equals(""))
-			newElement1 = new Element("haplogroup");
+			newElement.setText(result.toString());
+			sampleRowElement.addContent(newElement);
+			
+			
+			//The detected haplogroup
+			newElement = new Element("haplogroup");
 
-			// if no haplogroup is predefinied, than set our result to
+			// if no haplogroup is expected, than set our result to
 			// predefinied
 			if (sample.getExpectedHaplogroup().toString().equals("") && sample.getDetectedHaplogroup() != null) {
 				sample.setExpectedHaplogroup(sample.getDetectedHaplogroup());
-				sample.setState("top rank");
 			}
 			if (sample.getDetectedHaplogroup() != null && !sample.getDetectedHaplogroup().equals(sample.getExpectedHaplogroup()))
-				newElement1.setText(sample.getExpectedHaplogroup().toString() + " (" + sample.getDetectedHaplogroup().toString() + ")");
+				newElement.setText(sample.getExpectedHaplogroup().toString() + " (" + sample.getDetectedHaplogroup().toString() + ")");
 			else {
-				newElement1.setText(sample.getExpectedHaplogroup().toString());
+				newElement.setText(sample.getExpectedHaplogroup().toString());
 			}
-			newElement.addContent(newElement1);
+			sampleRowElement.addContent(newElement);
 
-			newElement1 = new Element("status");
-			newElement1.setText(String.valueOf(sample.getState()));
-			newElement.addContent(newElement1);
+			
+			//sample status (detected haplogroup equal, similar or different to expected haplogroup? )
+			newElement = new Element("status");
+			newElement.setText(String.valueOf("Column not in use"));
+			sampleRowElement.addContent(newElement);
 
-			newElement1 = new Element("hit");
-			newElement1.setText(String.valueOf(sample.getResultQuality()));
-			newElement.addContent(newElement1);
+			//matching quality of sample
+			newElement = new Element("hit");
+			newElement.setText(String.valueOf(sample.getTopResult().getDistance()));
+			sampleRowElement.addContent(newElement);
 
-			// parse Polymorphisms
+			//all polymorphism of sample
 			ArrayList<Polymorphism> t = sample.getSample().getPolymorphismn();
 			String polys = "";
 			for (Polymorphism t1 : t)
 				polys += t1.toString() + " ";
-			newElement1 = new Element("polys");
-			newElement.addContent(newElement1);
-			newElement1.setText(polys);
-			root.addContent(newElement);
+			newElement = new Element("polys");
+			sampleRowElement.addContent(newElement);
+			newElement.setText(polys);
+			root.addContent(sampleRowElement);
 		}
 
 		return root;
-
 	}
 
-//	public List<ClusteredSearchResult> getClassificationResults(String sampleID) {
-//		return classificationResults.get(sampleID);
-//	}
 
-	public void updateClassificationResults(Phylotree phylotree, RankingMethod rankingMethod) throws NumberFormatException, InvalidPolymorphismException,
-			JDOMException, IOException {
+	/**
+	 * Updates the haplogrep classification results for all test sample(Restarts haplogroup search)
+	 * @param phylotree The phylotree version to use for the update process
+	 * @param rankingMethod The ranking method that should be used for the results (e.g. Hamming) 
+	 */
+	public void updateClassificationResults(Phylotree phylotree, RankingMethod rankingMethod){
 		for (TestSample currenTestSample : testSamples.values()) {
-			currenTestSample.updateClassificationResults(phylotree,rankingMethod);
+			currenTestSample.updateSearchResults(phylotree, rankingMethod);
 		}
 
 	}
 
-
-
-	
-
-//	public Element getDetailsXML(String sampleID, String haplogroup) {
-//		for (ClusteredSearchResult currentResult : classificationResults.get(sampleID)) {
-//			Element result = currentResult.getDetailsXML(haplogroup);
-//
-//			if (result != null)
-//				return result;
-//
-//		}
-//		return null;
-//	}
-//
-//	public Element getUnusedPolys(String sampleID, String haplogroup) {
-//		for (ClusteredSearchResult currentResult : classificationResults.get(sampleID)) {
-//			Element result = currentResult.getUnusedPolysXML(haplogroup);
-//
-//			if (result != null)
-//				return result;
-//
-//		}
-//		return null;
-//	}
-
+	/**
+	 * Clears all previous search results
+	 */
 	public void clearClassificationResults() {
-		for(TestSample currentSample : testSamples.values())
-			currentSample.clearClassificationResults();
+		for (TestSample currentSample : testSamples.values())
+			currentSample.clearSearchResults();
 
 	}
 
-//	public Element getNotInRangePolys(String sampleID, String haplogroup) {
-//		for (ClusteredSearchResult currentResult : classificationResults.get(sampleID)) {
-//			Element result = currentResult.getNotInRangePolysXML(haplogroup);
-//
-//			if (result != null)
-//				return result;
-//
-//		}
-//		return null;
-//	}
+	/**
+	 * Creates a new overview image of all test samples. Uses detected haplogroups and polymorphisms to create
+	 * this overview.
+	 * @param sessionID The current session ID
+	 * @param format	The image format as string ('png' or 'svg')
+	 * @param resolution The image resolution in DPI
+	 * @param includeHotspots	True if mitochondrial hotspots should be included, false otherwise
+	 * @param includeMissingPolys	True if polymorphisms that are expected but not found for a test sample should be included
+	 * @return The generated overview file handle
+	 */
+	public File createOverviewImageFileBestResults(String sessionID, String format, int resolution, boolean includeHotspots, boolean includeMissingPolys){
 
-	public File getOverviewBestResultsAllSamples(String sessionID, String format, int res, boolean includeHotspots, boolean includeMissingPolys)
-			throws Exception {
-
-		/*
-		 * for(String currentSampleID : classificationResults.keySet()) {
-		 * List<ClusteredSearchResult> currentResultList =
-		 * classificationResults.get(currentSampleID);
-		 * 
-		 * if(currentResultList.size() > 0) {
-		 * 
-		 * 
-		 * Element newExpectedPoly = new Element("expected");
-		 * newExpectedPoly.setText(current.toString());
-		 * result.addContent(newExpectedPoly);
-		 * 
-		 * Element newCorrectPoly = new Element("correct");
-		 * newCorrectPoly.setText("no"); result.addContent(newCorrectPoly);
-		 * 
-		 * results.addContent(result);
-		 * 
-		 * combinePathsToTree
-		 * 
-		 * SearchResult topResult =
-		 * currentResultList.get(0).getCluster().get(0); PhyloTreePath newPath =
-		 * topResult.getPhyloTreePath(); paths.add(newPath); } }
-		 * 
-		 * 
-		 * try { JSONObject result = combinePathsToTree(paths,null);
-		 * 
-		 * /*FileWriter fstream; try { fstream = new
-		 * FileWriter("testdataVis.txt"); BufferedWriter out = new
-		 * BufferedWriter(fstream); out.write(result.toString()); out.close(); }
-		 * catch (IOException e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); }
-		 */
-
-		// System.out.println("All Paths for overview:" + result.toString());
-		Element resultTree = combinePathsToXMLTree( includeHotspots, includeMissingPolys);
+		Element resultTree = combineAllSamplesToXMLTree(includeHotspots, includeMissingPolys);
 		Document d = new Document(resultTree);
 		saveXMLToDisc(d);
-
-		SAXBuilder parser = new SAXBuilder();
 
 		File image = null;
 		PhylotreeRenderer renderer = new PhylotreeRenderer(d);
 		URL url = this.getClass().getClassLoader().getResource("haplogrepGray.png");
 
-		renderer.setWatermark(url);
-		renderer.setDpi(res);
-		// image = renderer.createImage("Overview" + this.id + ".png");
+		try {
+			renderer.setWatermark(url);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		renderer.setDpi(resolution);
+
 		image = renderer.createImage(format, "Overview" + sessionID + "." + format, includeHotspots);
-		/*
-		 * FileReader r; BufferedImage image = null; try { r = new
-		 * FileReader("testAll2.xml"); BufferedReader b = new BufferedReader(r);
-		 * String s = b.readLine();
-		 * 
-		 * 
-		 * 
-		 * 
-		 * SAXBuilder parser = new SAXBuilder(); Document d =parser.build(b);
-		 * 
-		 * PhylotreeRenderer renderer = new PhylotreeRenderer(d); image =
-		 * renderer.createImage(); r.close(); } catch (FileNotFoundException e)
-		 * { // TODO Auto-generated catch block e.printStackTrace(); } catch
-		 * (IOException e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } catch (JDOMException e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); }
-		 */
 
 		return image;
-		/*
-		 * } catch (JSONException e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); }
-		 * 
-		 * return null;
-		 */
 	}
 
+	private Element combineAllSamplesToXMLTree(boolean includeHotspots, boolean includeMissingPolys) {
+
+		Element combinedResultTree = null;
+		for (TestSample currentSample : testSamples.values()) {
+
+			if (combinedResultTree == null) {
+				Haplogroup assignedHaplogroup = currentSample.getDetectedHaplogroup();
+
+				SearchResult resultToExport = currentSample.getResult(assignedHaplogroup).getPhyloSearchData();
+
+				combinedResultTree = resultToExport.getDetailedResult().getPhyloTreePathXML(includeMissingPolys);
+
+				OverviewTreePath op = new OverviewTreePath(combinedResultTree, currentSample.getSampleID(), resultToExport.getDetailedResult()
+						.getUnusedPolysXML(includeHotspots));
+				combinedResultTree = op.toXML();
+
+			} else {
+				Haplogroup assignedHaplogroup = currentSample.getDetectedHaplogroup();
+				SearchResult resultToExport = currentSample.getResult(assignedHaplogroup).getPhyloSearchData();// ClusteredSearchResult.getSearchResultByHaplogroup(allResults,
+																											// assignedHaplogroup);
+
+				Element additionalPath = resultToExport.getDetailedResult().getPhyloTreePathXML(includeMissingPolys);
+				OverviewTreePath op = new OverviewTreePath(additionalPath, currentSample.getSampleID(), resultToExport.getDetailedResult().getUnusedPolysXML(
+						includeHotspots));
+				combinePathRec(combinedResultTree, op.toXML());
+			}
+
+		}
+
+		return combinedResultTree;
+	}
+	
+	/**
+	 * Creates a xml tree out of xml paths. Recursive function.
+	 * @param currentTreeRootNode The root node of the xml tree
+	 * @param currentPathNode The root node the path begins with
+	 * @return False if the end of the current path has been reached, true otherwise. Used to check for recursion stop.
+	 */
 	private boolean combinePathRec(Element currentTreeRootNode, Element currentPathNode) {
-		/*
-		 * ArrayList<Element> newPolys = new ArrayList<Element>(); for(Element
-		 * currentPoly : (List<Element>)currentPathNode.getChildren("Poly")) {
-		 * boolean found = false; for(Element currentPolyTree :
-		 * (List<Element>)currentTreeRootNode.getChildren("Poly")){
-		 * if(currentPoly.getText().equals(currentPolyTree.getText())){ found =
-		 * true;
-		 * 
-		 * 
-		 * 
-		 * } } if(!found){ Element newPoly = new Element("Poly");
-		 * newPoly.setText(currentPoly.getText()); newPolys.add(newPoly);
-		 * System.out.print(currentPoly.getText() + " ");} }
-		 * System.out.println(); for(Element c : newPolys)
-		 * currentTreeRootNode.addContent(c);
-		 * 
-		 * newPolys.clear();
-		 */
+
 		// The current result tree does NOT contain the current subpath. So we
 		// add it to the tree
 		// and are finished
@@ -343,17 +311,15 @@ public class SampleFile {
 				for (Element currentPolyTree : (List<Element>) currentTreeRootNode.getChildren("Poly")) {
 					if (currentPoly.getText().equals(currentPolyTree.getText())) {
 						found = true;
-
 					}
 				}
 				if (!found) {
 					Element newPoly = new Element("Poly");
 					newPoly.setText(currentPoly.getText());
 					newPolys.add(newPoly);
-					System.out.print(currentPoly.getText() + " ");
 				}
 			}
-			System.out.println();
+		
 			for (Element c : newPolys)
 				currentTreeRootNode.addContent(c);
 
@@ -376,27 +342,25 @@ public class SampleFile {
 					return true;
 			}
 
-			// if(!foundInsertPos){
 			currentPathNode.removeChildren("Poly");
 			currentTreeRootNode.addContent(currentPathNode.cloneContent());
-			// }
 
 			return true;
 		}
 
 		else {
-			// currentTreeRootNode.addContent(currentPathNode.cloneContent());
 			return false;
 		}
 
 	}
 
+	/**
+	 * Saves XML document to disc. Only used for additional testing
+	 * @param combinePathsToXMLTree The xml document object
+	 */
 	private void saveXMLToDisc(Document combinePathsToXMLTree) {
-		SAXBuilder builder = new SAXBuilder();
-		Document resultTree;
+
 		try {
-			// resultTree = builder.build();
-			// Document doc = new Document(combinePathsToXMLTree);
 			Format fmt = Format.getPrettyFormat();
 			XMLOutputter outp = new XMLOutputter(fmt);
 			File newoutputFile = new File("testOutputXML.xml");
@@ -410,57 +374,5 @@ public class SampleFile {
 	}
 
 	
-	
-//TODO rename to combineAllSamplesToXMLTree
-private Element combinePathsToXMLTree(boolean includeHotspots,boolean includeMissingPolys) throws Exception {
-
-//	if (classificationResults.size() < 2)
-//		throw new Exception("There must be more than one classified sample to create a tree. Please start classification process first!");
-
-	// Element root = new Element("root");
-	// root.setAttribute("name","rCRS");
-	// ClusteredSearchResult firstSampleSearchResult =
-	// classificationResults.values().
-	// Element currentPath =
-	// currentResultList.getPhyloTreePath(0).toXML(currentSampleID);
-
-	Element combinedResultTree = null;
-	for (TestSample currentSample : testSamples.values()) {
-		// ClusteredSearchResult currentResultList =
-		// classificationResults.get(currentSampleID).get(0);
-		// combinedResultTree =
-		// currentResultList.getPhyloTreePath(0).toXML(currentSampleID);
-		if (combinedResultTree == null) {
-			Haplogroup assignedHaplogroup = currentSample.getDetectedHaplogroup();
-
-//			List<RankedResult> allResults = getSearchResultByHaplogroup(assignedHaplogroup);
-			SearchResult resultToExport = currentSample.getSearchResultByHaplogroup(assignedHaplogroup);//ClusteredSearchResult.getSearchResultByHaplogroup(allResults, assignedHaplogroup);
-
-			// ClusteredSearchResult firstResult =
-			// classificationResults.get(currentSampleID).get(0);
-			combinedResultTree = resultToExport.getDetailedResult().getPhyloTreePathXML(includeMissingPolys);
-
-			OverviewTreePath op = new OverviewTreePath(combinedResultTree, currentSample.getSampleID(), resultToExport.getDetailedResult().getUnusedPolysXML(
-					includeHotspots));
-			combinedResultTree = op.toXML();
-
-		} else {
-			Haplogroup assignedHaplogroup = currentSample.getDetectedHaplogroup();
-
-//			List<ClusteredSearchResult> allResults = classificationResults.get(currentSampleID);
-//			SearchResult resultToExport = ClusteredSearchResult.getSearchResultByHaplogroup(allResults, assignedHaplogroup);
-			SearchResult resultToExport = currentSample.getSearchResultByHaplogroup(assignedHaplogroup);//ClusteredSearchResult.getSearchResultByHaplogroup(allResults, assignedHaplogroup);
-
-			Element additionalPath = resultToExport.getDetailedResult().getPhyloTreePathXML(includeMissingPolys);
-			OverviewTreePath op = new OverviewTreePath(additionalPath, currentSample.getSampleID(), resultToExport.getDetailedResult().getUnusedPolysXML(
-					includeHotspots));
-			combinePathRec(combinedResultTree, op.toXML());
-		}
-
-	}
-
-	return combinedResultTree;
-}
-
 
 }

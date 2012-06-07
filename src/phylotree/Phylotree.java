@@ -85,7 +85,7 @@ public final class Phylotree {
 	}
 	
 	
-	public List<RankedResult> search(TestSample testSample,RankingMethod rankingMethodToUse) throws JDOMException, IOException, NumberFormatException, InvalidPolymorphismException {
+	public List<RankedResult> search(TestSample testSample,RankingMethod rankingMethodToUse)  {
 
 	
 		// Start first search step
@@ -143,8 +143,7 @@ public final class Phylotree {
 	 * @throws InvalidBaseException
 	 * @throws InvalidFormatException
 	 */
-	private void searchPhylotree(PhyloTreeNode parent, ArrayList<SearchResult> results, TestSample sample, SearchResult parentResult) throws NumberFormatException,
-	InvalidPolymorphismException {
+	private void searchPhylotree(PhyloTreeNode parent, ArrayList<SearchResult> results, TestSample sample, SearchResult parentResult){
 		// Query all child haplogroup nodes
 		List<PhyloTreeNode> children = (List<PhyloTreeNode>) parent.getSubHaplogroups();
 

@@ -8,12 +8,19 @@ import java.util.regex.Pattern;
 
 import exceptions.parse.sample.InvalidPolymorphismException;
 
+/**
+ * Represents a sample including its sample ranges and polymorphisms
+ * 
+ * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * 
+ */
+//TODO Ask hansi to get rid of the callMethod parameters
 public class Sample {
 	public ArrayList<Polymorphism> sample = new ArrayList<Polymorphism>();
-	private SampleRange sampleRange = null;
+	private SampleRanges sampleRange = null;
 	
 	//callMethod defines the call. callMethod=1 call from PhyloTree
-	public Sample(String sampleToParse, SampleRange sampleRange,int callMethod) throws InvalidPolymorphismException {
+	public Sample(String sampleToParse, SampleRanges sampleRange,int callMethod) throws InvalidPolymorphismException {
 	
 		String[] polyTokens = sampleToParse.trim().split("\\s+");
 		ArrayList<String> listOfSampleTokens = new ArrayList<String>(Arrays.asList(polyTokens));
@@ -23,14 +30,26 @@ public class Sample {
 	}
 	
 	
+	/**
+	 * @return All polymorphisms of this sample
+	 */
 	public ArrayList<Polymorphism> getPolymorphismn() {
 		return sample;
 	}
 	
+	/**
+	 * Checks if a polymorphism appears in this sample
+	 * @param polyToCheck The polymorphism to check
+	 * @return True if the polymorphism appears in this sample, false otherwise
+	 */
 	public boolean contains(Polymorphism polyToCheck) {
 		return sample.contains(polyToCheck);
 	}
 	
+	/**Same as contains() but takes back mutations into account.
+	 * @param polyToCheck The polymorphism to check
+	 * @return True if the polymorphism appears in this sample, false otherwise
+	 */
 	public boolean containsWithBackmutation(Polymorphism polyToCheck) {
 		
 		boolean contains =  sample.contains(polyToCheck);
@@ -44,6 +63,9 @@ public class Sample {
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString()
 	{
 		String result = "";
@@ -54,22 +76,15 @@ public class Sample {
 		
 		return result.trim();
 	}
-	/**
-	 * Filters  polys in sample which do NOT appear in postivePolys
-	 * @param postivePolys
-	 */
-	public void filter(ArrayList<Polymorphism> postivePolys)
-	{
-		ArrayList<Polymorphism> filteredSample = new ArrayList<Polymorphism>();
-		for (Polymorphism currentPoly : sample) {
-			if (postivePolys.contains(currentPoly)) {
-				filteredSample.add(currentPoly);
-			}
-		}
-		
-		this.sample = filteredSample;
-	}
 
+
+	/**
+	 * Parses the sample part of a hsd file
+	 * @param sample An array of string representing the polymorphisms
+	 * @param callMethod weird toggle parameter to use right formats for phylotree and others?
+	 * @return The polymorphisms of this sample instance
+	 * @throws InvalidPolymorphismException Thrown if the format of the polymorphisms is not correct
+	 */
 	private ArrayList<Polymorphism> parseSample(ArrayList<String> sample, int callMethod) throws   InvalidPolymorphismException {
 
 		ArrayList<Polymorphism> filteredSample = new ArrayList<Polymorphism>();
@@ -159,22 +174,14 @@ public class Sample {
 				}
 			}
 		}
-		//System.out.println(filteredSample);
+
 		return filteredSample;
 	}
-	public SampleRange getSampleRanges() {
-		return sampleRange;
-	}
 	
-	public ArrayList<Polymorphism>getPolyNotinRange()
-	{
-		ArrayList<Polymorphism> notInRangePolys = new ArrayList<Polymorphism>();
-		for(Polymorphism currentPoly : getPolymorphismn())
-		{
-			if(!sampleRange.contains(currentPoly))
-				notInRangePolys.add(currentPoly);
-		}
-		
-		return notInRangePolys;
+	/**
+	 * @return The ranges of this sample instance
+	 */
+	public SampleRanges getSampleRanges() {
+		return sampleRange;
 	}
 }

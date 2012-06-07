@@ -1,21 +1,15 @@
 package search;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
-import org.jdom.Element;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import search.ranking.results.RankedResult;
 import core.Haplogroup;
-import core.Polymorphism;
 
 
 
@@ -176,15 +170,15 @@ public class ClusteredSearchResult{
 //	}
 
 
-public JSONArray getClusterAsJson(){
+public JSONArray toJSON(){
 	JSONArray resultArray = null;
 	resultArray = new JSONArray();
 
 	int rank = 1;
-	for (ArrayList<RankedResult> currentResult : cluster) {
+	for (ArrayList<RankedResult> currentCluster : cluster) {
 
 		try {
-			JSONObject resultObject = toJson(currentResult);
+			JSONObject resultObject = getClusterAsJSON(currentCluster);
 			resultObject.put("pos",rank);
 			resultArray.put(resultObject);
 			rank++;
@@ -196,7 +190,7 @@ public JSONArray getClusterAsJson(){
 	}
 	return resultArray;
 }
-private JSONObject toJson(ArrayList<RankedResult> cluster) throws JSONException {
+private JSONObject getClusterAsJSON(ArrayList<RankedResult> cluster) throws JSONException {
 	
 		JSONObject child =  new JSONObject();
 		JSONObject child1 =  new JSONObject();

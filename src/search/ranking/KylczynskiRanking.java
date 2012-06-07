@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import search.SearchResult;
-import search.ranking.results.RankedResult;
 import search.ranking.results.RankedResultKylczynski;
 import core.TestSample;
 

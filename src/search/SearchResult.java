@@ -1,16 +1,8 @@
 package search;
 
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-
-import org.jdom.Element;
-import org.json.JSONObject;
-
 import phylotree.PhyloTreeNode;
 import phylotree.Phylotree;
-
 import core.Haplogroup;
 import core.Polymorphism;
 import core.Sample;

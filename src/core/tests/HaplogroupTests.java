@@ -6,7 +6,6 @@ import org.junit.Test;
 
 import phylotree.Phylotree;
 import phylotree.PhylotreeManager;
-
 import core.Haplogroup;
 
 

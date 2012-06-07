@@ -1,71 +1,52 @@
 package core;
 
-import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.TreeSet;
 
-import org.jdom.JDOMException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import phylotree.Phylotree;
-
-import qualityAssurance.Cerberus;
 import search.ClusteredSearchResult;
-import search.SearchResult;
 import search.SearchResultTreeNode;
 import search.ranking.RankingMethod;
 import search.ranking.results.RankedResult;
 import exceptions.parse.sample.HsdFileSampleParseException;
 import exceptions.parse.sample.InvalidPolymorphismException;
-import exceptions.parse.sample.InvalidRangeException;
 import exceptions.parse.samplefile.HsdFileException;
 import exceptions.parse.samplefile.InvalidColumnCountException;
 
+/**
+ * Represents one test sample. Includes the expected and detected haplogroup. In addition it stores all 
+ * search results for a test sample 
+ * 
+ * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * 
+ */
 public class TestSample implements Comparable<TestSample>{
 	
-	ArrayList<RankedResult> classificationResults = new ArrayList<RankedResult>();
-	ClusteredSearchResult clusteredResults = new ClusteredSearchResult(classificationResults);
+	ArrayList<RankedResult> searchResults = new ArrayList<RankedResult>();
+	ClusteredSearchResult clusteredResults = new ClusteredSearchResult(searchResults);
 	
 	private String testSampleID = "Unknown";
 	private Haplogroup expectedHaplogroup;
 	private Haplogroup detectedHaplogroup;
 	private Sample sample;
-	
-	
-	private TreeSet<SearchResult> allSearchResults;
-	private Cerberus cerberus = null;
-	
-	private String state="n/a";
-	private double resultQuality=0;
 
-	public TestSample(){
+	private TestSample(){
 		
 	}
 	
-	public TestSample (String sampleID, Haplogroup predefiniedHaplogroup,Sample sample, String state) 
-	{
-		this.testSampleID = sampleID;
-		this.expectedHaplogroup = predefiniedHaplogroup;
-		this.sample = sample;
-		this.state=state;
-	}
-
 	/**
-	 * Parses a new Test sample object from an input string
+	 * Parses a new test sample object from an input string
 	 * @param inputString The string to parse
 	 * @return The parsed string as new TestSample object
-	 * @throws InvalidRangeException
-	 * @throws InvalidColumnCountException
-	 * @throws HsdFileSampleParseException
+	 * @throws HsdFileSampleParseException Thrown if the string could not parsed correctly
 	 */
 	public static TestSample parse(String inputString) throws HsdFileException {
 		TestSample parsedSample = new TestSample();
-		SampleRange sampleRange = null;
+		SampleRanges sampleRange = null;
 		try {
 			//Split the input string in separate column strings 
 			String[] columns = inputString.split("\t");
@@ -79,7 +60,7 @@ public class TestSample implements Comparable<TestSample>{
 
 			//Parse range
 			columns[1] = columns[1].replaceAll("\"", "");
-			sampleRange = new SampleRange(columns[1]);
+			sampleRange = new SampleRanges(columns[1]);
 
 			//Parse expected haplogroup
 			if (columns[2].equals("?") || columns[2].equals("SEQ"))
@@ -106,36 +87,55 @@ public class TestSample implements Comparable<TestSample>{
 		return parsedSample;
 	}
 
+	/**
+	 * @return The haplogroup the user expected by setting it in the hsd file.
+	 */
 	public Haplogroup getExpectedHaplogroup() {	
 		return expectedHaplogroup;
 	}
-
-	public ArrayList<Polymorphism> getPolymorphismn() {
-		return sample.sample;
+	
+	/**
+	 * @param expectedHaplogroup The new haplogroup to expect
+	 */
+	public void setExpectedHaplogroup(Haplogroup expectedHaplogroup) {
+		this.expectedHaplogroup = expectedHaplogroup;
 	}
-
 	
+	/**
+	 * @return The haplogroup of the best search result.
+	 */
+	public Haplogroup getDetectedHaplogroup() {
+		return detectedHaplogroup;
+	}
 	
+	/**
+	 * Weird method to set the detected haplogroup. Used to achieve some comparison feature when changing
+	 * phylotree versions. Consider to remove method.
+	 * @param detectedHaplogroup The new detected haplogroup
+	 */
+	public void setDetectedHaplogroup(Haplogroup detectedHaplogroup) {
+		this.detectedHaplogroup = detectedHaplogroup;
+	}
+	
+	/**
+	 * @return The sample object of this test sample. The sample object 
+	 * represents only the sample range and its polymorphisms.
+	 */
 	public Sample getSample() {
 		return sample;
 	}
 
-	public Haplogroup getDetectedHaplogroup() {
-		return detectedHaplogroup;
-	}
-
-	public void setDetectedHaplogroup(Haplogroup recognizedHaplogroup) {
-		this.detectedHaplogroup = recognizedHaplogroup;
-	}
-
-	public void setExpectedHaplogroup(Haplogroup predefiniedHaplogroup) {
-		this.expectedHaplogroup = predefiniedHaplogroup;
-	}
-
+	
+	/**
+	 * @return Returns the unique ID of this sample
+	 */
 	public String getSampleID() {
 		return testSampleID;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString()
 	{
 		String result = testSampleID + "\t" + expectedHaplogroup + "\t";
@@ -149,27 +149,9 @@ public class TestSample implements Comparable<TestSample>{
 	}
 
 	
-	//TODO Consider removing state and use new warning/error system instead
-	public String getState() {
-		return state;
-	}
-
-	public void setState(String status) {
-		state = status;
-	}
-	
-
-	//??
-	public void setResultQuality(double myDec) {
-		this.resultQuality = myDec;
-	}
-//??
-	public double getResultQuality() {
-		return resultQuality;
-	}
-
-	
-
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
 	@Override
 	public int compareTo(TestSample o) {
 	
@@ -181,81 +163,55 @@ public class TestSample implements Comparable<TestSample>{
 			 return 0;
 	}
 
-//	public void addRecommendedHaplogroups(Haplogroup hg, double rank) {
-//		setDetectedHaplogroup(hg);
-//
-//		double firstRank = (rank);
-//		BigDecimal myDec = new BigDecimal(firstRank);
-//		myDec = myDec.setScale(1, BigDecimal.ROUND_HALF_UP);
-//		setResultQuality(myDec.doubleValue());
-//
-//		// set status for colors
-//		if (getExpectedHaplogroup().equals(getDetectedHaplogroup()))
-//			setState("identical");
-//		else if (getExpectedHaplogroup().isSuperHaplogroup(getDetectedHaplogroup()) || getDetectedHaplogroup().isSuperHaplogroup(getExpectedHaplogroup()))
-//			setState("similar");
-//		else
-//			setState("mismatch");
-//
-//	}
-	
-	void addNewSearchResult(SearchResult newResult){
-		allSearchResults.add(newResult);
-	}
-	
-	SearchResult getSearchResultByHaplogroup(Haplogroup assignedHaplogroup) {
-		for(RankedResult currentResult : classificationResults){
-			if(currentResult.getHaplogroup().equals(assignedHaplogroup))
-				return currentResult.getPhyloSearchData();
-		}
-		return null;
-	}
-
+	/**
+	 * Returns a single result identified by its haplogroup name which is unique.
+	 * @param haplogroup The haplogroup of the result
+	 * @return The search result
+	 */
 	public RankedResult getResult(Haplogroup haplogroup) {
-		for(RankedResult currentResult: classificationResults){
+		for(RankedResult currentResult: searchResults){
 			if(currentResult.getHaplogroup().equals(haplogroup))
 				return currentResult;
 		}
 		return null;
 	}
 
+	/**
+	 * @return All ranked results of this test sample.
+	 */
 	public List<RankedResult> getResults() {
-		
-		return classificationResults;
+		return searchResults;
 	}
 	
-	public JSONObject getSelectetHaplogroupSubtree( ArrayList<String> selectedHaplogroups) {
+	/**Creates a subtree of results identified by their haplogroups. Combines the path of each result 
+	 * and returns the root of the tree as json object. If a cluster of results with same distance is requested
+	 * , all results in the cluster are included in the three automatically.
+	 * @param selectedHaplogroups The haplogroups to identify the results
+	 * @return The root json object of the tree
+	 */
+	public JSONObject getSelectetHaplogroupSubtree(ArrayList<String> selectedHaplogroups) {
 		ArrayList<RankedResult> selectedResults = new ArrayList<RankedResult>();
-		
-		for(String currentHg : selectedHaplogroups){
+
+		for (String currentHg : selectedHaplogroups) {
 			Haplogroup selectedHaplogroup = new Haplogroup(currentHg);
-			ArrayList<RankedResult> currentResults  = clusteredResults.getCluster(selectedHaplogroup);
-			
-			if(currentResults != null)
+			ArrayList<RankedResult> currentResults = clusteredResults.getCluster(selectedHaplogroup);
+
+			if (currentResults != null)
 				selectedResults.addAll(currentResults);
-			
-			else{
+
+			else {
 				selectedResults.add(getResult(selectedHaplogroup));
 			}
 		}
-		
-		
+
 		ArrayList<ArrayList<SearchResultTreeNode>> paths = new ArrayList<ArrayList<SearchResultTreeNode>>();
 		for (RankedResult currentResult : selectedResults) {
-//				if (selectedHaplogroups.contains(currentResult.getHaplogroup().toString())) {
-						ArrayList<SearchResultTreeNode> newPath = currentResult.getPhyloSearchData().getDetailedResult().getPhyloTreePath();
-						paths.add(newPath);
-					}
-//				}
-			
-			// newPath = currentResult.getPhyloTreePath(1);
-			// paths.add(newPath);
-			// if(newPath != null)
-
-			// }
+			ArrayList<SearchResultTreeNode> newPath = currentResult.getPhyloSearchData().getDetailedResult().getPhyloTreePath();
+			paths.add(newPath);
+		}
 
 		try {
-			JSONObject result = combinePathsToTree(paths, classificationResults.get(0));
+			JSONObject result = combinePathsToTree(paths, searchResults.get(0));
 
 			return result;
 		} catch (JSONException e) {
@@ -266,6 +222,12 @@ public class TestSample implements Comparable<TestSample>{
 		return null;
 	}
 
+	/** Recursive method to combine result path to one json tree
+	 * @param paths The array of paths 
+	 * @param list
+	 * @return the root json object of the tree
+	 * @throws JSONException
+	 */
 	private JSONObject combinePathsToTree(ArrayList<ArrayList<SearchResultTreeNode>> paths, RankedResult list) throws JSONException {
 
 		JSONObject currentNode = new JSONObject();
@@ -277,11 +239,8 @@ public class TestSample implements Comparable<TestSample>{
 
 		currentNode.put("data", dataNode);
 		currentNode.put("name", "sample");
-		// currentNode.append("children", new JSONArray());
 
-		// PhyloTreePath longestPath = paths.get(0);
 		int ipath = 0;
-		boolean step = false;
 		for (ArrayList<SearchResultTreeNode> currentPath : paths) {
 			currentNode = result;
 			if (currentNode.has("children")) {
@@ -367,24 +326,12 @@ public class TestSample implements Comparable<TestSample>{
 
 				dataNode = new JSONObject();
 				dataNode.put("type", "hg");
-				// dataNode.put("$width",
-				// longestPath.getNodes().get(i).getHaplogroup().toString().length()
-				// * 10 + 10);
 
 				JSONObject newNode = new JSONObject();
 				newNode.put("id", currentPath.get(i1).getHaplogroup());
 				newNode.put("data", dataNode);
 				newNode.put("name", currentPath.get(i1).getHaplogroup());
 				newNode.put("children", new JSONArray());
-				// dataNode.put("$width",
-				// longestPath.getNodes().get(i).getHaplogroup().toString().length()
-				// * 5 + 10);
-				// dataNode.put("$height",
-				// longestPath.getNodes().get(i).getHaplogroup().toString().length()
-				// * 5 + 10);
-				// dataNode.put("$dim",
-				// (longestPath.getNodes().get(i).getHaplogroup().toString().length()
-				// * 5 + 10) / 2);
 
 				newPolyNode.append("children", newNode);
 
@@ -392,105 +339,41 @@ public class TestSample implements Comparable<TestSample>{
 				currentNode = newNode;
 			}
 
-			System.out.println();
-
-			// }
 		}
-
-		// if(!step)
-		// {
-
-		// }
-		// }
-
-		// currentNode.put("children",new JSONArray());
-		/*
-		 * InputStream phyloFile =
-		 * this.getClass().getClassLoader().getResourceAsStream
-		 * ("phylotree8.xml"); try { currentNode.put("children",
-		 * JsonConverter.generateJson(phyloFile, haplogroup
-		 * ,2).getJSONArray("children")); } catch (JDOMException e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } catch (IOException
-		 * e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 */
 
 		return result;
 
-		// for(int i = 0; i < currentPath.getNodes().size();i++){
-		//
-		// }
-		//
-		// if(currentPath != longestPath &&
-		// currentPath.getNodes().get(i).getHaplogroup()
-		// .equals(longestPath.getNodes().get(i).getHaplogroup())){
-		//
-		// }
-		//
-		// else
-		// {
-		//
-		// }
-		// }
-		//
-		//
-		// for(PhyloTreePath currentPath : paths){
-		// if(longestPath.getNodes().size() < currentPath.getNodes().size())
-		// {
-		// longestPath = currentPath;
-		// }
-		// }
-		//
-		// for(int i = 0; i < longestPath.getNodes().size();i++){
-		// for(PhyloTreePath currentPath :paths)
-		// {
-		// if(currentPath != longestPath &&
-		// currentPath.getNodes().get(i).getHaplogroup()
-		// .equals(longestPath.getNodes().get(i).getHaplogroup())){
-		// JSONObject newNode = new JSONObject();
-		// newNode.put("id", "node" + i);
-		// newNode.put("name", longestPath.getNodes().get(i).getHaplogroup());
-		// tree.append("", newNode);
-		// }
-		//
-		// else
-		// {
-		//
-		// }
-		// }
-		// }
 	}
 
-	public void clearClassificationResults() {
-		classificationResults.clear();
+	/**
+	 * Clears all search results
+	 */
+	public void clearSearchResults() {
+		searchResults.clear();
 		clusteredResults = null;
 	}
 
-	public void updateClassificationResults(Phylotree phyloTreeToUse,RankingMethod rankingMethod) throws NumberFormatException, InvalidPolymorphismException, JDOMException, IOException {
+	/**Restarts search and updates all search results for this sample
+	 * @param phyloTreeToUse The phylotree version used for the search
+	 * @param rankingMethod The ranking method used (e.g Hamming)
+	 */
+	public void updateSearchResults(Phylotree phyloTreeToUse,RankingMethod rankingMethod) {
 		List<RankedResult> results = phyloTreeToUse.search(this, rankingMethod.clone());
-		classificationResults = (ArrayList<RankedResult>) results;
+		searchResults = (ArrayList<RankedResult>) results;
 		clusteredResults = new ClusteredSearchResult(results);
-		
 	}
 	
-	public JSONArray getClassificationResultJson() {
-//		JSONArray resultArray = null;
-//		resultArray = new JSONArray();
+	/**
+	 * @return The search results in clustered by the equal distances. Ranked by the used ranking method
+	 */
+	public JSONArray getClusteredSearchResults() {
+		return clusteredResults.toJSON();
+	}
 
-//
-//		for (ClusteredSearchResult currentResult : classificationResults.get(sampleID)) {
-//
-//			try {
-//				JSONObject resultObject = currentResult.toJson();
-//				resultArray.put(resultObject);
-//			} catch (JSONException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//
-//		}
-//		getTestSample(sampleID).getExpectedHaplogroup();
-		// classificationResults.g
-
-		return clusteredResults.getClusterAsJson();
+	/**
+	 * @return The top result of for this test sample
+	 */
+	public RankedResult getTopResult() {
+		return searchResults.get(0);
 	}
 }
