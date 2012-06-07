@@ -37,7 +37,7 @@ public class MissingPolysIterator implements Iterator<Polymorphism> {
 		nextMissingPoly = null;
 		while(iterExpectedPolysIter.hasNext()){
 			Polymorphism nextExpectedPoly = iterExpectedPolysIter.next();
-			if(!searchResult.getFoundPolys().contains(nextExpectedPoly)){
+			if(!searchResult.getDetailedResult().getFoundPolys().contains(nextExpectedPoly)){
 				nextMissingPoly = nextExpectedPoly;
 				return;
 			}

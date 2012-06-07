@@ -1,5 +1,12 @@
 package search.ranking.results;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import search.SearchResult;
 import core.Haplogroup;
 
@@ -38,5 +45,15 @@ public class RankedResultKylczynski extends RankedResult {
 	@Override
 	public double getDistance() {
 		return kylcinskiDistance;
+	}
+	
+	@Override
+	public void attachToJsonObject(JSONObject child) throws JSONException {
+		DecimalFormat df = new DecimalFormat( "0.000",new DecimalFormatSymbols(Locale.US));
+		child.put("rank",df.format(kylcinskiDistance));
+		child.put("rankHG",df.format(getCorrectPolyInHaplogroupRatio()));
+		child.put("rankS",df.format(getCorrectPolyInTestSampleRatio()));
+		child.put("name",phyloSearchData.getHaplogroup().toString());
+		child.put("id",phyloSearchData.getHaplogroup().toString());	
 	}
 }

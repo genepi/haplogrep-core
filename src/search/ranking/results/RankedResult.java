@@ -1,5 +1,8 @@
 package search.ranking.results;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import search.SearchResult;
 import core.Haplogroup;
 
@@ -34,6 +37,10 @@ public abstract class RankedResult  implements Comparable<RankedResult>{
 		
 		return delta;
 	}
+
+	public abstract void attachToJsonObject(JSONObject child) throws JSONException;
+
+	
 	
 	
 }

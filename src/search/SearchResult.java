@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import org.jdom.Element;
+import org.json.JSONObject;
 
 import phylotree.PhyloTreeNode;
 import phylotree.Phylotree;
@@ -20,11 +21,11 @@ import core.TestSample;
  *
  */
 
-public class SearchResult implements Comparable<SearchResult>{
+public class SearchResult /*implements Comparable<SearchResult>*/{
 
 	private PhyloTreeNode attachedPhyloTreeNode;
 	private Sample sampleChecked = null;
-	private SearchResultDetailed detailedResult = new SearchResultDetailed(this);
+	private SearchResultDetailed detailedResult = null;
 	
 
 	private double usedWeightPolys = 0;
@@ -44,8 +45,7 @@ public class SearchResult implements Comparable<SearchResult>{
 		this.sampleChecked = parentResult.getSample();
 		this.attachedPhyloTreeNode = phyloNode;
 		
-		detailedResult.remainingPolys.addAll(sampleChecked.getPolymorphismn());
-		
+			
 		for (Polymorphism currentPoly : sampleChecked.getPolymorphismn()) {
 			usedWeightPolys += getPhyloTree().getMutationRate(currentPoly);
 			
@@ -70,11 +70,11 @@ public class SearchResult implements Comparable<SearchResult>{
 	public SearchResult(String newHaplogroup,PhyloTreeNode phyloNode, SearchResult resultToCopy) {
 		this.attachedPhyloTreeNode = phyloNode;
 		this.sampleChecked = resultToCopy.sampleChecked;
-		this.detailedResult.foundPolys.addAll(resultToCopy.detailedResult.foundPolys);
-		this.detailedResult.remainingPolys.addAll(resultToCopy.detailedResult.remainingPolys);
-		this.detailedResult.correctedBackmutations.addAll(resultToCopy.detailedResult.correctedBackmutations);
-		this.detailedResult.remainingPolysNotInRange.addAll(resultToCopy.detailedResult.remainingPolysNotInRange);
-		this.detailedResult.missingPolysOutOfRange.addAll(resultToCopy.detailedResult.missingPolysOutOfRange);
+//		this.detailedResult.foundPolys.addAll(resultToCopy.detailedResult.foundPolys);
+//		this.detailedResult.remainingPolys.addAll(resultToCopy.detailedResult.remainingPolys);
+//		this.detailedResult.correctedBackmutations.addAll(resultToCopy.detailedResult.correctedBackmutations);
+//		this.detailedResult.remainingPolysNotInRange.addAll(resultToCopy.detailedResult.remainingPolysNotInRange);
+//		this.detailedResult.missingPolysOutOfRange.addAll(resultToCopy.detailedResult.missingPolysOutOfRange);
 //		this.detailedResult.usedPath =  new PhyloTreePath(resultToCopy.detailedResult.usedPath);
 	
 		usedWeightPolys = resultToCopy.usedWeightPolys;
@@ -113,13 +113,13 @@ public class SearchResult implements Comparable<SearchResult>{
 	/**
 	 * @return A list of all correctly found polys of the detected haplogroup
 	 */
-	public ArrayList<Polymorphism> getFoundPolys() {
-		return detailedResult.foundPolys;
-	}
+//	public ArrayList<Polymorphism> getFoundPolys() {
+//		return detailedResult.foundPolys;
+//	}
 
-	public ArrayList<Polymorphism> getMissingPolysOutOfRange() {
-		return detailedResult.missingPolysOutOfRange;
-	}
+//	public ArrayList<Polymorphism> getMissingPolysOutOfRange() {
+//		return detailedResult.missingPolysOutOfRange;
+//	}
 	
 	/**
 	 * The sample a haplogroup has to be detected for
@@ -143,10 +143,10 @@ public class SearchResult implements Comparable<SearchResult>{
 	
 
 
-	public void addFoundPoly(Polymorphism newFoundPoly) {	
-		detailedResult.foundPolys.add(newFoundPoly);
-		detailedResult.remainingPolys.remove(newFoundPoly);
-	}
+//	public void addFoundPoly(Polymorphism newFoundPoly) {	
+//		detailedResult.foundPolys.add(newFoundPoly);
+//		detailedResult.remainingPolys.remove(newFoundPoly);
+//	}
 	
 	public void addFoundPolyWeight(Polymorphism newFoundPoly) {
 		foundPolysSumWeights += getPhyloTree().getMutationRate(newFoundPoly);	
@@ -247,64 +247,40 @@ public class SearchResult implements Comparable<SearchResult>{
 		missingSumWeightsPolysOutOfRange -= getPhyloTree().getMutationRate(correctPoly);
 	}
 	
-	public void addMissingOutOfRangePoly(Polymorphism correctPoly) {
-		detailedResult.missingPolysOutOfRange.add(correctPoly);
-	}
-
-	public void removeMissingOutOfRangePoly(Polymorphism correctPoly) {
-		detailedResult.missingPolysOutOfRange.add(correctPoly);
-	}
+//	public void addMissingOutOfRangePoly(Polymorphism correctPoly) {
+//		detailedResult.missingPolysOutOfRange.add(correctPoly);
+//	}
+//
+//	public void removeMissingOutOfRangePoly(Polymorphism correctPoly) {
+//		detailedResult.missingPolysOutOfRange.add(correctPoly);
+//	}
 
 	/*
 	public void addUnusedNotInRange(Polymorphism correctPoly) {
 		unusedPolysNotInRange.add(correctPoly);
 	}*/
 	
-	public void setUnusedNotInRange(ArrayList<Polymorphism> polyNotinRange) {
-		detailedResult.remainingPolysNotInRange = polyNotinRange;
-		
-	}
+//	public void setUnusedNotInRange(ArrayList<Polymorphism> polyNotinRange) {
+//		detailedResult.remainingPolysNotInRange = polyNotinRange;
+//		
+//	}
 	
 	/* To sort SearchResults properly according to its rank
 	 * (non-Javadoc)
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
-	@Override
-	public int compareTo(SearchResult o) {
-		if (this.getRank() > o.getRank())
-			return -1;
-		if (this.getRank() < o.getRank())
-			return 1;
-		else
-			return 0;
-
-	}
+//	@Override
+//	public int compareTo(SearchResult o) {
+//		if (this.getRank() > o.getRank())
+//			return -1;
+//		if (this.getRank() < o.getRank())
+//			return 1;
+//		else
+//			return 0;
+//
+//	}
 	
-	public Element getNotInRangePolysXML() {
-		Element results = new Element("OutOfRangePolys");
-		Collections.sort(detailedResult.missingPolysOutOfRange);
-		
-			
-		for (Polymorphism currentPoly : detailedResult.missingPolysOutOfRange) {
-
-			Element result = new Element("OutOfRangePoly");
-			Element newUnusedPoly = new Element("poly");
-			newUnusedPoly.setText(currentPoly.toString());
-			result.addContent(newUnusedPoly);
-			
-			Element weightUnusedPoly = new Element("weight");
-			weightUnusedPoly.setText(String.valueOf(getPhyloTree().getMutationRate(currentPoly)));
-			result.addContent(weightUnusedPoly);
-			
-			
-
-			results.addContent(result);
-		}
-		
-		
-		
-		return results;
-	}
+	
 
 
 
@@ -313,9 +289,7 @@ public class SearchResult implements Comparable<SearchResult>{
 
 
 
-	public ArrayList<Polymorphism> getCorrectedBackmutations() {
-		return detailedResult.correctedBackmutations;
-	}
+	
 
 
 	
@@ -328,9 +302,7 @@ public class SearchResult implements Comparable<SearchResult>{
 
 	
 	
-	public ArrayList<Polymorphism> getUnusedPolys(){
-		return detailedResult.remainingPolys;
-	}
+	
 
 
 	public double getSumMissingPhyloWeight() {
@@ -342,6 +314,13 @@ public class SearchResult implements Comparable<SearchResult>{
 
 
 	public SearchResultDetailed getDetailedResult() {
+		if(detailedResult == null){
+			detailedResult = new SearchResultDetailed(this);
+			detailedResult.updateResult();
+//			detailedResult.remainingPolys.addAll(sampleChecked.getPolymorphismn());
+			
+		}
+		
 		return detailedResult;
 	}
 

@@ -187,7 +187,7 @@ public final class Phylotree {
 				
 			}
 			
-			newResult.setUnusedNotInRange(sample.getSample().getPolyNotinRange());
+//			newResult.setUnusedNotInRange(sample.getSample().getPolyNotinRange());
 			
 			// Add new result to the list of all results
 			results.add(newResult);

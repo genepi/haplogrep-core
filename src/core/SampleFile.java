@@ -41,8 +41,9 @@ import exceptions.parse.samplefile.UniqueKeyException;
 
 public class SampleFile {
 	Hashtable<String, TestSample> testSamples = new Hashtable<String, TestSample>();
-	HashMap<String, List<ClusteredSearchResult>> classificationResults = new HashMap<String, List<ClusteredSearchResult>>();
-
+	
+	
+	
 	public SampleFile(ArrayList<String> sampleLines) throws HsdFileException {
 		int lineIndex = 1;
 		for (String currentLine : sampleLines) {
@@ -174,131 +175,60 @@ public class SampleFile {
 
 	}
 
-	public List<ClusteredSearchResult> getClassificationResults(String sampleID) {
-		return classificationResults.get(sampleID);
-	}
+//	public List<ClusteredSearchResult> getClassificationResults(String sampleID) {
+//		return classificationResults.get(sampleID);
+//	}
 
 	public void updateClassificationResults(Phylotree phylotree, RankingMethod rankingMethod) throws NumberFormatException, InvalidPolymorphismException,
 			JDOMException, IOException {
 		for (TestSample currenTestSample : testSamples.values()) {
-			List<RankedResult> results = phylotree.search(currenTestSample, rankingMethod.clone());
-			classificationResults.put(currenTestSample.getSampleID(),
-					ClusteredSearchResult.createClusteredSearchResult(results, currenTestSample.getExpectedHaplogroup()));
+			currenTestSample.updateClassificationResults(phylotree,rankingMethod);
 		}
 
 	}
 
-	private Element combinePathsToXMLTree(HashMap<String, List<ClusteredSearchResult>> classificationResults2, boolean includeHotspots,
-			boolean includeMissingPolys) throws Exception {
 
-		if (classificationResults.size() < 2)
-			throw new Exception("There must be more than one classified sample to create a tree. Please start classification process first!");
 
-		// Element root = new Element("root");
-		// root.setAttribute("name","rCRS");
-		// ClusteredSearchResult firstSampleSearchResult =
-		// classificationResults.values().
-		// Element currentPath =
-		// currentResultList.getPhyloTreePath(0).toXML(currentSampleID);
+	
 
-		Element combinedResultTree = null;
-		for (String currentSampleID : classificationResults.keySet()) {
-			// ClusteredSearchResult currentResultList =
-			// classificationResults.get(currentSampleID).get(0);
-			// combinedResultTree =
-			// currentResultList.getPhyloTreePath(0).toXML(currentSampleID);
-			if (combinedResultTree == null) {
-				Haplogroup assignedHaplogroup = getTestSample(currentSampleID).getDetectedHaplogroup();
-
-				List<ClusteredSearchResult> allResults = classificationResults.get(currentSampleID);
-				SearchResult resultToExport = ClusteredSearchResult.getSearchResultByHaplogroup(allResults, assignedHaplogroup);
-
-				// ClusteredSearchResult firstResult =
-				// classificationResults.get(currentSampleID).get(0);
-				combinedResultTree = resultToExport.getDetailedResult().getPhyloTreePathXML(includeMissingPolys);
-
-				OverviewTreePath op = new OverviewTreePath(combinedResultTree, currentSampleID, resultToExport.getDetailedResult().getUnusedPolysXML(
-						includeHotspots));
-				combinedResultTree = op.toXML();
-
-			} else {
-				Haplogroup assignedHaplogroup = getTestSample(currentSampleID).getDetectedHaplogroup();
-
-				List<ClusteredSearchResult> allResults = classificationResults.get(currentSampleID);
-				SearchResult resultToExport = ClusteredSearchResult.getSearchResultByHaplogroup(allResults, assignedHaplogroup);
-
-				Element additionalPath = resultToExport.getDetailedResult().getPhyloTreePathXML(includeMissingPolys);
-				OverviewTreePath op = new OverviewTreePath(additionalPath, currentSampleID, resultToExport.getDetailedResult().getUnusedPolysXML(
-						includeHotspots));
-				combinePathRec(combinedResultTree, op.toXML());
-			}
-
-		}
-
-		return combinedResultTree;
-	}
-
-	public JSONArray getClassificationResultJson(String sampleID) {
-		JSONArray resultArray = null;
-		resultArray = new JSONArray();
-
-		if (!classificationResults.containsKey(sampleID))
-			return resultArray;
-
-		for (ClusteredSearchResult currentResult : classificationResults.get(sampleID)) {
-
-			try {
-				JSONObject resultObject = currentResult.toJson();
-				resultArray.put(resultObject);
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		}
-		getTestSample(sampleID).getExpectedHaplogroup();
-		// classificationResults.g
-
-		return resultArray;
-	}
-
-	public Element getDetailsXML(String sampleID, String haplogroup) {
-		for (ClusteredSearchResult currentResult : classificationResults.get(sampleID)) {
-			Element result = currentResult.getDetailsXML(haplogroup);
-
-			if (result != null)
-				return result;
-
-		}
-		return null;
-	}
-
-	public Element getUnusedPolys(String sampleID, String haplogroup) {
-		for (ClusteredSearchResult currentResult : classificationResults.get(sampleID)) {
-			Element result = currentResult.getUnusedPolysXML(haplogroup);
-
-			if (result != null)
-				return result;
-
-		}
-		return null;
-	}
+//	public Element getDetailsXML(String sampleID, String haplogroup) {
+//		for (ClusteredSearchResult currentResult : classificationResults.get(sampleID)) {
+//			Element result = currentResult.getDetailsXML(haplogroup);
+//
+//			if (result != null)
+//				return result;
+//
+//		}
+//		return null;
+//	}
+//
+//	public Element getUnusedPolys(String sampleID, String haplogroup) {
+//		for (ClusteredSearchResult currentResult : classificationResults.get(sampleID)) {
+//			Element result = currentResult.getUnusedPolysXML(haplogroup);
+//
+//			if (result != null)
+//				return result;
+//
+//		}
+//		return null;
+//	}
 
 	public void clearClassificationResults() {
-		classificationResults.clear();
+		for(TestSample currentSample : testSamples.values())
+			currentSample.clearClassificationResults();
 
 	}
 
-	public Element getNotInRangePolys(String sampleID, String haplogroup) {
-		for (ClusteredSearchResult currentResult : classificationResults.get(sampleID)) {
-			Element result = currentResult.getNotInRangePolysXML(haplogroup);
-
-			if (result != null)
-				return result;
-
-		}
-		return null;
-	}
+//	public Element getNotInRangePolys(String sampleID, String haplogroup) {
+//		for (ClusteredSearchResult currentResult : classificationResults.get(sampleID)) {
+//			Element result = currentResult.getNotInRangePolysXML(haplogroup);
+//
+//			if (result != null)
+//				return result;
+//
+//		}
+//		return null;
+//	}
 
 	public File getOverviewBestResultsAllSamples(String sessionID, String format, int res, boolean includeHotspots, boolean includeMissingPolys)
 			throws Exception {
@@ -337,7 +267,7 @@ public class SampleFile {
 		 */
 
 		// System.out.println("All Paths for overview:" + result.toString());
-		Element resultTree = combinePathsToXMLTree(classificationResults, includeHotspots, includeMissingPolys);
+		Element resultTree = combinePathsToXMLTree( includeHotspots, includeMissingPolys);
 		Document d = new Document(resultTree);
 		saveXMLToDisc(d);
 
@@ -479,229 +409,58 @@ public class SampleFile {
 
 	}
 
-	public JSONObject getSelectetHaplogroupSubtree(String sampleID, ArrayList<String> selectedHaplogroups) {
-		ArrayList<ArrayList<SearchResultTreeNode>> paths = new ArrayList<ArrayList<SearchResultTreeNode>>();
-		for (ClusteredSearchResult currentResult : classificationResults.get(sampleID)) {
+	
+	
+//TODO rename to combineAllSamplesToXMLTree
+private Element combinePathsToXMLTree(boolean includeHotspots,boolean includeMissingPolys) throws Exception {
 
-			for (SearchResult currentSearchResult : currentResult.getCluster()) {
+//	if (classificationResults.size() < 2)
+//		throw new Exception("There must be more than one classified sample to create a tree. Please start classification process first!");
 
-				if (selectedHaplogroups.contains(currentSearchResult.getHaplogroup().toString())) {
-					for (SearchResult currentSearchResult2 : currentResult.getCluster()) {
-						ArrayList<SearchResultTreeNode> newPath = currentSearchResult2.getDetailedResult().getPhyloTreePath();
-						paths.add(newPath);
-					}
-				}
-			}
-			// newPath = currentResult.getPhyloTreePath(1);
-			// paths.add(newPath);
-			// if(newPath != null)
+	// Element root = new Element("root");
+	// root.setAttribute("name","rCRS");
+	// ClusteredSearchResult firstSampleSearchResult =
+	// classificationResults.values().
+	// Element currentPath =
+	// currentResultList.getPhyloTreePath(0).toXML(currentSampleID);
 
-			// }
+	Element combinedResultTree = null;
+	for (TestSample currentSample : testSamples.values()) {
+		// ClusteredSearchResult currentResultList =
+		// classificationResults.get(currentSampleID).get(0);
+		// combinedResultTree =
+		// currentResultList.getPhyloTreePath(0).toXML(currentSampleID);
+		if (combinedResultTree == null) {
+			Haplogroup assignedHaplogroup = currentSample.getDetectedHaplogroup();
+
+//			List<RankedResult> allResults = getSearchResultByHaplogroup(assignedHaplogroup);
+			SearchResult resultToExport = currentSample.getSearchResultByHaplogroup(assignedHaplogroup);//ClusteredSearchResult.getSearchResultByHaplogroup(allResults, assignedHaplogroup);
+
+			// ClusteredSearchResult firstResult =
+			// classificationResults.get(currentSampleID).get(0);
+			combinedResultTree = resultToExport.getDetailedResult().getPhyloTreePathXML(includeMissingPolys);
+
+			OverviewTreePath op = new OverviewTreePath(combinedResultTree, currentSample.getSampleID(), resultToExport.getDetailedResult().getUnusedPolysXML(
+					includeHotspots));
+			combinedResultTree = op.toXML();
+
+		} else {
+			Haplogroup assignedHaplogroup = currentSample.getDetectedHaplogroup();
+
+//			List<ClusteredSearchResult> allResults = classificationResults.get(currentSampleID);
+//			SearchResult resultToExport = ClusteredSearchResult.getSearchResultByHaplogroup(allResults, assignedHaplogroup);
+			SearchResult resultToExport = currentSample.getSearchResultByHaplogroup(assignedHaplogroup);//ClusteredSearchResult.getSearchResultByHaplogroup(allResults, assignedHaplogroup);
+
+			Element additionalPath = resultToExport.getDetailedResult().getPhyloTreePathXML(includeMissingPolys);
+			OverviewTreePath op = new OverviewTreePath(additionalPath, currentSample.getSampleID(), resultToExport.getDetailedResult().getUnusedPolysXML(
+					includeHotspots));
+			combinePathRec(combinedResultTree, op.toXML());
 		}
 
-		try {
-			JSONObject result = combinePathsToTree(paths, classificationResults.get(sampleID).get(0));
-
-			return result;
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return null;
 	}
 
-	private JSONObject combinePathsToTree(ArrayList<ArrayList<SearchResultTreeNode>> paths, ClusteredSearchResult list) throws JSONException {
+	return combinedResultTree;
+}
 
-		JSONObject currentNode = new JSONObject();
-		JSONObject result = currentNode;
-		currentNode.put("id", "root");
 
-		JSONObject dataNode = new JSONObject();
-		dataNode.put("type", "hg");
-
-		currentNode.put("data", dataNode);
-		currentNode.put("name", "sample");
-		// currentNode.append("children", new JSONArray());
-
-		// PhyloTreePath longestPath = paths.get(0);
-		int ipath = 0;
-		boolean step = false;
-		for (ArrayList<SearchResultTreeNode> currentPath : paths) {
-			currentNode = result;
-			if (currentNode.has("children")) {
-				JSONArray currentChildren = currentNode.getJSONArray("children");
-				ipath = 0;
-				int i = 0;
-				// For each child
-				while (i < currentChildren.length()) {
-					if (ipath < currentPath.size()) {
-						JSONObject childNode = currentChildren.getJSONObject(i);
-
-						if (childNode.get("name").toString().equals(currentPath.get(ipath).getHaplogroup() + "_Polys")) {
-							currentNode = childNode;
-							currentChildren = currentNode.getJSONArray("children");
-							i = 0;
-						}
-
-						else {
-							if (childNode.get("name").equals(currentPath.get(ipath).getHaplogroup())) {
-								System.out.print(currentPath.get(ipath).getHaplogroup() + " ");
-								// step = true;
-								currentNode = childNode;
-								currentChildren = currentNode.getJSONArray("children");
-								i = 0;
-								ipath++;
-
-							} else {
-								i++;
-							}
-						}
-					}
-					// Path is shorter
-					else {
-						break;
-					}
-				}
-			}
-
-			for (int i1 = ipath; i1 < currentPath.size(); i1++) {
-				dataNode = new JSONObject();
-				dataNode.put("type", "poly");
-				for (Polymorphism currentPoly : currentPath.get(i1).getExpectedPolys()) {
-					JSONObject poly = new JSONObject();
-					poly.put("name", currentPoly);
-
-					if (currentPath.get(i1).getFoundPolys().contains(currentPoly)) {
-						poly.put("state", "found");
-					}
-
-					else {
-						if (list != null) {
-							if (list.getCluster().get(0).getCorrectedBackmutations().contains(currentPoly))
-								poly.put("state", "corrected");
-
-							else
-								poly.put("state", "notfound");
-						}
-					}
-
-					dataNode.append("polys", poly);
-
-				}
-
-				System.out.print("Neu " + currentPath.get(i1).getHaplogroup() + " ");
-
-				for (Polymorphism currentPoly : currentPath.get(i1).getNotInRangePolys()) {
-					JSONObject poly = new JSONObject();
-					poly.put("name", currentPoly);
-					poly.put("state", "notInRange");
-
-					dataNode.append("polys", poly);
-				}
-
-				int numAllPolys = currentPath.get(i1).getExpectedPolys().size() + currentPath.get(i1).getNotInRangePolys().size();
-
-				dataNode.put("$height", numAllPolys * 13 + 10);
-				dataNode.put("$width", 50);
-
-				JSONObject newPolyNode = new JSONObject();
-				newPolyNode.put("id", currentPath.get(i1).getHaplogroup() + "_Polys");
-				newPolyNode.put("data", dataNode);
-				newPolyNode.put("name", currentPath.get(i1).getHaplogroup() + "_Polys");
-
-				dataNode = new JSONObject();
-				dataNode.put("type", "hg");
-				// dataNode.put("$width",
-				// longestPath.getNodes().get(i).getHaplogroup().toString().length()
-				// * 10 + 10);
-
-				JSONObject newNode = new JSONObject();
-				newNode.put("id", currentPath.get(i1).getHaplogroup());
-				newNode.put("data", dataNode);
-				newNode.put("name", currentPath.get(i1).getHaplogroup());
-				newNode.put("children", new JSONArray());
-				// dataNode.put("$width",
-				// longestPath.getNodes().get(i).getHaplogroup().toString().length()
-				// * 5 + 10);
-				// dataNode.put("$height",
-				// longestPath.getNodes().get(i).getHaplogroup().toString().length()
-				// * 5 + 10);
-				// dataNode.put("$dim",
-				// (longestPath.getNodes().get(i).getHaplogroup().toString().length()
-				// * 5 + 10) / 2);
-
-				newPolyNode.append("children", newNode);
-
-				currentNode.append("children", newPolyNode);
-				currentNode = newNode;
-			}
-
-			System.out.println();
-
-			// }
-		}
-
-		// if(!step)
-		// {
-
-		// }
-		// }
-
-		// currentNode.put("children",new JSONArray());
-		/*
-		 * InputStream phyloFile =
-		 * this.getClass().getClassLoader().getResourceAsStream
-		 * ("phylotree8.xml"); try { currentNode.put("children",
-		 * JsonConverter.generateJson(phyloFile, haplogroup
-		 * ,2).getJSONArray("children")); } catch (JDOMException e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } catch (IOException
-		 * e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 */
-
-		return result;
-
-		// for(int i = 0; i < currentPath.getNodes().size();i++){
-		//
-		// }
-		//
-		// if(currentPath != longestPath &&
-		// currentPath.getNodes().get(i).getHaplogroup()
-		// .equals(longestPath.getNodes().get(i).getHaplogroup())){
-		//
-		// }
-		//
-		// else
-		// {
-		//
-		// }
-		// }
-		//
-		//
-		// for(PhyloTreePath currentPath : paths){
-		// if(longestPath.getNodes().size() < currentPath.getNodes().size())
-		// {
-		// longestPath = currentPath;
-		// }
-		// }
-		//
-		// for(int i = 0; i < longestPath.getNodes().size();i++){
-		// for(PhyloTreePath currentPath :paths)
-		// {
-		// if(currentPath != longestPath &&
-		// currentPath.getNodes().get(i).getHaplogroup()
-		// .equals(longestPath.getNodes().get(i).getHaplogroup())){
-		// JSONObject newNode = new JSONObject();
-		// newNode.put("id", "node" + i);
-		// newNode.put("name", longestPath.getNodes().get(i).getHaplogroup());
-		// tree.append("", newNode);
-		// }
-		//
-		// else
-		// {
-		//
-		// }
-		// }
-		// }
-	}
 }

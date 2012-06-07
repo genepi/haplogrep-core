@@ -18,11 +18,11 @@ public class SearchResultDetailed implements Serializable{
 	private static final long serialVersionUID = 3578717605511291419L;
 	
 	private ArrayList<Polymorphism> expectedPolys;
-	public ArrayList<Polymorphism> foundPolys;
-	public ArrayList<Polymorphism> remainingPolys;
-	public ArrayList<Polymorphism> remainingPolysNotInRange;
-	public ArrayList<Polymorphism> correctedBackmutations;
-	public ArrayList<Polymorphism> missingPolysOutOfRange;
+	private ArrayList<Polymorphism> foundPolys;
+	private ArrayList<Polymorphism> remainingPolys;
+	private ArrayList<Polymorphism> remainingPolysNotInRange;
+	private ArrayList<Polymorphism> correctedBackmutations;
+	private ArrayList<Polymorphism> missingPolysOutOfRange;
 
 	private ArrayList<SearchResultTreeNode> path = new ArrayList<SearchResultTreeNode>();
 	transient private SearchResult searchResult;
@@ -38,12 +38,13 @@ public class SearchResultDetailed implements Serializable{
 	}
 	
 	public void updateResult(){
-		path.clear();
-		expectedPolys.clear();
-		correctedBackmutations.clear();
-		remainingPolysNotInRange.clear();
-		correctedBackmutations.clear();
-		foundPolys.clear();
+//		path.clear();
+//		expectedPolys.clear();
+//		correctedBackmutations.clear();
+//		remainingPolysNotInRange.clear();
+//		correctedBackmutations.clear();
+//		foundPolys.clear();
+//		remainingPolys.clear();
 		
 		PhyloTreeNode startNode = searchResult.getAttachedPhyloTreeNode();
 		while (startNode != null) {
@@ -236,7 +237,7 @@ public class SearchResultDetailed implements Serializable{
 	
 	}
 
-	public Element toXML()
+	public Element getFoundNotFoundPolys()
 	{
 		
 		Element results = new Element("DetailedResults");
@@ -355,6 +356,34 @@ public class SearchResultDetailed implements Serializable{
 		return root;
 		
 	}
+	
+	public Element getNotInRangePolysXML() {
+		Element results = new Element("OutOfRangePolys");
+		Collections.sort(missingPolysOutOfRange);
+		
+			
+		for (Polymorphism currentPoly : missingPolysOutOfRange) {
+
+			Element result = new Element("OutOfRangePoly");
+			Element newUnusedPoly = new Element("poly");
+			newUnusedPoly.setText(currentPoly.toString());
+			result.addContent(newUnusedPoly);
+			
+			Element weightUnusedPoly = new Element("weight");
+			weightUnusedPoly.setText(String.valueOf(searchResult.getPhyloTree().getMutationRate(currentPoly)));
+			result.addContent(weightUnusedPoly);
+			
+			
+
+			results.addContent(result);
+		}
+		
+		
+		
+		return results;
+	}
+	
+	
 	public MissingPolysIterator getIterMissingPolys(){
 		return new MissingPolysIterator(searchResult);
 	}
@@ -366,4 +395,20 @@ public class SearchResultDetailed implements Serializable{
 	public ArrayList<SearchResultTreeNode> getPhyloTreePath() {	
 		return path;
 	}
+	
+	public ArrayList<Polymorphism> getUnusedPolys(){
+		return remainingPolys;
+	}
+	
+	public ArrayList<Polymorphism> getCorrectedBackmutations() {
+		return correctedBackmutations;
+	}
+	
+	public ArrayList<Polymorphism> getFoundPolys() {
+	return foundPolys;
+}
+
+public ArrayList<Polymorphism> getMissingPolysOutOfRange() {
+	return missingPolysOutOfRange;
+}
 }
