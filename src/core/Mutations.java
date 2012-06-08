@@ -11,7 +11,7 @@ import exceptions.parse.sample.InvalidBaseException;
 public enum Mutations {
 	A, G, C, T, R, Y, K, M, N, X, S, W, INS, DEL;
 
-	public static Mutations getBase(String mutation) throws InvalidBaseException {
+	static Mutations getBase(String mutation) throws InvalidBaseException {
 		if (mutation.equals("A") || mutation.equals("a"))
 			return A;
 		if (mutation.equals("C") || mutation.equals("c"))

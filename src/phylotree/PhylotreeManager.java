@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class PhylotreeManager {
 	private Map<String, Phylotree> phylotreeMap;
-	static PhylotreeManager instance = null;
+	private static PhylotreeManager instance = null;
 
 	/**
 	 * Private constructor (singleton pattern)

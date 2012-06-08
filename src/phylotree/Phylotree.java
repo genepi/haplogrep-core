@@ -35,7 +35,7 @@ import exceptions.parse.sample.InvalidPolymorphismException;
  */
 public final class Phylotree {
 
-	PhyloTreeNode root;
+	private PhyloTreeNode root;
 	private HashMap<Polymorphism, Double> phyloGeneticWeights = new HashMap<Polymorphism, Double>();
 	private HashMap<Haplogroup, PhyloTreeNode> haplogroupLookup = new HashMap<Haplogroup, PhyloTreeNode>();
 
@@ -47,7 +47,7 @@ public final class Phylotree {
 	 * @param phylogeneticWeightsFile
 	 *            Inputstream to the phylogentic weights file
 	 */
-	public Phylotree(InputStream phylotreeFile, InputStream phylogeneticWeightsFile) {
+	Phylotree(InputStream phylotreeFile, InputStream phylogeneticWeightsFile) {
 
 		root = new PhyloTreeNode(this);
 		// Create a JDOM document out of the phylotree XML

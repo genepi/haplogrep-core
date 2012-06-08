@@ -43,13 +43,13 @@ import org.w3c.dom.DOMImplementation;
  * 
  */
 public class PhylotreeRenderer {
-	Font polymprhismnFont = null;
-	Font sampleIDFont = null;
-	Font haplogroupFont = null;
+	private Font polymprhismnFont = null;
+	private Font sampleIDFont = null;
+	private Font haplogroupFont = null;
 	
-	Document xmlPhyloTree = null;
-	BufferedImage watermark = null;
-	final int linePadding = 2;
+	private Document xmlPhyloTree = null;
+	private BufferedImage watermark = null;
+	private final int linePadding = 2;
 	
 	private float dpi = 72;
 	
@@ -271,10 +271,7 @@ public class PhylotreeRenderer {
 		} catch (SVGGraphics2DIOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (TranscoderException e) {
+		}  catch (TranscoderException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -437,7 +434,7 @@ public class PhylotreeRenderer {
 	 * @param polys The list of polymorphisms
 	 * @return The max width of the polymorphims' strings
 	 */
-	private int getMaxStringWidthPolys(Graphics2D g2d, List polys) {
+	private int getMaxStringWidthPolys(Graphics2D g2d, List<Element> polys) {
 		int max = 0;
 		int width = 0;
 		for (Element currentPoly : (List<Element>) polys) {
@@ -478,9 +475,7 @@ public class PhylotreeRenderer {
 		g2d.setFont(polymprhismnFont);
 		depth += 10;
 
-		int polys = child.getChild("DetailedResults").getChildren("DetailedResult").size();
-		int p = polys * g2d.getFontMetrics().getHeight() + linePadding;
-
+			
 		for (Element currentPoly : (List<Element>) child.getChild("DetailedResults").getChildren("DetailedResult")) {
 
 			depth += g2d.getFontMetrics().getHeight() + linePadding;

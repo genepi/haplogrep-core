@@ -16,7 +16,7 @@ import exceptions.parse.sample.InvalidPolymorphismException;
  */
 // TODO Ask hansi to get rid of the callMethod parameters
 public class Sample {
-	public ArrayList<Polymorphism> sample = new ArrayList<Polymorphism>();
+	ArrayList<Polymorphism> sample = new ArrayList<Polymorphism>();
 	private SampleRanges sampleRange = null;
 
 	// callMethod defines the call. callMethod=1 call from PhyloTree

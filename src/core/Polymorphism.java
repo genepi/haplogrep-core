@@ -17,12 +17,12 @@ import exceptions.parse.sample.InvalidPolymorphismException;
 public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 
 	private static final long serialVersionUID = 777223002615235532L;
-	protected int position;
-	protected Mutations mutation;
+	private int position;
+	private Mutations mutation;
 	boolean isBackMutation = false;
-	String numberOfIns = "";
-	String insertedPolys = "";
-	int hashCode;
+	private String numberOfIns = "";
+	private String insertedPolys = "";
+	private int hashCode;
 	
 	/**
 	 * rCRS reference sequence
@@ -37,7 +37,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	 * @param mutatedBase
 	 *            The muation on the given position
 	 */
-	public Polymorphism(int newPosition, Mutations mutatedBase) {
+	Polymorphism(int newPosition, Mutations mutatedBase) {
 		this.mutation = mutatedBase;
 		this.position = newPosition;
 		hashCode = toString().hashCode();
@@ -177,7 +177,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	 * @param  position The position in the reference sequence 
 	 * @return The polymorphism representing the reference
 	 */
-	public static Polymorphism getReferenceBase(int position) {
+	private Polymorphism getReferenceBase(int position) {
 		String base = String.valueOf(rCRS.charAt(position - 1));
 		base = base.toUpperCase();
 		try {

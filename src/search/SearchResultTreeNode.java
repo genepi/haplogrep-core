@@ -124,7 +124,7 @@ public class SearchResultTreeNode implements Serializable{
 	 * Adds a corrected back mutation polymorphism to this nodes
 	 * @param polyToAdd
 	 */
-	public void addCorrectedBackmutation(Polymorphism polyToAdd) {
+	void addCorrectedBackmutation(Polymorphism polyToAdd) {
 		correctedBackmutation.add(polyToAdd);
 	}
 	

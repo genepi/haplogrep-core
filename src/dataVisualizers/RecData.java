@@ -6,13 +6,13 @@ package dataVisualizers;
  * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
  * 
  */
-public class RecData {
+class RecData {
 	private int currentPosX;
 	private int centerPosX;
 	private int maxWidth;
 	private int maxHeight;
 	
-	public RecData(int centerPosX, int currentPosX,int maxWidth,int maxHeight) {
+	RecData(int centerPosX, int currentPosX,int maxWidth,int maxHeight) {
 		this.centerPosX = centerPosX;
 		this.currentPosX = currentPosX;
 		this.maxWidth = maxWidth;

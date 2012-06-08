@@ -14,7 +14,7 @@ public class Haplogroup implements Serializable {
 
 	private static final long serialVersionUID = 8902692095026305359L;
 
-	String haplogroup;
+	private String haplogroup;
 
 	public Haplogroup(String haplogroup) {
 		this.haplogroup = haplogroup;

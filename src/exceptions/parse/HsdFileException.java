@@ -22,13 +22,6 @@ public class HsdFileException extends Exception {
 		super(message);
 	}
 
-	public HsdFileException(Throwable cause) {
-		super(cause);
-	}
-
-	public HsdFileException(String message, Throwable cause) {
-		super(message, cause);
-	}
 
 	/**
 	 * Sets the line in the hsd file the exception occurred

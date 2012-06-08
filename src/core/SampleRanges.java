@@ -13,8 +13,8 @@ import exceptions.parse.sample.InvalidRangeException;
 
 public class SampleRanges {
 
-	ArrayList<Integer> starts = new ArrayList<Integer>();
-	ArrayList<Integer> ends = new ArrayList<Integer>();
+	private ArrayList<Integer> starts = new ArrayList<Integer>();
+	private ArrayList<Integer> ends = new ArrayList<Integer>();
 
 	/**
 	 * Creates empty range.
@@ -23,16 +23,6 @@ public class SampleRanges {
 
 	}
 
-	/**
-	 * Copy constructor
-	 * 
-	 * @param rangeToCopy
-	 *            The SampleRanges object to copy
-	 */
-	public SampleRanges(SampleRanges rangeToCopy) {
-		starts.addAll(rangeToCopy.starts);
-		ends.addAll(rangeToCopy.ends);
-	}
 
 	/**
 	 * Parsed a new SampleRanges object. Needs hsd file format of ranges.
@@ -43,7 +33,7 @@ public class SampleRanges {
 	 *             Thrown if the format is incorrect or the ranges are invalid
 	 *             (e.g. < 0)
 	 */
-	public SampleRanges(String rangesToParse) throws InvalidRangeException {
+	SampleRanges(String rangesToParse) throws InvalidRangeException {
 		if (rangesToParse.equals(""))
 			return;
 
