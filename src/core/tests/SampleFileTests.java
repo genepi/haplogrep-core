@@ -8,15 +8,15 @@ import org.junit.Test;
 
 import core.Haplogroup;
 import core.SampleFile;
+import exceptions.parse.HsdFileException;
 import exceptions.parse.sample.InvalidBaseException;
-import exceptions.parse.samplefile.HsdFileException;
 import exceptions.parse.samplefile.InvalidColumnCountException;
-import exceptions.parse.samplefile.UniqueKeyException;
+import exceptions.parse.samplefile.UniqueSampleIDException;
 
 
 public class SampleFileTests {
 	@Test
-	public void ParseHSDSampleFormatTest() throws NumberFormatException, InvalidBaseException, IOException, HsdFileException, InvalidColumnCountException, UniqueKeyException
+	public void ParseHSDSampleFormatTest() throws NumberFormatException, InvalidBaseException, IOException, HsdFileException, InvalidColumnCountException, UniqueSampleIDException
 	{
 		ArrayList<String> sampleTokens = new ArrayList<String>();
 		sampleTokens.add("1	1-576;16024-16569	H	249DEL 263G");
@@ -44,7 +44,7 @@ public class SampleFileTests {
 	}
 	
 	@Test
-	public void ParseInvalidHSDFileTest() throws NumberFormatException, InvalidBaseException, IOException, HsdFileException, InvalidColumnCountException, UniqueKeyException
+	public void ParseInvalidHSDFileTest() throws NumberFormatException, InvalidBaseException, IOException, HsdFileException, InvalidColumnCountException, UniqueSampleIDException
 	{
 		ArrayList<String> sampleTokens = new ArrayList<String>();
 		sampleTokens.add("1	1-576;16024-16569	HH	249DEL 263G");

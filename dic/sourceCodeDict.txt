@@ -5,3 +5,5 @@ phylotree
 polymorphisms
 haplogroups
 json
+hsd
+phylogentic

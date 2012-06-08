@@ -1,5 +1,11 @@
 package dataVisualizers;
 
+/**
+ * Helper class for tree recursion and rendering of the phlotreeRenderer.class
+ * 
+ * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * 
+ */
 public class RecData {
 	private int currentPosX;
 	private int centerPosX;

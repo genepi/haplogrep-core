@@ -20,6 +20,7 @@ public class Haplogroup implements Serializable {
 		this.haplogroup = haplogroup;
 	}
 
+	@Override
 	public boolean equals(Object haplogroup) {
 		if (!(haplogroup instanceof Haplogroup))
 			return false;
@@ -48,10 +49,12 @@ public class Haplogroup implements Serializable {
 		return phylotree.isSuperHaplogroup(this, hgToCheck);
 	}
 
+	@Override
 	public int hashCode() {
 		return haplogroup.hashCode();
 	}
 
+	@Override
 	public String toString() {
 		return haplogroup;
 	}

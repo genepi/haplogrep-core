@@ -7,17 +7,32 @@ import search.SearchResult;
 import search.ranking.results.RankedResultHamming;
 import core.TestSample;
 
+/**
+ * Represents the Hamming ranking method
+ * 
+ * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * 
+ */
 public class HammingRanking extends RankingMethod {
 	
-	
+	/**
+	 * @see RankingMethod
+	 */
 	public HammingRanking(){
 		super();
 	}
 	
+	/**
+	 * @see RankingMethod
+	 */
 	public HammingRanking(int maxTopResults){
 		super(maxTopResults);
 	}
 	
+	/* (non-Javadoc)
+	 * @see search.ranking.RankingMethod#setResults(core.TestSample, java.util.ArrayList)
+	 */
+	@Override
 	public void setResults(TestSample sample, ArrayList<SearchResult> searchPhylotreeWrapper) {
 		for(SearchResult currentResult : searchPhylotreeWrapper){
 			results.add(new RankedResultHamming(currentResult,sample.getExpectedHaplogroup()));
@@ -27,6 +42,10 @@ public class HammingRanking extends RankingMethod {
 		
 		cutResultSetToTopHits();
 	}
+	/* (non-Javadoc)
+	 * @see search.ranking.RankingMethod#clone()
+	 */
+	@Override
 	public RankingMethod clone(){
 		return new HammingRanking(maxTopResults);
 	}

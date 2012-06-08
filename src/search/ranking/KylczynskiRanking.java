@@ -7,28 +7,53 @@ import search.SearchResult;
 import search.ranking.results.RankedResultKylczynski;
 import core.TestSample;
 
+/**
+ * Represents the Kylczynski ranking method
+ * 
+ * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * 
+ */
 public class KylczynskiRanking extends RankingMethod {
-	
-	public KylczynskiRanking(){
+
+	/**
+	 * @see RankingMethod
+	 */
+	public KylczynskiRanking() {
 		super();
 	}
-	
-	public KylczynskiRanking(int maxTopResults){
+
+	/**
+	 * @see RankingMethod
+	 */
+	public KylczynskiRanking(int maxTopResults) {
 		super(maxTopResults);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see search.ranking.RankingMethod#setResults(core.TestSample,
+	 * java.util.ArrayList)
+	 */
+	@Override
 	public void setResults(TestSample sample, ArrayList<SearchResult> searchPhylotreeWrapper) {
 
-		for(SearchResult currentResult : searchPhylotreeWrapper){
-			results.add(new RankedResultKylczynski(currentResult,sample.getExpectedHaplogroup()));
+		for (SearchResult currentResult : searchPhylotreeWrapper) {
+			results.add(new RankedResultKylczynski(currentResult, sample.getExpectedHaplogroup()));
 		}
-		
+
 		Collections.sort(results);
-		
+
 		cutResultSetToTopHits();
 	}
-	
-	public RankingMethod clone(){
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see search.ranking.RankingMethod#clone()
+	 */
+	@Override
+	public RankingMethod clone() {
 		return new KylczynskiRanking(maxTopResults);
 	}
 }

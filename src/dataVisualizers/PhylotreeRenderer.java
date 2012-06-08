@@ -25,15 +25,23 @@ import org.apache.batik.dom.GenericDOMImplementation;
 import org.apache.batik.svggen.SVGGeneratorContext;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.apache.batik.svggen.SVGGraphics2DIOException;
+import org.apache.batik.transcoder.SVGAbstractTranscoder;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
+import org.apache.fop.svg.AbstractFOPTranscoder;
 import org.apache.fop.svg.PDFTranscoder;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.w3c.dom.DOMImplementation;
 
+/**
+ * Renders an overview tree image given by an XML root node.
+ * 
+ * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * 
+ */
 public class PhylotreeRenderer {
 	Font polymprhismnFont = null;
 	Font sampleIDFont = null;
@@ -45,6 +53,11 @@ public class PhylotreeRenderer {
 	
 	private float dpi = 72;
 	
+	
+	/**
+	 * Creates a new PhyloTreeRenderer instance with a xml document 
+	 * @param xmlPhyloTree representing the tree to render as xml document
+	 */
 	public PhylotreeRenderer(Document xmlPhyloTree)
 	{
 		this.xmlPhyloTree = xmlPhyloTree;
@@ -54,24 +67,42 @@ public class PhylotreeRenderer {
 		haplogroupFont = new Font("Arial",Font.BOLD,14);
 	}
 	
+	/**
+	 * Sets a watermark image 
+	 * @param path The path to the watermark image file
+	 * @throws IOException	Throw if the file is not found etc..
+	 */
 	public void setWatermark(URL path) throws IOException{
 		watermark = ImageIO.read(path);
 	}
 	
+	/**
+	 * @return the set DPI of the renderer
+	 */
 	public float getDpi() {
 		return dpi;
 	}
 
+	/**
+	 * Sets the DPI of the image
+	 * @param dpi The new DPI value
+	 */
 	public void setDpi(float dpi) {
 		this.dpi = dpi;
 	}
 
+	/**
+	 * @param format The format of image as string ('png' or 'svg')
+	 * @param path The path the created image should be saved to 
+	 * @param includeHotspots	True if hotspots should be include, false otherwise
+	 * @return a file handle of the created file
+	 */
 	public File createImage(String format, String path, boolean includeHotspots){
 
 		File newImage = null;
 
 		try {
-			 newImage = createTreeImage(format,path,includeHotspots);
+			 newImage = renderImage(format,path,includeHotspots);
 			 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -83,231 +114,175 @@ public class PhylotreeRenderer {
 		
 		return newImage;
 	}
-		
-	private File createTreeImage(String format, String path, boolean includeHotspots) throws Exception
-	{		
-		
+	
+	//TODO The tree should be as compact as possible
+	//renders the image...not finished...subject to change....
+	private File renderImage(String format, String path, boolean includeHotspots) throws Exception {
+
 		// Get a DOMImplementation.
-        DOMImplementation domImpl =
-            GenericDOMImplementation.getDOMImplementation();
+		DOMImplementation domImpl = GenericDOMImplementation.getDOMImplementation();
 
-        // Create an instance of org.w3c.dom.Document.
-        String svgNS = "http://www.w3.org/2000/svg";
-        org.w3c.dom.Document document = domImpl.createDocument(svgNS, "svg", null);
+		// Create an instance of org.w3c.dom.Document.
+		String svgNS = "http://www.w3.org/2000/svg";
+		org.w3c.dom.Document document = domImpl.createDocument(svgNS, "svg", null);
 
-        SVGGeneratorContext ctx = SVGGeneratorContext.createDefault(document);
-        ctx.setEmbeddedFontsOn(true);
-        // Create an instance of the SVG Generator.
-        SVGGraphics2D svgGraphics2D = new SVGGraphics2D(document);
-   
+		SVGGeneratorContext ctx = SVGGeneratorContext.createDefault(document);
+		ctx.setEmbeddedFontsOn(true);
+		// Create an instance of the SVG Generator.
+		SVGGraphics2D svgGraphics2D = new SVGGraphics2D(document);
 
+		Graphics2D g2 = svgGraphics2D;// newImage.getGraphics();
+		RecData r = traverseTree(g2, xmlPhyloTree.getRootElement(), 0, new RecData(0, 20, 0, 0), 0);
 
-		
-		
-		
-        	Graphics2D g2 = (Graphics2D)svgGraphics2D;//newImage.getGraphics();
-			RecData r = traverseTree(g2,xmlPhyloTree.getRootElement(),0,new RecData(0, 20,0,0),0);
-			
-			int imageWidth = r.getCurrentPos() + r.getMaxWidth()/2;
-			
-			if(imageWidth < 300)
-				imageWidth = 300;
-			
-			int treeHeight =  r.getMaxHeight() + 50;
-			int imageHeight = treeHeight +  g2.getFontMetrics().getHeight()*6 + 10;
-			
-			
-			document = domImpl.createDocument(svgNS, "svg", null);
+		int imageWidth = r.getCurrentPos() + r.getMaxWidth() / 2;
 
-	         ctx = SVGGeneratorContext.createDefault(document);
-	        ctx.setEmbeddedFontsOn(true);
-	        // Create an instance of the SVG Generator.
-	         svgGraphics2D = new SVGGraphics2D(document);
-	        g2 = (Graphics2D)svgGraphics2D;//newImage.getGraphics();
-			
-			g2.setBackground(Color.white);
-			
-			svgGraphics2D.setSVGCanvasSize(new Dimension(imageWidth, imageHeight));		
-			g2.clearRect(0,0,imageWidth, imageHeight);
-			
-			
-			if(imageWidth == 300){
-				int treeWidth = r.getCurrentPos() + r.getMaxWidth()/2;
-			r = traverseTree(g2,xmlPhyloTree.getRootElement(),0,new RecData(0, 20 + treeWidth/2,0,0),treeHeight);
-			}
-			else
-			r = traverseTree(g2,xmlPhyloTree.getRootElement(),0,new RecData(0, 20 ,0,0),treeHeight);
-			
-			g2.setFont(haplogroupFont);
-			
-			int boxWidth = g2.getFontMetrics().stringWidth("@ = assumed back mutation") + 20;
-			
-			g2.drawString("KEY", 30, treeHeight  + g2.getFontMetrics().getHeight());
-			
-			int boxY = treeHeight + g2.getFontMetrics().getHeight() * 2;
-			if(includeHotspots){
+		if (imageWidth < 300)
+			imageWidth = 300;
+
+		int treeHeight = r.getMaxHeight() + 50;
+		int imageHeight = treeHeight + g2.getFontMetrics().getHeight() * 6 + 10;
+
+		document = domImpl.createDocument(svgNS, "svg", null);
+
+		ctx = SVGGeneratorContext.createDefault(document);
+		ctx.setEmbeddedFontsOn(true);
+		// Create an instance of the SVG Generator.
+		svgGraphics2D = new SVGGraphics2D(document);
+		g2 = svgGraphics2D;// newImage.getGraphics();
+
+		g2.setBackground(Color.white);
+
+		svgGraphics2D.setSVGCanvasSize(new Dimension(imageWidth, imageHeight));
+		g2.clearRect(0, 0, imageWidth, imageHeight);
+
+		if (imageWidth == 300) {
+			int treeWidth = r.getCurrentPos() + r.getMaxWidth() / 2;
+			r = traverseTree(g2, xmlPhyloTree.getRootElement(), 0, new RecData(0, 20 + treeWidth / 2, 0, 0), treeHeight);
+		} else
+			r = traverseTree(g2, xmlPhyloTree.getRootElement(), 0, new RecData(0, 20, 0, 0), treeHeight);
+
+		g2.setFont(haplogroupFont);
+
+		int boxWidth = g2.getFontMetrics().stringWidth("@ = assumed back mutation") + 20;
+
+		g2.drawString("KEY", 30, treeHeight + g2.getFontMetrics().getHeight());
+
+		int boxY = treeHeight + g2.getFontMetrics().getHeight() * 2;
+		if (includeHotspots) {
 			g2.setColor(new Color(153, 204, 153));
 			g2.drawString("Hotspot", 30, boxY);
 			boxY += g2.getFontMetrics().getHeight();
-			}
-			
-			
-			g2.setColor(new Color(50, 180, 227));
-			g2.drawString("Local private mutation", 30, boxY);
-			boxY += g2.getFontMetrics().getHeight();
-			g2.setColor(Color.red);
-			g2.drawString("Global private mutation", 30, boxY);
-			boxY += g2.getFontMetrics().getHeight();
-			g2.drawString("@ = assumed back mutation", 30, boxY);
-			boxY += g2.getFontMetrics().getHeight();
-			g2.setColor(Color.black);
-			g2.drawString("mis = missing mutation", 30, boxY);
-			//boxY += g2.getFontMetrics().getHeight();
-			
-			g2.setColor(new Color(0, 0, 0));
-			g2.draw3DRect(20, treeHeight,boxWidth ,  boxY + 5- treeHeight, true);
-			
-			if(watermark != null && imageWidth - boxWidth > watermark.getWidth())
-			g2.drawImage(watermark,imageWidth - watermark.getWidth(),imageHeight-watermark.getHeight(),null);
+		}
 
-			//svgGenerator.scale(4.0, 4.0);
-			
-			// Finally, stream out SVG to the standard output using
-	        // UTF-8 encoding.
-	        
-				
-				
-				
-				/*
-				String outFilename = "outfile.zip";
-			    ZipOutputStream outz = new ZipOutputStream(new FileOutputStream(outFilename));
+		g2.setColor(new Color(50, 180, 227));
+		g2.drawString("Local private mutation", 30, boxY);
+		boxY += g2.getFontMetrics().getHeight();
+		g2.setColor(Color.red);
+		g2.drawString("Global private mutation", 30, boxY);
+		boxY += g2.getFontMetrics().getHeight();
+		g2.drawString("@ = assumed back mutation", 30, boxY);
+		boxY += g2.getFontMetrics().getHeight();
+		g2.setColor(Color.black);
+		g2.drawString("mis = missing mutation", 30, boxY);
+		// boxY += g2.getFontMetrics().getHeight();
 
-			    ArrayList<String> filenames = new ArrayList<String>();
-			    filenames.add("v.svg");    
-			    filenames.add("svg.png");
-			    byte[] buf = new byte[1024];
+		g2.setColor(new Color(0, 0, 0));
+		g2.draw3DRect(20, treeHeight, boxWidth, boxY + 5 - treeHeight, true);
 
-			    // Compress the files
-			    for (int i=0; i<filenames.size(); i++) {
-			        FileInputStream in = new FileInputStream(filenames.get(i));
+		if (watermark != null && imageWidth - boxWidth > watermark.getWidth())
+			g2.drawImage(watermark, imageWidth - watermark.getWidth(), imageHeight - watermark.getHeight(), null);
 
-			        // Add ZIP entry to output stream.
-			        outz.putNextEntry(new ZipEntry(filenames.get(i)));
+		if (format.equals("SVG")) {
+			File resultFile = new File(path);
+			FileOutputStream outFile = new FileOutputStream(resultFile);
+			Writer out = new OutputStreamWriter(outFile, "UTF-8");
+			svgGraphics2D.stream(out, true);
 
-			        // Transfer bytes from the file to the ZIP file
-			        int len;
-			        while ((len = in.read(buf)) > 0) {
-			            outz.write(buf, 0, len);
-			        }
+			return resultFile;
+		} else if (format.equals("PDF")) {
+			PDFTranscoder transcoder = new PDFTranscoder();
+			ByteArrayOutputStream outb = new ByteArrayOutputStream();
+			Writer out = new OutputStreamWriter(outb, "UTF-8");
+			svgGraphics2D.stream(out, true);
 
-			        // Complete the entry
-			        outz.closeEntry();
-			        in.close();
-			    }
+			TranscoderInput input = new TranscoderInput(new ByteArrayInputStream(outb.toByteArray()));// (new
+																										// File("v.svg").toURL().toString());
 
-			    // Complete the ZIP file
-			    outz.close();*/
+			File resultFile = new File(path);
+			FileOutputStream outFile = new FileOutputStream(resultFile);
 
-			 if(format.equals("SVG"))   
-			 {
-				File resultFile = new File(path);
-				FileOutputStream outFile = new FileOutputStream(resultFile);	 
-				Writer out = new OutputStreamWriter(outFile, "UTF-8");
-				svgGraphics2D.stream(out, true);
-				
-				return resultFile;
-			 }
-			 else if(format.equals("PDF")){
-				 PDFTranscoder transcoder = new PDFTranscoder();
-				 ByteArrayOutputStream outb = new ByteArrayOutputStream();	 
-				 Writer out = new OutputStreamWriter(outb, "UTF-8");
-				 svgGraphics2D.stream(out, true);
-				 
-				 TranscoderInput input = new TranscoderInput(new ByteArrayInputStream ( outb.toByteArray() ));//(new File("v.svg").toURL().toString());
-				 
-				 File resultFile = new File(path);
-				 FileOutputStream outFile = new FileOutputStream(resultFile);
-					
-				TranscoderOutput output = new TranscoderOutput(outFile);
-				  
-				  
-				transcoder.addTranscodingHint(PDFTranscoder.KEY_STROKE_TEXT, new Boolean(false));
+			TranscoderOutput output = new TranscoderOutput(outFile);
 
+			transcoder.addTranscodingHint(AbstractFOPTranscoder.KEY_STROKE_TEXT, new Boolean(false));
 
-				 transcoder.transcode(input, output);
-				 
-				return resultFile;
-			 }
-			
-			//svgGenerator.setSVGCanvasSize(new Dimension(r.getCurrentPos() + r.getMaxWidth()/2, r.getMaxHeight() + g2.getFontMetrics().getHeight()*4));
-			 else
-				 return rescale(this.dpi,svgGraphics2D,r.getCurrentPos() + r.getMaxWidth()/2,r.getMaxHeight() + g2.getFontMetrics().getHeight()*4,path);/*newImage.getSubimage(0, 0, r.getCurrentPos() + r.getMaxWidth()/2, r.getMaxHeight() + g2.getFontMetrics().getHeight()*4);*/
-			
-		/*} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
-		
+			transcoder.transcode(input, output);
+
+			return resultFile;
+		}
+
+		else
+			return rescale( svgGraphics2D, r.getCurrentPos() + r.getMaxWidth() / 2, r.getMaxHeight() + g2.getFontMetrics().getHeight() * 4, path);
 	}
 	
-	private File rescale(float newDPI,SVGGraphics2D svgGraphics2D,int widht,int height,String path){
+	/**
+	 * Rescales a svg graphic to a match a given DPI and rasters the image to png
+	 * @param svgGraphics2D The svg graphics context
+	 * @param widht	width of the image 
+	 * @param height height of the image
+	 * @param pathToSaveFile The path the new iamge should be save to
+	 * @return	A handle to the image file
+	 */
+	private File rescale( SVGGraphics2D svgGraphics2D, int widht, int height, String pathToSaveFile) {
 		boolean useCSS = true; // we want to use CSS style attributes
-        //ByteArrayOutputStream baos = null;
-        Writer out;
-		
-			
-			try {
-			ByteArrayOutputStream outb = new ByteArrayOutputStream();	 
+		Writer out;
+
+		try {
+			ByteArrayOutputStream outb = new ByteArrayOutputStream();
 			out = new OutputStreamWriter(outb, "UTF-8");
-			
+
 			svgGraphics2D.stream(out, useCSS);
-			
-			
+
 			// Create a PNG transcoder
 			PNGTranscoder transcoder = new PNGTranscoder();
 
 			// Create the transcoder input
-			
-			TranscoderInput input = new TranscoderInput(new ByteArrayInputStream ( outb.toByteArray() ));//(new File("v.svg").toURL().toString());
 
-			//float numpages =  ((float)(r.getCurrentPos() + r.getMaxWidth()/2)) / ((float)(dpi/25.4 * 297.0));
-			// Create the transcoder output
-		//	 baos = new ByteArrayOutputStream();
-			File resultFile = new File(path);
+			TranscoderInput input = new TranscoderInput(new ByteArrayInputStream(outb.toByteArray()));
+
+			File resultFile = new File(pathToSaveFile);
 			FileOutputStream outFile = new FileOutputStream(resultFile);
-			
+
 			TranscoderOutput output = new TranscoderOutput(outFile);
-			transcoder.addTranscodingHint(PNGTranscoder.KEY_PIXEL_UNIT_TO_MILLIMETER, (float)(25.4/150.f));
-			transcoder.addTranscodingHint(PNGTranscoder.KEY_WIDTH, (float)((widht)* dpi/72.0) /*(float)(300.0/25.4 * 297.0 * numpages)*//* (float)(r.getMaxHeight() + g2.getFontMetrics().getHeight()*4)*/);
-			transcoder.addTranscodingHint(PNGTranscoder.KEY_HEIGHT,(float)((height)* dpi/72.0)/* (float)(300.0/25.4 * 209.9)*//*(float)(25.4/600.0)/*(float)(r.getCurrentPos() + r.getMaxWidth()/2)*/);
-			
-			
-				
+			transcoder.addTranscodingHint(SVGAbstractTranscoder.KEY_PIXEL_UNIT_TO_MILLIMETER, (float) (25.4 / 150.f));
+			transcoder.addTranscodingHint(SVGAbstractTranscoder.KEY_WIDTH, (float) ((widht) * dpi / 72.0) );
+			transcoder.addTranscodingHint(SVGAbstractTranscoder.KEY_HEIGHT, (float) ((height) * dpi / 72.0));
+
 			// Transform the svg document into a PNG image
 			transcoder.transcode(input, output);
-			
+
 			return resultFile;
-			
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SVGGraphics2DIOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (TranscoderException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			return null;		
+
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SVGGraphics2DIOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TranscoderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 	
+	//traverses tree and renderes image using the graphics context..also subject to change
 	private RecData traverseTree(Graphics2D g2d, Element result, int depth,RecData recData, int treeHeight) throws Exception {
 		
 		int numPolys =  result.getChildren("Poly").size();
@@ -456,129 +431,126 @@ public class PhylotreeRenderer {
 		//throw new Exception("Invalid data format!");
 	}
 
-
-
-
-
+	/**
+	 * Returns the max width of a string in a polymorphisms column
+	 * @param g2d The graphics context
+	 * @param polys The list of polymorphisms
+	 * @return The max width of the polymorphims' strings
+	 */
 	private int getMaxStringWidthPolys(Graphics2D g2d, List polys) {
 		int max = 0;
 		int width = 0;
-		for(Element currentPoly : (List<Element>) polys){
-			 width = g2d.getFontMetrics().stringWidth(currentPoly.getText());
-			if(max < width){
+		for (Element currentPoly : (List<Element>) polys) {
+			width = g2d.getFontMetrics().stringWidth(currentPoly.getText());
+			if (max < width) {
 				max = width;
 			}
 		}
 		return width;
 	}
 
-	private int drawEndNode(Graphics2D g2d, Element child, int center, int depth,int treeHeight) {
-		
-		
-		g2d.drawLine(center,depth,center,treeHeight-15);
-		
-		g2d.setFont(polymprhismnFont);
-		depth += 10;
-		
-		int polys = child.getChild("DetailedResults").getChildren("DetailedResult").size();
-		int p = polys*g2d.getFontMetrics().getHeight()+ linePadding;
-		
-		for (Element currentPoly : (List<Element>) child.getChild("DetailedResults").getChildren("DetailedResult")) {
-
-			depth += g2d.getFontMetrics().getHeight()+ linePadding;;
-			if(currentPoly.getChildText("reasonUnused").equals("hotspot")){
-				g2d.setColor(new Color(153, 204, 153));
-			}
-			if(currentPoly.getChildText("reasonUnused").equals("globalPrivateMutation")){
-				g2d.setColor(Color.red);
-			}
-			if(currentPoly.getChildText("reasonUnused").equals("localPrivateMutation")){
-				g2d.setColor(new Color(50, 180, 227));
-			}
-			
-			drawCenteredNode(g2d,center, depth, currentPoly.getChildText("unused"));
-
-		}
-		
-		
-		drawSampleIDNode(g2d,child.getAttributeValue("id"),center,treeHeight);
-		
-		g2d.setFont(sampleIDFont);
-		return depth + g2d.getFontMetrics().stringWidth(child.getAttributeValue("id")) + 20;
-		
-	}
-
 	private int getMaxStringWidthUnusedPolys(Graphics2D g2d, Element child) {
-
 		int max = 0;
 		int width = 0;
 		g2d.setFont(polymprhismnFont);
-
 		for (Element currentPoly : (List<Element>) child.getChild("DetailedResults").getChildren("DetailedResult")) {
-
 			width = g2d.getFontMetrics().stringWidth(currentPoly.getChildText("unused"));
 			if (max < width) {
 				max = width;
 			}
 
 		}
-
 		return max;
-
 	}
 	
-	private void drawHaplogroupNode(Graphics2D g2d, int x,int y,String haplogroupName) {
+	/**
+	 * @param g2d
+	 * @param child
+	 * @param center
+	 * @param depth
+	 * @param treeHeight
+	 * @return
+	 */
+	private int drawEndNode(Graphics2D g2d, Element child, int center, int depth, int treeHeight) {
+
+		g2d.drawLine(center, depth, center, treeHeight - 15);
+
+		g2d.setFont(polymprhismnFont);
+		depth += 10;
+
+		int polys = child.getChild("DetailedResults").getChildren("DetailedResult").size();
+		int p = polys * g2d.getFontMetrics().getHeight() + linePadding;
+
+		for (Element currentPoly : (List<Element>) child.getChild("DetailedResults").getChildren("DetailedResult")) {
+
+			depth += g2d.getFontMetrics().getHeight() + linePadding;
+			;
+			if (currentPoly.getChildText("reasonUnused").equals("hotspot")) {
+				g2d.setColor(new Color(153, 204, 153));
+			}
+			if (currentPoly.getChildText("reasonUnused").equals("globalPrivateMutation")) {
+				g2d.setColor(Color.red);
+			}
+			if (currentPoly.getChildText("reasonUnused").equals("localPrivateMutation")) {
+				g2d.setColor(new Color(50, 180, 227));
+			}
+
+			drawCenteredNode(g2d, center, depth, currentPoly.getChildText("unused"));
+
+		}
+
+		drawSampleIDNode(g2d, child.getAttributeValue("id"), center, treeHeight);
+
+		g2d.setFont(sampleIDFont);
+		return depth + g2d.getFontMetrics().stringWidth(child.getAttributeValue("id")) + 20;
+
+	}
+
+
+
+	private void drawHaplogroupNode(Graphics2D g2d, int x, int y, String haplogroupName) {
 		g2d.setFont(haplogroupFont);
 		g2d.setColor(Color.black);
-		drawCenteredNode(g2d, x, y,haplogroupName);
+		drawCenteredNode(g2d, x, y, haplogroupName);
 	}
 
+	private void drawPolymorhismn(Graphics2D g2d, Element currentNode, int x, int y) {
 
-	private void drawPolymorhismn(Graphics2D g2d, Element currentNode, int x,int y) {
-		
-		
 		g2d.setFont(polymprhismnFont);
 		g2d.setColor(Color.black);
-		y -= 5 + ( currentNode.getChildren("Poly").size() * (g2d.getFontMetrics().getHeight()+linePadding));
-		
+		y -= 5 + (currentNode.getChildren("Poly").size() * (g2d.getFontMetrics().getHeight() + linePadding));
+
 		for (Element currentPoly : (List<Element>) currentNode.getChildren("Poly")) {
 
-			
-			drawCenteredNode(g2d,x, y, currentPoly.getText());
+			drawCenteredNode(g2d, x, y, currentPoly.getText());
 			y += g2d.getFontMetrics().getHeight() + linePadding;
 		}
-		
+
 	}
 
+	private void drawSampleIDNode(Graphics2D g2d, String sampleIDText, int x, int y) {
 
-	private void drawSampleIDNode(Graphics2D g2d, String sampleIDText,int x, int y)
-	 {	
-		
 		g2d.setFont(sampleIDFont);
 		g2d.setColor(Color.black);
 		int widthSampleID = g2d.getFontMetrics().stringWidth(sampleIDText);
-		
-		y -= widthSampleID+15;
-		
+
+		y -= widthSampleID + 15;
+
 		g2d.drawLine(x, y, x, y + 4);
-		g2d.translate( x - 6,y + 5);
+		g2d.translate(x - 6, y + 5);
 		g2d.rotate(Math.toRadians(90));
-		g2d.clearRect(0,-15,  widthSampleID+5,19);
-		//g2d.drawRect(0,-15,  widthSampleID+5,19);
-		g2d.drawString(sampleIDText,2,0);
+		g2d.clearRect(0, -15, widthSampleID + 5, 19);
+		g2d.drawString(sampleIDText, 2, 0);
 		g2d.rotate(Math.toRadians(-90));
-		g2d.translate( -(x -6),-(y + 5));	
+		g2d.translate(-(x - 6), -(y + 5));
 	}
 
-
-
-	private void drawCenteredNode(Graphics2D g2d, int x, int y,String text) {
+	private void drawCenteredNode(Graphics2D g2d, int x, int y, String text) {
 
 		int stringWidth = g2d.getFontMetrics().stringWidth(text);
-		
-		//Clear background
-		g2d.clearRect(x  - stringWidth/2,y -(int)(g2d.getFontMetrics().getHeight() *1.5 ), stringWidth, g2d.getFontMetrics().getHeight() +1);
-		//g2d.drawRect(x  - stringWidth/2,y -(int)(g2d.getFontMetrics().getHeight()  *1.5), stringWidth, g2d.getFontMetrics().getHeight());
-		g2d.drawString(text,x  - stringWidth/2,y -g2d.getFontMetrics().getHeight() /2);
+
+		// Clear background
+		g2d.clearRect(x - stringWidth / 2, y - (int) (g2d.getFontMetrics().getHeight() * 1.5), stringWidth, g2d.getFontMetrics().getHeight() + 1);
+		g2d.drawString(text, x - stringWidth / 2, y - g2d.getFontMetrics().getHeight() / 2);
 	}
 }

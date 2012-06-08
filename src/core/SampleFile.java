@@ -22,8 +22,8 @@ import search.SearchResult;
 import search.ranking.RankingMethod;
 import dataVisualizers.OverviewTreePath;
 import dataVisualizers.PhylotreeRenderer;
-import exceptions.parse.samplefile.HsdFileException;
-import exceptions.parse.samplefile.UniqueKeyException;
+import exceptions.parse.HsdFileException;
+import exceptions.parse.samplefile.UniqueSampleIDException;
 
 /**
  * Represents the entire file of test sample. Used as main object in haplogrep.
@@ -51,8 +51,8 @@ public class SampleFile {
 			}
 			if (testSamples.containsKey(newSample.getSampleID()))
 				try {
-					throw new UniqueKeyException();
-				} catch (UniqueKeyException e) {
+					throw new UniqueSampleIDException();
+				} catch (UniqueSampleIDException e) {
 					e.setLineExceptionOccured(lineIndex);
 					e.setTestSampleeID(newSample.getSampleID());
 					throw e;
@@ -116,6 +116,7 @@ public class SampleFile {
 	 * 
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
 	public String toString() {
 		String result = "";
 
@@ -263,7 +264,7 @@ public class SampleFile {
 			if (combinedResultTree == null) {
 				Haplogroup assignedHaplogroup = currentSample.getDetectedHaplogroup();
 
-				SearchResult resultToExport = currentSample.getResult(assignedHaplogroup).getPhyloSearchData();
+				SearchResult resultToExport = currentSample.getResult(assignedHaplogroup).getSearchResult();
 
 				combinedResultTree = resultToExport.getDetailedResult().getPhyloTreePathXML(includeMissingPolys);
 
@@ -273,7 +274,7 @@ public class SampleFile {
 
 			} else {
 				Haplogroup assignedHaplogroup = currentSample.getDetectedHaplogroup();
-				SearchResult resultToExport = currentSample.getResult(assignedHaplogroup).getPhyloSearchData();// ClusteredSearchResult.getSearchResultByHaplogroup(allResults,
+				SearchResult resultToExport = currentSample.getResult(assignedHaplogroup).getSearchResult();// ClusteredSearchResult.getSearchResultByHaplogroup(allResults,
 																											// assignedHaplogroup);
 
 				Element additionalPath = resultToExport.getDetailedResult().getPhyloTreePathXML(includeMissingPolys);

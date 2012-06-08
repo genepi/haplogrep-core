@@ -4,8 +4,13 @@ package exceptions.parse.sample;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import exceptions.parse.samplefile.HsdFileException;
-
+import exceptions.parse.HsdFileException;
+/**
+ * Root exceptions class for all exceptions dealing with parsing of hsd test samples
+ * 
+ * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * 
+ */
 public class HsdFileSampleParseException extends HsdFileException{
 	/**
 	 * 
@@ -17,14 +22,24 @@ public class HsdFileSampleParseException extends HsdFileException{
 		super(message);
 	}
 
+	/**
+	 * @return The test sample id the exceptions occurred
+	 */
 	public String getTestSampleID() {
 		return testSampleID;
 	}
 
-	public void setTestSampleID(String testSampleID2) {
-		this.testSampleID = testSampleID2;
+	/**
+	 * Sets the test sample id the exception occurred
+	 * @param testSampleID The test sample id
+	 */
+	public void setTestSampleID(String testSampleID) {
+		this.testSampleID = testSampleID;
 	}
 
+	/* (non-Javadoc)
+	 * @see exceptions.parse.HsdFileException#toJSON()
+	 */
 	public JSONObject toJSON() throws JSONException
 	{
 		JSONObject newJSONException = super.toJSON();

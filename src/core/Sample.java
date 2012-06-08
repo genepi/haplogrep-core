@@ -72,6 +72,7 @@ public class Sample {
 	 * 
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
 	public String toString() {
 		String result = "";
 		for (Polymorphism currentPoly : sample) {

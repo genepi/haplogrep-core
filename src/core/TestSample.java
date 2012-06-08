@@ -8,13 +8,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import phylotree.Phylotree;
-import search.ClusteredSearchResult;
+import search.ClusteredSearchResults;
 import search.SearchResultTreeNode;
 import search.ranking.RankingMethod;
 import search.ranking.results.RankedResult;
+import exceptions.parse.HsdFileException;
 import exceptions.parse.sample.HsdFileSampleParseException;
 import exceptions.parse.sample.InvalidPolymorphismException;
-import exceptions.parse.samplefile.HsdFileException;
 import exceptions.parse.samplefile.InvalidColumnCountException;
 
 /**
@@ -27,7 +27,7 @@ import exceptions.parse.samplefile.InvalidColumnCountException;
 public class TestSample implements Comparable<TestSample>{
 	
 	ArrayList<RankedResult> searchResults = new ArrayList<RankedResult>();
-	ClusteredSearchResult clusteredResults = new ClusteredSearchResult(searchResults);
+	ClusteredSearchResults clusteredResults = new ClusteredSearchResults(searchResults);
 	
 	private String testSampleID = "Unknown";
 	private Haplogroup expectedHaplogroup;
@@ -136,6 +136,7 @@ public class TestSample implements Comparable<TestSample>{
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
 	public String toString()
 	{
 		String result = testSampleID + "\t" + expectedHaplogroup + "\t";
@@ -206,7 +207,7 @@ public class TestSample implements Comparable<TestSample>{
 
 		ArrayList<ArrayList<SearchResultTreeNode>> paths = new ArrayList<ArrayList<SearchResultTreeNode>>();
 		for (RankedResult currentResult : selectedResults) {
-			ArrayList<SearchResultTreeNode> newPath = currentResult.getPhyloSearchData().getDetailedResult().getPhyloTreePath();
+			ArrayList<SearchResultTreeNode> newPath = currentResult.getSearchResult().getDetailedResult().getPhyloTreePath();
 			paths.add(newPath);
 		}
 
@@ -292,7 +293,7 @@ public class TestSample implements Comparable<TestSample>{
 
 					else {
 						if (list != null) {
-							if (list.getPhyloSearchData().getDetailedResult().getCorrectedBackmutations().contains(currentPoly))
+							if (list.getSearchResult().getDetailedResult().getCorrectedBackmutations().contains(currentPoly))
 								poly.put("state", "corrected");
 
 							else
@@ -360,7 +361,7 @@ public class TestSample implements Comparable<TestSample>{
 	public void updateSearchResults(Phylotree phyloTreeToUse,RankingMethod rankingMethod) {
 		List<RankedResult> results = phyloTreeToUse.search(this, rankingMethod.clone());
 		searchResults = (ArrayList<RankedResult>) results;
-		clusteredResults = new ClusteredSearchResult(results);
+		clusteredResults = new ClusteredSearchResults(results);
 	}
 	
 	/**

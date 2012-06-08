@@ -10,39 +10,70 @@ import org.json.JSONObject;
 import search.SearchResult;
 import core.Haplogroup;
 
+/**
+ * Encapsulates a Search Result instance adding Hamming distance
+ * 
+ * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * 
+ */
 public class RankedResultHamming extends RankedResult {
 
+	private double hammingDistance;
 
-	double hammingDistance;
-	public RankedResultHamming(SearchResult result,Haplogroup expectedHaplogroup) {
-		super(result,expectedHaplogroup);
+	/**
+	 * Creates a new result with hamming distance.
+	 * 
+	 * @see RankedResult#RankedResult(SearchResult, Haplogroup)
+	 */
+	public RankedResultHamming(SearchResult result, Haplogroup expectedHaplogroup) {
+		super(result, expectedHaplogroup);
 		hammingDistance = calcDistance();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * search.ranking.results.RankedResult#compareTo(search.ranking.results.
+	 * RankedResult)
+	 */
+	@Override
 	public int compareTo(RankedResult o) {
-		int delta = (int)Math.signum(hammingDistance - ((RankedResultHamming)o).hammingDistance);
-		if(delta == 0)
+		int delta = (int) Math.signum(hammingDistance - ((RankedResultHamming) o).hammingDistance);
+		if (delta == 0)
 			return super.compareTo(o);
-		
+
 		return delta;
 	}
 
 	private double calcDistance() {
-		return (phyloSearchData.getWeightRemainingPolys()) + phyloSearchData.getSumMissingPhyloWeight();
+		return (searchResult.getWeightRemainingPolys()) + searchResult.getSumMissingPhyloWeight();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see search.ranking.results.RankedResult#getDistance()
+	 */
 	@Override
 	public double getDistance() {
 		return hammingDistance;
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * search.ranking.results.RankedResult#attachToJsonObject(org.json.JSONObject
+	 * )
+	 */
 	@Override
 	public void attachToJsonObject(JSONObject child) throws JSONException {
-		DecimalFormat df = new DecimalFormat( "0.000",new DecimalFormatSymbols(Locale.US));
-		child.put("rank",df.format(hammingDistance));
-		child.put("rankHG",df.format(phyloSearchData.getSumMissingPhyloWeight()));
-		child.put("rankS",df.format(phyloSearchData.getWeightRemainingPolys()));
-		child.put("name",phyloSearchData.getHaplogroup().toString());
-		child.put("id",phyloSearchData.getHaplogroup().toString());	
+		DecimalFormat df = new DecimalFormat("0.000", new DecimalFormatSymbols(Locale.US));
+		child.put("rank", df.format(hammingDistance));
+		child.put("rankHG", df.format(searchResult.getSumMissingPhyloWeight()));
+		child.put("rankS", df.format(searchResult.getWeightRemainingPolys()));
+		child.put("name", searchResult.getHaplogroup().toString());
+		child.put("id", searchResult.getHaplogroup().toString());
 	}
 }

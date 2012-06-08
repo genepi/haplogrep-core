@@ -6,41 +6,73 @@ import org.json.JSONObject;
 import search.SearchResult;
 import core.Haplogroup;
 
-public abstract class RankedResult  implements Comparable<RankedResult>{
-	SearchResult phyloSearchData;
-	Haplogroup expectedHaplogroup;
-	
-	public RankedResult(SearchResult phyloSearchData, Haplogroup expectedHaplogroup){
-		this.phyloSearchData = phyloSearchData;
+/**
+ * Encapsulates a Search Result instance to add ranking functionality
+ * 
+ * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * 
+ */
+
+public abstract class RankedResult implements Comparable<RankedResult> {
+	SearchResult searchResult;
+	private Haplogroup expectedHaplogroup;
+
+	/**
+	 * Creates a new ranked Result
+	 * 
+	 * @param searchResult
+	 *            The search result object to be ranked
+	 * @param expectedHaplogroup
+	 *            The haplogroup expected for this result
+	 */
+	RankedResult(SearchResult searchResult, Haplogroup expectedHaplogroup) {
+		this.searchResult = searchResult;
 		this.expectedHaplogroup = expectedHaplogroup;
 	}
-	
-	public SearchResult getPhyloSearchData(){
-		return phyloSearchData;
+
+	/**
+	 * @return The encapsulated SearchResult object
+	 */
+	public SearchResult getSearchResult() {
+		return searchResult;
 	}
 
+	/**
+	 * @return The haplogroup detected by this result
+	 */
 	public Haplogroup getHaplogroup() {
-		return phyloSearchData.getHaplogroup();
+		return searchResult.getHaplogroup();
 	}
-	
+
+	/**
+	 * @return The distance of this result
+	 */
 	public abstract double getDistance();
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
 	public int compareTo(RankedResult o) {
 		int delta = 0;
-	
-		if(o.phyloSearchData.getHaplogroup().equals(expectedHaplogroup) &&
-				!phyloSearchData.getHaplogroup().equals(expectedHaplogroup))
+
+		if (o.searchResult.getHaplogroup().equals(expectedHaplogroup) && !searchResult.getHaplogroup().equals(expectedHaplogroup))
 			delta = 1;
-		else if (!o.phyloSearchData.getHaplogroup().equals(expectedHaplogroup) &&
-				phyloSearchData.getHaplogroup().equals(expectedHaplogroup))
+		else if (!o.searchResult.getHaplogroup().equals(expectedHaplogroup) && searchResult.getHaplogroup().equals(expectedHaplogroup))
 			delta = -1;
-		
+
 		return delta;
 	}
 
-	public abstract void attachToJsonObject(JSONObject child) throws JSONException;
+	/**
+	 * Attaches this result to a given JSON object
+	 * 
+	 * @param parent
+	 *            The JASON object
+	 * @throws JSONException
+	 */
+	public abstract void attachToJsonObject(JSONObject parent) throws JSONException;
 
-	
-	
-	
 }

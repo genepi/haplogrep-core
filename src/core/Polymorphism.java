@@ -77,6 +77,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	 * (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
+	@Override
 	public boolean equals(Object p) {
 		if (!(p instanceof Polymorphism))
 			return false;
@@ -107,6 +108,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
 	public String toString() {
 		if (!isBackMutation) {
 			if (this.mutation == Mutations.INS)
@@ -369,6 +371,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
+	@Override
 	public int hashCode() {
 		return hashCode;
 	}
