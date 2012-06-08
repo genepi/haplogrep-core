@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="polyGeneticWeights"/>
 	<classpathentry kind="lib" path="jars/jaxen-1.1.1.jar"/>
 	<classpathentry kind="lib" path="jars/jdom.jar"/>
 	<classpathentry kind="lib" path="jars/jxl.jar"/>

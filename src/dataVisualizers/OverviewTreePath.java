@@ -1,4 +1,4 @@
-package search;
+package dataVisualizers;
 
 import org.jdom.Element;
 

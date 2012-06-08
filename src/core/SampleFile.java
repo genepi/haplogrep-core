@@ -18,9 +18,9 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 import phylotree.Phylotree;
-import search.OverviewTreePath;
 import search.SearchResult;
 import search.ranking.RankingMethod;
+import dataVisualizers.OverviewTreePath;
 import dataVisualizers.PhylotreeRenderer;
 import exceptions.parse.samplefile.HsdFileException;
 import exceptions.parse.samplefile.UniqueKeyException;

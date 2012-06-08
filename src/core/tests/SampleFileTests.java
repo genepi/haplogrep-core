@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import org.junit.Assert;
 import org.junit.Test;
 
+import core.Haplogroup;
 import core.SampleFile;
 import exceptions.parse.sample.InvalidBaseException;
 import exceptions.parse.samplefile.HsdFileException;
@@ -52,7 +53,7 @@ public class SampleFileTests {
 	
 		Assert.assertEquals( "1",newSampleFile.getTestSamples().get(0).getSampleID());
 		Assert.assertEquals( "1-576 ; 16024-16569 ;",newSampleFile.getTestSamples().get(0).getSample().getSampleRanges().toString());
-		Assert.assertEquals( "H",newSampleFile.getTestSamples().get(0).getExpectedHaplogroup().toString());
+		Assert.assertEquals( new Haplogroup("H"),newSampleFile.getTestSamples().get(0).getExpectedHaplogroup());
 		Assert.assertEquals( "249d 263G",newSampleFile.getTestSamples().get(0).getSample().toString());
 		
 	}
