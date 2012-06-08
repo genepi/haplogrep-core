@@ -20,6 +20,7 @@ import org.jdom.output.XMLOutputter;
 import phylotree.Phylotree;
 import search.SearchResult;
 import search.ranking.RankingMethod;
+import search.ranking.results.RankedResult;
 import dataVisualizers.OverviewTreePath;
 import dataVisualizers.PhylotreeRenderer;
 import exceptions.parse.HsdFileException;
@@ -184,7 +185,13 @@ public class SampleFile {
 
 			//matching quality of sample
 			newElement = new Element("hit");
-			newElement.setText(String.valueOf(sample.getTopResult().getDistance()));
+			RankedResult topResult = sample.getTopResult();
+			if(topResult != null)
+				newElement.setText(String.valueOf(topResult.getDistance()));
+			
+			else
+				newElement.setText(String.valueOf(0));
+			
 			sampleRowElement.addContent(newElement);
 
 			//all polymorphism of sample

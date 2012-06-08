@@ -375,6 +375,9 @@ public class TestSample implements Comparable<TestSample>{
 	 * @return The top result of for this test sample
 	 */
 	public RankedResult getTopResult() {
-		return searchResults.get(0);
+		if(searchResults.size() > 0)
+			return searchResults.get(0);
+		else
+			return null;
 	}
 }
