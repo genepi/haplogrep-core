@@ -17,7 +17,7 @@ import core.Haplogroup;
  * 
  */
 
-public class RankedResultKylczynski extends RankedResult {
+public class KylczynskiResult extends RankedResult {
 
 	private double kylcinskiDistance;
 
@@ -26,7 +26,7 @@ public class RankedResultKylczynski extends RankedResult {
 	 * 
 	 * @see RankedResult#RankedResult(SearchResult, Haplogroup)
 	 */
-	public RankedResultKylczynski(SearchResult phyloSearchData, Haplogroup expectedHaplogroup) {
+	public KylczynskiResult(SearchResult phyloSearchData, Haplogroup expectedHaplogroup) {
 		super(phyloSearchData, expectedHaplogroup);
 		kylcinskiDistance = calcDistance();
 	}
@@ -40,7 +40,7 @@ public class RankedResultKylczynski extends RankedResult {
 	 */
 	@Override
 	public int compareTo(RankedResult o) {
-		int delta = (int) Math.signum(((RankedResultKylczynski) o).kylcinskiDistance - kylcinskiDistance);
+		int delta = (int) Math.signum(((KylczynskiResult) o).kylcinskiDistance - kylcinskiDistance);
 
 		if (delta == 0)
 			delta = super.compareTo(o);

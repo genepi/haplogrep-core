@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import search.SearchResult;
-import search.ranking.results.RankedResultHamming;
+import search.ranking.results.HammingResult;
 import core.TestSample;
 
 /**
@@ -35,7 +35,7 @@ public class HammingRanking extends RankingMethod {
 	@Override
 	public void setResults(TestSample sample, ArrayList<SearchResult> searchPhylotreeWrapper) {
 		for(SearchResult currentResult : searchPhylotreeWrapper){
-			results.add(new RankedResultHamming(currentResult,sample.getExpectedHaplogroup()));
+			results.add(new HammingResult(currentResult,sample.getExpectedHaplogroup()));
 		}
 		
 		Collections.sort(results);

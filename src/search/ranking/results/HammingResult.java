@@ -16,7 +16,7 @@ import core.Haplogroup;
  * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
  * 
  */
-public class RankedResultHamming extends RankedResult {
+public class HammingResult extends RankedResult {
 
 	private double hammingDistance;
 
@@ -25,7 +25,7 @@ public class RankedResultHamming extends RankedResult {
 	 * 
 	 * @see RankedResult#RankedResult(SearchResult, Haplogroup)
 	 */
-	public RankedResultHamming(SearchResult result, Haplogroup expectedHaplogroup) {
+	public HammingResult(SearchResult result, Haplogroup expectedHaplogroup) {
 		super(result, expectedHaplogroup);
 		hammingDistance = calcDistance();
 	}
@@ -39,7 +39,7 @@ public class RankedResultHamming extends RankedResult {
 	 */
 	@Override
 	public int compareTo(RankedResult o) {
-		int delta = (int) Math.signum(hammingDistance - ((RankedResultHamming) o).hammingDistance);
+		int delta = (int) Math.signum(hammingDistance - ((HammingResult) o).hammingDistance);
 		if (delta == 0)
 			return super.compareTo(o);
 
