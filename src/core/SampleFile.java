@@ -17,11 +17,13 @@ import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
+import phylotree.PhyloTreeNode;
 import phylotree.Phylotree;
 import search.SearchResult;
+import search.SearchResultTreeNode;
 import search.ranking.RankingMethod;
 import search.ranking.results.RankedResult;
-import dataVisualizers.OverviewTreePath;
+import dataVisualizers.OverviewTree;
 import dataVisualizers.PhylotreeRenderer;
 import exceptions.parse.HsdFileException;
 import exceptions.parse.samplefile.UniqueSampleIDException;
@@ -242,12 +244,12 @@ public class SampleFile {
 	 */
 	public File createOverviewImageFileBestResults(String sessionID, String format, int resolution, boolean includeHotspots, boolean includeMissingPolys){
 
-		Element resultTree = combineAllSamplesToXMLTree(includeHotspots, includeMissingPolys);
-		Document d = new Document(resultTree);
-		saveXMLToDisc(d);
+		OverviewTree resultTree = combineAllSamplesToXMLTree(includeHotspots, includeMissingPolys);
+//		Document d = new Document(resultTree);
+//		saveXMLToDisc(d);
 
 		File image = null;
-		PhylotreeRenderer renderer = new PhylotreeRenderer(d);
+		PhylotreeRenderer renderer = new PhylotreeRenderer(testSamples.values().iterator().next().searchResults.get(0).getSearchResult().getAttachedPhyloTreeNode().getTree(),resultTree);
 		URL url = this.getClass().getClassLoader().getResource("haplogrepGray.png");
 
 		try {
@@ -263,105 +265,119 @@ public class SampleFile {
 		return image;
 	}
 
-	private Element combineAllSamplesToXMLTree(boolean includeHotspots, boolean includeMissingPolys) {
-
-		Element combinedResultTree = null;
+	private OverviewTree combineAllSamplesToXMLTree(boolean includeHotspots, boolean includeMissingPolys) {
+//		PhyloTreeNode combinedResultTree = null;
+		OverviewTree newOverviewTree = new OverviewTree();
+//		int d = 0;
 		for (TestSample currentSample : testSamples.values()) {
 
-			if (combinedResultTree == null) {
-				Haplogroup assignedHaplogroup = currentSample.getDetectedHaplogroup();
+			newOverviewTree.addNewPath(currentSample,currentSample.searchResults.get(0).getSearchResult().getDetailedResult().getPhyloTreePath());
+//
+//			if(d==3)break;
+//			
+//			d++;
+			//			if (combinedResultTree == null) {
+//				Haplogroup assignedHaplogroup = currentSample.getDetectedHaplogroup();
+				
+//				combinedResultTree = combinePathRec(combinedResultTree,currentSample.searchResults.get(0).getSearchResult().getDetailedResult().getPhyloTreePath());
+//				SearchResult resultToExport = currentSample.getResult(assignedHaplogroup).getSearchResult();
+//				resultToExport.getDetailedResult().
+//				combinedResultTree = resultToExport.getDetailedResult().getPhyloTreePathXML(includeMissingPolys);
 
-				SearchResult resultToExport = currentSample.getResult(assignedHaplogroup).getSearchResult();
+//				resultToExport.getSample().
+				
+				
+//				OverviewTreePath op = new OverviewTreePath(combinedResultTree, currentSample.getSampleID(), resultToExport.getDetailedResult()
+//						.getUnusedPolysXML(includeHotspots));
+//				combinedResultTree = op.toXML();
 
-				combinedResultTree = resultToExport.getDetailedResult().getPhyloTreePathXML(includeMissingPolys);
-
-				OverviewTreePath op = new OverviewTreePath(combinedResultTree, currentSample.getSampleID(), resultToExport.getDetailedResult()
-						.getUnusedPolysXML(includeHotspots));
-				combinedResultTree = op.toXML();
-
-			} else {
-				Haplogroup assignedHaplogroup = currentSample.getDetectedHaplogroup();
-				SearchResult resultToExport = currentSample.getResult(assignedHaplogroup).getSearchResult();// ClusteredSearchResult.getSearchResultByHaplogroup(allResults,
-																											// assignedHaplogroup);
-
-				Element additionalPath = resultToExport.getDetailedResult().getPhyloTreePathXML(includeMissingPolys);
-				OverviewTreePath op = new OverviewTreePath(additionalPath, currentSample.getSampleID(), resultToExport.getDetailedResult().getUnusedPolysXML(
-						includeHotspots));
-				combinePathRec(combinedResultTree, op.toXML());
-			}
+//			} else {
+//				Haplogroup assignedHaplogroup = currentSample.getDetectedHaplogroup();
+//				SearchResult resultToExport = currentSample.getResult(assignedHaplogroup).getSearchResult();// ClusteredSearchResult.getSearchResultByHaplogroup(allResults,
+//																											// assignedHaplogroup);
+//
+//				Element additionalPath = resultToExport.getDetailedResult().getPhyloTreePathXML(includeMissingPolys);
+//				OverviewTreePath op = new OverviewTreePath(additionalPath, currentSample.getSampleID(), resultToExport.getDetailedResult().getUnusedPolysXML(
+//						includeHotspots));
+//				combinePathRec(combinedResultTree, op.toXML());
+//			}
 
 		}
 
-		return combinedResultTree;
+		newOverviewTree.generateLeafNodes(includeHotspots,includeMissingPolys);
+		
+		return newOverviewTree;
 	}
 	
-	/**
-	 * Creates a xml tree out of xml paths. Recursive function.
-	 * @param currentTreeRootNode The root node of the xml tree
-	 * @param currentPathNode The root node the path begins with
-	 * @return False if the end of the current path has been reached, true otherwise. Used to check for recursion stop.
-	 */
-	private boolean combinePathRec(Element currentTreeRootNode, Element currentPathNode) {
+//	/**
+//	 * Creates a xml tree out of xml paths. Recursive function.
+//	 * @param currentTreeRootNode The root node of the xml tree
+//	 * @param currentPathNode The root node the path begins with
+//	 * @return False if the end of the current path has been reached, true otherwise. Used to check for recursion stop.
+//	 */
+//	private boolean combinePathRec(Element currentTreeRootNode, Element currentPathNode) {
+//
+//		// The current result tree does NOT contain the current subpath. So we
+//		// add it to the tree
+//		// and are finished
+//		if (currentTreeRootNode.getChildren().size() == 0) {
+//			currentTreeRootNode.addContent(currentPathNode.cloneContent());
+//			return true;
+//		}
+//
+//		if (currentTreeRootNode.getAttributeValue("type").equals("Haplogroup")
+//				&& currentTreeRootNode.getAttributeValue("name").equals(currentPathNode.getAttributeValue("name"))) {
+//			ArrayList<Element> newPolys = new ArrayList<Element>();
+//			for (Element currentPoly : (List<Element>) currentPathNode.getChildren("Poly")) {
+//				boolean found = false;
+//				for (Element currentPolyTree : (List<Element>) currentTreeRootNode.getChildren("Poly")) {
+//					if (currentPoly.getText().equals(currentPolyTree.getText())) {
+//						found = true;
+//					}
+//				}
+//				if (!found) {
+//					Element newPoly = new Element("Poly");
+//					newPoly.setText(currentPoly.getText());
+//					newPolys.add(newPoly);
+//				}
+//			}
+//		
+//			for (Element c : newPolys)
+//				currentTreeRootNode.addContent(c);
+//
+//			newPolys.clear();
+//
+//			// Check if we are at the end of the subpath. If true then our
+//			// result tree already contains
+//			// the subpath completely and we leave the function immediately
+//			if (currentPathNode.getChildren("TreeNode").size() == 0) {
+//				return true;
+//			}
+//
+//			// boolean foundInsertPos = false;
+//			// The tree contains our current subpath so we step one node ahead
+//			// and make a RECURSIVE
+//			// call to this function for each child element
+//			for (Element currentTreeChild : (List<Element>) currentTreeRootNode.getChildren("TreeNode")) {
+//
+//				if (combinePathRec(currentTreeChild, currentPathNode.getChild("TreeNode")))
+//					return true;
+//			}
+//
+//			currentPathNode.removeChildren("Poly");
+//			currentTreeRootNode.addContent(currentPathNode.cloneContent());
+//
+//			return true;
+//		}
+//
+//		else {
+//			return false;
+//		}
+//
+//	}
 
-		// The current result tree does NOT contain the current subpath. So we
-		// add it to the tree
-		// and are finished
-		if (currentTreeRootNode.getChildren().size() == 0) {
-			currentTreeRootNode.addContent(currentPathNode.cloneContent());
-			return true;
-		}
-
-		if (currentTreeRootNode.getAttributeValue("type").equals("Haplogroup")
-				&& currentTreeRootNode.getAttributeValue("name").equals(currentPathNode.getAttributeValue("name"))) {
-			ArrayList<Element> newPolys = new ArrayList<Element>();
-			for (Element currentPoly : (List<Element>) currentPathNode.getChildren("Poly")) {
-				boolean found = false;
-				for (Element currentPolyTree : (List<Element>) currentTreeRootNode.getChildren("Poly")) {
-					if (currentPoly.getText().equals(currentPolyTree.getText())) {
-						found = true;
-					}
-				}
-				if (!found) {
-					Element newPoly = new Element("Poly");
-					newPoly.setText(currentPoly.getText());
-					newPolys.add(newPoly);
-				}
-			}
-		
-			for (Element c : newPolys)
-				currentTreeRootNode.addContent(c);
-
-			newPolys.clear();
-
-			// Check if we are at the end of the subpath. If true then our
-			// result tree already contains
-			// the subpath completely and we leave the function immediately
-			if (currentPathNode.getChildren("TreeNode").size() == 0) {
-				return true;
-			}
-
-			// boolean foundInsertPos = false;
-			// The tree contains our current subpath so we step one node ahead
-			// and make a RECURSIVE
-			// call to this function for each child element
-			for (Element currentTreeChild : (List<Element>) currentTreeRootNode.getChildren("TreeNode")) {
-
-				if (combinePathRec(currentTreeChild, currentPathNode.getChild("TreeNode")))
-					return true;
-			}
-
-			currentPathNode.removeChildren("Poly");
-			currentTreeRootNode.addContent(currentPathNode.cloneContent());
-
-			return true;
-		}
-
-		else {
-			return false;
-		}
-
-	}
-
+	
+	
 	/**
 	 * Saves XML document to disc. Only used for additional testing
 	 * @param combinePathsToXMLTree The xml document object

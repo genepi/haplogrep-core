@@ -57,31 +57,31 @@ public class SearchResultDetailed implements Serializable {
 		PhyloTreeNode startNode = searchResult.getAttachedPhyloTreeNode();
 		while (startNode != null) {
 			SearchResultTreeNode newNode = new SearchResultTreeNode(startNode);
-			for (Polymorphism currentPoly : startNode.getExpectedPolys()) {
-				if (searchResult.getSample().getSampleRanges().contains(currentPoly)) {
-					if (searchResult.getSample().containsWithBackmutation(currentPoly)) {
-						newNode.addFoundPoly(currentPoly);
-						newNode.addExpectedPoly(currentPoly);
+			for (Polymorphism currentExpectedPoly : startNode.getExpectedPolys()) {
+				if (searchResult.getSample().getSampleRanges().contains(currentExpectedPoly)) {
+					if (searchResult.getSample().containsWithBackmutation(currentExpectedPoly)) {
+						newNode.addFoundPoly(currentExpectedPoly);
+						newNode.addExpectedPoly(currentExpectedPoly);
 
-						Polymorphism newPoly = new Polymorphism(currentPoly);
-						newPoly.setBackMutation(!currentPoly.isBackMutation());
-						if (!expectedPolys.contains(currentPoly) && !expectedPolys.contains(newPoly))
-							expectedPolys.add(currentPoly);
+						Polymorphism newPoly = new Polymorphism(currentExpectedPoly);
+						newPoly.setBackMutation(!currentExpectedPoly.isBackMutation());
+						if (!expectedPolys.contains(currentExpectedPoly) && !expectedPolys.contains(newPoly))
+							expectedPolys.add(currentExpectedPoly);
 						else {
-							correctedBackmutations.add(currentPoly);
-							newNode.addCorrectedBackmutation(currentPoly);
+							correctedBackmutations.add(currentExpectedPoly);
+							newNode.addCorrectedBackmutation(currentExpectedPoly);
 						}
 					} else {
-						newNode.addExpectedPoly(currentPoly);
+						newNode.addExpectedPoly(currentExpectedPoly);
 
-						Polymorphism newPoly = new Polymorphism(currentPoly);
-						newPoly.setBackMutation(!currentPoly.isBackMutation());
-						if (!expectedPolys.contains(currentPoly) && !expectedPolys.contains(newPoly))
-							expectedPolys.add(currentPoly);
+						Polymorphism newPoly = new Polymorphism(currentExpectedPoly);
+						newPoly.setBackMutation(!currentExpectedPoly.isBackMutation());
+						if (!expectedPolys.contains(currentExpectedPoly) && !expectedPolys.contains(newPoly))
+							expectedPolys.add(currentExpectedPoly);
 					}
 				} else {
-					newNode.addNotInRangePoly(currentPoly);
-					missingPolysOutOfRange.add(currentPoly);
+					newNode.addNotInRangePoly(currentExpectedPoly);
+					missingPolysOutOfRange.add(currentExpectedPoly);
 				}
 			}
 			path.add(newNode);
@@ -90,18 +90,25 @@ public class SearchResultDetailed implements Serializable {
 
 		remainingPolys.addAll(searchResult.getSample().getPolymorphismn());
 		for (SearchResultTreeNode currentNode : path) {
-			for (Polymorphism currentPoly : currentNode.getFoundPolys()) {
-				Polymorphism newPoly = new Polymorphism(currentPoly);
-				newPoly.setBackMutation(!currentPoly.isBackMutation());
-				if (!foundPolys.contains(currentPoly) && !foundPolys.contains(newPoly)) {
-					foundPolys.add(currentPoly);
-					remainingPolys.remove(currentPoly);
-				}
+			for (Polymorphism currentFoundPoly : currentNode.getFoundPolys()) {
+				foundPolys.add(currentFoundPoly);
+				
+//				if(!currentFoundPoly.isBackMutation())
+					remainingPolys.remove(currentFoundPoly);
+//				else{
+//					
+//				}
+				
+////				Polymorphism newPoly = new Polymorphism(currentFoundPoly);
+////				newPoly.setBackMutation(!currentFoundPoly.isBackMutation());
+//				if (!foundPolys.contains(currentFoundPoly) && !foundPolys.contains(newPoly)) {
+//										remainingPolys.remove(currentFoundPoly);
+//				}
 
 			}
 
 		}
-
+		remainingPolys.addAll(correctedBackmutations);
 		Collections.reverse(path);
 	}
 
@@ -169,15 +176,15 @@ public class SearchResultDetailed implements Serializable {
 		ArrayList<Polymorphism> unusedPolysWithBackmutations = new ArrayList<Polymorphism>();
 		unusedPolysWithBackmutations.addAll(remainingPolys);
 
-		for (Polymorphism currentPoly : expectedPolys) {
-			if (!foundPolys.contains(currentPoly)) {
-				if (expectedPolysSuperGroup.contains(currentPoly)) {
-					Polymorphism p = new Polymorphism(currentPoly);
-					p.setBackMutation(true);
-					unusedPolysWithBackmutations.add(p);
-				}
-			}
-		}
+//		for (Polymorphism currentPoly : expectedPolys) {
+//			if (!foundPolys.contains(currentPoly)) {
+//				if (expectedPolysSuperGroup.contains(currentPoly)) {
+//					Polymorphism p = new Polymorphism(currentPoly);
+//					p.setBackMutation(true);
+//					unusedPolysWithBackmutations.add(p);
+//				}
+//			}
+//		}
 
 		Collections.sort(unusedPolysWithBackmutations);
 
@@ -400,4 +407,10 @@ public class SearchResultDetailed implements Serializable {
 	public ArrayList<Polymorphism> getMissingPolysOutOfRange() {
 		return missingPolysOutOfRange;
 	}
+
+	public ArrayList<Polymorphism> getExpectedPolys() {
+		return expectedPolys;
+	}
+	
+	
 }

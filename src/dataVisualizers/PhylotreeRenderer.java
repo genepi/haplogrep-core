@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Polygon;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -36,6 +37,12 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.w3c.dom.DOMImplementation;
 
+import phylotree.Phylotree;
+
+import search.SearchResultTreeNode;
+
+import core.Polymorphism;
+
 /**
  * Renders an overview tree image given by an XML root node.
  * 
@@ -43,26 +50,28 @@ import org.w3c.dom.DOMImplementation;
  * 
  */
 public class PhylotreeRenderer {
-	private Font polymprhismnFont = null;
+	private Font polymorphismFont = null;
 	private Font sampleIDFont = null;
 	private Font haplogroupFont = null;
 	
-	private Document xmlPhyloTree = null;
+	private Phylotree phyloTree = null;
+	private OverviewTree xmlPhyloTree = null;
 	private BufferedImage watermark = null;
 	private final int linePadding = 2;
 	
 	private float dpi = 72;
-	
+	private int numEndNode = 0;
 	
 	/**
 	 * Creates a new PhyloTreeRenderer instance with a xml document 
 	 * @param xmlPhyloTree representing the tree to render as xml document
 	 */
-	public PhylotreeRenderer(Document xmlPhyloTree)
+	public PhylotreeRenderer(Phylotree phyloTree,OverviewTree xmlPhyloTree)
 	{
 		this.xmlPhyloTree = xmlPhyloTree;
+		this.phyloTree = phyloTree;
 		
-		polymprhismnFont = new Font("Arial",Font.PLAIN,12);
+		polymorphismFont = new Font("Arial",Font.PLAIN,12);
 		sampleIDFont = new Font("Arial",Font.PLAIN,16);
 		haplogroupFont = new Font("Arial",Font.BOLD,14);
 	}
@@ -132,7 +141,7 @@ public class PhylotreeRenderer {
 		SVGGraphics2D svgGraphics2D = new SVGGraphics2D(document);
 
 		Graphics2D g2 = svgGraphics2D;// newImage.getGraphics();
-		RecData r = traverseTree(g2, xmlPhyloTree.getRootElement(), 0, new RecData(0, 20, 0, 0), 0);
+		RecData r = traverseTree(g2, xmlPhyloTree.getRootNode(), 0, new RecData(0, 20, 0, 0), 0);
 
 		int imageWidth = r.getCurrentPos() + r.getMaxWidth() / 2;
 
@@ -157,9 +166,9 @@ public class PhylotreeRenderer {
 
 		if (imageWidth == 300) {
 			int treeWidth = r.getCurrentPos() + r.getMaxWidth() / 2;
-			r = traverseTree(g2, xmlPhyloTree.getRootElement(), 0, new RecData(0, 20 + treeWidth / 2, 0, 0), treeHeight);
+			r = traverseTree(g2, xmlPhyloTree.getRootNode(), 0, new RecData(0, 20 + treeWidth / 2, 0, 0), treeHeight);
 		} else
-			r = traverseTree(g2, xmlPhyloTree.getRootElement(), 0, new RecData(0, 20, 0, 0), treeHeight);
+			r = traverseTree(g2, xmlPhyloTree.getRootNode(), 0, new RecData(0, 20, 0, 0), treeHeight);
 
 		g2.setFont(haplogroupFont);
 
@@ -189,8 +198,8 @@ public class PhylotreeRenderer {
 		g2.setColor(new Color(0, 0, 0));
 		g2.draw3DRect(20, treeHeight, boxWidth, boxY + 5 - treeHeight, true);
 
-		if (watermark != null && imageWidth - boxWidth > watermark.getWidth())
-			g2.drawImage(watermark, imageWidth - watermark.getWidth(), imageHeight - watermark.getHeight(), null);
+//		if (watermark != null && imageWidth - boxWidth > watermark.getWidth())
+//			g2.drawImage(watermark, imageWidth - watermark.getWidth(), imageHeight - watermark.getHeight(), null);
 
 		if (format.equals("SVG")) {
 			File resultFile = new File(path);
@@ -279,55 +288,62 @@ public class PhylotreeRenderer {
 		return null;
 	}
 	
-	//traverses tree and renderes image using the graphics context..also subject to change
-	private RecData traverseTree(Graphics2D g2d, Element result, int depth,RecData recData, int treeHeight) throws Exception {
+	int domi = 0;
+	//traverses tree and renders image using the graphics context..also subject to change
+	private RecData traverseTree(Graphics2D g2d, TreeNode result, int depth,RecData recData, int treeHeight) throws Exception {
 		
-		int numPolys =  result.getChildren("Poly").size();
+		
 		int oldDepth = depth;
 		
-		g2d.setFont(polymprhismnFont);
+		g2d.setFont(polymorphismFont);
 		
 		
 		
 			
-		List<Element> list = result.getChildren("TreeNode");
+		List<TreeNode> list = result.getChildren();
 		
 				
-		if (result.getChildren("TreeNode").size() > 0) {
+		if (result instanceof OverviewTreeInnerNode) {
+			String s = "";
+			for(int i = 0 ; i < treeHeight;i++){
+				s += " ";
+			}
+			System.out.println(s+ result.getPhyloTreeNode().getHaplogroup());
 			
-			int maxPolyWidth = getMaxStringWidthPolys(g2d,result.getChildren("Poly"));
+			int numPolys =  ((OverviewTreeInnerNode) result).getFoundPolys().size();
+			int maxPolyWidth = getMaxStringWidthPolys(g2d,((OverviewTreeInnerNode) result).getFoundPolys());
 			if(recData.getMaxWidth() < maxPolyWidth)
 				recData.setMaxWidth(maxPolyWidth);
 			
 			
 			
 			depth+= (1+numPolys) * (g2d.getFontMetrics().getHeight()+linePadding) + 15;
-			String haplogroupName = result.getAttributeValue("name").toString();
+			String haplogroupName = result.getPhyloTreeNode().getHaplogroup().toString();
 			
 			g2d.setFont(haplogroupFont);
 			int maxHaplogroupWidth = g2d.getFontMetrics().stringWidth(haplogroupName)+5;
 			
 			if(recData.getMaxWidth() < maxHaplogroupWidth)
 				recData.setMaxWidth(maxHaplogroupWidth);
-			g2d.setFont(polymprhismnFont);
+			g2d.setFont(polymorphismFont);
 			
 			RecData rNodeData = null;
 			RecData lNodeData = null;
 			
-			ArrayList<Element> l1 = new ArrayList<Element>();
-			ArrayList<Element> l2 = new ArrayList<Element>();
-			for(Element currentElement : list){
-				if(currentElement.getAttributeValue("type").equals("Haplogroup"))
-					l1.add(currentElement);
-				else
-					l2.add(currentElement);
-					
-			}
-			
-			list.clear();
-			list.addAll(l1);
-			list.addAll(l2);
-			
+//			ArrayList<OverviewTreeNode> l1 = new ArrayList<OverviewTreeNode>();
+//			ArrayList<OverviewTreeNode> l2 = new ArrayList<OverviewTreeNode>();
+//			for(OverviewTreeNode currentElement : list){
+//				if(currentElement.getAttributeValue("type").equals("Haplogroup"))
+//					l1.add(currentElement);
+//				else
+//					l2.add(currentElement);
+//					
+//			}
+//			
+//			list.clear();
+//			list.addAll(l1);
+//			list.addAll(l2);
+//			
 			int maxdepth = 0;
 			
 			for (int i = 0; i < list.size();i++){
@@ -337,7 +353,7 @@ public class PhylotreeRenderer {
 					recData = traverseTree(g2d, list.get(i), depth,recData,treeHeight);	}
 				
 				else{
-					
+
 					recData = traverseTree(g2d, list.get(i), depth,recData,treeHeight);	}
 				
 				if(maxdepth < recData.getMaxHeight())
@@ -364,7 +380,7 @@ public class PhylotreeRenderer {
 			g2d.drawLine(superNodePosXCentered, depth -g2d.getFontMetrics().getHeight(),superNodePosXCentered, oldDepth);
 			
 			//Draw all polymorphisms
-			drawPolymorhismn(g2d, result,superNodePosXCentered, depth);
+			drawPolymorhismn(g2d, (OverviewTreeInnerNode) result,superNodePosXCentered, depth);
 			depth += 5;
 			
 			//Draw haplogroup
@@ -389,7 +405,7 @@ public class PhylotreeRenderer {
 		else{
 			int widthHgLabel = g2d.getFontMetrics().getHeight();
 			
-			int maxUnused = getMaxStringWidthUnusedPolys(g2d,result);
+			int maxUnused = getMaxStringWidthUnusedPolys(g2d,(OverviewTreeLeafNode) result);
 			
 			if(recData.getMaxWidth() < maxUnused)
 				recData.setMaxWidth(maxUnused);
@@ -419,7 +435,7 @@ public class PhylotreeRenderer {
 				
 			//attach the end node with unused polys and sampleId 		
 			//int y = drawEndNode(g2d, result, newData.getCenter(),depth);
-			int y = drawEndNode(g2d, result, newData.getCenter(),depth,treeHeight);
+			int y = drawEndNode(g2d, (OverviewTreeLeafNode) result, newData.getCenter(),depth,treeHeight);
 			newData.setMaxHeight(y);
 			
 			return newData;
@@ -427,6 +443,155 @@ public class PhylotreeRenderer {
 			
 		//throw new Exception("Invalid data format!");
 	}
+	
+//	//traverses tree and renderes image using the graphics context..also subject to change
+//		private RecData traverseTree(Graphics2D g2d, OverviewTreeNode result, int depth,RecData recData, int treeHeight) throws Exception {
+//			
+//			int numPolys =  result.getChildren("Poly").size();
+//			int oldDepth = depth;
+//			
+//			g2d.setFont(polymprhismnFont);
+//			
+//			
+//			
+//				
+//			List<Element> list = result.getChildren("TreeNode");
+//			
+//					
+//			if (result.getChildren("TreeNode").size() > 0) {
+//				
+//				int maxPolyWidth = getMaxStringWidthPolys(g2d,result.getChildren("Poly"));
+//				if(recData.getMaxWidth() < maxPolyWidth)
+//					recData.setMaxWidth(maxPolyWidth);
+//				
+//				
+//				
+//				depth+= (1+numPolys) * (g2d.getFontMetrics().getHeight()+linePadding) + 15;
+//				String haplogroupName = result.getAttributeValue("name").toString();
+//				
+//				g2d.setFont(haplogroupFont);
+//				int maxHaplogroupWidth = g2d.getFontMetrics().stringWidth(haplogroupName)+5;
+//				
+//				if(recData.getMaxWidth() < maxHaplogroupWidth)
+//					recData.setMaxWidth(maxHaplogroupWidth);
+//				g2d.setFont(polymprhismnFont);
+//				
+//				RecData rNodeData = null;
+//				RecData lNodeData = null;
+//				
+//				ArrayList<Element> l1 = new ArrayList<Element>();
+//				ArrayList<Element> l2 = new ArrayList<Element>();
+//				for(Element currentElement : list){
+//					if(currentElement.getAttributeValue("type").equals("Haplogroup"))
+//						l1.add(currentElement);
+//					else
+//						l2.add(currentElement);
+//						
+//				}
+//				
+//				list.clear();
+//				list.addAll(l1);
+//				list.addAll(l2);
+//				
+//				int maxdepth = 0;
+//				
+//				for (int i = 0; i < list.size();i++){
+//					
+//					if( list.size() > 1){
+//						recData.setMaxWidth(0);
+//						recData = traverseTree(g2d, list.get(i), depth,recData,treeHeight);	}
+//					
+//					else{
+//						
+//						recData = traverseTree(g2d, list.get(i), depth,recData,treeHeight);	}
+//					
+//					if(maxdepth < recData.getMaxHeight())
+//						maxdepth = recData.getMaxHeight();
+//					
+//					if(i == 0)
+//					{				
+//						lNodeData = recData;
+//					}
+//					
+//					if(i == list.size()-1)
+//					{				
+//						rNodeData = recData;
+//					}
+//				}
+//				
+//				//Calculate the x position of the supernode (average of child node position)
+//				int superNodePosXCentered = lNodeData.getCenter() + (rNodeData.getCenter()-lNodeData.getCenter())/2;
+//				
+//				//Draw horizontal line
+//				g2d.drawLine(lNodeData.getCenter(), depth  ,rNodeData.getCenter(), depth);
+//				
+//				//Draw vertical line
+//				g2d.drawLine(superNodePosXCentered, depth -g2d.getFontMetrics().getHeight(),superNodePosXCentered, oldDepth);
+//				
+//				//Draw all polymorphisms
+//				drawPolymorhismn(g2d, result,superNodePosXCentered, depth);
+//				depth += 5;
+//				
+//				//Draw haplogroup
+//				drawHaplogroupNode(g2d, superNodePosXCentered,depth, haplogroupName);	
+//					
+//				//attach the end node with unused polys and sampleId 		
+//				//if(result.getChild("DetailedResults") != null)
+//				//drawEndNode(g2d, result.getChild("DetailedResults"), superNodePosXCentered,depth);
+//				
+//				
+//				
+//				return new RecData(superNodePosXCentered,recData.getCurrentPos(),recData.getMaxWidth(), maxdepth);
+//			}
+//			
+//		
+//			//list = result.getChildren("DetailedResults");
+//			
+//			//if(list.size() == 1){
+//				
+//			// s}
+//			
+//			else{
+//				int widthHgLabel = g2d.getFontMetrics().getHeight();
+//				
+//				int maxUnused = getMaxStringWidthUnusedPolys(g2d,result);
+//				
+//				if(recData.getMaxWidth() < maxUnused)
+//					recData.setMaxWidth(maxUnused);
+//				
+//				int delta = (recData.getMaxWidth() /*- (widthHgLabel) */);
+//				//Calc labels start and end position an save center pos
+//				int left = recData.getCurrentPos();
+//				int right = 0;
+//				
+//				if(delta < widthHgLabel)
+//					right = recData.getCurrentPos() + widthHgLabel + 10;
+//				else
+//					right = recData.getCurrentPos()  + delta + 5;
+//				
+//				int center = left + (right-left)/2;
+//				
+//				RecData newData = new RecData(center,right,recData.getMaxWidth(),depth);
+//				//Draw vertical line to from up-bottom
+//				g2d.setColor(Color.black);
+//				g2d.drawLine(newData.getCenter(), oldDepth, newData.getCenter(),depth + g2d.getFontMetrics().getHeight() + 3);
+//				
+//				//Draw all polymorphisms
+//				//drawPolymorhismn(g2d, result, newData.getCenter(), depth);
+//						
+//				//Draw haplogroup
+//				//drawHaplogroupNode(g2d, newData.getCenter(),depth, haplogroupName);		
+//					
+//				//attach the end node with unused polys and sampleId 		
+//				//int y = drawEndNode(g2d, result, newData.getCenter(),depth);
+//				int y = drawEndNode(g2d, result, newData.getCenter(),depth,treeHeight);
+//				newData.setMaxHeight(y);
+//				
+//				return newData;
+//			}
+//				
+//			//throw new Exception("Invalid data format!");
+//		}
 
 	/**
 	 * Returns the max width of a string in a polymorphisms column
@@ -434,11 +599,11 @@ public class PhylotreeRenderer {
 	 * @param polys The list of polymorphisms
 	 * @return The max width of the polymorphims' strings
 	 */
-	private int getMaxStringWidthPolys(Graphics2D g2d, List<Element> polys) {
+	private int getMaxStringWidthPolys(Graphics2D g2d, List<Polymorphism> polys) {
 		int max = 0;
 		int width = 0;
-		for (Element currentPoly : (List<Element>) polys) {
-			width = g2d.getFontMetrics().stringWidth(currentPoly.getText());
+		for (Polymorphism currentPoly : polys) {
+			width = g2d.getFontMetrics().stringWidth(currentPoly.toString());
 			if (max < width) {
 				max = width;
 			}
@@ -446,12 +611,12 @@ public class PhylotreeRenderer {
 		return width;
 	}
 
-	private int getMaxStringWidthUnusedPolys(Graphics2D g2d, Element child) {
+	private int getMaxStringWidthUnusedPolys(Graphics2D g2d, OverviewTreeLeafNode tree) {
 		int max = 0;
 		int width = 0;
-		g2d.setFont(polymprhismnFont);
-		for (Element currentPoly : (List<Element>) child.getChild("DetailedResults").getChildren("DetailedResult")) {
-			width = g2d.getFontMetrics().stringWidth(currentPoly.getChildText("unused"));
+		g2d.setFont(polymorphismFont);
+		for (Polymorphism currentPoly : tree.getRemainingPolys()) {
+			width = g2d.getFontMetrics().stringWidth(currentPoly.toString());
 			if (max < width) {
 				max = width;
 			}
@@ -468,36 +633,36 @@ public class PhylotreeRenderer {
 	 * @param treeHeight
 	 * @return
 	 */
-	private int drawEndNode(Graphics2D g2d, Element child, int center, int depth, int treeHeight) {
+	private int drawEndNode(Graphics2D g2d, OverviewTreeLeafNode tree, int center, int depth, int treeHeight) {
 
 		g2d.drawLine(center, depth, center, treeHeight - 15);
 
-		g2d.setFont(polymprhismnFont);
+		g2d.setFont(polymorphismFont);
 		depth += 10;
 
-			
-		for (Element currentPoly : (List<Element>) child.getChild("DetailedResults").getChildren("DetailedResult")) {
+
+		for (Polymorphism currentPoly :  tree.getRemainingPolys()) {
 
 			depth += g2d.getFontMetrics().getHeight() + linePadding;
-			;
-			if (currentPoly.getChildText("reasonUnused").equals("hotspot")) {
+			
+			if (currentPoly.isMTHotspot()) {
 				g2d.setColor(new Color(153, 204, 153));
 			}
-			if (currentPoly.getChildText("reasonUnused").equals("globalPrivateMutation")) {
+			else if (phyloTree.getMutationRate(currentPoly) == 0) {
 				g2d.setColor(Color.red);
 			}
-			if (currentPoly.getChildText("reasonUnused").equals("localPrivateMutation")) {
+			else {
 				g2d.setColor(new Color(50, 180, 227));
 			}
 
-			drawCenteredNode(g2d, center, depth, currentPoly.getChildText("unused"));
+			drawCenteredNode(g2d, center, depth, Polymorphism.convertToATBackmutation(currentPoly.toString()));
 
 		}
 
-		drawSampleIDNode(g2d, child.getAttributeValue("id"), center, treeHeight);
+		drawSampleIDNode(g2d, tree.getTestSample().getSampleID(), center, treeHeight);
 
 		g2d.setFont(sampleIDFont);
-		return depth + g2d.getFontMetrics().stringWidth(child.getAttributeValue("id")) + 20;
+		return depth + g2d.getFontMetrics().stringWidth(tree.getTestSample().getSampleID()) + 20;
 
 	}
 
@@ -506,20 +671,28 @@ public class PhylotreeRenderer {
 	private void drawHaplogroupNode(Graphics2D g2d, int x, int y, String haplogroupName) {
 		g2d.setFont(haplogroupFont);
 		g2d.setColor(Color.black);
-		drawCenteredNode(g2d, x, y, haplogroupName);
+		drawCenteredNode(g2d, x, y-2, haplogroupName);
+		int width = Math.max(g2d.getFontMetrics().stringWidth(haplogroupName), 20);
+		
+		g2d.drawRect(x-width/2 - 4, y-g2d.getFontMetrics().getHeight()-7, width+8, g2d.getFontMetrics().getHeight());
 	}
 
-	private void drawPolymorhismn(Graphics2D g2d, Element currentNode, int x, int y) {
+	private void drawPolymorhismn(Graphics2D g2d, OverviewTreeInnerNode currentNode, int x, int y) {
 
-		g2d.setFont(polymprhismnFont);
+		g2d.setFont(polymorphismFont);
 		g2d.setColor(Color.black);
-		y -= 5 + (currentNode.getChildren("Poly").size() * (g2d.getFontMetrics().getHeight() + linePadding));
+		y -= 5 + (currentNode.getFoundPolys().size() * (g2d.getFontMetrics().getHeight() + linePadding));
 
-		for (Element currentPoly : (List<Element>) currentNode.getChildren("Poly")) {
+		for (Polymorphism currentPoly :  currentNode.getFoundPolys()) {
 
-			drawCenteredNode(g2d, x, y, currentPoly.getText());
+			drawCenteredNode(g2d, x, y, Polymorphism.convertToATBackmutation(currentPoly.toString()));
 			y += g2d.getFontMetrics().getHeight() + linePadding;
 		}
+//		for (Polymorphism currentPoly :  currentNode.getMissingPolys()) {
+//
+//			drawCenteredNode(g2d, x, y, currentPoly.toString());
+//			y += g2d.getFontMetrics().getHeight() + linePadding;
+//		}
 
 	}
 
@@ -531,10 +704,16 @@ public class PhylotreeRenderer {
 
 		y -= widthSampleID + 15;
 
-		g2d.drawLine(x, y, x, y + 4);
+		
+		g2d.drawLine(x, y, x, y+4);
 		g2d.translate(x - 6, y + 5);
 		g2d.rotate(Math.toRadians(90));
-		g2d.clearRect(0, -15, widthSampleID + 5, 19);
+		g2d.clearRect(-5, -15, widthSampleID + 5, 19);
+		int[] polylineX = {0-6,6-6,6+ widthSampleID-6,12 +  widthSampleID-6,6+ widthSampleID-6,6-6,0-6};
+		int[] polylineY = {-g2d.getFontMetrics().getHeight()/2+2,6,6,-g2d.getFontMetrics().getHeight()/2+2,-g2d.getFontMetrics().getHeight(),-g2d.getFontMetrics().getHeight(),-g2d.getFontMetrics().getHeight()/2+2};
+		
+		g2d.drawPolyline(polylineX,polylineY, 7);
+		
 		g2d.drawString(sampleIDText, 2, 0);
 		g2d.rotate(Math.toRadians(-90));
 		g2d.translate(-(x - 6), -(y + 5));

@@ -55,10 +55,17 @@ public class Sample {
 	 * @return True if the polymorphism appears in this sample, false otherwise
 	 */
 	public boolean containsWithBackmutation(Polymorphism polyToCheck) {
+		boolean contains = false;
+		
+		if(polyToCheck.isBackMutation){
+			Polymorphism p = new Polymorphism(polyToCheck);
+			p.setBackMutation(false);
+			contains = sample.contains(p);
+		}
+		else
+		 contains = sample.contains(polyToCheck);
 
-		boolean contains = sample.contains(polyToCheck);
-
-		if (!contains && polyToCheck.isBackMutation || contains && !polyToCheck.isBackMutation)
+		if ((!contains && polyToCheck.isBackMutation) || (contains && !polyToCheck.isBackMutation))
 			return true;
 
 		else if (!contains && !polyToCheck.isBackMutation)

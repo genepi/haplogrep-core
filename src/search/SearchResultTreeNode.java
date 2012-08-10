@@ -136,4 +136,8 @@ public class SearchResultTreeNode implements Serializable{
 		}
 		return true;
 	}
+	
+	public PhyloTreeNode getPhyloTreeNode(){
+		return phylotreeNode;
+	}
 }

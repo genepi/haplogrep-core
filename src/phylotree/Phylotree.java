@@ -158,10 +158,10 @@ public final class Phylotree {
 				// Check whether polymorphism is in range
 				if (sample.getSample().getSampleRanges().contains(currentPoly)) {
 					// In case of a backmutation we must correct the current
-					// result since a polymorhism is no longer expected
+					// result since a polymorphism is no longer expected
 					if (currentPoly.isBackMutation()) {
 						newResult.removeExpectedPolyWeight(currentPoly);
-						newResult.removeFoundPolyWeight(currentPoly, sample.getSample());
+						newResult.removeFoundPolyWeight(currentPoly, sample.getSample());	
 					}
 
 					// The sample contains the right polymorphism for this group

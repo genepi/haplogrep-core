@@ -88,10 +88,12 @@ public class PolymorphismTests {
 		new Polymorphism("1X");
 	}
 	
-	@Test(expected=InvalidPolymorphismException.class)
-	public void CheckMalformedInsertPolyException() throws InvalidPolymorphismException
+	@Test
+	public void CheckInsertPolyWildcardEquals() throws InvalidPolymorphismException
 	{
-		new Polymorphism("1.1X");
+		Polymorphism p = new Polymorphism("573.XC");
+		Polymorphism p2 = new Polymorphism("573");
+		Assert.assertEquals(p, p2);
 	}
 	
 	@Test(expected=NumberFormatException.class)

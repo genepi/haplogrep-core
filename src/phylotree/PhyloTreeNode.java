@@ -31,7 +31,7 @@ public class PhyloTreeNode implements Serializable {
 	 */
 	PhyloTreeNode(Phylotree tree) {
 		this.tree = tree;
-		haplogroup = new Haplogroup("Haplogrep Root");
+		haplogroup = new Haplogroup("rCRS NC_012920");
 	}
 
 	/**
