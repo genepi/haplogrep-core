@@ -84,15 +84,15 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 
 		if (this.position == ((Polymorphism) p).position && this.mutation == ((Polymorphism) p).mutation) {
 
-			// insertions
-			if (((Polymorphism) p).getMutation().equals(Mutations.INS)) {
-
-				if (((Polymorphism) p).insertedPolys.contains(this.insertedPolys))
+			//insertions
+			if(((Polymorphism)p).getMutation().equals(this.mutation.INS)){
+				if(((Polymorphism)p).insertedPolys.contains(this.insertedPolys))
 					return true;
-				else
-					return false;
-			}
-			// end insertions
+				else if (((Polymorphism)p).insertedPolys.contains(".X"))
+					return true;
+				else return false;
+			} 
+			//end insertions
 
 			else if (((Polymorphism) p).isBackMutation != this.isBackMutation)
 				return false;
@@ -250,6 +250,10 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 					this.numberOfIns = "." + number;
 				}
 			}
+			if (token1.contains("X")){
+				 mutationString = token1.replace("X", "");
+				 this.numberOfIns=".X";
+				}
 
 			// Check for valid acid
 			int i = 0;
