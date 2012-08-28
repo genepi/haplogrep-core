@@ -2,6 +2,8 @@ package core;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,7 +49,10 @@ public class TestSample implements Comparable<TestSample>{
 	public static TestSample parse(String inputString) throws HsdFileException {
 		TestSample parsedSample = new TestSample();
 		SampleRanges sampleRange = null;
+		Pattern p = Pattern.compile( "(\\d*(-|;)?)*" );
+		int columnSet = 0;
 		try {
+			System.out.println("Input "+inputString);
 			//Split the input string in separate column strings 
 			String[] columns = inputString.split("\t");
 
@@ -60,18 +65,29 @@ public class TestSample implements Comparable<TestSample>{
 
 			//Parse range
 			columns[1] = columns[1].replaceAll("\"", "");
-			sampleRange = new SampleRanges(columns[1]);
+			columns[1] = columns[1].replaceAll("\\s", "");
+			String a = columns[1].trim();
+			System.out.println(a.trim());
+			Matcher m = p.matcher(a);
+			
+			/**support old fileformat of Haplogrep with matcher*/
+			if(m.matches())
+				columnSet=2;
+			else columnSet=1;
+			/** Haplogrep 2.0 calculate complete range every time */
+			sampleRange = new SampleRanges("1-16569");
 
 			//Parse expected haplogroup
-			if (columns[2].equals("?") || columns[2].equals("SEQ"))
+			System.out.println("a->"+columnSet);
+			if (columns[columnSet].equals("?") || columns[columnSet].equals("SEQ"))
 				parsedSample.expectedHaplogroup = new Haplogroup("");
 
 			else
-				parsedSample.expectedHaplogroup = new Haplogroup(columns[2]);
-
+				parsedSample.expectedHaplogroup = new Haplogroup(columns[columnSet]);
+			System.out.println("b->"+columnSet);
 			// Parse the sample and all its polymprhisms
 			StringBuffer sampleString = new StringBuffer();
-			for (int i = 3; i < columns.length; i++) {
+			for (int i = ++columnSet; i < columns.length; i++) {
 				sampleString.append(columns[i] + " ");
 			}
 			parsedSample.sample = new Sample(sampleString.toString(),sampleRange, 0);

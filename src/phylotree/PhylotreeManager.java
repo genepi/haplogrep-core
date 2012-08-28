@@ -47,7 +47,7 @@ public class PhylotreeManager {
 			try {
 				if (phyloFile == null) {
 					phyloFile = new FileInputStream(new File("../HaplogrepServer/phylotree/" + phylotreePath));
-					flucRates = new FileInputStream(new File("../HaplogrepServer/polyGeneticWeights/" + phyloGeneticWeightsPath));
+					flucRates = new FileInputStream(new File("../HaplogrepServer/weights/" + phyloGeneticWeightsPath));
 				}
 
 			} catch (FileNotFoundException e) {

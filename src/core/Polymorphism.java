@@ -23,7 +23,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	private String numberOfIns = "";
 	private String insertedPolys = "";
 	private int hashCode;
-	
+
 	/**
 	 * rCRS reference sequence
 	 */
@@ -68,13 +68,14 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		this.isBackMutation = polyToCopy.isBackMutation;
 		this.numberOfIns = polyToCopy.numberOfIns;
 		this.insertedPolys = polyToCopy.insertedPolys;
-		
+
 		hashCode = toString().hashCode();
 	}
 
-	/* 
-	 * Remark: The polymorphism equals method don't check for back mutation of two instances
-	 * (non-Javadoc)
+	/*
+	 * Remark: The polymorphism equals method don't check for back mutation of
+	 * two instances (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -84,15 +85,16 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 
 		if (this.position == ((Polymorphism) p).position && this.mutation == ((Polymorphism) p).mutation) {
 
-			//insertions
-			if(((Polymorphism)p).getMutation().equals(this.mutation.INS)){
-				if(((Polymorphism)p).insertedPolys.contains(this.insertedPolys))
+			// insertions
+			if (((Polymorphism) p).getMutation().equals(this.mutation.INS)) {
+				if (((Polymorphism) p).insertedPolys.contains(this.insertedPolys))
 					return true;
-				else if (((Polymorphism)p).insertedPolys.contains(".X"))
+				else if (((Polymorphism) p).insertedPolys.contains(".X"))
 					return true;
-				else return false;
-			} 
-			//end insertions
+				else
+					return false;
+			}
+			// end insertions
 
 			else if (((Polymorphism) p).isBackMutation != this.isBackMutation)
 				return false;
@@ -105,7 +107,9 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 			return false;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
@@ -125,10 +129,9 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 			return position + mutation.toString().trim() + "!";
 	}
 
-
-	/** 
-	 * @return A shorter string version of this polymorphism instance. Removes obvious transitions and  
-	 * changes 'DEL' to 'd'
+	/**
+	 * @return A shorter string version of this polymorphism instance. Removes
+	 *         obvious transitions and changes 'DEL' to 'd'
 	 */
 	public String toStringShortVersion() {
 		if (!isBackMutation) {
@@ -152,8 +155,9 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	}
 
 	/**
-	 * Reformat a string representation of a polymorphism with back mutation 
-	 * from '!' to '@' e.g. 185! to '@185' 
+	 * Reformat a string representation of a polymorphism with back mutation
+	 * from '!' to '@' e.g. 185! to '@185'
+	 * 
 	 * @param poly
 	 * @return The reformatted string
 	 */
@@ -166,15 +170,21 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	}
 
 	/**
-	 * Creates and returns a polymorphism representing the reference at the position of this instance
-	 * 	@return The polymorphism representing the reference
+	 * Creates and returns a polymorphism representing the reference at the
+	 * position of this instance
+	 * 
+	 * @return The polymorphism representing the reference
 	 */
 	public Polymorphism getReferenceBase() {
 		return getReferenceBase(this.position);
 	}
+
 	/**
-	 * Creates and returns a polymorphism representing the reference at a given position
-	 * @param  position The position in the reference sequence 
+	 * Creates and returns a polymorphism representing the reference at a given
+	 * position
+	 * 
+	 * @param position
+	 *            The position in the reference sequence
 	 * @return The polymorphism representing the reference
 	 */
 	private Polymorphism getReferenceBase(int position) {
@@ -185,23 +195,24 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		} catch (InvalidBaseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}	
+		}
 		return null;
 	}
 
-	//TODO: Ask hansi if this can be replaced by getReferenceBase(int position)
+	// TODO: Ask hansi if this can be replaced by getReferenceBase(int position)
 	public static String getReferenceBaseSingle(int position) throws InvalidBaseException {
 		String base = String.valueOf(rCRS.charAt(position - 1));
 		base = base.toUpperCase();
 		return base;
 	}
 
-	
-
 	/**
 	 * Parses a string to create a new polymorphism instance
-	 * @param stringToParse The input string
-	 * @throws InvalidPolymorphismException If the string could not be parsed
+	 * 
+	 * @param stringToParse
+	 *            The input string
+	 * @throws InvalidPolymorphismException
+	 *             If the string could not be parsed
 	 */
 	private void parse(String stringToParse) throws InvalidPolymorphismException {
 		// Because of deletion and insertion more than one resulting
@@ -250,10 +261,10 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 					this.numberOfIns = "." + number;
 				}
 			}
-			if (token1.contains("X")){
-				 mutationString = token1.replace("X", "");
-				 this.numberOfIns=".X";
-				}
+			if (token1.contains("X")) {
+				mutationString = token1.replace("X", "");
+				this.numberOfIns = ".X";
+			}
 
 			// Check for valid acid
 			int i = 0;
@@ -285,21 +296,23 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 			else {
 
 				p = Pattern.compile("\\d+");
-				m = p.matcher(stringToParse);
-				m.find();
 
 				try {
-					Integer.parseInt(stringToParse.substring(m.start(), m.end()), 10);
+					m = p.matcher(stringToParse);
+					if (m.find())
+						Integer.parseInt(stringToParse.substring(m.start(), m.end()), 10);
 				} catch (NumberFormatException e) {
 					throw new InvalidPolymorphismException(stringToParse);
 				}
 
-				int position = Integer.valueOf(stringToParse);
 				try {
+					int position = Integer.valueOf(stringToParse);
 					getTransitionPoly(position);
 				} catch (InvalidBaseException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					throw new InvalidPolymorphismException(stringToParse);
+				} catch (NumberFormatException e) {
+					throw new InvalidPolymorphismException(stringToParse);
 				}
 
 			}
@@ -350,7 +363,9 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		return insertedPolys;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	@Override
@@ -372,7 +387,9 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 			return 1;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -437,8 +454,10 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	}
 
 	/**
-	 * Changes the polymorphism to a back mutation or vice versa 
-	 * @param isBackMutation The new back mutation state
+	 * Changes the polymorphism to a back mutation or vice versa
+	 * 
+	 * @param isBackMutation
+	 *            The new back mutation state
 	 */
 	public void setBackMutation(boolean isBackMutation) {
 		this.isBackMutation = isBackMutation;

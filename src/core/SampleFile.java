@@ -166,9 +166,9 @@ public class SampleFile {
 			
 			//The detected haplogroup
 			newElement = new Element("haplogroup");
-
-			// if no haplogroup is expected, than set our result to
-			// predefinied
+			
+			/** the weird methods (quoted domi) are not available anymore ;) */
+			/*// if no haplogroup is expected, than set our result to		// predefinied
 			if (sample.getExpectedHaplogroup().toString().equals("") && sample.getDetectedHaplogroup() != null) {
 				sample.setExpectedHaplogroup(sample.getDetectedHaplogroup());
 			}
@@ -176,18 +176,21 @@ public class SampleFile {
 				newElement.setText(sample.getExpectedHaplogroup().toString() + " (" + sample.getDetectedHaplogroup().toString() + ")");
 			else {
 				newElement.setText(sample.getExpectedHaplogroup().toString());
-			}
+			}*/
+			
+			RankedResult topResult = sample.getTopResult();
+			if(topResult != null)
+			newElement.setText(String.valueOf(topResult.getHaplogroup()));
 			sampleRowElement.addContent(newElement);
 
 			
-			//sample status (detected haplogroup equal, similar or different to expected haplogroup? )
+			/*//sample status (detected haplogroup equal, similar or different to expected haplogroup? )
 			newElement = new Element("status");
 			newElement.setText(String.valueOf("Column not in use"));
-			sampleRowElement.addContent(newElement);
+			sampleRowElement.addContent(newElement);*/
 
 			//matching quality of sample
 			newElement = new Element("hit");
-			RankedResult topResult = sample.getTopResult();
 			if(topResult != null)
 				newElement.setText(String.valueOf(topResult.getDistance()));
 			
