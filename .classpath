@@ -17,7 +17,5 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="jars/org.json.jar"/>
-	<classpathentry kind="lib" path="/Users/dominicpacher/Documents/DrArbeit/Haplogrep/Haplogrep/jars/batik-svggen.jar"/>
-	<classpathentry kind="lib" path="/Users/dominicpacher/Documents/DrArbeit/Haplogrep/Haplogrep/jars/batik-transcoder.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
