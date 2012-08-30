@@ -34,7 +34,8 @@ public class ClusteredSearchResults {
 		ArrayList<RankedResult> currentCluster = null;
 		for (RankedResult currentResult : unclusteredResults) {
 
-			// Only process the top rated results
+			// TODO Check if needed 
+			//Only process the top rated results
 			if (i == 50)
 				break;
 
