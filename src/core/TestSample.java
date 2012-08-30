@@ -50,7 +50,6 @@ public class TestSample implements Comparable<TestSample>{
 		TestSample parsedSample = new TestSample();
 		SampleRanges sampleRange = null;
 		Pattern p = Pattern.compile( "(\\d*(-|;)?)*" );
-		int columnPos = 0;
 		try {
 			System.out.println("Input "+inputString);
 			//Split the input string in separate column strings 
@@ -65,28 +64,26 @@ public class TestSample implements Comparable<TestSample>{
 
 			//Parse range
 			columns[1] = columns[1].replaceAll("\"", "");
-			columns[1] = columns[1].replaceAll("\\s", "");
-			String a = columns[1].trim();
-			System.out.println(a.trim());
-			Matcher m = p.matcher(a);
 			
-			/**support old fileformat of Haplogrep with matcher*/
+			/** Haplogrep 2.0 calculates complete range every time, decided not to use it */
+			/*columns[1] = columns[1].replaceAll("\\s", "");
+			String a = columns[1].trim();
+			Matcher m = p.matcher(a);
 			if(m.matches())
 				columnPos=2;
-			else columnPos=1;
-			/** Haplogrep 2.0 calculates complete range every time */
-			sampleRange = new SampleRanges("1-16569");
+			else columnPos=1;*/
+			
+			sampleRange = new SampleRanges(columns[1]);
 
 			//Parse expected haplogroup
-			if (columns[columnPos].equals("?") || columns[columnPos].equals("SEQ"))
+			if (columns[2].equals("?") || columns[2].equals("SEQ"))
 				parsedSample.expectedHaplogroup = new Haplogroup("");
 
 			else
-				parsedSample.expectedHaplogroup = new Haplogroup(columns[columnPos]);
+				parsedSample.expectedHaplogroup = new Haplogroup(columns[2]);
 			// Parse the sample and all its polymorphisms
 			StringBuffer sampleString = new StringBuffer();
-			columnPos++;
-			for (int i = columnPos; i < columns.length; i++) {
+			for (int i = 3; i < columns.length; i++) {
 				sampleString.append(columns[i] + " ");
 			}
 			parsedSample.sample = new Sample(sampleString.toString(),sampleRange, 0);

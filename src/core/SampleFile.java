@@ -204,6 +204,15 @@ public class SampleFile {
 			
 			sampleRowElement.addContent(newElement);
 
+			// TODO fill correct number of errors and warnings
+			newElement = new Element("err");
+			newElement.setText("2");
+			sampleRowElement.addContent(newElement);
+			
+			newElement = new Element("war");
+			newElement.setText("0");
+			sampleRowElement.addContent(newElement);
+			
 			//all polymorphism of sample
 			ArrayList<Polymorphism> t = sample.getSample().getPolymorphisms();
 			String polys = "";
