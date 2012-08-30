@@ -132,7 +132,7 @@ public class SearchResult {
 			newPoly.setBackMutation(false);
 			if (sample.contains(newPoly)) {
 				foundPolysSumWeights -= getPhyloTree().getMutationRate(newPoly);
-				remainingPolysSumWeights += getPhyloTree().getMutationRate(newPoly);;
+				remainingPolysSumWeights += getPhyloTree().getMutationRate(newPoly);
 
 			}
 		} else

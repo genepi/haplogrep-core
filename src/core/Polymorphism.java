@@ -77,33 +77,33 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	 * (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
-	@Override
-	public boolean equals(Object p) {
-		if (!(p instanceof Polymorphism))
-			return false;
-
-		if (this.position == ((Polymorphism) p).position && this.mutation == ((Polymorphism) p).mutation) {
-
-			//insertions
-			if(((Polymorphism)p).getMutation().equals(this.mutation.INS)){
-				if(((Polymorphism)p).insertedPolys.contains(this.insertedPolys))
-					return true;
-				else if (((Polymorphism)p).insertedPolys.contains(".X"))
-					return true;
-				else return false;
-			} 
-			//end insertions
-
-			else if (((Polymorphism) p).isBackMutation != this.isBackMutation)
-				return false;
-
-			else
-				return true;
-		}
-
-		else
-			return false;
-	}
+//	@Override
+//	public boolean equals(Object p) {
+//		if (!(p instanceof Polymorphism))
+//			return false;
+//
+//		if (this.position == ((Polymorphism) p).position && this.mutation == ((Polymorphism) p).mutation) {
+//
+//			//insertions
+//			if(((Polymorphism)p).getMutation().equals(this.mutation.INS)){
+//				if(((Polymorphism)p).insertedPolys.contains(this.insertedPolys))
+//					return true;
+//				else if (((Polymorphism)p).insertedPolys.contains(".X"))
+//					return true;
+//				else return false;
+//			} 
+//			//end insertions
+//
+//			else if (((Polymorphism) p).isBackMutation != this.isBackMutation)
+//				return false;
+//
+//			else
+//				return true;
+//		}
+//
+//		else
+//			return false;
+//	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
@@ -125,6 +125,28 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 			return position + mutation.toString().trim() + "!";
 	}
 
+
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Polymorphism other = (Polymorphism) obj;
+//		if (hashCode != other.hashCode)
+//			return false;
+		if (isBackMutation != other.isBackMutation)
+			return false;
+		if (mutation != other.mutation)
+			return false;
+		if (position != other.position)
+			return false;
+		return true;
+	}
 
 	/** 
 	 * @return A shorter string version of this polymorphism instance. Removes obvious transitions and  
@@ -380,12 +402,15 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 			return 1;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
 	@Override
 	public int hashCode() {
-		return hashCode;
+		final int prime = 31;
+		int result = 1;
+		//result = prime * result + hashCode;
+		result = prime * result + (isBackMutation ? 1231 : 1237);
+		result = prime * result + ((mutation == null) ? 0 : mutation.hashCode());
+		result = prime * result + position;
+		return result;
 	}
 
 	// TODO hotspots depend on phylotree version! Move somewhere better
