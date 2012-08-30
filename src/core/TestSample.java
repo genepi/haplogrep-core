@@ -75,7 +75,7 @@ public class TestSample implements Comparable<TestSample>{
 				columnPos=2;
 			else columnPos=1;
 			/** Haplogrep 2.0 calculate complete range every time */
-			sampleRange = new SampleRanges("16024-16569");
+			sampleRange = new SampleRanges("1-16569");
 
 			//Parse expected haplogroup
 			if (columns[columnPos].equals("?") || columns[columnPos].equals("SEQ"))
