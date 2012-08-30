@@ -61,16 +61,31 @@ public abstract class RankingMethod {
 	/**
 	 * Reduces the entire result set to the maximum number of allowed top
 	 * results
+	 * @param sample 
 	 */
-	void cutResultSetToTopHits() {
+	void cutResultSetToTopHits(TestSample sample) {
 		ArrayList<RankedResult> topResults = new ArrayList<RankedResult>();
 
-		if (maxTopResults != Integer.MAX_VALUE) {
-			for (int i = 0; i < Math.min(maxTopResults, results.size()); i++) {
-				topResults.add(results.get(i));
+		int numResults = 0;
+		for(RankedResult currentResult : results){
+			if(numResults < maxTopResults){
+				topResults.add(currentResult);	
 			}
-			results = topResults;
+			
+			else if(currentResult.getHaplogroup().equals(sample.getExpectedHaplogroup()))
+			topResults.add(currentResult);
+			
+			numResults++;
 		}
+		
+		results = topResults;
+//		
+//		if (maxTopResults != Integer.MAX_VALUE) {
+//			for (int i = 0; i < Math.min(maxTopResults, results.size()); i++) {
+//				topResults.add(results.get(i));
+//			}
+//			results = topResults;
+//		}
 	}
 
 	/*

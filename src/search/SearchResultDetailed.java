@@ -88,7 +88,7 @@ public class SearchResultDetailed implements Serializable {
 			startNode = startNode.getParent();
 		}
 
-		remainingPolys.addAll(searchResult.getSample().getPolymorphismn());
+		remainingPolys.addAll(searchResult.getSample().getPolymorphisms());
 		for (SearchResultTreeNode currentNode : path) {
 			for (Polymorphism currentFoundPoly : currentNode.getFoundPolys()) {
 				foundPolys.add(currentFoundPoly);
@@ -253,7 +253,7 @@ public class SearchResultDetailed implements Serializable {
 		Collections.sort(expectedPolys);
 
 		ArrayList<Polymorphism> unusedPolysArray = new ArrayList<Polymorphism>();
-		unusedPolysArray.addAll(searchResult.getSample().getPolymorphismn());
+		unusedPolysArray.addAll(searchResult.getSample().getPolymorphisms());
 
 		for (Polymorphism current : expectedPolys) {
 

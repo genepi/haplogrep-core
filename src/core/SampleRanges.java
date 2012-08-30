@@ -90,6 +90,17 @@ public class SampleRanges {
 		starts.add(1);
 		ends.add(16569);
 	}
+	
+	/**
+	 * Adds the control range(16024-16569 1-576) to this SampleRanges instance,
+	 */
+	public void addControlRange() {
+		starts.add(16024);
+		ends.add(16569);
+		
+		starts.add(1);
+		ends.add(576);
+	}
 
 	/**
 	 * Adds a custom range to this instance.

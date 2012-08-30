@@ -38,7 +38,7 @@ public class SearchResult {
 		this.sampleChecked = parentResult.getSample();
 		this.attachedPhyloTreeNode = phyloNode;
 
-		for (Polymorphism currentPoly : sampleChecked.getPolymorphismn()) {
+		for (Polymorphism currentPoly : sampleChecked.getPolymorphisms()) {
 			sumWeightsAllPolysSample += getPhyloTree().getMutationRate(currentPoly);
 
 			if (parentResult.getSample().getSampleRanges().contains(currentPoly)) {

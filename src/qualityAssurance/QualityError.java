@@ -1,9 +1,16 @@
 package qualityAssurance;
 
+import core.TestSample;
+
 public class QualityError extends QualityIssue {
 
-	public QualityError(String desciption) {
-		super(1,desciption);
+	public QualityError(QualityAssistent assistent,TestSample sampleOfIssue,String desciption) {
+		super(1,sampleOfIssue,desciption);
+		assistent.incNumErrors();
 	}
 	
+
+	public String toString(){
+		return  "SAMPLE: " + sampleOfIssue.getSampleID() + " ERROR: " + description;
+	}
 }

@@ -80,14 +80,19 @@ public class SampleFile {
 		{
 		BufferedReader sampleFileStream;
 		if (testCase) { // for test cases
-			File sampleFile = new File(pathToSampleFile);
-			System.out.println("%%%% " + pathToSampleFile);
+			String userDir = new java.io.File("").getAbsolutePath();
+			System.out.println(userDir);
+			File sampleFile = new File(userDir + pathToSampleFile);
+			System.out.println("%%%% " + userDir + pathToSampleFile);
 			sampleFileStream = new BufferedReader(new FileReader(sampleFile));
 		} else { // "Load Testdata" button
 			InputStream testFile = this.getClass().getClassLoader().getResourceAsStream(pathToSampleFile);
 			sampleFileStream = new BufferedReader(new InputStreamReader(testFile));
 		}
 		String currentLine = sampleFileStream.readLine();
+		
+		//skip header line
+		 currentLine = sampleFileStream.readLine();
 
 		while (currentLine != null) {
 			TestSample newSample = TestSample.parse(currentLine);
@@ -146,7 +151,7 @@ public class SampleFile {
 			newElement.setText(sample.getSampleID().toString());
 			sampleRowElement.addContent(newElement);
 			
-			//sample sange
+			//sample range
 			newElement = new Element("range");
 			SampleRanges range = sample.getSample().getSampleRanges();
 			ArrayList<Integer> startRange = range.getStarts();
@@ -168,7 +173,7 @@ public class SampleFile {
 			newElement = new Element("haplogroup");
 			
 			/** the weird methods (quoted domi) are not available anymore ;) */
-			/*// if no haplogroup is expected, than set our result to		// predefinied
+			// if no haplogroup is expected, than set our result to		// predefinied
 			if (sample.getExpectedHaplogroup().toString().equals("") && sample.getDetectedHaplogroup() != null) {
 				sample.setExpectedHaplogroup(sample.getDetectedHaplogroup());
 			}
@@ -176,11 +181,11 @@ public class SampleFile {
 				newElement.setText(sample.getExpectedHaplogroup().toString() + " (" + sample.getDetectedHaplogroup().toString() + ")");
 			else {
 				newElement.setText(sample.getExpectedHaplogroup().toString());
-			}*/
+			}
 			
 			RankedResult topResult = sample.getTopResult();
-			if(topResult != null)
-			newElement.setText(String.valueOf(topResult.getHaplogroup()));
+//			if(topResult != null)
+//			newElement.setText(String.valueOf(topResult.getHaplogroup()));
 			sampleRowElement.addContent(newElement);
 
 			
@@ -200,7 +205,7 @@ public class SampleFile {
 			sampleRowElement.addContent(newElement);
 
 			//all polymorphism of sample
-			ArrayList<Polymorphism> t = sample.getSample().getPolymorphismn();
+			ArrayList<Polymorphism> t = sample.getSample().getPolymorphisms();
 			String polys = "";
 			for (Polymorphism t1 : t)
 				polys += t1.toString() + " ";

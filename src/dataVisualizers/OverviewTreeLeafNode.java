@@ -48,14 +48,14 @@ public class OverviewTreeLeafNode extends TreeNode {
 			c = (OverviewTreeInnerNode) c.getParent();
 		}
 		
-		for(Polymorphism currentSamplePoly : testSample.getSample().getPolymorphismn()){
+		for(Polymorphism currentSamplePoly : testSample.getSample().getPolymorphisms()){
 			if(!foundPolysAllSamples.contains(currentSamplePoly))
 				if(includeHotspots || (!includeHotspots && !currentSamplePoly.isMTHotspot()))
 				remainingPolys.add(currentSamplePoly);
 		}
 		
 		for(Polymorphism currentSamplePoly : foundPolysAllSamples){
-			if(!testSample.getSample().getPolymorphismn().contains(currentSamplePoly)){
+			if(!testSample.getSample().getPolymorphisms().contains(currentSamplePoly)){
 				Polymorphism newBackmutation = new Polymorphism(currentSamplePoly);
 				newBackmutation.setBackMutation(true);
 				remainingPolys.add(newBackmutation);

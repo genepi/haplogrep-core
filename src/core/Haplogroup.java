@@ -46,7 +46,7 @@ public class Haplogroup implements Serializable {
 		if (!(hgToCheck instanceof Haplogroup))
 			return false;
 
-		return phylotree.isSuperHaplogroup(this, hgToCheck);
+		return phylotree.isSuperHaplogroup(hgToCheck,this);
 	}
 
 	@Override

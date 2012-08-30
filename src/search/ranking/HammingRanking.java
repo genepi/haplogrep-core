@@ -40,7 +40,7 @@ public class HammingRanking extends RankingMethod {
 		
 		Collections.sort(results);
 		
-		cutResultSetToTopHits();
+		cutResultSetToTopHits(sample);
 	}
 	/* (non-Javadoc)
 	 * @see search.ranking.RankingMethod#clone()

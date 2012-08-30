@@ -32,7 +32,7 @@ public class Sample {
 	/**
 	 * @return All polymorphisms of this sample
 	 */
-	public ArrayList<Polymorphism> getPolymorphismn() {
+	public ArrayList<Polymorphism> getPolymorphisms() {
 		return sample;
 	}
 

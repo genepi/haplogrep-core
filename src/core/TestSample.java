@@ -120,7 +120,10 @@ public class TestSample implements Comparable<TestSample>{
 	 * @return The haplogroup of the best search result.
 	 */
 	public Haplogroup getDetectedHaplogroup() {
-		return detectedHaplogroup;
+		if(getTopResult() != null)
+			return getTopResult().getSearchResult().getHaplogroup();
+		else
+			return null;
 	}
 	
 	/**

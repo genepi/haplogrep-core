@@ -44,7 +44,7 @@ public class KylczynskiRanking extends RankingMethod {
 
 		Collections.sort(results);
 
-		cutResultSetToTopHits();
+		cutResultSetToTopHits(sample);
 	}
 
 	/*
