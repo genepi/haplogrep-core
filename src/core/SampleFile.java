@@ -183,7 +183,7 @@ public class SampleFile {
 				newElement.setText(sample.getExpectedHaplogroup().toString());
 			}
 			
-			RankedResult topResult = sample.getTopResult();
+			
 //			if(topResult != null)
 //			newElement.setText(String.valueOf(topResult.getHaplogroup()));
 			sampleRowElement.addContent(newElement);
@@ -196,6 +196,7 @@ public class SampleFile {
 
 			//matching quality of sample
 			newElement = new Element("hit");
+			RankedResult topResult = sample.getTopResult();
 			if(topResult != null)
 				newElement.setText(String.valueOf(topResult.getDistance()));
 			
@@ -206,7 +207,7 @@ public class SampleFile {
 
 			// TODO fill correct number of errors and warnings
 			newElement = new Element("err");
-			newElement.setText("2");
+			newElement.setText("0");
 			sampleRowElement.addContent(newElement);
 			
 			newElement = new Element("war");
