@@ -685,7 +685,7 @@ public class PhylotreeRenderer {
 
 		for (Polymorphism currentPoly :  currentNode.getFoundPolys()) {
 
-			drawCenteredNode(g2d, x, y, Polymorphism.convertToATBackmutation(currentPoly.toString()));
+			drawCenteredNode(g2d, x, y, Polymorphism.convertToATBackmutation(currentPoly.toStringShortVersion()));
 			y += g2d.getFontMetrics().getHeight() + linePadding;
 		}
 //		for (Polymorphism currentPoly :  currentNode.getMissingPolys()) {

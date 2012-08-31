@@ -55,7 +55,7 @@ public class OverviewTreeLeafNode extends TreeNode {
 		}
 		
 		for(Polymorphism currentSamplePoly : foundPolysAllSamples){
-			if(!testSample.getSample().getPolymorphisms().contains(currentSamplePoly)){
+			if(!currentSamplePoly.isBackMutation() && !testSample.getSample().getPolymorphisms().contains(currentSamplePoly)){
 				Polymorphism newBackmutation = new Polymorphism(currentSamplePoly);
 				newBackmutation.setBackMutation(true);
 				remainingPolys.add(newBackmutation);
