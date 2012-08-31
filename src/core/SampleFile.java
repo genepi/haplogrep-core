@@ -92,16 +92,16 @@ public class SampleFile {
 			InputStream testFile = this.getClass().getClassLoader().getResourceAsStream(pathToSampleFile);
 			sampleFileStream = new BufferedReader(new InputStreamReader(testFile));
 		}
-		String currentLine = sampleFileStream.readLine();
 		
-		//skip header line
-		 currentLine = sampleFileStream.readLine();
-
-		while (currentLine != null) {
+		 String currentLine = sampleFileStream.readLine();
+			if(!currentLine.startsWith("SampleId\tRange")){
+				TestSample newSample = TestSample.parse(currentLine);
+				testSamples.put(newSample.getSampleID(), newSample);
+			}
+		while ((currentLine =sampleFileStream.readLine())!= null) {
 			TestSample newSample = TestSample.parse(currentLine);
 			testSamples.put(newSample.getSampleID(), newSample);
 
-			currentLine = sampleFileStream.readLine();
 		}
 	}
 
@@ -202,7 +202,6 @@ public class SampleFile {
 			RankedResult topResult = sample.getTopResult();
 			if(topResult != null)
 				newElement.setText(String.valueOf(topResult.getDistance()));
-			
 			else
 				newElement.setText(String.valueOf(0));
 			
@@ -211,7 +210,7 @@ public class SampleFile {
 			// TODO fill correct number of errors and warnings
 			newElement = new Element("err");
 			if(topResult == null)
-				newElement.setText("0");
+				newElement.setText("-");
 			else
 				newElement.setText(String.valueOf(getQualityAssistent().getNumIssuedErrors(sample)));
 			
@@ -219,7 +218,7 @@ public class SampleFile {
 			
 			newElement = new Element("war");
 			if(topResult == null)
-				newElement.setText("0");
+				newElement.setText("-");
 			else
 				newElement.setText(String.valueOf(getQualityAssistent().getNumIssuedWarnings(sample)));
 			
