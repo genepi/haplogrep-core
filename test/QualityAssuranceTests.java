@@ -24,7 +24,7 @@ public class QualityAssuranceTests {
 	public void testMatchingRulesDetectedExcpectedHg() throws HsdFileException, IOException {
 		SampleFile testFile = new  SampleFile("/testDataFiles/Burma_44GG.txt",true);
 		
-		testFile.updateClassificationResults(PhylotreeManager.getInstance().getPhylotree("phylotree14.xml","fluctRates14.txt"), new HammingRanking());
+		testFile.updateClassificationResults(PhylotreeManager.getInstance().getPhylotree("phylotree14.xml","weights14.txt"), new HammingRanking());
 		QualityAssistent newQualityAssistent = new QualityAssistent(testFile,RuleSet.createStandardRuleSet());
 		
 		newQualityAssistent.reevaluateRules();
@@ -36,7 +36,7 @@ public class QualityAssuranceTests {
 	public void testCheckTooManyPrivateMutations() throws HsdFileException, IOException {
 		SampleFile testFile = new  SampleFile("/testDataFiles/Burma_44GG.txt",true);
 		
-		testFile.updateClassificationResults(PhylotreeManager.getInstance().getPhylotree("phylotree14.xml","fluctRates14.txt"), new HammingRanking());
+		testFile.updateClassificationResults(PhylotreeManager.getInstance().getPhylotree("phylotree14.xml","weights14.txt"), new HammingRanking());
 		
 		RuleSet rules = new RuleSet();
 		rules.addRule(new CheckForTooManyGlobalPrivateMutations());
@@ -51,7 +51,7 @@ public class QualityAssuranceTests {
 	public void testForMetaboChip() throws HsdFileException, IOException {
 		SampleFile testFile = new  SampleFile("/testDataFiles/selected-samples-metabochip.hsd",true);
 		
-		testFile.updateClassificationResults(PhylotreeManager.getInstance().getPhylotree("phylotree14.xml","fluctRates14.txt"), new HammingRanking());
+		testFile.updateClassificationResults(PhylotreeManager.getInstance().getPhylotree("phylotree14.xml","weights14.txt"), new HammingRanking());
 		
 		RuleSet rules = new RuleSet();
 		rules.addRule(new CheckForSampleRange());
@@ -66,7 +66,7 @@ public class QualityAssuranceTests {
 	public void testForRSRS() throws HsdFileException, IOException {
 		SampleFile testFile = new  SampleFile("/testDataFiles/RSRS.hsd",true);
 		
-		testFile.updateClassificationResults(PhylotreeManager.getInstance().getPhylotree("phylotree14.xml","fluctRates14.txt"), new HammingRanking());
+		testFile.updateClassificationResults(PhylotreeManager.getInstance().getPhylotree("phylotree14.xml","weights14.txt"), new HammingRanking());
 		
 		RuleSet rules = new RuleSet();
 		rules.addRule(new CheckForSampleRSRSAligned());
@@ -78,5 +78,20 @@ public class QualityAssuranceTests {
 		assertEquals(3, newQualityAssistent.getNumIssuedWarnings());
 	}
 
-
+	@Test
+	public void testCompleteRuleSet() throws HsdFileException, IOException {
+		SampleFile testFile = new  SampleFile("/testDataFiles/qualityIssuesTestFile.hsd",true);
+		
+		testFile.updateClassificationResults(PhylotreeManager.getInstance().getPhylotree("phylotree14.xml","weights14.txt"), new HammingRanking());
+		
+		RuleSet rules = RuleSet.createStandardRuleSet();
+		QualityAssistent newQualityAssistent = new QualityAssistent(testFile,rules);
+		
+		newQualityAssistent.reevaluateRules();
+		System.out.println(newQualityAssistent);
+		System.out.println(newQualityAssistent.getAllIssuesJSON().toString());
+		
+		
+		assertEquals(3, newQualityAssistent.getNumIssuedWarnings());
+	}
 }

@@ -3,6 +3,9 @@ package qualityAssurance;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JsonConfig;
+
 import phylotree.Phylotree;
 
 import qualityAssurance.rules.HaplogrepRule;
@@ -13,8 +16,11 @@ public class QualityAssistent {
 	SampleFile fileToCheck;
 	RuleSet rules;
 	HashMap<TestSample, ArrayList<QualityIssue>> allQualityIssuesLookup = new HashMap<TestSample, ArrayList<QualityIssue>>();
-	 ArrayList<QualityIssue> allQualityIssues = new ArrayList<QualityIssue>();
+	HashMap<Integer, QualityIssue> issueLookup = new HashMap<Integer, QualityIssue>();
+	
+	ArrayList<QualityIssue> allQualityIssues = new ArrayList<QualityIssue>();
 	Phylotree usedPhyloTree = null;
+	int numIssues = 0;
 	int numIssuedWarnings = 0;
 	int numIssuedErrors = 0;
 	
@@ -33,11 +39,12 @@ public class QualityAssistent {
 	}
 
 	public void addNewIssue(QualityIssue newIssue){
-		if(!allQualityIssuesLookup.containsKey(newIssue.getSample()))
-			allQualityIssuesLookup.put(newIssue.getSample(), new ArrayList<QualityIssue>());
+		if(!allQualityIssuesLookup.containsKey(newIssue.getSampleOfIssue()))
+			allQualityIssuesLookup.put(newIssue.getSampleOfIssue(), new ArrayList<QualityIssue>());
 		
-		allQualityIssuesLookup.get(newIssue.getSample()).add(newIssue);
+		allQualityIssuesLookup.get(newIssue.getSampleOfIssue()).add(newIssue);
 		
+		issueLookup.put(newIssue.getIssueID(), newIssue);	
 		allQualityIssues.add(newIssue);
 	}
 
@@ -61,6 +68,31 @@ public class QualityAssistent {
 		return numIssuedErrors;
 	}
 	
+	
+	public int getNumIssuedWarnings(TestSample sample) {
+		int numWarningsPerSample = 0;
+		
+		for(QualityIssue currentIssue : allQualityIssuesLookup.get(sample)){
+			if(currentIssue.priority == 0)
+				numWarningsPerSample++;
+		}
+		
+		
+		return numWarningsPerSample;
+	}
+	
+	public int getNumIssuedErrors(TestSample sample) {
+		int numErrorsPerSample = 0;
+		
+		for(QualityIssue currentIssue : allQualityIssuesLookup.get(sample)){
+			if(currentIssue.priority == 1)
+				numErrorsPerSample++;
+		}
+		
+		
+		return numErrorsPerSample;
+	}
+	
 	public String toString(){
 		String s = "Quality Issues: \n";
 		for(QualityIssue currentIssue : allQualityIssues){
@@ -69,5 +101,19 @@ public class QualityAssistent {
 		
 		return s;
 	}
+
+	public int getNewIssueID() {
+		numIssues++;
+		return numIssues;	
+	}
+	
+	public JSONArray getAllIssuesJSON(){
+		JsonConfig conf = new JsonConfig();
+		conf.setExcludes(new String[]{"sampleOfIssue"});
+		JSONArray jsonArray = JSONArray.fromObject(allQualityIssues,conf);
+		
+		return jsonArray;
+	}
+
 	
 }

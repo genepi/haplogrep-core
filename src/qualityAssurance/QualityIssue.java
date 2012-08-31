@@ -3,11 +3,13 @@ package qualityAssurance;
 import core.TestSample;
 
 public class QualityIssue implements Comparable<QualityIssue>{
+	int issueID;
 	int priority;
 	String description;
 	TestSample sampleOfIssue;
 	
-	public QualityIssue(int priority,TestSample sampleofIssue, String description){
+	public QualityIssue(QualityAssistent qualityAssistent,int priority,TestSample sampleofIssue, String description){
+		this.issueID = qualityAssistent.getNewIssueID();
 		this.priority = priority;
 		this.sampleOfIssue = sampleofIssue;
 		this.description = description;
@@ -22,8 +24,19 @@ public class QualityIssue implements Comparable<QualityIssue>{
 		return description;
 	}
 
-	public TestSample getSample() {
+	public Integer getIssueID() {
+		return issueID;
+	}
+
+	public TestSample getSampleOfIssue() {
 		return sampleOfIssue;
+	}
+
+	public int getPriority() {
+		return priority;
+	}
+	public String getSampleID() {
+		return sampleOfIssue.getSampleID();
 	}
 	
 	

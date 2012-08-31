@@ -33,7 +33,6 @@ public class TestSample implements Comparable<TestSample>{
 	
 	private String testSampleID = "Unknown";
 	private Haplogroup expectedHaplogroup;
-	private Haplogroup detectedHaplogroup;
 	private Sample sample;
 
 	private TestSample(){
@@ -123,14 +122,7 @@ public class TestSample implements Comparable<TestSample>{
 			return null;
 	}
 	
-	/**
-	 * Weird method to set the detected haplogroup. Used to achieve some comparison feature when changing
-	 * phylotree versions. Consider to remove method.
-	 * @param detectedHaplogroup The new detected haplogroup
-	 */
-	public void setDetectedHaplogroup(Haplogroup detectedHaplogroup) {
-		this.detectedHaplogroup = detectedHaplogroup;
-	}
+
 	
 	/**
 	 * @return The sample object of this test sample. The sample object 

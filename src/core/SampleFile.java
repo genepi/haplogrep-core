@@ -19,6 +19,8 @@ import org.jdom.output.XMLOutputter;
 
 import phylotree.PhyloTreeNode;
 import phylotree.Phylotree;
+import qualityAssurance.QualityAssistent;
+import qualityAssurance.RuleSet;
 import search.SearchResult;
 import search.SearchResultTreeNode;
 import search.ranking.RankingMethod;
@@ -36,7 +38,8 @@ import exceptions.parse.samplefile.UniqueSampleIDException;
  */
 public class SampleFile {
 	Hashtable<String, TestSample> testSamples = new Hashtable<String, TestSample>();
-
+	QualityAssistent qualityAssistent = null;
+	
 	/**
 	 * Main constructor of SampleFile class. Creates a new test sample instance. 
 	 * @param sampleLines An array of strings representing each line of the hsd file
@@ -172,7 +175,7 @@ public class SampleFile {
 			//The detected haplogroup
 			newElement = new Element("haplogroup");
 			
-			/** the weird methods (quoted domi) are not available anymore ;) */
+			
 			// if no haplogroup is expected, than set our result to		// predefinied
 			if (sample.getExpectedHaplogroup().toString().equals("") && sample.getDetectedHaplogroup() != null) {
 				sample.setExpectedHaplogroup(sample.getDetectedHaplogroup());
@@ -207,11 +210,19 @@ public class SampleFile {
 
 			// TODO fill correct number of errors and warnings
 			newElement = new Element("err");
-			newElement.setText("0");
+			if(topResult == null)
+				newElement.setText("0");
+			else
+				newElement.setText(String.valueOf(getQualityAssistent().getNumIssuedErrors(sample)));
+			
 			sampleRowElement.addContent(newElement);
 			
 			newElement = new Element("war");
-			newElement.setText("0");
+			if(topResult == null)
+				newElement.setText("0");
+			else
+				newElement.setText(String.valueOf(getQualityAssistent().getNumIssuedWarnings(sample)));
+			
 			sampleRowElement.addContent(newElement);
 			
 			//all polymorphism of sample
@@ -242,12 +253,21 @@ public class SampleFile {
 	}
 
 	/**
+	 * Runs all quality rules of the standard rule set
+	 */
+	public void runQualityChecks(){	
+			RuleSet rules = RuleSet.createStandardRuleSet();
+			qualityAssistent = new QualityAssistent(this, rules);
+			qualityAssistent.reevaluateRules();
+	}
+	/**
 	 * Clears all previous search results
 	 */
 	public void clearClassificationResults() {
 		for (TestSample currentSample : testSamples.values())
 			currentSample.clearSearchResults();
 
+		qualityAssistent = null;
 	}
 
 	/**
@@ -413,6 +433,11 @@ public class SampleFile {
 			e.printStackTrace();
 		}
 
+	}
+
+
+	public QualityAssistent getQualityAssistent() {
+		return qualityAssistent;		
 	}
 
 	

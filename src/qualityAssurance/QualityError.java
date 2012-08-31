@@ -5,7 +5,7 @@ import core.TestSample;
 public class QualityError extends QualityIssue {
 
 	public QualityError(QualityAssistent assistent,TestSample sampleOfIssue,String desciption) {
-		super(1,sampleOfIssue,desciption);
+		super(assistent,1,sampleOfIssue,desciption);
 		assistent.incNumErrors();
 	}
 	

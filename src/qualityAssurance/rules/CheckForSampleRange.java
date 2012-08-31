@@ -3,9 +3,11 @@ package qualityAssurance.rules;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -33,7 +35,12 @@ public class CheckForSampleRange implements HaplogrepRule {
 	
 	private void loadMetaboChipPositions() {
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader(new File("testDataFiles/metaboChipPositions")));
+			InputStream phyloFile = this.getClass().getClassLoader().getResourceAsStream("metaboChipPositions");
+			
+			if(phyloFile == null)
+				phyloFile = new  FileInputStream(new File("testDataFiles/metaboChipPositions"));
+			
+			BufferedReader reader = new BufferedReader(new InputStreamReader(phyloFile));
 
 			String currentLine = reader.readLine();
 			while (currentLine != null) {
