@@ -23,57 +23,34 @@ import exceptions.parse.sample.InvalidPolymorphismException;
 
 public class CheckForSampleRange implements HaplogrepRule {
 	ArrayList<Polymorphism> foundReferencePolys = new ArrayList<Polymorphism>();
-	static HashSet<Integer> metaboChipPositions = null;
+	//static HashSet<Integer> metaboChipPositions = null;
 	
 	public CheckForSampleRange(){
-		if(metaboChipPositions == null){
-			metaboChipPositions = new HashSet<Integer>();
-			
-			loadMetaboChipPositions();
-		}
+//		if(metaboChipPositions == null){
+//			metaboChipPositions = new HashSet<Integer>();
+//			
+//			loadMetaboChipPositions();
+//		}
 	}
 	
-	private void loadMetaboChipPositions() {
-		try {
-			InputStream phyloFile = this.getClass().getClassLoader().getResourceAsStream("metaboChipPositions");
-			
-			if(phyloFile == null)
-				phyloFile = new  FileInputStream(new File("testDataFiles/metaboChipPositions"));
-			
-			BufferedReader reader = new BufferedReader(new InputStreamReader(phyloFile));
-
-			String currentLine = reader.readLine();
-			while (currentLine != null) {
-				Scanner sc = new Scanner(currentLine);
-				sc.next();
-				sc.next();
-				metaboChipPositions.add(Integer.parseInt(sc.next().replace("mt", "")));
-				currentLine = reader.readLine();
-			}
-
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
+	
 
 	@Override
 	public void evaluate(QualityAssistent qualityAssistent, TestSample currentSample) {
 			
 		boolean isMetaboChip = true;
 		
+		SampleRanges metaboChipRange = new SampleRanges();
+		metaboChipRange.addMetaboChipRange();
 		for(Polymorphism currentPoly : currentSample.getSample().getPolymorphisms()){
-			if(!metaboChipPositions.contains(currentPoly.getPosition())){
+			if(!metaboChipRange.contains(currentPoly)){
 					isMetaboChip = false;
 					break;
 			}
 		}
-		boolean isControlRange = true;
+		boolean isControlRange = false;
 		if(!isMetaboChip){
+			isControlRange = true;
 			SampleRanges controlRange = new SampleRanges();
 			controlRange.addControlRange();
 			
@@ -85,12 +62,26 @@ public class CheckForSampleRange implements HaplogrepRule {
 			}
 		}
 		
-		if(isMetaboChip)
-			qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "MetaboChip recognized"));
-		else if(isControlRange){
+		boolean isCompleteRange = false;
+		if(!isMetaboChip && !isControlRange){
+			isCompleteRange = true;
+			SampleRanges controlRange = new SampleRanges();
+			controlRange.addControlRange();
+			
+			for(Polymorphism currentPoly : currentSample.getSample().getPolymorphisms()){
+				if(!controlRange.contains(currentPoly)){
+					isCompleteRange = false;
+					break;
+				}
+			}
+		}
+		
+		if(isMetaboChip && !currentSample.getSample().getSampleRanges().isMataboChipRange())
+			qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "MetaboChip range detected but does not match the indicated range"));
+		else if(isControlRange && !currentSample.getSample().getSampleRanges().isControlRange()){
 			qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "Control range recognized"));	
 		}
-		else
+		else if(isCompleteRange && !currentSample.getSample().getSampleRanges().isCompleteRange())
 		qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "Complete range recognized"));
 	}
 

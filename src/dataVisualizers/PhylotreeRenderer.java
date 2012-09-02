@@ -655,7 +655,7 @@ public class PhylotreeRenderer {
 				g2d.setColor(new Color(50, 180, 227));
 			}
 
-			drawCenteredNode(g2d, center, depth, Polymorphism.convertToATBackmutation(currentPoly.toString()));
+			drawCenteredNode(g2d, center, depth, Polymorphism.convertToATBackmutation(currentPoly.toStringShortVersion()));
 
 		}
 

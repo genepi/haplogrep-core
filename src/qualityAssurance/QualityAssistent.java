@@ -72,6 +72,7 @@ public class QualityAssistent {
 	public int getNumIssuedWarnings(TestSample sample) {
 		int numWarningsPerSample = 0;
 		
+		if(allQualityIssuesLookup.get(sample) != null)
 		for(QualityIssue currentIssue : allQualityIssuesLookup.get(sample)){
 			if(currentIssue.priority == 0)
 				numWarningsPerSample++;
@@ -84,6 +85,7 @@ public class QualityAssistent {
 	public int getNumIssuedErrors(TestSample sample) {
 		int numErrorsPerSample = 0;
 		
+		if(allQualityIssuesLookup.get(sample) != null)
 		for(QualityIssue currentIssue : allQualityIssuesLookup.get(sample)){
 			if(currentIssue.priority == 1)
 				numErrorsPerSample++;

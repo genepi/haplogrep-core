@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="lib" path="jars/jaxen-1.1.1.jar"/>
 	<classpathentry kind="lib" path="jars/jdom.jar"/>
 	<classpathentry kind="lib" path="jars/jxl.jar"/>
@@ -15,6 +16,11 @@
 	<classpathentry kind="lib" path="jars/batik-ext-1.7.jar"/>
 	<classpathentry kind="lib" path="jars/batik-xml-1.7.jar"/>
 	<classpathentry kind="lib" path="jars/json-lib.jar"/>
+	<classpathentry kind="lib" path="jars/commons-lang-2.4.jar"/>
+	<classpathentry kind="lib" path="jars/batik-bridge-1.7.jar"/>
+	<classpathentry kind="lib" path="jars/commons-beanutils-1.8.0.jar"/>
+	<classpathentry kind="lib" path="jars/commons-collections-3.2.jar"/>
+	<classpathentry kind="lib" path="jars/ezmorph-1.0.6.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="jars/org.json.jar"/>

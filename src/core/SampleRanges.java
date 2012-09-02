@@ -1,6 +1,15 @@
 package core;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Scanner;
 
 import exceptions.parse.sample.InvalidRangeException;
 
@@ -15,15 +24,47 @@ public class SampleRanges {
 
 	private ArrayList<Integer> starts = new ArrayList<Integer>();
 	private ArrayList<Integer> ends = new ArrayList<Integer>();
-
+	static HashSet<Integer> metaboChipPositions = null;
 	/**
 	 * Creates empty range.
 	 */
 	public SampleRanges() {
-
+		if(metaboChipPositions == null){
+			metaboChipPositions = new HashSet<Integer>();
+			
+			loadMetaboChipPositions();
+		}
 	}
 
+	private void loadMetaboChipPositions() {
+		try {
+			InputStream phyloFile = this.getClass().getClassLoader().getResourceAsStream("metaboChipPositions");
+			
+			if(phyloFile == null)
+				phyloFile = new  FileInputStream(new File("testDataFiles/metaboChipPositions"));
+			
+			BufferedReader reader = new BufferedReader(new InputStreamReader(phyloFile));
 
+			String currentLine = reader.readLine();
+			while (currentLine != null) {
+				Scanner sc = new Scanner(currentLine);
+				sc.next();
+				sc.next();
+				Integer newPosition = Integer.parseInt(sc.next().replace("mt", ""));
+				metaboChipPositions.add(newPosition);
+				System.out.print(newPosition + ";");
+				currentLine = reader.readLine();
+			}
+
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
 	/**
 	 * Parsed a new SampleRanges object. Needs hsd file format of ranges.
 	 * 
@@ -101,6 +142,16 @@ public class SampleRanges {
 		starts.add(1);
 		ends.add(576);
 	}
+	
+	/**
+	 * Adds the Metabo chip positions to this SampleRanges instance,
+	 */
+	public void addMetaboChipRange() {
+		for(int currentMetaboPosition : metaboChipPositions){
+		starts.add(currentMetaboPosition);
+		ends.add(currentMetaboPosition);
+		}
+	}
 
 	/**
 	 * Adds a custom range to this instance.
@@ -121,8 +172,12 @@ public class SampleRanges {
 	 * @return True if the polymorphism is contained, false otherwise
 	 */
 	public boolean contains(Polymorphism polyToCheck) {
+		return continsPosition(polyToCheck.getPosition());
+	}
+
+	private boolean continsPosition(int position) {
 		for (int i = 0; i < starts.size(); i++) {
-			if (starts.get(i) <= polyToCheck.getPosition() && ends.get(i) >= polyToCheck.getPosition())
+			if (starts.get(i) <= position && ends.get(i) >= position)
 				return true;
 		}
 
@@ -160,5 +215,62 @@ public class SampleRanges {
 		}
 		return result.trim();
 
+	}
+
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((ends == null) ? 0 : ends.hashCode());
+		result = prime * result + ((starts == null) ? 0 : starts.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SampleRanges other = (SampleRanges) obj;
+		if (ends == null) {
+			if (other.ends != null)
+				return false;
+		} 
+		else{
+			for(int i : ends)
+				if(!other.ends.contains(i))
+					return false;
+		} 
+		if (starts == null) {
+			for(int i : starts)
+				if(!other.starts.contains(i))
+					return false;
+		} 
+		return true;
+	}
+
+	public boolean isMataboChipRange() {
+		SampleRanges metaboChipRange = new SampleRanges();
+		metaboChipRange.addMetaboChipRange();
+		
+		return metaboChipRange.equals(this);
+	}
+
+	public boolean isControlRange() {
+		SampleRanges controlRange = new SampleRanges();
+		controlRange.addControlRange();
+		
+		return controlRange.equals(this);
+	}
+
+	public boolean isCompleteRange() {
+		SampleRanges completeRange = new SampleRanges();
+		completeRange.addCompleteRange();
+		
+		return completeRange.equals(this);
 	}
 }

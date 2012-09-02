@@ -3,6 +3,7 @@ package qualityAssurance.rules;
 import com.sun.org.apache.bcel.internal.generic.NEW;
 
 import qualityAssurance.QualityAssistent;
+import qualityAssurance.QualityError;
 import qualityAssurance.QualityWarning;
 import core.Haplogroup;
 import core.TestSample;
@@ -21,7 +22,7 @@ public class CheckExpectedHGMatchesDetectedHG implements HaplogrepRule {
 
 			if (!currentSample.getExpectedHaplogroup().isSuperHaplogroup(qualityAssistent.getUsedPhyloTree(), detectedHg)) {
 
-				qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "The expected haplogroup "
+				qualityAssistent.addNewIssue(new QualityError(qualityAssistent, currentSample, "The expected haplogroup "
 						+ currentSample.getExpectedHaplogroup() + " is no super group of the detected haplogroup " + detectedHg));
 			} else {
 				qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "The detected haplogroup " + detectedHg

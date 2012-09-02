@@ -11,11 +11,12 @@ import core.TestSample;
 import exceptions.parse.sample.InvalidPolymorphismException;
 
 public class CheckForReferencePolymorhisms implements HaplogrepRule {
-	ArrayList<Polymorphism> foundReferencePolys = new ArrayList<Polymorphism>();
+	
 	
 	
 	@Override
 	public void evaluate(QualityAssistent qualityAssistent, TestSample currentSample) {
+		ArrayList<Polymorphism> foundReferencePolys = new ArrayList<Polymorphism>();
 		
 		for(Polymorphism currentPoly : currentSample.getSample().getPolymorphisms()){
 			if(currentPoly.equalsReference())
