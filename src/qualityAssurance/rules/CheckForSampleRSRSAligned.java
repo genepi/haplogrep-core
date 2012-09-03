@@ -71,6 +71,12 @@ public class CheckForSampleRSRSAligned implements HaplogrepRule {
 		
 		
 			if(numRSRSPolysFound > 1){
+				if(numRSRSPolysFound == 5){
+					for(Polymorphism currentUniqueRSRSPoly : uniqueRSRSPolys)	
+						if(currentSample.getSample().contains(currentUniqueRSRSPoly))
+								System.out.println(currentUniqueRSRSPoly);
+				}
+				
 				qualityAssistent.addNewIssue(new QualityError(qualityAssistent, currentSample, numRSRSPolysFound + " common RSRS polymorphims found! " +
 						"The sample seems to be aligned to RSRS. Haplogrep only supports rCRS aligned samples."));
 			}

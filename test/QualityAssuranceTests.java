@@ -80,7 +80,7 @@ public class QualityAssuranceTests {
 
 	@Test
 	public void testCompleteRuleSet() throws HsdFileException, IOException {
-		SampleFile testFile = new  SampleFile("/testDataFiles/qualityIssuesTestFile.hsd",true);
+		SampleFile testFile = new  SampleFile("/testDataFiles/qualityIssuesTestFileSmall.hsd",true);
 		
 		testFile.updateClassificationResults(PhylotreeManager.getInstance().getPhylotree("phylotree14.xml","weights14.txt"), new HammingRanking());
 		

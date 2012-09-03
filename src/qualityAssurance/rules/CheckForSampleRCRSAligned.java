@@ -15,6 +15,7 @@ public class CheckForSampleRCRSAligned implements HaplogrepRule {
 		try {
 			if(!currentSample.getSample().contains(new Polymorphism("263G")) && 
 					!currentSample.getSample().contains(new Polymorphism("8860G")) &&
+					!currentSample.getSample().contains(new Polymorphism("930G")) &&
 					!currentSample.getSample().contains(new Polymorphism("15326G"))){
 				qualityAssistent.addNewIssue(new QualityError(qualityAssistent, currentSample, "Common rCRS polymorphim (263G 8860G or 15326G) not found! " +
 						"The sample seems not properly aligned to rCRS."));
