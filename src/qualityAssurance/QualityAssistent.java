@@ -21,6 +21,7 @@ public class QualityAssistent {
 	HashMap<Integer, QualityIssue> issueLookup = new HashMap<Integer, QualityIssue>();
 	
 	ArrayList<QualityIssue> allQualityIssues = new ArrayList<QualityIssue>();
+	
 	Phylotree usedPhyloTree = null;
 	int numIssues = 0;
 	int numIssuedWarnings = 0;
@@ -135,6 +136,19 @@ public class QualityAssistent {
 		}
 		
 		JSONArray jsonArray = JSONArray.fromObject(notSuppressedIssues,conf);
+		
+		return jsonArray;
+	}
+	
+	public JSONArray getSampleIssues(String sampleID){
+		ArrayList<QualityIssue> sampleQualityIssues = new ArrayList<QualityIssue>();
+		for(QualityIssue currentIssue : allQualityIssues){
+			if(currentIssue.getSampleID().equals(sampleID))
+			sampleQualityIssues.add(currentIssue);
+		}
+		JsonConfig conf = new JsonConfig();
+		conf.setExcludes(new String[]{"sampleOfIssue"});
+		JSONArray jsonArray = JSONArray.fromObject(sampleQualityIssues,conf);
 		
 		return jsonArray;
 	}
