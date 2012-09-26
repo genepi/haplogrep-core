@@ -79,9 +79,16 @@ public class CheckForSampleRSRSAligned implements HaplogrepRule {
 				
 				qualityAssistent.addNewIssue(new QualityError(qualityAssistent, currentSample, numRSRSPolysFound + " common RSRS polymorphims found! " +
 						"The sample seems to be aligned to RSRS. Haplogrep only supports rCRS aligned samples."));
+				currentSample.setPassedPreTests(false);
 			}
 			
 					
-		} 
+		}
+
+	@Override
+	public void suppressIssues(QualityAssistent qualityAssistent, TestSample currentSample) {
+		// TODO Auto-generated method stub
+		
+	} 
 
 }

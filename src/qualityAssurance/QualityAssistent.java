@@ -1,6 +1,7 @@
 package qualityAssurance;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 import net.sf.json.JSONArray;
@@ -8,12 +9,13 @@ import net.sf.json.JsonConfig;
 
 import phylotree.Phylotree;
 
+import qualityAssurance.rules.CheckForSampleRCRSAligned;
 import qualityAssurance.rules.HaplogrepRule;
 import core.SampleFile;
 import core.TestSample;
 
 public class QualityAssistent {
-	SampleFile fileToCheck;
+	Collection<TestSample> sampleToCheck;
 	RuleSet rules;
 	HashMap<TestSample, ArrayList<QualityIssue>> allQualityIssuesLookup = new HashMap<TestSample, ArrayList<QualityIssue>>();
 	HashMap<Integer, QualityIssue> issueLookup = new HashMap<Integer, QualityIssue>();
@@ -25,15 +27,17 @@ public class QualityAssistent {
 	int numIssuedErrors = 0;
 	
 	
-	public QualityAssistent(SampleFile fileToCheck,RuleSet usedRules){
-		this.fileToCheck = fileToCheck;
+	public QualityAssistent(Collection<TestSample> fileToCheck,RuleSet usedRules,Phylotree usedPhyloTree){
+		this.sampleToCheck = fileToCheck;
 		this.rules = usedRules;
-		this.usedPhyloTree = fileToCheck.getTestSamples().get(0).getResults().
-				get(0).getSearchResult().getAttachedPhyloTreeNode().getTree();		
+		this.usedPhyloTree = usedPhyloTree;
+//		if(sampleToCheck.get(0).getResults().size() > 0)
+//			this.usedPhyloTree = fileToCheck.get(0).getResults().
+//					get(0).getSearchResult().getAttachedPhyloTreeNode().getTree();		
 	}
 	
 	public void reevaluateRules(){
-		for(TestSample currentSample : fileToCheck.getTestSamples()){
+		for(TestSample currentSample : sampleToCheck){
 			rules.reevaluateRules(this,currentSample);
 		}
 	}
@@ -74,7 +78,7 @@ public class QualityAssistent {
 		
 		if(allQualityIssuesLookup.get(sample) != null)
 		for(QualityIssue currentIssue : allQualityIssuesLookup.get(sample)){
-			if(currentIssue.priority == 0)
+			if(currentIssue.priority == 0 && !currentIssue.isSuppress())
 				numWarningsPerSample++;
 		}
 		
@@ -87,7 +91,7 @@ public class QualityAssistent {
 		
 		if(allQualityIssuesLookup.get(sample) != null)
 		for(QualityIssue currentIssue : allQualityIssuesLookup.get(sample)){
-			if(currentIssue.priority == 1)
+			if(currentIssue.priority == 1 && !currentIssue.isSuppress())
 				numErrorsPerSample++;
 		}
 		
@@ -95,9 +99,19 @@ public class QualityAssistent {
 		return numErrorsPerSample;
 	}
 	
+	public QualityIssue getIssue(TestSample sample,String desc){
+		if(allQualityIssuesLookup.get(sample) != null){
+			for(QualityIssue currentIssue : allQualityIssuesLookup.get(sample)){
+				if(currentIssue.description.contains(desc))
+					return currentIssue;
+			}
+		}
+		return null;
+	}
 	public String toString(){
 		String s = "Quality Issues: \n";
 		for(QualityIssue currentIssue : allQualityIssues){
+			if(!currentIssue.isSuppress())
 			s += currentIssue + "\n";
 		}
 		
@@ -112,7 +126,15 @@ public class QualityAssistent {
 	public JSONArray getAllIssuesJSON(){
 		JsonConfig conf = new JsonConfig();
 		conf.setExcludes(new String[]{"sampleOfIssue"});
-		JSONArray jsonArray = JSONArray.fromObject(allQualityIssues,conf);
+		
+		ArrayList<QualityIssue> notSuppressedIssues = new ArrayList<QualityIssue>();
+		
+		for(QualityIssue currentIssue : allQualityIssues){
+			if(!currentIssue.isSuppress())
+				notSuppressedIssues.add(currentIssue);
+		}
+		
+		JSONArray jsonArray = JSONArray.fromObject(notSuppressedIssues,conf);
 		
 		return jsonArray;
 	}

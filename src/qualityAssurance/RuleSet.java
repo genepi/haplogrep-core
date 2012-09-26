@@ -23,12 +23,17 @@ public class RuleSet {
 		 RuleSet newRuleSet = new RuleSet();
 		 newRuleSet.rules.add(new CheckExpectedHGMatchesDetectedHG());		 
 		 newRuleSet.rules.add(new CheckForReferencePolymorhisms());
-		 newRuleSet.rules.add(new CheckForSampleRange());
-		 newRuleSet.rules.add(new CheckForSampleRCRSAligned());
-		 newRuleSet.rules.add(new CheckForSampleRSRSAligned());
 		 newRuleSet.rules.add(new CheckForTooManyGlobalPrivateMutations());
 
 		 
+		 return newRuleSet;
+	}
+	
+	public static RuleSet createPreClassificationRuleSet(){
+		 RuleSet newRuleSet = new RuleSet();
+		 newRuleSet.rules.add(new CheckForSampleRange());
+		 newRuleSet.rules.add(new CheckForSampleRCRSAligned());
+		 newRuleSet.rules.add(new CheckForSampleRSRSAligned());	
 		 return newRuleSet;
 	}
 	
@@ -40,6 +45,8 @@ public class RuleSet {
 		for(HaplogrepRule currentRule : rules){
 			currentRule.evaluate(qualityAssistent,currentSample);
 		}
-		
+		for(HaplogrepRule currentRule : rules){
+			currentRule.suppressIssues(qualityAssistent,currentSample);
+		}
 	}
 }

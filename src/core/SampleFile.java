@@ -39,6 +39,7 @@ import exceptions.parse.samplefile.UniqueSampleIDException;
 public class SampleFile {
 	Hashtable<String, TestSample> testSamples = new Hashtable<String, TestSample>();
 	QualityAssistent qualityAssistent = null;
+	QualityAssistent preChecksQualityAssistent = null;
 	
 	/**
 	 * Main constructor of SampleFile class. Creates a new test sample instance. 
@@ -207,18 +208,26 @@ public class SampleFile {
 			
 			sampleRowElement.addContent(newElement);
 
-			// TODO fill correct number of errors and warnings
+			
 			newElement = new Element("err");
-			if(topResult == null)
-				newElement.setText("-");
+			if(topResult == null){
+				if(getPreChecksQualityAssistent() != null)
+				newElement.setText(String.valueOf(getPreChecksQualityAssistent().getNumIssuedErrors(sample)));
+				else
+					newElement.setText("-");
+			}
 			else
 				newElement.setText(String.valueOf(getQualityAssistent().getNumIssuedErrors(sample)));
 			
 			sampleRowElement.addContent(newElement);
 			
 			newElement = new Element("war");
-			if(topResult == null)
-				newElement.setText("-");
+			if(topResult == null){
+				if(getPreChecksQualityAssistent() != null)
+				newElement.setText(String.valueOf(getPreChecksQualityAssistent().getNumIssuedErrors(sample)));
+				else
+					newElement.setText("-");
+			}
 			else
 				newElement.setText(String.valueOf(getQualityAssistent().getNumIssuedWarnings(sample)));
 			
@@ -252,11 +261,19 @@ public class SampleFile {
 	}
 
 	/**
+	 * Runs all rules to check each sample if it is ready for classification
+	 */
+	public void runPreClassficationChecks(Phylotree phylotree){	
+			RuleSet rules = RuleSet.createPreClassificationRuleSet();
+			preChecksQualityAssistent = new QualityAssistent(testSamples.values(), rules,phylotree);
+			preChecksQualityAssistent.reevaluateRules();
+	}
+	/**
 	 * Runs all quality rules of the standard rule set
 	 */
-	public void runQualityChecks(){	
+	public void runQualityChecks(Phylotree phylotree){	
 			RuleSet rules = RuleSet.createStandardRuleSet();
-			qualityAssistent = new QualityAssistent(this, rules);
+			qualityAssistent = new QualityAssistent(getPreChecksPassedSamples(), rules,phylotree);
 			qualityAssistent.reevaluateRules();
 	}
 	/**
@@ -438,7 +455,18 @@ public class SampleFile {
 	public QualityAssistent getQualityAssistent() {
 		return qualityAssistent;		
 	}
-
 	
-
+	public QualityAssistent getPreChecksQualityAssistent() {
+		return preChecksQualityAssistent;		
+	}
+	
+	public ArrayList<TestSample> getPreChecksPassedSamples(){
+		ArrayList<TestSample> samples = new ArrayList<TestSample>();
+		for(TestSample currentSample : testSamples.values()){
+			if(currentSample.passedPreTests())
+				samples.add(currentSample);
+		}
+		
+		return samples;
+	}
 }

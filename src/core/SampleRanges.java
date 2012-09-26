@@ -273,4 +273,9 @@ public class SampleRanges {
 		
 		return completeRange.equals(this);
 	}
+
+	public void clear() {
+		starts.clear();
+		ends.clear();
+	}
 }

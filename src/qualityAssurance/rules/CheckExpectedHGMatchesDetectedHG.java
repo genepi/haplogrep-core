@@ -32,4 +32,10 @@ public class CheckExpectedHGMatchesDetectedHG implements HaplogrepRule {
 
 	}
 
+	@Override
+	public void suppressIssues(QualityAssistent qualityAssistent, TestSample currentSample) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

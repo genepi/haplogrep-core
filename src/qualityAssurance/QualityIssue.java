@@ -1,5 +1,7 @@
 package qualityAssurance;
 
+import java.util.ArrayList;
+
 import core.TestSample;
 
 public class QualityIssue implements Comparable<QualityIssue>{
@@ -7,6 +9,8 @@ public class QualityIssue implements Comparable<QualityIssue>{
 	int priority;
 	String description;
 	TestSample sampleOfIssue;
+	boolean suppress = false;
+	protected ArrayList<CorrectionMethod> correctionMethods = new ArrayList<CorrectionMethod>();
 	
 	public QualityIssue(QualityAssistent qualityAssistent,int priority,TestSample sampleofIssue, String description){
 		this.issueID = qualityAssistent.getNewIssueID();
@@ -37,6 +41,14 @@ public class QualityIssue implements Comparable<QualityIssue>{
 	}
 	public String getSampleID() {
 		return sampleOfIssue.getSampleID();
+	}
+
+	public boolean isSuppress() {
+		return suppress;
+	}
+
+	public void setSuppress(boolean suppress) {
+		this.suppress = suppress;
 	}
 	
 	

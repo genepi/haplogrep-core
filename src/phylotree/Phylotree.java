@@ -47,7 +47,7 @@ public final class Phylotree {
 	 * @param phylogeneticWeightsFile
 	 *            Inputstream to the phylogentic weights file
 	 */
-	Phylotree(InputStream phylotreeFile, InputStream phylogeneticWeightsFile) {
+	public Phylotree(InputStream phylotreeFile, InputStream phylogeneticWeightsFile) {
 
 		root = new PhyloTreeNode(this);
 		// Create a JDOM document out of the phylotree XML

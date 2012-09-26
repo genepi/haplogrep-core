@@ -13,8 +13,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Scanner;
 
+import qualityAssurance.MetaboRangeDetected;
 import qualityAssurance.QualityAssistent;
 import qualityAssurance.QualityError;
+import qualityAssurance.QualityIssue;
 import qualityAssurance.QualityWarning;
 import core.Polymorphism;
 import core.SampleRanges;
@@ -24,6 +26,7 @@ import exceptions.parse.sample.InvalidPolymorphismException;
 public class CheckForSampleRange implements HaplogrepRule {
 	ArrayList<Polymorphism> foundReferencePolys = new ArrayList<Polymorphism>();
 	//static HashSet<Integer> metaboChipPositions = null;
+	boolean isMetaboChip = true;
 	
 	public CheckForSampleRange(){
 //		if(metaboChipPositions == null){
@@ -38,8 +41,8 @@ public class CheckForSampleRange implements HaplogrepRule {
 	@Override
 	public void evaluate(QualityAssistent qualityAssistent, TestSample currentSample) {
 			
-		boolean isMetaboChip = true;
 		
+		isMetaboChip = true;
 		SampleRanges metaboChipRange = new SampleRanges();
 		metaboChipRange.addMetaboChipRange();
 		for(Polymorphism currentPoly : currentSample.getSample().getPolymorphisms()){
@@ -76,13 +79,32 @@ public class CheckForSampleRange implements HaplogrepRule {
 			}
 		}
 		
-		if(isMetaboChip && !currentSample.getSample().getSampleRanges().isMataboChipRange())
-			qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "MetaboChip range detected but does not match the indicated range"));
+		if(isMetaboChip && !currentSample.getSample().getSampleRanges().isMataboChipRange()){
+			qualityAssistent.addNewIssue(new MetaboRangeDetected(qualityAssistent, currentSample, "MetaboChip range detected but does not match the indicated range"));
+			currentSample.setPassedPreTests(false);
+		}
 		else if(isControlRange && !currentSample.getSample().getSampleRanges().isControlRange()){
 			qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "Control range recognized"));	
+			currentSample.setPassedPreTests(false);
 		}
-		else if(isCompleteRange && !currentSample.getSample().getSampleRanges().isCompleteRange())
-		qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "Complete range recognized"));
+		else if(isCompleteRange && !currentSample.getSample().getSampleRanges().isCompleteRange()){
+			qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "Complete range recognized"));
+			currentSample.setPassedPreTests(false);
+		}
 	}
 
+	public void suppressIssues(QualityAssistent qualityAssistent, TestSample currentSample) {
+		if(isMetaboChip){
+			QualityIssue issue = qualityAssistent.getIssue(currentSample,"Common rCRS polymorphim (263G 8860G or 15326G)");
+			if(issue != null){
+				issue.setSuppress(true);
+			}
+			
+			issue = qualityAssistent.getIssue(currentSample,"common RSRS polymorphims found!");
+			if(issue != null){
+				issue.setSuppress(true);
+			}
+		}
+	}
+		
 }

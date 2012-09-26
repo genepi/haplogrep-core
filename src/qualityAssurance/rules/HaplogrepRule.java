@@ -5,4 +5,5 @@ import core.TestSample;
 
 public interface HaplogrepRule {
 	void evaluate(QualityAssistent qualityAssistent,TestSample currentSample);
+	void suppressIssues(QualityAssistent qualityAssistent, TestSample currentSample);
 }
