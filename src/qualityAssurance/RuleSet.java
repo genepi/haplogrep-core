@@ -8,7 +8,6 @@ import qualityAssurance.rules.CheckExpectedHGMatchesDetectedHG;
 import qualityAssurance.rules.CheckForReferencePolymorhisms;
 import qualityAssurance.rules.CheckForSampleRCRSAligned;
 import qualityAssurance.rules.CheckForSampleRSRSAligned;
-import qualityAssurance.rules.CheckForSampleRange;
 import qualityAssurance.rules.CheckForTooManyGlobalPrivateMutations;
 import qualityAssurance.rules.HaplogrepRule;
 

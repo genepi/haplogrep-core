@@ -1,4 +1,4 @@
-package qualityAssurance.rules;
+package qualityAssurance;
 
 
 import java.io.BufferedReader;
@@ -13,11 +13,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Scanner;
 
-import qualityAssurance.MetaboRangeDetected;
-import qualityAssurance.QualityAssistent;
-import qualityAssurance.QualityError;
-import qualityAssurance.QualityIssue;
-import qualityAssurance.QualityWarning;
+import qualityAssurance.issues.QualityIssue;
+import qualityAssurance.issues.errors.ControlRangeDetected;
+import qualityAssurance.issues.errors.CustomOrCompleteRangeDetected;
+import qualityAssurance.issues.errors.MetaboRangeDetected;
+import qualityAssurance.rules.HaplogrepRule;
 import core.Polymorphism;
 import core.SampleRanges;
 import core.TestSample;
@@ -80,15 +80,15 @@ public class CheckForSampleRange implements HaplogrepRule {
 		}
 		
 		if(isMetaboChip && !currentSample.getSample().getSampleRanges().isMataboChipRange()){
-			qualityAssistent.addNewIssue(new MetaboRangeDetected(qualityAssistent, currentSample, "MetaboChip range detected but does not match the indicated range"));
+			qualityAssistent.addNewIssue(new MetaboRangeDetected(qualityAssistent, currentSample));
 			currentSample.setPassedPreTests(false);
 		}
 		else if(isControlRange && !currentSample.getSample().getSampleRanges().isControlRange()){
-			qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "Control range recognized"));	
+			qualityAssistent.addNewIssue(new ControlRangeDetected(qualityAssistent, currentSample));	
 			currentSample.setPassedPreTests(false);
 		}
 		else if(isCompleteRange && !currentSample.getSample().getSampleRanges().isCompleteRange()){
-			qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "Complete range recognized"));
+			qualityAssistent.addNewIssue(new CustomOrCompleteRangeDetected(qualityAssistent, currentSample));
 			currentSample.setPassedPreTests(false);
 		}
 	}

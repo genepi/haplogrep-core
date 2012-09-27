@@ -10,7 +10,7 @@ public class CorrectionMethod {
 		this.desc = description;
 		this.methodID = methodID;
 	}
-	void execute(TestSample sample){}
+	public void execute(TestSample sample){}
 	public String getDesc() {
 		return desc;
 	}

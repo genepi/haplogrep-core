@@ -1,8 +1,11 @@
-package qualityAssurance;
+package qualityAssurance.issues.errors;
 
 import java.util.ArrayList;
 
-import net.sf.json.JSONArray;
+import qualityAssurance.CorrectionMethod;
+import qualityAssurance.QualityAssistent;
+import qualityAssurance.issues.QualityError;
+
 
 import core.TestSample;
 
@@ -14,22 +17,18 @@ public class MetaboRangeDetected extends QualityError {
 			super("Change to metabo chip sample range",methodID);
 		}
 
-	void execute(TestSample testSample)
+	public void execute(TestSample testSample)
       {
 		testSample.getSample().getSampleRanges().clear();
 		testSample.getSample().getSampleRanges().addMetaboChipRange();
       }
     }
 	
-	public MetaboRangeDetected(QualityAssistent assistent, TestSample sampleOfIssue, String desciption) {
-		super(assistent, sampleOfIssue, desciption);
+	public MetaboRangeDetected(QualityAssistent assistent, TestSample sampleOfIssue) {
+		super(assistent, sampleOfIssue, "MetaboChip range detected but does not match the indicated range");
 		correctionMethods.add(new SetMataboRange(correctionMethods.size()));
 	}
 
-//	public JSONArray getCorrectionMethodsAsJson(){
-//		JSONArray jsonMethods = JSONArray.fromObject(correctionMethods);
-//		return jsonMethods;
-//	}
 	public ArrayList<CorrectionMethod> getCorrectionMethods(){
 		return correctionMethods;
 	}

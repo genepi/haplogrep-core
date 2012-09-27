@@ -4,8 +4,8 @@ package qualityAssurance.rules;
 import java.util.ArrayList;
 
 import qualityAssurance.QualityAssistent;
-import qualityAssurance.QualityError;
-import qualityAssurance.QualityWarning;
+import qualityAssurance.issues.QualityError;
+import qualityAssurance.issues.QualityWarning;
 import core.Polymorphism;
 import core.TestSample;
 import exceptions.parse.sample.InvalidPolymorphismException;

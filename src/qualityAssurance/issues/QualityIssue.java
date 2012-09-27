@@ -1,6 +1,9 @@
-package qualityAssurance;
+package qualityAssurance.issues;
 
 import java.util.ArrayList;
+
+import qualityAssurance.CorrectionMethod;
+import qualityAssurance.QualityAssistent;
 
 import core.TestSample;
 

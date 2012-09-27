@@ -10,7 +10,6 @@ import qualityAssurance.QualityAssistent;
 import qualityAssurance.RuleSet;
 import qualityAssurance.rules.CheckForSampleRCRSAligned;
 import qualityAssurance.rules.CheckForSampleRSRSAligned;
-import qualityAssurance.rules.CheckForSampleRange;
 import qualityAssurance.rules.CheckForTooManyGlobalPrivateMutations;
 import search.ranking.HammingRanking;
 
@@ -56,7 +55,7 @@ public class QualityAssuranceTests {
 		testFile.updateClassificationResults(PhylotreeManager.getInstance().getPhylotree("phylotree14.xml","weights14.txt"), new HammingRanking());
 		
 		RuleSet rules = new RuleSet();
-		rules.addRule(new CheckForSampleRange());
+		rules.addRule(new qualityAssurance.CheckForSampleRange());
 		QualityAssistent newQualityAssistent = new QualityAssistent(testFile.getTestSamples(),rules,phyoTree);
 		
 		newQualityAssistent.reevaluateRules();

@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.Scanner;
 
 import qualityAssurance.QualityAssistent;
-import qualityAssurance.QualityError;
+import qualityAssurance.issues.QualityError;
 import core.Polymorphism;
 import core.TestSample;
 import exceptions.parse.sample.InvalidPolymorphismException;

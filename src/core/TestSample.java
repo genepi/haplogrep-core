@@ -378,7 +378,10 @@ public class TestSample implements Comparable<TestSample>{
 	 * @return The search results in clustered by the equal distances. Ranked by the used ranking method
 	 */
 	public JSONArray getClusteredSearchResults() {
-		return clusteredResults.toJSON();
+		if(clusteredResults != null)
+			return clusteredResults.toJSON();
+		return 
+				new JSONArray();
 	}
 
 	/**

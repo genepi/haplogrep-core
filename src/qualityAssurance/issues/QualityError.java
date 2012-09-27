@@ -1,5 +1,6 @@
-package qualityAssurance;
+package qualityAssurance.issues;
 
+import qualityAssurance.QualityAssistent;
 import core.TestSample;
 
 public class QualityError extends QualityIssue {

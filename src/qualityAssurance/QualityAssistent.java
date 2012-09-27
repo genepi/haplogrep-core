@@ -8,10 +8,9 @@ import net.sf.json.JSONArray;
 import net.sf.json.JsonConfig;
 
 import phylotree.Phylotree;
+import qualityAssurance.issues.QualityIssue;
 
-import qualityAssurance.rules.CheckForSampleRCRSAligned;
-import qualityAssurance.rules.HaplogrepRule;
-import core.SampleFile;
+
 import core.TestSample;
 
 public class QualityAssistent {
@@ -57,11 +56,11 @@ public class QualityAssistent {
 		return usedPhyloTree;
 	}
 
-	void incNumWarnings(){
+	public void incNumWarnings(){
 		numIssuedWarnings++;
 	}
 	
-	void incNumErrors(){
+	public void incNumErrors(){
 		numIssuedErrors++;
 	}
 
@@ -79,7 +78,7 @@ public class QualityAssistent {
 		
 		if(allQualityIssuesLookup.get(sample) != null)
 		for(QualityIssue currentIssue : allQualityIssuesLookup.get(sample)){
-			if(currentIssue.priority == 0 && !currentIssue.isSuppress())
+			if(currentIssue.getPriority() == 0 && !currentIssue.isSuppress())
 				numWarningsPerSample++;
 		}
 		
@@ -92,7 +91,7 @@ public class QualityAssistent {
 		
 		if(allQualityIssuesLookup.get(sample) != null)
 		for(QualityIssue currentIssue : allQualityIssuesLookup.get(sample)){
-			if(currentIssue.priority == 1 && !currentIssue.isSuppress())
+			if(currentIssue.getPriority() == 1 && !currentIssue.isSuppress())
 				numErrorsPerSample++;
 		}
 		
@@ -103,7 +102,7 @@ public class QualityAssistent {
 	public QualityIssue getIssue(TestSample sample,String desc){
 		if(allQualityIssuesLookup.get(sample) != null){
 			for(QualityIssue currentIssue : allQualityIssuesLookup.get(sample)){
-				if(currentIssue.description.contains(desc))
+				if(currentIssue.getDescription().contains(desc))
 					return currentIssue;
 			}
 		}

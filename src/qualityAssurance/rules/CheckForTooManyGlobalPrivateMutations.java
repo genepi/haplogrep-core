@@ -1,7 +1,7 @@
 package qualityAssurance.rules;
 
 import qualityAssurance.QualityAssistent;
-import qualityAssurance.QualityWarning;
+import qualityAssurance.issues.QualityWarning;
 import search.SearchResult;
 import core.Polymorphism;
 import core.TestSample;

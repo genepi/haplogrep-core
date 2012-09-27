@@ -3,8 +3,8 @@ package qualityAssurance.rules;
 import com.sun.org.apache.bcel.internal.generic.NEW;
 
 import qualityAssurance.QualityAssistent;
-import qualityAssurance.QualityError;
-import qualityAssurance.QualityWarning;
+import qualityAssurance.issues.QualityError;
+import qualityAssurance.issues.QualityWarning;
 import core.Haplogroup;
 import core.TestSample;
 
