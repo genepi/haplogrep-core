@@ -64,5 +64,7 @@ public class QualityIssue implements Comparable<QualityIssue>{
 		}
 	}
 	
-	
+	public boolean getLeaf() {
+		return correctionMethods.isEmpty();
+	}
 }

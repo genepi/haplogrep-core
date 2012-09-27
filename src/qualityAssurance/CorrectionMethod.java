@@ -24,5 +24,7 @@ public class CorrectionMethod {
 	public int getIssueID() {
 		return issue.getIssueID();
 	};
-	
+	public boolean getLeaf() {
+		return true;
+	}
 }
