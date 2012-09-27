@@ -93,7 +93,7 @@ public class QualityAssuranceTests {
 		preChecksQualityAssistent.reevaluateRules();
 		System.out.println(preChecksQualityAssistent);
 		System.out.println(preChecksQualityAssistent.getAllIssuesJSON().toString());
-	
+		preChecksQualityAssistent.getAllIssuesJSON();
 		//assertEquals(2, preChecksQualityAssistent.getNumIssuedErrors(testFile.getTestSample("5019773")));
 		//assertEquals(3, preChecksQualityAssistent.getNumIssuedErrors());
 		

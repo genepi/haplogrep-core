@@ -149,6 +149,7 @@ public class QualityAssistent {
 		}
 		
 		JSONArray jsonArray = JSONArray.fromObject(notSuppressedIssues,conf);
+		System.out.println(jsonArray.toString());
 		
 		return jsonArray;
 	}
@@ -162,6 +163,7 @@ public class QualityAssistent {
 		JsonConfig conf = new JsonConfig();
 		conf.setExcludes(new String[]{"sampleOfIssue"});
 		JSONArray jsonArray = JSONArray.fromObject(sampleQualityIssues,conf);
+		
 		
 		return jsonArray;
 	}

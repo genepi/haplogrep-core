@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import qualityAssurance.CorrectionMethod;
 import qualityAssurance.QualityAssistent;
 import qualityAssurance.issues.QualityError;
+import qualityAssurance.issues.QualityIssue;
 
 
 import core.Polymorphism;
@@ -14,8 +15,8 @@ public class ControlRangeDetected extends QualityError {
 
 	class SetCompleteRange extends CorrectionMethod
     {
-      public SetCompleteRange(int methodID) {
-			super("Change to metabo chip sample range",methodID);
+      public SetCompleteRange(int methodID,QualityIssue issue) {
+			super("Change to metabo chip sample range",methodID,issue);
 		}
 
 	public void execute(TestSample testSample)
@@ -27,8 +28,8 @@ public class ControlRangeDetected extends QualityError {
 	
 	class SetCustomRange extends CorrectionMethod
     {
-      public SetCustomRange(int methodID) {
-			super("Change to metabo chip sample range",methodID);
+      public SetCustomRange(int methodID,QualityIssue issue) {
+			super("Change to metabo chip sample range",methodID,issue);
 		}
 
 	public void execute(TestSample testSample)
@@ -40,8 +41,8 @@ public class ControlRangeDetected extends QualityError {
 	
 	public ControlRangeDetected(QualityAssistent assistent, TestSample sampleOfIssue) {
 		super(assistent, sampleOfIssue, "Complete or custom range recognized");
-		correctionMethods.add(new SetCompleteRange(correctionMethods.size()));
-		correctionMethods.add(new SetCustomRange(correctionMethods.size()));
+		correctionMethods.add(new SetCompleteRange(correctionMethods.size(),this));
+		correctionMethods.add(new SetCustomRange(correctionMethods.size(),this));
 	}
 
 	public ArrayList<CorrectionMethod> getCorrectionMethods(){
