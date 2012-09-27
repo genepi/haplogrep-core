@@ -21,6 +21,7 @@ import phylotree.PhyloTreeNode;
 import phylotree.Phylotree;
 import qualityAssurance.QualityAssistent;
 import qualityAssurance.RuleSet;
+import qualityAssurance.issues.QualityIssue;
 import search.SearchResult;
 import search.SearchResultTreeNode;
 import search.ranking.RankingMethod;
@@ -40,6 +41,8 @@ public class SampleFile {
 	Hashtable<String, TestSample> testSamples = new Hashtable<String, TestSample>();
 	QualityAssistent qualityAssistent = null;
 	QualityAssistent preChecksQualityAssistent = null;
+	Phylotree usedPhyloTreeLastRun = null;
+	RankingMethod usedRankingMethodLastRun = null;
 	
 	/**
 	 * Main constructor of SampleFile class. Creates a new test sample instance. 
@@ -254,6 +257,8 @@ public class SampleFile {
 	 * @param rankingMethod The ranking method that should be used for the results (e.g. Hamming) 
 	 */
 	public void updateClassificationResults(Phylotree phylotree, RankingMethod rankingMethod){
+		usedPhyloTreeLastRun = phylotree;
+		usedRankingMethodLastRun = rankingMethod;
 		for (TestSample currenTestSample : testSamples.values()) {
 			currenTestSample.updateSearchResults(phylotree, rankingMethod);
 		}
@@ -276,6 +281,21 @@ public class SampleFile {
 			qualityAssistent = new QualityAssistent(getPreChecksPassedSamples(), rules,phylotree);
 			qualityAssistent.reevaluateRules();
 	}
+	
+	public void reevaluateSample(TestSample sampleToReevaluate){
+		ArrayList<TestSample> a = new ArrayList<TestSample>();
+		a.add(sampleToReevaluate);
+		
+		if(!sampleToReevaluate.passedPreTests()){
+			preChecksQualityAssistent.reevaluateRulesForSample(sampleToReevaluate);
+		}
+		
+		if(sampleToReevaluate.passedPreTests()){
+			sampleToReevaluate.updateSearchResults(usedPhyloTreeLastRun, usedRankingMethodLastRun);
+			qualityAssistent.reevaluateRulesForSample(sampleToReevaluate);
+		}
+	}
+	
 	/**
 	 * Clears all previous search results
 	 */
@@ -468,5 +488,16 @@ public class SampleFile {
 		}
 		
 		return samples;
+	}
+
+
+	public void correctIssue(int issueID) {
+		//TestSample currentSample = session.getCurrentSampleFile().getTestSample("663002210");
+		QualityIssue issue = preChecksQualityAssistent.doCorrection(issueID, 0);	
+		if(issue == null){
+			issue = qualityAssistent.getIssueByID(issueID);
+		}
+		TestSample sample = issue.getSampleOfIssue();
+		reevaluateSample(sample);
 	}
 }

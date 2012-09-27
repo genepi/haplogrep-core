@@ -52,6 +52,12 @@ public class QualityAssistent {
 		allQualityIssues.add(newIssue);
 	}
 
+	public void removeIssue(QualityIssue issue) {
+		allQualityIssuesLookup.remove(issue);
+		issueLookup.remove(issue.getIssueID());
+		allQualityIssues.remove(issue);
+	}
+	
 	public Phylotree getUsedPhyloTree() {
 		return usedPhyloTree;
 	}
@@ -60,10 +66,18 @@ public class QualityAssistent {
 		numIssuedWarnings++;
 	}
 	
+	public void decNumWarnings() {
+		numIssuedWarnings--;
+	}
+	
 	public void incNumErrors(){
 		numIssuedErrors++;
 	}
 
+	public void decNumErrors() {
+		numIssuedErrors--;
+	}
+	
 	public int getNumIssuedWarnings() {
 		return numIssuedWarnings;
 	}
@@ -152,5 +166,23 @@ public class QualityAssistent {
 		return jsonArray;
 	}
 
+	public QualityIssue doCorrection(int issueID,int correctionMethodID){
+		QualityIssue issueToCorrect = issueLookup.get(issueID);
+		if(issueToCorrect != null){
+			issueToCorrect.doAutoCorrection(this,correctionMethodID);
+			removeIssue(issueToCorrect);
+		}
+		return issueToCorrect;
+	}
+
+	public QualityIssue getIssueByID(int issueID){
+		return issueLookup.get(issueID);
+	}
+	public void reevaluateRulesForSample(TestSample sampleToReevaluate) {
+		rules.reevaluateRules(this,sampleToReevaluate);	
+	}
+
 	
+
+
 }

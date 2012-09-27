@@ -12,4 +12,9 @@ public class QualityWarning extends QualityIssue {
 	public String toString(){
 		return  "SAMPLE: " + sampleOfIssue.getSampleID() + " WARNING: " + description;
 	}
+	
+	public void doAutoCorrection(QualityAssistent qualityAssistent,int correctionMethodID) {
+		super.doAutoCorrection(qualityAssistent,correctionMethodID);
+		qualityAssistent.decNumWarnings();
+	}
 }

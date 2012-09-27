@@ -57,6 +57,12 @@ public class QualityIssue implements Comparable<QualityIssue>{
 	public ArrayList<CorrectionMethod> getCorrectionMethods(){
 		return correctionMethods;
 	}
+
+	public void doAutoCorrection(QualityAssistent qualityAssistent,int correctionMethodID) {
+		if(correctionMethods.size() > correctionMethodID){
+			correctionMethods.get(correctionMethodID).execute(sampleOfIssue);
+		}
+	}
 	
 	
 }
