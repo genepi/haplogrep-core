@@ -54,7 +54,7 @@ public class QualityIssue implements Comparable<QualityIssue>{
 		this.suppress = suppress;
 	}
 	
-	public ArrayList<CorrectionMethod> getCorrectionMethods(){
+	public ArrayList<CorrectionMethod> getChildren(){
 		return correctionMethods;
 	}
 

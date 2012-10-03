@@ -45,7 +45,7 @@ public class ControlRangeDetected extends QualityError {
 		correctionMethods.add(new SetCustomRange(correctionMethods.size(),this));
 	}
 
-	public ArrayList<CorrectionMethod> getCorrectionMethods(){
+	public ArrayList<CorrectionMethod> getChildren(){
 		return correctionMethods;
 	}
 	

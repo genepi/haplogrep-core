@@ -30,7 +30,7 @@ public class MetaboRangeDetected extends QualityError {
 		correctionMethods.add(new SetMataboRange(correctionMethods.size(),this));
 	}
 
-	public ArrayList<CorrectionMethod> getCorrectionMethods(){
+	public ArrayList<CorrectionMethod> getChildren(){
 		return correctionMethods;
 	}
 	

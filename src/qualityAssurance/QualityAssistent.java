@@ -157,7 +157,7 @@ public class QualityAssistent {
 	public JSONArray getSampleIssues(String sampleID){
 		ArrayList<QualityIssue> sampleQualityIssues = new ArrayList<QualityIssue>();
 		for(QualityIssue currentIssue : allQualityIssues){
-			if(currentIssue.getSampleID().equals(sampleID))
+			if(currentIssue.getSampleID().equals(sampleID)&& !currentIssue.isSuppress())
 			sampleQualityIssues.add(currentIssue);
 		}
 		JsonConfig conf = new JsonConfig();

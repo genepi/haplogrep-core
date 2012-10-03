@@ -30,7 +30,7 @@ public class CustomOrCompleteRangeDetected extends QualityError {
 		correctionMethods.add(new SetControlRange(correctionMethods.size(),this));
 	}
 
-	public ArrayList<CorrectionMethod> getCorrectionMethods(){
+	public ArrayList<CorrectionMethod> getChildren(){
 		return correctionMethods;
 	}
 	
