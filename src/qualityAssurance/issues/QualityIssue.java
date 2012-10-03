@@ -67,4 +67,7 @@ public class QualityIssue implements Comparable<QualityIssue>{
 	public boolean getLeaf() {
 		return correctionMethods.isEmpty();
 	}
+	public String getIconCls() {
+		return "icon-show-rules";
+	}
 }

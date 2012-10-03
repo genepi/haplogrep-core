@@ -27,4 +27,9 @@ public class CorrectionMethod {
 	public boolean getLeaf() {
 		return true;
 	}
+	public String getIconCls() {
+		return "icon-apply-rules";
+	}
+	
+	
 }
