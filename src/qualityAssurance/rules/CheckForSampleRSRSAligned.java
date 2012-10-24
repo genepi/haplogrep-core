@@ -13,15 +13,16 @@ import java.util.HashSet;
 import java.util.Scanner;
 
 import qualityAssurance.QualityAssistent;
-import qualityAssurance.issues.QualityError;
+import qualityAssurance.issues.QualityFatal;
 import core.Polymorphism;
 import core.TestSample;
 import exceptions.parse.sample.InvalidPolymorphismException;
 
-public class CheckForSampleRSRSAligned implements HaplogrepRule {
+public class CheckForSampleRSRSAligned extends HaplogrepRule {
 	static ArrayList<Polymorphism> uniqueRSRSPolys = null;
 	
-	public CheckForSampleRSRSAligned(){
+	public CheckForSampleRSRSAligned(int priority){
+		super(priority);
 		if(uniqueRSRSPolys == null){
 			uniqueRSRSPolys = new ArrayList<Polymorphism>();
 			
@@ -77,12 +78,12 @@ public class CheckForSampleRSRSAligned implements HaplogrepRule {
 								System.out.println(currentUniqueRSRSPoly);
 				}
 				
-				qualityAssistent.addNewIssue(new QualityError(qualityAssistent, currentSample, numRSRSPolysFound + " common RSRS polymorphims found! " +
+				qualityAssistent.addNewIssue(new QualityFatal(qualityAssistent, currentSample, numRSRSPolysFound + " common RSRS polymorphims found! " +
 						"The sample seems to be aligned to RSRS. Haplogrep only supports rCRS aligned samples."));
-				currentSample.setPassedPreTests(false);
+				
 			}
-			
-					
+			else
+				currentSample.setReachedQualityLevel(this.getPriority()+1);		
 		}
 
 	@Override

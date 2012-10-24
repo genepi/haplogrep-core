@@ -4,13 +4,13 @@ import java.util.ArrayList;
 
 import qualityAssurance.CorrectionMethod;
 import qualityAssurance.QualityAssistent;
-import qualityAssurance.issues.QualityError;
+import qualityAssurance.issues.QualityFatal;
 import qualityAssurance.issues.QualityIssue;
 
 
 import core.TestSample;
 
-public class CustomOrCompleteRangeDetected extends QualityError {
+public class CustomOrCompleteRangeDetected extends QualityFatal {
 
 	class SetControlRange extends CorrectionMethod
     {

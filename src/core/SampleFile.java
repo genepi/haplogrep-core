@@ -40,7 +40,7 @@ import exceptions.parse.samplefile.UniqueSampleIDException;
 public class SampleFile {
 	Hashtable<String, TestSample> testSamples = new Hashtable<String, TestSample>();
 	QualityAssistent qualityAssistent = null;
-	QualityAssistent preChecksQualityAssistent = null;
+//	QualityAssistent preChecksQualityAssistent = null;
 	Phylotree usedPhyloTreeLastRun = null;
 	RankingMethod usedRankingMethodLastRun = null;
 	
@@ -72,6 +72,8 @@ public class SampleFile {
 			
 			lineIndex++;
 		}
+		
+		
 	}
 
 
@@ -213,27 +215,31 @@ public class SampleFile {
 
 			
 			newElement = new Element("err");
-			if(topResult == null){
-				if(getPreChecksQualityAssistent() != null)
-				newElement.setText(String.valueOf(getPreChecksQualityAssistent().getNumIssuedErrors(sample)));
-				else
-					newElement.setText("-");
-			}
-			else
+//			if(topResult == null){
+//				if(getPreChecksQualityAssistent() != null)
+//				newElement.setText(String.valueOf(getPreChecksQualityAssistent().getNumIssuedErrors(sample)));
+//				else
+//					newElement.setText("-");
+//			}
+//			else
+			if(getQualityAssistent() != null)
 				newElement.setText(String.valueOf(getQualityAssistent().getNumIssuedErrors(sample)));
-			
+			else
+				newElement.setText("-");
 			sampleRowElement.addContent(newElement);
 			
 			newElement = new Element("war");
-			if(topResult == null){
-				if(getPreChecksQualityAssistent() != null)
-				newElement.setText(String.valueOf(getPreChecksQualityAssistent().getNumIssuedErrors(sample)));
-				else
-					newElement.setText("-");
-			}
-			else
+//			if(topResult == null){
+//				if(getPreChecksQualityAssistent() != null)
+//				newElement.setText(String.valueOf(getPreChecksQualityAssistent().getNumIssuedErrors(sample)));
+//				else
+//					newElement.setText("-");
+//			}
+//			else
+			if(getQualityAssistent() != null)
 				newElement.setText(String.valueOf(getQualityAssistent().getNumIssuedWarnings(sample)));
-			
+			else
+				newElement.setText("-");
 			sampleRowElement.addContent(newElement);
 			
 			//all polymorphism of sample
@@ -259,41 +265,57 @@ public class SampleFile {
 	public void updateClassificationResults(Phylotree phylotree, RankingMethod rankingMethod){
 		usedPhyloTreeLastRun = phylotree;
 		usedRankingMethodLastRun = rankingMethod;
+		
+		if(qualityAssistent == null){
+			RuleSet rules = new RuleSet();
+			rules.addStandardRules();
+			qualityAssistent = new QualityAssistent(testSamples.values(), rules, phylotree);
+		}
+		
 		for (TestSample currenTestSample : testSamples.values()) {
-			currenTestSample.updateSearchResults(phylotree, rankingMethod);
+			if(!qualityAssistent.hasFatalIssues(currenTestSample))
+				currenTestSample.updateSearchResults(phylotree, rankingMethod);
 		}
 
 	}
 
-	/**
-	 * Runs all rules to check each sample if it is ready for classification
-	 */
-	public void runPreClassficationChecks(Phylotree phylotree){	
-			RuleSet rules = RuleSet.createPreClassificationRuleSet();
-			preChecksQualityAssistent = new QualityAssistent(testSamples.values(), rules,phylotree);
-			preChecksQualityAssistent.reevaluateRules();
-	}
+//	/**
+//	 * Runs all rules to check each sample if it is ready for classification
+//	 */
+//	public void runPreClassficationChecks(Phylotree phylotree){	
+//			RuleSet rules = RuleSet.createPreClassificationRuleSet();
+//			preChecksQualityAssistent = new QualityAssistent(testSamples.values(), rules,phylotree);
+//			preChecksQualityAssistent.reevaluateRules();
+//	}
 	/**
 	 * Runs all quality rules of the standard rule set
 	 */
 	public void runQualityChecks(Phylotree phylotree){	
-			RuleSet rules = RuleSet.createStandardRuleSet();
-			qualityAssistent = new QualityAssistent(getPreChecksPassedSamples(), rules,phylotree);
-			qualityAssistent.reevaluateRules();
+		if(qualityAssistent == null){
+			RuleSet rules = new RuleSet();
+			rules.addStandardRules();
+			qualityAssistent = new QualityAssistent(testSamples.values(), rules, phylotree);
+		}
+		qualityAssistent.reevaluateRules();
 	}
 	
 	public void reevaluateSample(TestSample sampleToReevaluate){
-		ArrayList<TestSample> a = new ArrayList<TestSample>();
-		a.add(sampleToReevaluate);
+		qualityAssistent.reevaluateRulesForSample(sampleToReevaluate);
 		
-		if(!sampleToReevaluate.passedPreTests()){
-			preChecksQualityAssistent.reevaluateRulesForSample(sampleToReevaluate);
-		}
-		
-		if(sampleToReevaluate.passedPreTests()){
+		if(!qualityAssistent.hasFatalIssues(sampleToReevaluate))
 			sampleToReevaluate.updateSearchResults(usedPhyloTreeLastRun, usedRankingMethodLastRun);
-			qualityAssistent.reevaluateRulesForSample(sampleToReevaluate);
-		}
+		
+//		ArrayList<TestSample> a = new ArrayList<TestSample>();
+//		a.add(sampleToReevaluate);
+//		
+//		if(!sampleToReevaluate.getQualityLevelReached()){
+//			preChecksQualityAssistent.reevaluateRulesForSample(sampleToReevaluate);
+//		}
+//		
+//		if(sampleToReevaluate.getQualityLevelReached()){
+//			sampleToReevaluate.updateSearchResults(usedPhyloTreeLastRun, usedRankingMethodLastRun);
+//			qualityAssistent.reevaluateRulesForSample(sampleToReevaluate);
+//		}
 	}
 	
 	/**
@@ -303,7 +325,7 @@ public class SampleFile {
 		for (TestSample currentSample : testSamples.values())
 			currentSample.clearSearchResults();
 
-		qualityAssistent = null;
+		//qualityAssistent = null;
 	}
 
 	/**
@@ -476,24 +498,24 @@ public class SampleFile {
 		return qualityAssistent;		
 	}
 	
-	public QualityAssistent getPreChecksQualityAssistent() {
-		return preChecksQualityAssistent;		
-	}
+//	public QualityAssistent getPreChecksQualityAssistent() {
+//		return preChecksQualityAssistent;		
+//	}
 	
-	public ArrayList<TestSample> getPreChecksPassedSamples(){
-		ArrayList<TestSample> samples = new ArrayList<TestSample>();
-		for(TestSample currentSample : testSamples.values()){
-			if(currentSample.passedPreTests())
-				samples.add(currentSample);
-		}
-		
-		return samples;
-	}
+//	public ArrayList<TestSample> getPreChecksPassedSamples(){
+//		ArrayList<TestSample> samples = new ArrayList<TestSample>();
+//		for(TestSample currentSample : testSamples.values()){
+//			if(currentSample.getQualityLevelReached())
+//				samples.add(currentSample);
+//		}
+//		
+//		return samples;
+//	}
 
 
 	public void correctIssue(int issueID) {
 		//TestSample currentSample = session.getCurrentSampleFile().getTestSample("663002210");
-		QualityIssue issue = preChecksQualityAssistent.doCorrection(issueID, 0);	
+		QualityIssue issue = qualityAssistent.doCorrection(issueID, 0);	
 		if(issue == null){
 			issue = qualityAssistent.getIssueByID(issueID);
 		}

@@ -34,7 +34,7 @@ public class TestSample implements Comparable<TestSample>{
 	private String testSampleID = "Unknown";
 	private Haplogroup expectedHaplogroup;
 	private Sample sample;
-	private boolean passedPreTests = true;
+	private int qualityRulesLevelReached = 0;
 	
 	private TestSample(){
 		
@@ -367,11 +367,11 @@ public class TestSample implements Comparable<TestSample>{
 	 * @param rankingMethod The ranking method used (e.g Hamming)
 	 */
 	public void updateSearchResults(Phylotree phyloTreeToUse,RankingMethod rankingMethod) {
-		if(passedPreTests){
+		//if(qualityRulesLevelReached > 0){
 			List<RankedResult> results = phyloTreeToUse.search(this, rankingMethod.clone());
 			searchResults = (ArrayList<RankedResult>) results;
 			clusteredResults = new ClusteredSearchResults(results);
-		}
+		//}
 	}
 	
 	/**
@@ -394,11 +394,11 @@ public class TestSample implements Comparable<TestSample>{
 			return null;
 	}
 
-	public boolean passedPreTests() {
-		return passedPreTests;
+	public int getQualityLevelReached() {
+		return qualityRulesLevelReached;
 	}
 
-	public void setPassedPreTests(boolean passedPreTests) {
-		this.passedPreTests = passedPreTests;
+	public void setReachedQualityLevel(int level) {
+		this.qualityRulesLevelReached = level;
 	}
 }

@@ -1,4 +1,4 @@
-package qualityAssurance;
+package qualityAssurance.rules;
 
 
 import java.io.BufferedReader;
@@ -13,22 +13,23 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Scanner;
 
+import qualityAssurance.QualityAssistent;
 import qualityAssurance.issues.QualityIssue;
 import qualityAssurance.issues.errors.ControlRangeDetected;
 import qualityAssurance.issues.errors.CustomOrCompleteRangeDetected;
 import qualityAssurance.issues.errors.MetaboRangeDetected;
-import qualityAssurance.rules.HaplogrepRule;
 import core.Polymorphism;
 import core.SampleRanges;
 import core.TestSample;
 import exceptions.parse.sample.InvalidPolymorphismException;
 
-public class CheckForSampleRange implements HaplogrepRule {
+public class CheckForSampleRange extends HaplogrepRule {
 	ArrayList<Polymorphism> foundReferencePolys = new ArrayList<Polymorphism>();
 	//static HashSet<Integer> metaboChipPositions = null;
 	boolean isMetaboChip = true;
 	
-	public CheckForSampleRange(){
+	public CheckForSampleRange(int priority){
+		super(priority);
 //		if(metaboChipPositions == null){
 //			metaboChipPositions = new HashSet<Integer>();
 //			
@@ -81,16 +82,15 @@ public class CheckForSampleRange implements HaplogrepRule {
 		
 		if(isMetaboChip && !currentSample.getSample().getSampleRanges().isMataboChipRange()){
 			qualityAssistent.addNewIssue(new MetaboRangeDetected(qualityAssistent, currentSample));
-			currentSample.setPassedPreTests(false);
 		}
 		else if(isControlRange && !currentSample.getSample().getSampleRanges().isControlRange()){
 			qualityAssistent.addNewIssue(new ControlRangeDetected(qualityAssistent, currentSample));	
-			currentSample.setPassedPreTests(false);
 		}
 		else if(isCompleteRange && !currentSample.getSample().getSampleRanges().isCompleteRange()){
-			qualityAssistent.addNewIssue(new CustomOrCompleteRangeDetected(qualityAssistent, currentSample));
-			currentSample.setPassedPreTests(false);
+			qualityAssistent.addNewIssue(new CustomOrCompleteRangeDetected(qualityAssistent, currentSample));		
 		}
+		else
+		currentSample.setReachedQualityLevel(this.getPriority() + 1);
 	}
 
 	public void suppressIssues(QualityAssistent qualityAssistent, TestSample currentSample) {

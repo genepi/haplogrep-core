@@ -10,6 +10,7 @@ import qualityAssurance.QualityAssistent;
 import qualityAssurance.RuleSet;
 import qualityAssurance.rules.CheckForSampleRCRSAligned;
 import qualityAssurance.rules.CheckForSampleRSRSAligned;
+import qualityAssurance.rules.CheckForSampleRange;
 import qualityAssurance.rules.CheckForTooManyGlobalPrivateMutations;
 import search.ranking.HammingRanking;
 
@@ -23,9 +24,14 @@ public class QualityAssuranceTests {
 	public void testMatchingRulesDetectedExcpectedHg() throws HsdFileException, IOException {
 		SampleFile testFile = new  SampleFile("/testDataFiles/Burma_44GG.txt",true);
 		Phylotree phyoTree = PhylotreeManager.getInstance().getPhylotree("phylotree14.xml","weights14.txt");
-		testFile.updateClassificationResults(phyoTree, new HammingRanking());
-		QualityAssistent newQualityAssistent = new QualityAssistent(testFile.getTestSamples(),RuleSet.createStandardRuleSet(),phyoTree);
 		
+		RuleSet rules = new RuleSet();
+		rules.addStandardRules();
+		
+		QualityAssistent newQualityAssistent = new QualityAssistent(testFile.getTestSamples(),rules,phyoTree);
+		
+		newQualityAssistent.reevaluateRules();
+		testFile.updateClassificationResults(phyoTree, new HammingRanking());
 		newQualityAssistent.reevaluateRules();
 		System.out.println(newQualityAssistent);
 		assertEquals(3, newQualityAssistent.getNumIssuedWarnings());
@@ -39,7 +45,7 @@ public class QualityAssuranceTests {
 		testFile.updateClassificationResults(PhylotreeManager.getInstance().getPhylotree("phylotree14.xml","weights14.txt"), new HammingRanking());
 		
 		RuleSet rules = new RuleSet();
-		rules.addRule(new CheckForTooManyGlobalPrivateMutations());
+		rules.addRule(new CheckForTooManyGlobalPrivateMutations(0));
 		QualityAssistent newQualityAssistent = new QualityAssistent(testFile.getTestSamples(),rules,phyoTree);
 		
 		newQualityAssistent.reevaluateRules();
@@ -55,7 +61,7 @@ public class QualityAssuranceTests {
 		testFile.updateClassificationResults(PhylotreeManager.getInstance().getPhylotree("phylotree14.xml","weights14.txt"), new HammingRanking());
 		
 		RuleSet rules = new RuleSet();
-		rules.addRule(new qualityAssurance.CheckForSampleRange());
+		rules.addRule(new CheckForSampleRange(0));
 		QualityAssistent newQualityAssistent = new QualityAssistent(testFile.getTestSamples(),rules,phyoTree);
 		
 		newQualityAssistent.reevaluateRules();
@@ -71,8 +77,8 @@ public class QualityAssuranceTests {
 		testFile.updateClassificationResults(PhylotreeManager.getInstance().getPhylotree("phylotree14.xml","weights14.txt"), new HammingRanking());
 		
 		RuleSet rules = new RuleSet();
-		rules.addRule(new CheckForSampleRSRSAligned());
-		rules.addRule(new CheckForSampleRCRSAligned());
+		rules.addRule(new CheckForSampleRSRSAligned(0));
+		rules.addRule(new CheckForSampleRCRSAligned(0));
 		QualityAssistent newQualityAssistent = new QualityAssistent(testFile.getTestSamples(),rules,phyoTree);
 		
 		newQualityAssistent.reevaluateRules();
@@ -85,21 +91,21 @@ public class QualityAssuranceTests {
 		SampleFile testFile = new  SampleFile("/testDataFiles/qualityIssuesTestFile.hsd",true);
 		Phylotree phyoTree = PhylotreeManager.getInstance().getPhylotree("phylotree14.xml","weights14.txt");
 		
+		RuleSet rules = new RuleSet();
+		rules.addStandardRules();
+		QualityAssistent newQualityAssistent = new QualityAssistent(testFile.getTestSamples(),rules,phyoTree);
+		
+		newQualityAssistent.reevaluateRules();
+		System.out.println(newQualityAssistent);
+		System.out.println(newQualityAssistent.getAllIssuesJSON().toString());
+		
 		testFile.updateClassificationResults(PhylotreeManager.getInstance().getPhylotree("phylotree14.xml","weights14.txt"), new HammingRanking());
 		
-		RuleSet rules = RuleSet.createPreClassificationRuleSet();
-		QualityAssistent preChecksQualityAssistent = new QualityAssistent(testFile.getTestSamples(),rules,phyoTree);
 		
-		preChecksQualityAssistent.reevaluateRules();
-		System.out.println(preChecksQualityAssistent);
-		System.out.println(preChecksQualityAssistent.getAllIssuesJSON().toString());
-		preChecksQualityAssistent.getAllIssuesJSON();
+		newQualityAssistent.getAllIssuesJSON();
 		//assertEquals(2, preChecksQualityAssistent.getNumIssuedErrors(testFile.getTestSample("5019773")));
 		//assertEquals(3, preChecksQualityAssistent.getNumIssuedErrors());
-		
-		 rules = RuleSet.createStandardRuleSet();
-		QualityAssistent newQualityAssistent = new QualityAssistent(testFile.getPreChecksPassedSamples(),rules,phyoTree);
-		
+			
 		newQualityAssistent.reevaluateRules();
 		System.out.println(newQualityAssistent);
 		System.out.println(newQualityAssistent.getAllIssuesJSON().toString());

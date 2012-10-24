@@ -4,16 +4,21 @@ package qualityAssurance.rules;
 import java.util.ArrayList;
 
 import qualityAssurance.QualityAssistent;
-import qualityAssurance.issues.QualityError;
+import qualityAssurance.issues.QualityFatal;
 import qualityAssurance.issues.QualityWarning;
 import core.Polymorphism;
 import core.TestSample;
 import exceptions.parse.sample.InvalidPolymorphismException;
 
-public class CheckForReferencePolymorhisms implements HaplogrepRule {
+public class CheckForReferencePolymorhisms extends HaplogrepRule {
 	
 	
 	
+	public CheckForReferencePolymorhisms(int priority) {
+		super(priority);
+		// TODO Auto-generated constructor stub
+	}
+
 	@Override
 	public void evaluate(QualityAssistent qualityAssistent, TestSample currentSample) {
 		ArrayList<Polymorphism> foundReferencePolys = new ArrayList<Polymorphism>();

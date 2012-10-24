@@ -1,51 +1,69 @@
 package qualityAssurance;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import core.TestSample;
 
+import qualityAssurance.issues.QualityIssue;
 import qualityAssurance.rules.CheckExpectedHGMatchesDetectedHG;
 import qualityAssurance.rules.CheckForReferencePolymorhisms;
 import qualityAssurance.rules.CheckForSampleRCRSAligned;
 import qualityAssurance.rules.CheckForSampleRSRSAligned;
+import qualityAssurance.rules.CheckForSampleRange;
 import qualityAssurance.rules.CheckForTooManyGlobalPrivateMutations;
 import qualityAssurance.rules.HaplogrepRule;
 
 public class RuleSet {
-	ArrayList<HaplogrepRule> rules = new ArrayList<HaplogrepRule>();
+	HashMap<Integer,ArrayList<HaplogrepRule>> rules = new HashMap<Integer,ArrayList<HaplogrepRule>>();
 	
 	public RuleSet(){
 		
 	}
 	
-	public static RuleSet createStandardRuleSet(){
-		 RuleSet newRuleSet = new RuleSet();
-		 newRuleSet.rules.add(new CheckExpectedHGMatchesDetectedHG());		 
-		 newRuleSet.rules.add(new CheckForReferencePolymorhisms());
-		 newRuleSet.rules.add(new CheckForTooManyGlobalPrivateMutations());
+	public void addStandardRules() {
+		addRule(new CheckForSampleRange(0));
+		addRule(new CheckForSampleRCRSAligned(0));
+		addRule(new CheckForSampleRSRSAligned(0));
 
-		 
-		 return newRuleSet;
+		addRule(new CheckExpectedHGMatchesDetectedHG(1));
+		addRule(new CheckForReferencePolymorhisms(1));
+		addRule(new CheckForTooManyGlobalPrivateMutations(1));
 	}
 	
-	public static RuleSet createPreClassificationRuleSet(){
-		 RuleSet newRuleSet = new RuleSet();
-		 newRuleSet.rules.add(new CheckForSampleRange());
-		 newRuleSet.rules.add(new CheckForSampleRCRSAligned());
-		 newRuleSet.rules.add(new CheckForSampleRSRSAligned());	
-		 return newRuleSet;
-	}
 	
 	public void addRule(HaplogrepRule newRule){
-		this.rules.add(newRule);
+		 if(!rules.containsKey(newRule.getPriority()))
+			 rules.put(newRule.getPriority(), new ArrayList<HaplogrepRule>());
+		 
+		this.rules.get(newRule.getPriority()).add(newRule);
 	}
 	
-	void reevaluateRules(QualityAssistent qualityAssistent,TestSample currentSample) {
-		for(HaplogrepRule currentRule : rules){
+//	void reevaluateAllRules(QualityAssistent qualityAssistent, TestSample currentSample) {
+//		for (int i = 0; i < 10;i++)
+//			if(qualityAssistent.getIssues(currentSample).size() == 0)	
+//				reevaluateRules(qualityAssistent, i, currentSample);
+//				
+//
+//		for (int currentPriority : rules.keySet())
+//			if(currentSample.getQualityLevelReached() <= currentPriority)
+//				suppressRules(qualityAssistent, currentPriority, currentSample);
+//
+//	}
+	
+	private void reevaluateRules(QualityAssistent qualityAssistent,int priority,TestSample currentSample) {
+		for(HaplogrepRule currentRule : rules.get(priority)){
 			currentRule.evaluate(qualityAssistent,currentSample);
 		}
-		for(HaplogrepRule currentRule : rules){
+	}
+	
+	private void suppressRules(QualityAssistent qualityAssistent,int priority,TestSample currentSample) {
+		for(HaplogrepRule currentRule : rules.get(priority)){
 			currentRule.suppressIssues(qualityAssistent,currentSample);
 		}
+	}
+
+	public ArrayList<HaplogrepRule> getRulesLevel(int levelID) {
+		return rules.get(levelID);
 	}
 }
