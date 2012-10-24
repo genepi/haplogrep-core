@@ -75,6 +75,12 @@ public class SampleRanges {
 	 *             (e.g. < 0)
 	 */
 	SampleRanges(String rangesToParse) throws InvalidRangeException {
+		if(metaboChipPositions == null){
+			metaboChipPositions = new HashSet<Integer>();
+			
+			loadMetaboChipPositions();
+		}
+		
 		if (rangesToParse.equals(""))
 			return;
 
@@ -240,14 +246,25 @@ public class SampleRanges {
 			if (other.ends != null)
 				return false;
 		} 
+		
 		else{
 			for(int i : ends)
 				if(!other.ends.contains(i))
 					return false;
+			for(int i : other.ends)
+				if(!ends.contains(i))
+					return false;
+			
 		} 
 		if (starts == null) {
 			for(int i : starts)
 				if(!other.starts.contains(i))
+					return false;
+		} 
+		
+		if (starts == null) {
+			for(int i : other.starts)
+				if(!starts.contains(i))
 					return false;
 		} 
 		return true;
@@ -277,5 +294,10 @@ public class SampleRanges {
 	public void clear() {
 		starts.clear();
 		ends.clear();
+	}
+
+	public boolean isCustomRange() {
+		
+		return !isCompleteRange() && !isControlRange() && !isMataboChipRange();
 	}
 }

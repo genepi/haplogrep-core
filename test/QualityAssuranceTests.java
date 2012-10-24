@@ -113,4 +113,32 @@ public class QualityAssuranceTests {
 		
 		assertEquals(3, newQualityAssistent.getNumIssuedWarnings());
 	}
+	
+	@Test
+	public void testCompleteRangeDetectionRule() throws HsdFileException, IOException {
+		SampleFile testFile = new  SampleFile("/testDataFiles/completeRangeDetection.hsd",true);
+		Phylotree phyoTree = PhylotreeManager.getInstance().getPhylotree("phylotree15.xml","weights15.txt");
+		
+		RuleSet rules = new RuleSet();
+		rules.addStandardRules();
+		QualityAssistent newQualityAssistent = new QualityAssistent(testFile.getTestSamples(),rules,phyoTree);
+		
+		newQualityAssistent.reevaluateRules();
+		System.out.println(newQualityAssistent);
+		System.out.println(newQualityAssistent.getAllIssuesJSON().toString());
+		
+		assertEquals(3, newQualityAssistent.getNumIssuedWarnings());
+	}
+	
+	@Test
+	public void test() throws HsdFileException, IOException {
+		SampleFile testFile = new  SampleFile("/testDataFiles/zeroPolysFound.hsd",true);
+		Phylotree phyoTree = PhylotreeManager.getInstance().getPhylotree("phylotree15.xml","weights15.txt");
+		testFile.updateClassificationResults(phyoTree, new HammingRanking());
+		testFile.getTestSample("5019784").getSample().getSampleRanges().clear();
+		testFile.getTestSample("5019784").getSample().getSampleRanges().addMetaboChipRange();
+		System.out.println();
+		System.out.println(testFile.getTestSample("5019784").getClusteredSearchResults());
+	
+	}
 }

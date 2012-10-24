@@ -15,8 +15,8 @@ import java.util.Scanner;
 
 import qualityAssurance.QualityAssistent;
 import qualityAssurance.issues.QualityIssue;
-import qualityAssurance.issues.errors.ControlRangeDetected;
 import qualityAssurance.issues.errors.CustomOrCompleteRangeDetected;
+import qualityAssurance.issues.errors.ControlRangeDetected;
 import qualityAssurance.issues.errors.MetaboRangeDetected;
 import core.Polymorphism;
 import core.SampleRanges;
@@ -69,15 +69,15 @@ public class CheckForSampleRange extends HaplogrepRule {
 		boolean isCompleteRange = false;
 		if(!isMetaboChip && !isControlRange){
 			isCompleteRange = true;
-			SampleRanges controlRange = new SampleRanges();
-			controlRange.addControlRange();
-			
-			for(Polymorphism currentPoly : currentSample.getSample().getPolymorphisms()){
-				if(!controlRange.contains(currentPoly)){
-					isCompleteRange = false;
-					break;
-				}
-			}
+//			SampleRanges controlRange = new SampleRanges();
+//			controlRange.addControlRange();
+//			
+//			for(Polymorphism currentPoly : currentSample.getSample().getPolymorphisms()){
+//				if(!controlRange.contains(currentPoly)){
+//					isCompleteRange = false;
+//					break;
+//				}
+//			}
 		}
 		
 		if(isMetaboChip && !currentSample.getSample().getSampleRanges().isMataboChipRange()){
@@ -86,7 +86,8 @@ public class CheckForSampleRange extends HaplogrepRule {
 		else if(isControlRange && !currentSample.getSample().getSampleRanges().isControlRange()){
 			qualityAssistent.addNewIssue(new ControlRangeDetected(qualityAssistent, currentSample));	
 		}
-		else if(isCompleteRange && !currentSample.getSample().getSampleRanges().isCompleteRange()){
+		else if(isCompleteRange && !currentSample.getSample().getSampleRanges().isCompleteRange()
+				&& !currentSample.getSample().getSampleRanges().isCustomRange()){
 			qualityAssistent.addNewIssue(new CustomOrCompleteRangeDetected(qualityAssistent, currentSample));		
 		}
 		else

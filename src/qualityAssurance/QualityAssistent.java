@@ -184,10 +184,10 @@ public class QualityAssistent {
 		return jsonArray;
 	}
 
-	public JSONArray getSampleIssues(String sampleID) {
+	public JSONArray getSampleIssues(TestSample testSample) {
 		ArrayList<QualityIssue> sampleQualityIssues = new ArrayList<QualityIssue>();
-		for (QualityIssue currentIssue : issueLookup.values()) {
-			if (currentIssue.getSampleID().equals(sampleID) && !currentIssue.isSuppress())
+		for (QualityIssue currentIssue : allQualityIssuesLookup.get(testSample)) {
+			if (/*currentIssue.getSampleID().equals(testSample) &&*/ !currentIssue.isSuppress())
 				sampleQualityIssues.add(currentIssue);
 		}
 		JsonConfig conf = new JsonConfig();
@@ -235,7 +235,7 @@ public class QualityAssistent {
 			return false;
 		
 		for(QualityIssue currentIssue : allQualityIssuesLookup.get(currentTestSample))
-			if(currentIssue instanceof QualityFatal)
+			if(!currentIssue.isSuppress() && currentIssue instanceof QualityFatal)
 				return true;
 		
 			return false;

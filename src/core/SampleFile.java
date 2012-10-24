@@ -513,9 +513,9 @@ public class SampleFile {
 //	}
 
 
-	public void correctIssue(int issueID) {
+	public void correctIssue(int issueID,int correctionMethodID) {
 		//TestSample currentSample = session.getCurrentSampleFile().getTestSample("663002210");
-		QualityIssue issue = qualityAssistent.doCorrection(issueID, 0);	
+		QualityIssue issue = qualityAssistent.doCorrection(issueID, correctionMethodID);	
 		if(issue == null){
 			issue = qualityAssistent.getIssueByID(issueID);
 		}
