@@ -254,6 +254,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 			stringToParse = stringToParse.replace("del", "");
 			stringToParse = stringToParse.replace("d", "");
 			stringToParse = stringToParse.replace("DEL", "");
+			stringToParse = stringToParse.replace("D", "");
 			this.position = Integer.valueOf(stringToParse);
 			this.mutation = Mutations.DEL;
 		}
@@ -354,7 +355,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		}
 	}
 
-	private boolean isTransitionPoly() {
+	public boolean isTransitionPoly() {
 
 		if (this.mutation == Mutations.T && getReferenceBase().mutation == Mutations.C) {
 			return true;

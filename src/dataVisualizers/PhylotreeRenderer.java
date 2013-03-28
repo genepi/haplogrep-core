@@ -308,7 +308,7 @@ public class PhylotreeRenderer {
 			for(int i = 0 ; i < treeHeight;i++){
 				s += " ";
 			}
-			System.out.println(s+ result.getPhyloTreeNode().getHaplogroup());
+			
 			
 			int numPolys =  ((OverviewTreeInnerNode) result).getFoundPolys().size();
 			int maxPolyWidth = getMaxStringWidthPolys(g2d,((OverviewTreeInnerNode) result).getFoundPolys());

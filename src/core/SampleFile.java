@@ -100,7 +100,7 @@ public class SampleFile {
 		}
 		
 		 String currentLine = sampleFileStream.readLine();
-			if(!currentLine.startsWith("SampleId\tRange")){
+			if(!currentLine.startsWith("SampleId\tRange") ){
 				TestSample newSample = TestSample.parse(currentLine);
 				testSamples.put(newSample.getSampleID(), newSample);
 			}
@@ -367,6 +367,7 @@ public class SampleFile {
 //		int d = 0;
 		for (TestSample currentSample : testSamples.values()) {
 
+			if(currentSample.searchResults.size() > 0) // <-- neu
 			newOverviewTree.addNewPath(currentSample,currentSample.searchResults.get(0).getSearchResult().getDetailedResult().getPhyloTreePath());
 //
 //			if(d==3)break;

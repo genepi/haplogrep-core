@@ -11,23 +11,24 @@ import search.SearchResult;
 import core.Haplogroup;
 
 /**
- * Encapsulates a Search Result instance adding Hamming distance
+ * Encapsulates a Search Result instance adding Kylczynski distance
  * 
- * @author Dominic Pacher, Sebastian Schönherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
  * 
  */
-public class HammingResult extends RankedResult {
 
-	private double hammingDistance;
+public class JaccardResult extends RankedResult {
+
+	private double jaccardDistance;
 
 	/**
-	 * Creates a new result with hamming distance.
+	 * Creates a new result with Kylczynski distance.
 	 * 
 	 * @see RankedResult#RankedResult(SearchResult, Haplogroup)
 	 */
-	public HammingResult(SearchResult result, Haplogroup expectedHaplogroup) {
-		super(result, expectedHaplogroup);
-		hammingDistance = calcDistance();
+	public JaccardResult(SearchResult phyloSearchData, Haplogroup expectedHaplogroup) {
+		super(phyloSearchData, expectedHaplogroup);
+		jaccardDistance = calcDistance();
 	}
 
 	/*
@@ -39,15 +40,27 @@ public class HammingResult extends RankedResult {
 	 */
 	@Override
 	public int compareTo(RankedResult o) {
-		int delta = (int) Math.signum(hammingDistance - ((HammingResult) o).hammingDistance);
+		int delta = (int) Math.signum(((JaccardResult) o).jaccardDistance - jaccardDistance);
+
 		if (delta == 0)
-			return super.compareTo(o);
+			delta = super.compareTo(o);
 
 		return delta;
 	}
 
+	/**
+	 * @return The calculated Kylczynski distance
+	 */
 	private double calcDistance() {
-		return (searchResult.getWeightRemainingPolys()) + searchResult.getSumMissingPhyloWeight();
+		return ( getCorrectPolyInTestSample() /( getAllPoly()));
+	}
+
+	private double getCorrectPolyInTestSample() {
+		return searchResult.getWeightFoundPolys() ;
+	}
+
+	private double getAllPoly() {
+		return searchResult.getSumMissingPhyloWeight() + searchResult.getSumWeightsAllPolysSample();
 	}
 
 	/*
@@ -57,7 +70,7 @@ public class HammingResult extends RankedResult {
 	 */
 	@Override
 	public double getDistance() {
-		return hammingDistance;
+		return jaccardDistance;
 	}
 
 	/*
@@ -70,9 +83,9 @@ public class HammingResult extends RankedResult {
 	@Override
 	public void attachToJsonObject(JSONObject child) throws JSONException {
 		DecimalFormat df = new DecimalFormat("0.000", new DecimalFormatSymbols(Locale.US));
-		child.put("rank", df.format(hammingDistance));
-		child.put("rankHG", df.format(searchResult.getSumMissingPhyloWeight()));
-		child.put("rankS", df.format(searchResult.getWeightRemainingPolys()));
+		child.put("rank", df.format(jaccardDistance));
+		child.put("rankHG", df.format(getCorrectPolyInTestSample()));
+		child.put("rankS", df.format(getAllPoly()));
 		child.put("name", searchResult.getHaplogroup().toString());
 		child.put("id", searchResult.getHaplogroup().toString());
 	}

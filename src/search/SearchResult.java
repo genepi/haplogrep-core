@@ -26,6 +26,8 @@ public class SearchResult {
 	private double expectedPolsysSumWeight = 0;
 	private double missingPolysSumWeights = 0;
 	private double missingSumWeightsPolysOutOfRange = 0;
+	private double sumWeightedTransitions = 0;
+	private double sumWeightedTransversions = 0;
 
 	/**
 	 * Creates a new SeachResult object with given haplogroup and test sample
@@ -66,6 +68,8 @@ public class SearchResult {
 		missingSumWeightsPolysOutOfRange = resultToCopy.missingSumWeightsPolysOutOfRange;
 		remainingPolysSumWeights = resultToCopy.remainingPolysSumWeights;
 		missingPolysSumWeights = resultToCopy.missingPolysSumWeights;
+		sumWeightedTransitions = resultToCopy.sumWeightedTransitions;
+		sumWeightedTransversions = resultToCopy.sumWeightedTransversions;
 	}
 
 	/**
@@ -116,6 +120,11 @@ public class SearchResult {
 		foundPolysSumWeights += getPhyloTree().getMutationRate(newFoundPoly);
 		remainingPolysSumWeights -= getPhyloTree().getMutationRate(newFoundPoly);
 		missingPolysSumWeights -= getPhyloTree().getMutationRate(newFoundPoly);
+		
+		if(newFoundPoly.isTransitionPoly())
+			sumWeightedTransitions -= 1;//getPhyloTree().getMutationRate(newFoundPoly);
+		else
+			sumWeightedTransversions -= 1;//getPhyloTree().getMutationRate(newFoundPoly);
 	}
 
 	/**
@@ -133,7 +142,12 @@ public class SearchResult {
 			if (sample.contains(newPoly)) {
 				foundPolysSumWeights -= getPhyloTree().getMutationRate(newPoly);
 				remainingPolysSumWeights += getPhyloTree().getMutationRate(newPoly);
-
+				
+				if(newPoly.isTransitionPoly())
+					sumWeightedTransitions += 1;//getPhyloTree().getMutationRate(newPoly);		
+				else
+					sumWeightedTransversions += 1;//getPhyloTree().getMutationRate(newPoly);
+				
 			}
 		} else
 			foundPolysSumWeights -= getPhyloTree().getMutationRate(polyToRemove);
@@ -148,8 +162,14 @@ public class SearchResult {
 	public void addExpectedPolyWeight(Polymorphism newExpectedPoly) {
 		expectedPolsysSumWeight += getPhyloTree().getMutationRate(newExpectedPoly);
 		missingPolysSumWeights += getPhyloTree().getMutationRate(newExpectedPoly);
+		
+//		if(newExpectedPoly.isTransitionPoly())
+//			sumWeightedTransitions += 1;//getPhyloTree().getMutationRate(newExpectedPoly);		
+//		else
+//			sumWeightedTransversions += 1;//getPhyloTree().getMutationRate(newExpectedPoly);
 	}
 
+	
 	/**
 	 * Removes weight of a the expected polymorphisms
 	 * 
@@ -223,4 +243,14 @@ public class SearchResult {
 	public Phylotree getPhyloTree() {
 		return attachedPhyloTreeNode.getTree();
 	}
+
+	public double getSumWeightedTransversions() {
+		return sumWeightedTransversions;
+	}
+	
+	public double getSumWeightedTransitions() {
+		return sumWeightedTransitions;
+	}
+	
+	
 }

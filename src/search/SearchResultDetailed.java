@@ -112,6 +112,45 @@ public class SearchResultDetailed implements Serializable {
 		Collections.reverse(path);
 	}
 
+	public double getSumWeightsRemainingTransitions(){
+		double sumTransitions = 0;
+		for(Polymorphism currentRemainingPoly : remainingPolys){
+			if(currentRemainingPoly.isTransitionPoly())
+				sumTransitions += 1;
+		}
+		
+		for (Polymorphism current : expectedPolys) {
+
+			// The polymorphism is contained in this haplogroup
+			if (!foundPolys.contains(current)) {
+				if(current.isTransitionPoly())
+				sumTransitions += 1;
+			}
+
+		}
+		
+		return sumTransitions;
+	}
+	
+	public double getSumWeightsRemainingTransversion(){
+		double sumTransversions = 0;
+		for(Polymorphism currentRemainingPoly : remainingPolys){
+			if(!currentRemainingPoly.isTransitionPoly())
+				sumTransversions += 1;
+		}
+		
+		for (Polymorphism current : expectedPolys) {
+
+			// The polymorphism is contained in this haplogroup
+			if (!foundPolys.contains(current)) {
+				if(!current.isTransitionPoly())
+					sumTransversions += 1;
+			}
+
+		}
+		
+		return sumTransversions;
+	}
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -262,7 +301,7 @@ public class SearchResultDetailed implements Serializable {
 				Element result = new Element("DetailedResult");
 
 				Element newExpectedPoly = new Element("expected");
-				newExpectedPoly.setText(current.toString());
+				newExpectedPoly.setText(current.toStringShortVersion());
 				result.addContent(newExpectedPoly);
 
 				Element newCorrectPoly = new Element("correct");
@@ -281,7 +320,7 @@ public class SearchResultDetailed implements Serializable {
 				Element result = new Element("DetailedResult");
 
 				Element newExpectedPoly = new Element("expected");
-				newExpectedPoly.setText(current.toString());
+				newExpectedPoly.setText(current.toStringShortVersion());
 				result.addContent(newExpectedPoly);
 
 				Element newCorrectPoly = new Element("correct");

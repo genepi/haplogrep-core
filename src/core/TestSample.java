@@ -51,7 +51,6 @@ public class TestSample implements Comparable<TestSample>{
 		SampleRanges sampleRange = null;
 		Pattern p = Pattern.compile( "(\\d*(-|;)?)*" );
 		try {
-			System.out.println("Input "+inputString);
 			//Split the input string in separate column strings 
 			String[] columns = inputString.split("\t");
 
