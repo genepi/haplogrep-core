@@ -36,7 +36,7 @@ public class ClusteredSearchResults {
 
 			// TODO Check if needed 
 			//Only process the top rated results
-			if (i == 50)
+			if (i == 200)
 				break;
 
 			if (currentRank != currentResult.getDistance()) {

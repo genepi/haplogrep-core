@@ -23,7 +23,7 @@ public class RuleSet {
 	
 	public void addStandardRules() {
 		addRule(new CheckForSampleRange(0));
-		addRule(new CheckForSampleRCRSAligned(0));
+	//	addRule(new CheckForSampleRCRSAligned(0));
 		addRule(new CheckForSampleRSRSAligned(0));
 
 		addRule(new CheckExpectedHGMatchesDetectedHG(1));
