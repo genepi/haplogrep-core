@@ -14,7 +14,7 @@ import java.util.Scanner;
 import exceptions.parse.sample.InvalidRangeException;
 
 /**
- * Represents the ranges of one sample.
+ * Represents the ranges of a sample.
  * 
  * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
  * 
@@ -178,17 +178,20 @@ public class SampleRanges {
 	 * @return True if the polymorphism is contained, false otherwise
 	 */
 	public boolean contains(Polymorphism polyToCheck) {
-		return continsPosition(polyToCheck.getPosition());
-	}
-
-	private boolean continsPosition(int position) {
-		for (int i = 0; i < starts.size(); i++) {
-			if (starts.get(i) <= position && ends.get(i) >= position)
-				return true;
-		}
-
-		return false;
-	}
+	return getSubrangeID(polyToCheck) != -1 ? true : false;
+}
+//	public boolean contains(Polymorphism polyToCheck) {
+//		return containsPosition(polyToCheck.getPosition());
+//	}
+//
+//	private boolean containsPosition(int position) {
+//		for (int i = 0; i < starts.size(); i++) {
+//			if (starts.get(i) <= position && ends.get(i) >= position)
+//				return true;
+//		}
+//
+//		return false;
+//	}
 
 	/**
 	 * @return All start positions of ranges of this instances
@@ -299,5 +302,25 @@ public class SampleRanges {
 	public boolean isCustomRange() {
 		
 		return !isCompleteRange() && !isControlRange() && !isMataboChipRange();
+	}
+
+	public int getSubrangeID(Polymorphism currentPoly) {
+		int rangeID = -1;
+		for (int i = 0; i < starts.size(); i++) {
+			if ((starts.get(i) <= currentPoly.getPosition() && ends.get(i) >= currentPoly.getPosition()) || 
+					(starts.get(i) > ends.get(i) &&  (starts.get(i) >= currentPoly.getPosition() || ends.get(i) <= currentPoly.getPosition()))){
+				rangeID++;
+				break;
+			}
+			
+			rangeID++;
+		}
+		return rangeID;
+	}
+
+	public SampleRanges getSubrange(int i) {
+		SampleRanges newSubrange = new SampleRanges();
+		newSubrange.addCustomRange(starts.get(i), ends.get(i));
+		return newSubrange;
 	}
 }

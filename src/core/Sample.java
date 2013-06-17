@@ -29,6 +29,11 @@ public class Sample {
 		this.sampleRange = sampleRange;
 	}
 
+	public Sample(ArrayList<Polymorphism> polymorphisms, SampleRanges sampleRange) {
+		this.sample = polymorphisms;
+		this.sampleRange = sampleRange;
+	}
+
 	/**
 	 * @return All polymorphisms of this sample
 	 */

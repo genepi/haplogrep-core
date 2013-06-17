@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -110,6 +112,19 @@ public class SampleFile {
 
 		}
 	}
+
+	public SampleFile() {
+		// TODO Auto-generated constructor stub
+	}
+
+
+	public void setTestSamples(ArrayList<TestSample> file) {
+		testSamples.clear();
+		for(TestSample currentSample : file){
+			testSamples.put(currentSample.getSampleID(), currentSample);
+		}
+	}
+
 
 	/**
 	 * Returns a test sample.
@@ -366,10 +381,11 @@ public class SampleFile {
 		OverviewTree newOverviewTree = new OverviewTree();
 //		int d = 0;
 		for (TestSample currentSample : testSamples.values()) {
-
+//			System.out.println(currentSample.getSampleID());
+			if(currentSample.searchResults.size() > 0)
 			if(currentSample.searchResults.size() > 0) // <-- neu
 			newOverviewTree.addNewPath(currentSample,currentSample.searchResults.get(0).getSearchResult().getDetailedResult().getPhyloTreePath());
-//
+			
 //			if(d==3)break;
 //			
 //			d++;
@@ -522,5 +538,43 @@ public class SampleFile {
 		}
 		TestSample sample = issue.getSampleOfIssue();
 		reevaluateSample(sample);
+	}
+	
+	public String toHSDFileString() {
+		long start = new java.util.Date().getTime();
+		StringBuffer result = new StringBuffer();
+
+		Collection<TestSample> sampleCollection = null;
+		sampleCollection = testSamples.values();
+//		Collections.sort((List<TestSample>) sampleCollection);
+		result.append("SampleID\tRange\tHaplogroup\tPolymorphisms\n");
+		if (sampleCollection != null) {
+			for (TestSample sample : sampleCollection) {
+				//SampleID
+				result.append(sample.getSampleID() + "\t");
+				//Range; convert 1447-1447 to 1447
+				SampleRanges range = sample.getSample().getSampleRanges();
+				ArrayList<Integer> startRange = range.getStarts();				
+				ArrayList<Integer> endRange = range.getEnds();
+				String resultRange="";
+				for(int i=0;i<startRange.size();i++){
+					if(startRange.get(i).equals(endRange.get(i))){resultRange+=startRange.get(i)+";";}
+					else {resultRange+=startRange.get(i)+"-"+endRange.get(i)+";";}
+				}
+				result.append(resultRange + "\t");
+				//Status, Quality, PredefiniedHaplogroup
+				//result.append(sample.getStatus() + "\t"); 
+				//result.append(sample.getResultQuality() + "\t"); 
+				result.append(sample.getExpectedHaplogroup()); 
+				//result.append(sample.getRecognizedHaplogroup() + "\t"); 
+				//Polymorphisms
+				for (Polymorphism poly : sample.getSample().getPolymorphisms()) {
+					result.append("\t" + poly);
+				}
+				result.append("\n");
+			}
+		}
+		System.out.println("Time: "+ (new java.util.Date().getTime() - start));
+		return result.toString();
 	}
 }

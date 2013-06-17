@@ -55,7 +55,7 @@ public class KylczynskiResult extends RankedResult {
 		return (getCorrectPolyInTestSampleRatio() * 0.5 + getCorrectPolyInHaplogroupRatio() * 0.5);
 	}
 
-	private double getCorrectPolyInTestSampleRatio() {
+	public double getCorrectPolyInTestSampleRatio() {
 		return searchResult.getWeightFoundPolys() / searchResult.getSumWeightsAllPolysSample();
 	}
 

@@ -1,6 +1,7 @@
 package core;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,6 +41,11 @@ public class TestSample implements Comparable<TestSample>{
 		
 	}
 	
+	public TestSample(String sampleID,ArrayList<Polymorphism> polymorphisms,SampleRanges sampleRange) {
+		this.testSampleID = sampleID;
+		sample = new Sample(polymorphisms,sampleRange);
+	}
+
 	/**
 	 * Parses a new test sample object from an input string
 	 * @param inputString The string to parse
@@ -399,5 +405,33 @@ public class TestSample implements Comparable<TestSample>{
 
 	public void setReachedQualityLevel(int level) {
 		this.qualityRulesLevelReached = level;
+	}
+	
+	public ArrayList<TestSample> createFragments(SampleRanges fragmentRanges) {
+
+		HashMap<Integer, ArrayList<Polymorphism>> fragmentsHashMap = new HashMap<Integer, ArrayList<Polymorphism>>(); // MultiMap
+		ArrayList<TestSample> resultFragments = new ArrayList<TestSample>();
+	
+		for(int i = 0; i <  fragmentRanges.getStarts().size();i++)
+			fragmentsHashMap.put(i, new ArrayList<Polymorphism>());
+		
+		for (Polymorphism currentPoly : sample.getPolymorphisms()) {
+			int key = fragmentRanges.getSubrangeID(currentPoly);
+			
+			ArrayList<Polymorphism> currentFragment = fragmentsHashMap.get(key);
+
+//			if (currentFragment == null)
+//				fragmentsHashMap.put(key, new ArrayList<Polymorphism>());
+			
+			fragmentsHashMap.get(key).add(currentPoly);
+
+		}
+		int i = 0;
+		for(ArrayList<Polymorphism> currentFragment : fragmentsHashMap.values()){
+			resultFragments.add( new TestSample(testSampleID  + "_Frag_" + (fragmentRanges.getStarts().get(i)), currentFragment,fragmentRanges.getSubrange(i)));
+			i++;
+		}
+		
+		return resultFragments;
 	}
 }
