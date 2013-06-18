@@ -16,7 +16,7 @@ import exceptions.parse.sample.InvalidRangeException;
 /**
  * Represents the ranges of a sample.
  * 
- * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schnherr, Hansi Weissensteiner
  * 
  */
 
@@ -304,18 +304,16 @@ public class SampleRanges {
 		return !isCompleteRange() && !isControlRange() && !isMataboChipRange();
 	}
 
-	public int getSubrangeID(Polymorphism currentPoly) {
-		int rangeID = -1;
+	public int getSubrangeID(Polymorphism currentPoly) {	
+		int foundRangeID = -1;
 		for (int i = 0; i < starts.size(); i++) {
 			if ((starts.get(i) <= currentPoly.getPosition() && ends.get(i) >= currentPoly.getPosition()) || 
 					(starts.get(i) > ends.get(i) &&  (starts.get(i) >= currentPoly.getPosition() || ends.get(i) <= currentPoly.getPosition()))){
-				rangeID++;
+				foundRangeID = i;
 				break;
-			}
-			
-			rangeID++;
+			}	
 		}
-		return rangeID;
+		return foundRangeID;
 	}
 
 	public SampleRanges getSubrange(int i) {

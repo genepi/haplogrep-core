@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import phylotree.Phylotree;
@@ -141,6 +142,24 @@ public class QualityAssuranceTests {
 	}
 	
 	@Test
+	public void testRecombinationControlRegion() throws Exception {
+		SampleFile testFile = new  SampleFile("/testDataFiles/Bandelt.txt",true);
+		Phylotree phyoTree = PhylotreeManager.getInstance().getPhylotree("phylotree15.xml","weights15.txt");
+//	ArrayList<TestSample> file = generateRecombination(phyoTree,testFile);
+//	file.addAll(testFile.getTestSamples());
+//		
+		RuleSet rules = new RuleSet();
+		rules.addRule(new CheckForRecombinationWindow(1000));
+		QualityAssistent newQualityAssistent = new QualityAssistent(testFile.getTestSamples(),rules,phyoTree);
+		
+		newQualityAssistent.reevaluateRules();
+		System.out.println(newQualityAssistent);
+		System.out.println(newQualityAssistent.getAllIssuesJSON().toString());
+//		newQualityAssistent.getIssueByID(0).getDescription()
+//		assertEquals(3, newQualityAssistent.getNumIssuedWarnings());
+	}
+	
+	@Test
 	public void testRecombinationRule() throws Exception {
 		SampleFile testFile = new  SampleFile("/testDataFiles/test4Recombination.hsd",true);
 		Phylotree phyoTree = PhylotreeManager.getInstance().getPhylotree("phylotree15.xml","weights15.txt");
@@ -240,5 +259,26 @@ public class QualityAssuranceTests {
 		}
 		
 		return recombiantedTestSamples;
+	}
+	
+	@Test
+	public void testSampleRange() throws Exception{
+		SampleRanges ranges  = new SampleRanges();
+		ranges.addCustomRange(2488, 10858);
+		ranges.addCustomRange(10898, 2687);
+		
+		Assert.assertTrue(ranges.contains(new Polymorphism("73G")));
+		Assert.assertTrue(ranges.contains(new Polymorphism("16512G")));
+		Assert.assertTrue(ranges.contains(new Polymorphism("10898G")));
+		Assert.assertTrue(ranges.contains(new Polymorphism("2687G")));
+		
+		ranges  = new SampleRanges();
+		ranges.addCustomRange(16024, 16569);
+		ranges.addCustomRange(74, 576);
+			
+		Assert.assertFalse(ranges.contains(new Polymorphism("73G")));
+		Assert.assertTrue(ranges.contains(new Polymorphism("16512G")));
+		Assert.assertFalse(ranges.contains(new Polymorphism("10898G")));
+		Assert.assertFalse(ranges.contains(new Polymorphism("2687G")));
 	}
 }

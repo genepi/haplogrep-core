@@ -23,7 +23,8 @@ public class RecombinationDetectedWindow extends QualityWarning {
 	
 //	Haplogroup remainingHaplogroup;
 //	double remainingQuality;
-
+	int dis;
+	int inverseDis;
 	
 	class SetMataboRange extends CorrectionMethod
     {
@@ -40,13 +41,15 @@ public class RecombinationDetectedWindow extends QualityWarning {
 	
 	public RecombinationDetectedWindow(QualityAssistent assistent,TestSample sampleOfIssue, int numberOfDifferences,
 								ArrayList<TestSample> fragmentsReference,ArrayList<TestSample> fragmentsSampleToCheck,
-								ArrayList<Haplogroup> referenceHaplogroups,ArrayList<Haplogroup> currentSampleHaplogroups) {
+								ArrayList<Haplogroup> referenceHaplogroups,ArrayList<Haplogroup> currentSampleHaplogroups, int distanceToSuperHaplogroup, int inverseDistanceToSuperHaplogroup) {
 		super(assistent, sampleOfIssue, "Possible recombiantion detected");
 		this.numberOfDifferences = numberOfDifferences;
 		this.fragmentsReference = fragmentsReference;
 		this.fragmentsSampleToCheck = fragmentsSampleToCheck;
 		this.referenceHaplogroups = referenceHaplogroups;
 		this.currentSampleHaplogroups = currentSampleHaplogroups;
+		this.dis =distanceToSuperHaplogroup;
+		this.inverseDis = inverseDistanceToSuperHaplogroup;
 	}
 	
 
@@ -80,6 +83,8 @@ public class RecombinationDetectedWindow extends QualityWarning {
 		for(int i = 0; i < currentSampleHaplogroups.size();i++){
 			result += currentSampleHaplogroups.get(i) + "\t";
 		}
+		
+		result += "\r\nDis" + dis + " " + inverseDis;
 		return result;
 	}
 }

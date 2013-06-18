@@ -30,7 +30,7 @@ import exceptions.parse.sample.InvalidPolymorphismException;
  * Represents an instance of a phylotree. Includes phylogentic weights and
  * search code for haplogroup detection.
  * 
- * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schï¿½nherr, Hansi Weissensteiner
  * 
  */
 public final class Phylotree {
@@ -272,6 +272,22 @@ public final class Phylotree {
 			currentNode = currentNode.getParent();
 		}
 		return false;
+	}
+
+	public int distanceToSuperHaplogroup(Haplogroup superGroup, Haplogroup hgToCheck) {
+		PhyloTreeNode currentNode = haplogroupLookup.get(superGroup);
+		int distance = 0;
+		if (superGroup == null)
+			return -1;
+
+		while (currentNode != null) {
+			if (currentNode.getHaplogroup().equals(hgToCheck))
+				return distance;
+
+			currentNode = currentNode.getParent();
+			distance++;
+		}
+		return -1;
 	}
 
 }

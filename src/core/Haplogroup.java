@@ -7,7 +7,7 @@ import phylotree.Phylotree;
 /**
  * Represents a single haplogroup.
  * 
- * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schï¿½nherr, Hansi Weissensteiner
  * 
  */
 public class Haplogroup implements Serializable {
@@ -47,6 +47,13 @@ public class Haplogroup implements Serializable {
 			return false;
 
 		return phylotree.isSuperHaplogroup(hgToCheck,this);
+	}
+	
+	public int distanceToSuperHaplogroup(Phylotree phylotree, Haplogroup hgToCheck) {
+		if (!(hgToCheck instanceof Haplogroup))
+			return -1;
+
+		return phylotree.distanceToSuperHaplogroup(hgToCheck,this);
 	}
 
 	@Override
