@@ -3,7 +3,6 @@ import static org.junit.Assert.*;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
 
 import org.junit.Assert;
@@ -13,8 +12,7 @@ import phylotree.Phylotree;
 import phylotree.PhylotreeManager;
 import qualityAssurance.QualityAssistent;
 import qualityAssurance.RuleSet;
-import qualityAssurance.rules.CheckForRecombination;
-import qualityAssurance.rules.CheckForRecombinationWindow;
+import qualityAssurance.rules.CheckForRecombinationRule;
 import qualityAssurance.rules.CheckForSampleRCRSAligned;
 import qualityAssurance.rules.CheckForSampleRSRSAligned;
 import qualityAssurance.rules.CheckForSampleRange;
@@ -149,7 +147,7 @@ public class QualityAssuranceTests {
 //	file.addAll(testFile.getTestSamples());
 //		
 		RuleSet rules = new RuleSet();
-		rules.addRule(new CheckForRecombinationWindow());
+		rules.addRule(new CheckForRecombinationRule(4));
 		QualityAssistent newQualityAssistent = new QualityAssistent(testFile.getTestSamples(),rules,phyoTree);
 		
 		newQualityAssistent.reevaluateRules();
@@ -167,7 +165,7 @@ public class QualityAssuranceTests {
 	file.addAll(testFile.getTestSamples());
 //		
 		RuleSet rules = new RuleSet();
-		rules.addRule(new CheckForRecombinationWindow());
+		rules.addRule(new CheckForRecombinationRule(4));
 		QualityAssistent newQualityAssistent = new QualityAssistent(file,rules,phyoTree);
 		
 		newQualityAssistent.reevaluateRules();

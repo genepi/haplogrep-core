@@ -7,8 +7,7 @@ import core.TestSample;
 
 import qualityAssurance.issues.QualityIssue;
 import qualityAssurance.rules.CheckExpectedHGMatchesDetectedHG;
-import qualityAssurance.rules.CheckForRecombination;
-import qualityAssurance.rules.CheckForRecombinationWindow;
+import qualityAssurance.rules.CheckForRecombinationRule;
 import qualityAssurance.rules.CheckForReferencePolymorhisms;
 import qualityAssurance.rules.CheckForSampleRCRSAligned;
 import qualityAssurance.rules.CheckForSampleRSRSAligned;
@@ -32,7 +31,7 @@ public class RuleSet {
 //		addRule(new CheckForReferencePolymorhisms(1));
 //		addRule(new CheckForTooManyGlobalPrivateMutations(1));
 		
-		addRule(new CheckForRecombinationWindow());
+		addRule(new CheckForRecombinationRule(4));
 	}
 	
 	
