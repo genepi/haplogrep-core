@@ -11,7 +11,7 @@ import core.TestSample;
  * Represents a search result attached to a phylotree node. Calculates data to
  * rank the results.
  * 
- * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schï¿½nherr, Hansi Weissensteiner
  * 
  */
 public class SearchResult {
@@ -221,7 +221,7 @@ public class SearchResult {
 	 * @return Returns the detailed result of this search result. Generated of
 	 *         it's not existing yet.
 	 */
-	public SearchResultDetailed getDetailedResult() {
+	synchronized public SearchResultDetailed getDetailedResult() {
 		if (detailedResult == null) {
 			detailedResult = new SearchResultDetailed(this);
 			detailedResult.updateResult();

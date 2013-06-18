@@ -206,6 +206,7 @@ public class SearchResultDetailed implements Serializable {
 	 */
 	public Element getUnusedPolysXML(boolean includeHotspots) {
 		Element results = new Element("DetailedResults");
+		
 		Collections.sort(remainingPolys);
 
 		ArrayList<Polymorphism> expectedPolysSuperGroup = new ArrayList<Polymorphism>();
@@ -288,12 +289,7 @@ public class SearchResultDetailed implements Serializable {
 	 * @return The root element of the xml representation
 	 */
 	public Element getFoundNotFoundPolys() {
-		boolean done = false;
 		Element results = new Element("DetailedResults");
-		//Concurrent modification work around
-		while(!done){
-			try{
-		 results = new Element("DetailedResults");
 		Collections.sort(expectedPolys);
 
 		ArrayList<Polymorphism> unusedPolysArray = new ArrayList<Polymorphism>();
@@ -337,13 +333,7 @@ public class SearchResultDetailed implements Serializable {
 			}
 
 		}
-		done = true;
-		}
-//		
-		catch(ConcurrentModificationException e){
-			System.out.println("ConccurentModification");
-		}
-		}
+
 		return results;
 	}
 
