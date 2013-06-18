@@ -186,6 +186,7 @@ public class QualityAssistent {
 
 	public JSONArray getSampleIssues(TestSample testSample) {
 		ArrayList<QualityIssue> sampleQualityIssues = new ArrayList<QualityIssue>();
+		if(allQualityIssuesLookup.containsKey(testSample))
 		for (QualityIssue currentIssue : allQualityIssuesLookup.get(testSample)) {
 			if (/*currentIssue.getSampleID().equals(testSample) &&*/ !currentIssue.isSuppress())
 				sampleQualityIssues.add(currentIssue);

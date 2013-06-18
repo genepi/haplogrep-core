@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 
 import org.jdom.Element;
 
@@ -17,7 +18,7 @@ import core.Polymorphism;
  * on first request. Since detailed results need more memory and cpu capacity to
  * create, they meant to be used only on the top ranking results.
  * 
- * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schï¿½nherr, Hansi Weissensteiner
  * 
  */
 public class SearchResultDetailed implements Serializable {
@@ -287,13 +288,18 @@ public class SearchResultDetailed implements Serializable {
 	 * @return The root element of the xml representation
 	 */
 	public Element getFoundNotFoundPolys() {
-
+		boolean done = false;
 		Element results = new Element("DetailedResults");
+		//Concurrent modification work around
+		while(!done){
+			try{
+		 results = new Element("DetailedResults");
 		Collections.sort(expectedPolys);
 
 		ArrayList<Polymorphism> unusedPolysArray = new ArrayList<Polymorphism>();
 		unusedPolysArray.addAll(searchResult.getSample().getPolymorphisms());
-
+		
+		
 		for (Polymorphism current : expectedPolys) {
 
 			// The polymorphism is contained in this haplogroup
@@ -331,7 +337,13 @@ public class SearchResultDetailed implements Serializable {
 			}
 
 		}
-
+		done = true;
+		}
+//		
+		catch(ConcurrentModificationException e){
+			System.out.println("ConccurentModification");
+		}
+		}
 		return results;
 	}
 
