@@ -34,13 +34,17 @@ import exceptions.parse.sample.InvalidPolymorphismException;
 
 public class CheckForRecombinationWindow extends HaplogrepRule {
 	ArrayList<Polymorphism> foundReferencePolys = new ArrayList<Polymorphism>();
-//	static HashSet<Integer> metaboChipPositions = null;
-//	boolean isMetaboChip = true;
-	int windowSize;
+
+	SampleRanges customFragmentRanges = null;
 	
-	public CheckForRecombinationWindow(int windowSize){
+	
+	public CheckForRecombinationWindow(){
 		super(0);
-		this.windowSize= 2000;
+	}
+	
+	public CheckForRecombinationWindow(SampleRanges customFragmentRanges){
+		super(0);
+		this.customFragmentRanges= customFragmentRanges;
 	}
 	
 	
@@ -48,49 +52,33 @@ public class CheckForRecombinationWindow extends HaplogrepRule {
 	@Override
 	public void evaluate(QualityAssistent qualityAssistent, TestSample currentSample) {
 		
-		List<RankedResult> result = qualityAssistent.getUsedPhyloTree().search(currentSample, new KylczynskiRanking(1));	
-		
-		
-		ArrayList<Polymorphism> haplogroupDefiningPolys = result.get(0).getSearchResult().getDetailedResult().getExpectedPolys();
-		System.out.println("Recomb haplogroup "+  result.get(0).getSearchResult().getHaplogroup());
+		//Create sample of the reference haplogroup
+		List<RankedResult> result = qualityAssistent.getUsedPhyloTree().search(currentSample, new KylczynskiRanking(1));		
+		ArrayList<Polymorphism> haplogroupDefiningPolys = result.get(0).getSearchResult().getDetailedResult().getExpectedPolys();	
 		TestSample haplogroupReferenceSample = new TestSample("hgReference", haplogroupDefiningPolys, currentSample.getSample().getSampleRanges());
 		
-		SampleRanges ranges = new SampleRanges();
-		if(currentSample.getSample().getSampleRanges().isCompleteRange()){
-			ranges.addCustomRange(2488, 10858);
-			ranges.addCustomRange(10898, 2687);
-		}
 		
-		else if(currentSample.getSample().getSampleRanges().isControlRange()){
-//			//HSV1 range
-//			ranges.addCustomRange(16024, 16383);
-//			//Control Range
-//			ranges.addCustomRange(16384,  56);
-//			
-//			//HSV 2
-//			ranges.addCustomRange(57,  437);
-//			
-//			//HSV 3
-//			ranges.addCustomRange(438,  576);
+		//Use standard fragments ranges for complete and control range sample if no custom range is given.
+		SampleRanges ranges = customFragmentRanges;
+		if(customFragmentRanges == null){
+			 ranges = new SampleRanges();
+			if(currentSample.getSample().getSampleRanges().isCompleteRange()){
+				ranges.addCustomRange(2488, 10858);
+				ranges.addCustomRange(10898, 2687);
+			}
 			
-			ranges.addCustomRange(16024, 16579);
-//			//Control Range
-			ranges.addCustomRange(1,  576);
-		}
-		
-		else{
-			currentSample.setReachedQualityLevel(this.getPriority() + 1);
-			return;
+			else if(currentSample.getSample().getSampleRanges().isControlRange()){
+				ranges.addCustomRange(16024, 16579);
+				ranges.addCustomRange(1,  576);
+			}
+			
+			else{
+				currentSample.setReachedQualityLevel(this.getPriority() + 1);
+				return;
+			}
 		}
 			
-//		int i2 = 0 ;
-//		for( i2 = 0; i2 < 16569 / windowSize;i2++){
-//			ranges.addCustomRange(windowSize*i2, windowSize*(i2+1)-1);
-//		}
-//		ranges.addCustomRange(windowSize*(i2), 16569);
-		
-		
-		
+		//Create fragments and determine their respective haplogroups
 		ArrayList<TestSample> fragmentsReference = haplogroupReferenceSample.createFragments(ranges);
 		ArrayList<TestSample> fragmentsSampleToCheck = currentSample.createFragments(ranges);
 		ArrayList<Haplogroup> referenceHaplogroups = new ArrayList<Haplogroup>();
@@ -106,62 +94,41 @@ public class CheckForRecombinationWindow extends HaplogrepRule {
 			qualityAssistent.getUsedPhyloTree().search(currentFragment, new KylczynskiRanking(1)).get(0).getHaplogroup());
 		}
 		
-		int numberOfDifferences = 0;
-		int distanceToSuperHaplogroup = -1;
-		int inverseDistanceToSuperHaplogroup = -1;
-		for(int i = 0; i < referenceHaplogroups.size();i++){
-//			if(distanceToSuperHaplogroup == -1)
-			distanceToSuperHaplogroup = currentSampleHaplogroups.get(i).distanceToSuperHaplogroup(qualityAssistent.getUsedPhyloTree(), referenceHaplogroups.get(i));
-//			if(inverseDistanceToSuperHaplogroup == -1)
-			inverseDistanceToSuperHaplogroup = referenceHaplogroups.get(i).distanceToSuperHaplogroup(qualityAssistent.getUsedPhyloTree(), currentSampleHaplogroups.get(i));
+//		int numberOfDifferences = 0;
+//		int distanceToSuperHaplogroup = -1;
+//		int inverseDistanceToSuperHaplogroup = -1;
+//		for(int i = 0; i < referenceHaplogroups.size();i++){
+////			if(distanceToSuperHaplogroup == -1)
+//			distanceToSuperHaplogroup = currentSampleHaplogroups.get(i).distanceToSuperHaplogroup(qualityAssistent.getUsedPhyloTree(), referenceHaplogroups.get(i));
+////			if(inverseDistanceToSuperHaplogroup == -1)
+//			inverseDistanceToSuperHaplogroup = referenceHaplogroups.get(i).distanceToSuperHaplogroup(qualityAssistent.getUsedPhyloTree(), currentSampleHaplogroups.get(i));
+////			
 //			
-			
-//			if(!referenceHaplogroups.get(i).equals(currentSampleHaplogroups.get(i))){
-			if (inverseDistanceToSuperHaplogroup == -1 || inverseDistanceToSuperHaplogroup > 2){
-				numberOfDifferences++;
-			}
-		}
-		
-//		Haplogroup currentParentGroup = currentSampleHaplogroups.get(0);
-		
-//		boolean recombinationDetected = false;
-		
-//		for (int i = 1; i < currentSampleHaplogroups.size(); i++) {
-//			distanceToSuperHaplogroup = currentSampleHaplogroups.get(i).distanceToSuperHaplogroup(qualityAssistent.getUsedPhyloTree(), currentParentGroup);
-//			inverseDistanceToSuperHaplogroup = currentParentGroup.distanceToSuperHaplogroup(qualityAssistent.getUsedPhyloTree(), currentSampleHaplogroups.get(i));
-//			if (distanceToSuperHaplogroup > -1 && distanceToSuperHaplogroup < 4) {
-//				currentParentGroup = currentSampleHaplogroups.get(i);
-//			}
-//
-//			else if (inverseDistanceToSuperHaplogroup == -1 || inverseDistanceToSuperHaplogroup >= 4) {
-//				recombinationDetected = true;
-//				break;
+////			if(!referenceHaplogroups.get(i).equals(currentSampleHaplogroups.get(i))){
+//			if (inverseDistanceToSuperHaplogroup == -1 || inverseDistanceToSuperHaplogroup > 2){
+//				numberOfDifferences++;
 //			}
 //		}
-		
-		if(numberOfDifferences != 0)
+		int overallDistance = 0;
+		int distance = 0;
+		for(int i = 0; i < referenceHaplogroups.size();i++){
+
+			distance += qualityAssistent.getUsedPhyloTree().getDistanceBetweenHaplogroups(currentSampleHaplogroups.get(i),referenceHaplogroups.get(i));
+			
+//			if (distance < 2){
+				overallDistance += distance;
+//			}
+		}
+		//If there differences (even with tolerance) create a recombination issue
+		if(overallDistance > 4)
 			qualityAssistent.addNewIssue(new RecombinationDetectedWindow(qualityAssistent, currentSample,
-					numberOfDifferences,fragmentsReference,fragmentsSampleToCheck,referenceHaplogroups,currentSampleHaplogroups,
-					distanceToSuperHaplogroup,inverseDistanceToSuperHaplogroup));
+					overallDistance,fragmentsReference,fragmentsSampleToCheck,referenceHaplogroups,currentSampleHaplogroups,
+					overallDistance,0));
 		
 		currentSample.setReachedQualityLevel(this.getPriority() + 1);
 	}
 	
 	public void suppressIssues(QualityAssistent qualityAssistent, TestSample currentSample) {
-//		if(isMetaboChip){
-//			QualityIssue issue = qualityAssistent.getIssue(currentSample,"Common rCRS polymorphim (263G 8860G or 15326G)");
-//			if(issue != null){
-//				issue.setSuppress(true);
-//			}
-//			
-//			issue = qualityAssistent.getIssue(currentSample,"common RSRS polymorphims found!");
-//			if(issue != null){
-//				issue.setSuppress(true);
-//			}
-//		}
-	}
-	
-	
-	
 
+	}
 }

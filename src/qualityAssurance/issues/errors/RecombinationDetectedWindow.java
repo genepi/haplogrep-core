@@ -69,11 +69,11 @@ public class RecombinationDetectedWindow extends QualityWarning {
 		return toString();
 	}
 	public String toString(){
-		String result = "Sample " + getSampleOfIssue().getSampleID() + " - Detected differences: " + numberOfDifferences + "\r\n";
-		result += "Fragment\t";
-		for(int i = 0; i < referenceHaplogroups.size();i++){
-			result += i + "\t";
-		}
+		String result = "Sample " + getSampleOfIssue().getSampleID() + " - Overall distance to reference: " + numberOfDifferences + "\r\n";
+//		result += "Fragment\t";
+//		for(int i = 0; i < referenceHaplogroups.size();i++){
+//			result += i + "\t";
+//		}
 		result += "\r\nHG Reference\t";
 		for(int i = 0; i < referenceHaplogroups.size();i++){
 			result += referenceHaplogroups.get(i) + "\t";
@@ -83,8 +83,6 @@ public class RecombinationDetectedWindow extends QualityWarning {
 		for(int i = 0; i < currentSampleHaplogroups.size();i++){
 			result += currentSampleHaplogroups.get(i) + "\t";
 		}
-		
-		result += "\r\nDis" + dis + " " + inverseDis;
 		return result;
 	}
 }

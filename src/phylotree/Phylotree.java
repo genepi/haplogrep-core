@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -290,4 +291,39 @@ public final class Phylotree {
 		return -1;
 	}
 
+	public int getDistanceBetweenHaplogroups( Haplogroup hgToCheck1, Haplogroup hgToCheck2) {
+	
+		int distance = -1;
+		HashSet<Haplogroup> markedHaplogroups = new HashSet<Haplogroup>();
+		
+		boolean complete = false;
+		PhyloTreeNode c1 = haplogroupLookup.get(hgToCheck1);
+		PhyloTreeNode c2 = haplogroupLookup.get(hgToCheck2);
+		
+		while(!complete){
+			if(c1 != null)
+					if(!markedHaplogroups.contains(c1.getHaplogroup())){
+					markedHaplogroups.add(c1.getHaplogroup());
+					c1 = c1.getParent();
+					distance++;
+				}
+				else{
+					complete = true;
+					break;
+				}
+			if(c2 != null)
+				if(!markedHaplogroups.contains(c2.getHaplogroup())){
+					markedHaplogroups.add(c2.getHaplogroup());
+					c2 = c2.getParent();
+					distance++;
+				}
+				else{
+					complete = true;
+					break;
+				}
+				
+			
+		}
+		return distance;
+	}
 }

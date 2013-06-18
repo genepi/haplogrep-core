@@ -149,7 +149,7 @@ public class QualityAssuranceTests {
 //	file.addAll(testFile.getTestSamples());
 //		
 		RuleSet rules = new RuleSet();
-		rules.addRule(new CheckForRecombinationWindow(1000));
+		rules.addRule(new CheckForRecombinationWindow());
 		QualityAssistent newQualityAssistent = new QualityAssistent(testFile.getTestSamples(),rules,phyoTree);
 		
 		newQualityAssistent.reevaluateRules();
@@ -167,7 +167,7 @@ public class QualityAssuranceTests {
 	file.addAll(testFile.getTestSamples());
 //		
 		RuleSet rules = new RuleSet();
-		rules.addRule(new CheckForRecombinationWindow(1000));
+		rules.addRule(new CheckForRecombinationWindow());
 		QualityAssistent newQualityAssistent = new QualityAssistent(file,rules,phyoTree);
 		
 		newQualityAssistent.reevaluateRules();

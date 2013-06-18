@@ -1,6 +1,7 @@
 package core;
 
 import java.io.Serializable;
+import java.util.HashSet;
 
 import phylotree.Phylotree;
 
@@ -55,6 +56,8 @@ public class Haplogroup implements Serializable {
 
 		return phylotree.distanceToSuperHaplogroup(hgToCheck,this);
 	}
+	
+	
 
 	@Override
 	public int hashCode() {

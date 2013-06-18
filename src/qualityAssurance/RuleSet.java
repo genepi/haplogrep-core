@@ -32,7 +32,7 @@ public class RuleSet {
 //		addRule(new CheckForReferencePolymorhisms(1));
 //		addRule(new CheckForTooManyGlobalPrivateMutations(1));
 		
-		addRule(new CheckForRecombinationWindow(1000));
+		addRule(new CheckForRecombinationWindow());
 	}
 	
 	
