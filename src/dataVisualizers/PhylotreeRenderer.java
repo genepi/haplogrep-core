@@ -18,6 +18,7 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -57,7 +58,7 @@ public class PhylotreeRenderer {
 	private Phylotree phyloTree = null;
 	private OverviewTree xmlPhyloTree = null;
 	private BufferedImage watermark = null;
-	private final int linePadding = 2;
+	private final int linePadding = 3;
 	
 	private float dpi = 72;
 	private int numEndNode = 0;
@@ -189,10 +190,12 @@ public class PhylotreeRenderer {
 		g2.setColor(Color.red);
 		g2.drawString("Global private mutation", 30, boxY);
 		boxY += g2.getFontMetrics().getHeight();
+		g2.setColor(Color.black);
 		g2.drawString("@ = assumed back mutation", 30, boxY);
 		boxY += g2.getFontMetrics().getHeight();
-		g2.setColor(Color.black);
-		g2.drawString("mis = missing mutation", 30, boxY);
+		g2.drawString("or missing poly", 30 + g2.getFontMetrics().stringWidth("@ = "), boxY);
+//		g2.setColor(Color.black);
+//		g2.drawString("mis = missing mutation", 30, boxY);
 		// boxY += g2.getFontMetrics().getHeight();
 
 		g2.setColor(new Color(0, 0, 0));
@@ -640,7 +643,8 @@ public class PhylotreeRenderer {
 		g2d.setFont(polymorphismFont);
 		depth += 10;
 
-
+		Collections.sort(leafNode.getRemainingPolys());
+		
 		for (Polymorphism currentPoly :  leafNode.getRemainingPolys()) {
 
 			depth += g2d.getFontMetrics().getHeight() + linePadding;
@@ -648,9 +652,12 @@ public class PhylotreeRenderer {
 			if (currentPoly.isMTHotspot()) {
 				g2d.setColor(new Color(153, 204, 153));
 			}
+			else if (currentPoly.isBackMutation()) {
+				g2d.setColor(Color.black);
+			}
 			else if (phyloTree.getMutationRate(currentPoly) == 0) {
 				g2d.setColor(Color.red);
-			}
+			}		
 			else {
 				g2d.setColor(new Color(50, 180, 227));
 			}
@@ -659,11 +666,11 @@ public class PhylotreeRenderer {
 
 		}
 		
-		for (Polymorphism currentPoly :  leafNode.getMissingPolys()) {
-			g2d.setColor(new Color(0, 0, 0));
-			drawCenteredNode(g2d, center, depth, "mis" + currentPoly.toString());
-			depth += g2d.getFontMetrics().getHeight() + linePadding;
-		}
+//		for (Polymorphism currentPoly :  leafNode.getMissingPolys()) {
+//			depth += g2d.getFontMetrics().getHeight() + linePadding;
+//			g2d.setColor(new Color(0, 0, 0));
+//			drawCenteredNode(g2d, center, depth, "mis" + currentPoly.toString());		
+//		}
 
 		drawSampleIDNode(g2d, leafNode.getTestSample().getSampleID(), center, treeHeight);
 
