@@ -64,7 +64,7 @@ public class OverviewTreeLeafNode extends TreeNode {
 			}
 		}
 		
-		if(includeMissingPolys)
+//		if(includeMissingPolys)
 		for(Polymorphism currentExpectedPoly : testSample.getResults().get(0)
 				.getSearchResult().getDetailedResult().getExpectedPolys()){
 			if(!foundPolysAllSamples.contains(currentExpectedPoly))
@@ -74,5 +74,9 @@ public class OverviewTreeLeafNode extends TreeNode {
 	}
 	public ArrayList<Polymorphism> getRemainingPolys() {
 		return remainingPolys;
+	}
+	
+	public ArrayList<Polymorphism> getMissingPolys() {
+		return missingPolys;
 	}
 }

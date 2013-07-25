@@ -46,7 +46,7 @@ import core.Polymorphism;
 /**
  * Renders an overview tree image given by an XML root node.
  * 
- * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schï¿½nherr, Hansi Weissensteiner
  * 
  */
 public class PhylotreeRenderer {
@@ -616,7 +616,7 @@ public class PhylotreeRenderer {
 		int width = 0;
 		g2d.setFont(polymorphismFont);
 		for (Polymorphism currentPoly : tree.getRemainingPolys()) {
-			width = g2d.getFontMetrics().stringWidth(currentPoly.toString());
+			width = g2d.getFontMetrics().stringWidth(currentPoly.toString() + "mis"); //takes the 'mis' prefix into account
 			if (max < width) {
 				max = width;
 			}
@@ -633,7 +633,7 @@ public class PhylotreeRenderer {
 	 * @param treeHeight
 	 * @return
 	 */
-	private int drawEndNode(Graphics2D g2d, OverviewTreeLeafNode tree, int center, int depth, int treeHeight) {
+	private int drawEndNode(Graphics2D g2d, OverviewTreeLeafNode leafNode, int center, int depth, int treeHeight) {
 
 		g2d.drawLine(center, depth, center, treeHeight - 15);
 
@@ -641,7 +641,7 @@ public class PhylotreeRenderer {
 		depth += 10;
 
 
-		for (Polymorphism currentPoly :  tree.getRemainingPolys()) {
+		for (Polymorphism currentPoly :  leafNode.getRemainingPolys()) {
 
 			depth += g2d.getFontMetrics().getHeight() + linePadding;
 			
@@ -658,11 +658,17 @@ public class PhylotreeRenderer {
 			drawCenteredNode(g2d, center, depth, Polymorphism.convertToATBackmutation(currentPoly.toStringShortVersion()));
 
 		}
+		
+		for (Polymorphism currentPoly :  leafNode.getMissingPolys()) {
+			g2d.setColor(new Color(0, 0, 0));
+			drawCenteredNode(g2d, center, depth, "mis" + currentPoly.toString());
+			depth += g2d.getFontMetrics().getHeight() + linePadding;
+		}
 
-		drawSampleIDNode(g2d, tree.getTestSample().getSampleID(), center, treeHeight);
+		drawSampleIDNode(g2d, leafNode.getTestSample().getSampleID(), center, treeHeight);
 
 		g2d.setFont(sampleIDFont);
-		return depth + g2d.getFontMetrics().stringWidth(tree.getTestSample().getSampleID()) + 20;
+		return depth + g2d.getFontMetrics().stringWidth(leafNode.getTestSample().getSampleID()) + 20;
 
 	}
 
@@ -688,6 +694,7 @@ public class PhylotreeRenderer {
 			drawCenteredNode(g2d, x, y, Polymorphism.convertToATBackmutation(currentPoly.toStringShortVersion()));
 			y += g2d.getFontMetrics().getHeight() + linePadding;
 		}
+		
 //		for (Polymorphism currentPoly :  currentNode.getMissingPolys()) {
 //
 //			drawCenteredNode(g2d, x, y, currentPoly.toString());
