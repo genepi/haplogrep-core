@@ -193,7 +193,7 @@ public class PhylotreeRenderer {
 		g2.setColor(Color.black);
 		g2.drawString("@ = assumed back mutation", 30, boxY);
 		boxY += g2.getFontMetrics().getHeight();
-		g2.drawString("or missing poly", 30 + g2.getFontMetrics().stringWidth("@ = "), boxY);
+		g2.drawString("or missing mutation", 30 + g2.getFontMetrics().stringWidth("@ = "), boxY);
 //		g2.setColor(Color.black);
 //		g2.drawString("mis = missing mutation", 30, boxY);
 		// boxY += g2.getFontMetrics().getHeight();

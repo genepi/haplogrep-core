@@ -11,7 +11,7 @@ import exceptions.parse.sample.InvalidPolymorphismException;
 /**
  * Represents one polymorphism
  * 
- * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schï¿½nherr, Hansi Weissensteiner
  * 
  */
 public class Polymorphism implements Comparable<Polymorphism>, Serializable {
@@ -153,24 +153,28 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	 * changes 'DEL' to 'd'
 	 */
 	public String toStringShortVersion() {
-		if (!isBackMutation) {
+		String convertedString = "";
+//		if (!isBackMutation) {
 			if (this.mutation == Mutations.INS)
-				return position + numberOfIns + insertedPolys;
+				convertedString =  position + numberOfIns + insertedPolys;
 
 			else if (this.mutation == Mutations.DEL)
-				return position + "d";
+				convertedString =  position + "d";
 
 			else {
 				if (isTransitionPoly())
-					return String.valueOf(position);
+					convertedString =  String.valueOf(position);
 
 				else
-					return position + mutation.toString().trim();
+					convertedString =  position + mutation.toString().trim();
 			}
-		}
+//		}
 
-		else
-			return position + mutation.toString().trim() + "!";
+//		else
+		if (isBackMutation)
+			return convertedString + "!";
+		
+		return convertedString;
 	}
 
 	/**
