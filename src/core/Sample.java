@@ -147,7 +147,7 @@ public class Sample {
 										{
 											if (buffer.length() < ipos - 1)
 												buffer.setLength(ipos - 1);
-
+											if (ipos>0) //09.10.213 recheck whith startpositions
 											buffer.setCharAt(ipos - 2, token1.charAt(m.end()));
 
 										}

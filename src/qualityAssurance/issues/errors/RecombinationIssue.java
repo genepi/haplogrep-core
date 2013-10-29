@@ -32,7 +32,7 @@ public class RecombinationIssue extends QualityWarning {
 	 */
 	public RecombinationIssue(QualityAssistent assistent,TestSample sampleOfIssue, int distanceToReference,
 								ArrayList<Haplogroup> referenceHaplogroups,ArrayList<Haplogroup> currentSampleHaplogroups) {
-		super(assistent, sampleOfIssue, "Possible recombiantion detected");
+		super(assistent, sampleOfIssue, "Possible recombination: ");
 		this.distanceToReference = distanceToReference;
 		this.referenceHaplogroups = referenceHaplogroups;
 		this.currentSampleHaplogroups = currentSampleHaplogroups;
@@ -43,7 +43,7 @@ public class RecombinationIssue extends QualityWarning {
 	}
 	
 	public String toString(){
-		String result = "Possible recombiantion detected " + " - Overall distance to reference: " + distanceToReference + "\r\n";
+		String result = "Possible recombination: " + " - Distance to reference: " + distanceToReference + "\r\n";
 
 		result += "\r\nHG Reference\t";
 		for(int i = 0; i < referenceHaplogroups.size();i++){

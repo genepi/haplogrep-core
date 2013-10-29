@@ -313,8 +313,8 @@ public class PhylotreeRenderer {
 			}
 			
 			
-			int numPolys =  ((OverviewTreeInnerNode) result).getFoundPolys().size();
-			int maxPolyWidth = getMaxStringWidthPolys(g2d,((OverviewTreeInnerNode) result).getFoundPolys());
+			int numPolys =  ((OverviewTreeInnerNode) result).getExpectedPoly().size();
+			int maxPolyWidth = getMaxStringWidthPolys(g2d,((OverviewTreeInnerNode) result).getExpectedPoly());
 			if(recData.getMaxWidth() < maxPolyWidth)
 				recData.setMaxWidth(maxPolyWidth);
 			
@@ -662,7 +662,7 @@ public class PhylotreeRenderer {
 				g2d.setColor(new Color(50, 180, 227));
 			}
 
-			drawCenteredNode(g2d, center, depth, Polymorphism.convertToATBackmutation(currentPoly.toStringShortVersion()));
+			drawCenteredNode(g2d, center, depth, Polymorphism.convertToATBackmutation(currentPoly.toStringShortVersion())+" "+currentPoly.getAnnotation());
 
 		}
 		
@@ -694,9 +694,11 @@ public class PhylotreeRenderer {
 
 		g2d.setFont(polymorphismFont);
 		g2d.setColor(Color.black);
-		y -= 5 + (currentNode.getFoundPolys().size() * (g2d.getFontMetrics().getHeight() + linePadding));
-
-		for (Polymorphism currentPoly :  currentNode.getFoundPolys()) {
+		y -= 5 + (currentNode.getExpectedPoly().size() * (g2d.getFontMetrics().getHeight() + linePadding));
+		
+		Collections.sort(currentNode.getExpectedPoly());
+		
+		for (Polymorphism currentPoly :  currentNode.getExpectedPoly()) {
 
 			drawCenteredNode(g2d, x, y, Polymorphism.convertToATBackmutation(currentPoly.toStringShortVersion()));
 			y += g2d.getFontMetrics().getHeight() + linePadding;

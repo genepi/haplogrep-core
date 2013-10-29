@@ -47,7 +47,7 @@ public class SearchResult {
 				remainingPolysSumWeights += getPhyloTree().getMutationRate(currentPoly);
 			}
 		}
-
+  
 	}
 
 	/**

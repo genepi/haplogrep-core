@@ -1,17 +1,26 @@
 package core;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import sun.security.action.LoadLibraryAction;
 import exceptions.parse.sample.InvalidBaseException;
 import exceptions.parse.sample.InvalidPolymorphismException;
 
 /**
  * Represents one polymorphism
  * 
- * @author Dominic Pacher, Sebastian Schï¿½nherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schönherr, Hansi Weissensteiner
  * 
  */
 public class Polymorphism implements Comparable<Polymorphism>, Serializable {
@@ -23,6 +32,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	private String numberOfIns = "";
 	private String insertedPolys = "";
 	private int hashCode;
+	private static HashMap<Polymorphism, AnnotationAAC> acidLookup;
 	
 	/**
 	 * rCRS reference sequence
@@ -110,7 +120,15 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	 */
 	@Override
 	public String toString() {
-		if (!isBackMutation) {
+
+		if (position>16569)
+			return "";
+		
+	try{
+
+	}catch(Exception e){;}
+	
+		if (!isBackMutation && !this.mutation.equals("N")) {
 			if (this.mutation == Mutations.INS)
 				return position + numberOfIns + insertedPolys;
 
@@ -212,6 +230,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	 * @return The polymorphism representing the reference
 	 */
 	private Polymorphism getReferenceBase(int position) {
+		if (position<16569){
 		String base = String.valueOf(rCRS.charAt(position - 1));
 		base = base.toUpperCase();
 		try {
@@ -221,7 +240,8 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 			e.printStackTrace();
 		}	
 		return null;
-	}
+	}else return null;
+		}
 
 	//TODO: Ask hansi if this can be replaced by getReferenceBase(int position)
 	public static String getReferenceBaseSingle(int position) throws InvalidBaseException {
@@ -344,6 +364,8 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	private void getTransitionPoly(int position) throws InvalidBaseException {
 
 		this.position = position;
+	try{
+
 
 		if (getReferenceBase(position).mutation == Mutations.C) {
 			this.mutation = Mutations.T;
@@ -356,6 +378,14 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		}
 		if (getReferenceBase(position).mutation == Mutations.A) {
 			this.mutation = Mutations.G;
+		}
+		}catch (Exception e) {
+			try {
+				throw new InvalidPolymorphismException(""+position, ""+position);
+			} catch (InvalidPolymorphismException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 	}
 
@@ -482,4 +512,65 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		this.isBackMutation = isBackMutation;
 		hashCode = toString().hashCode();
 	}
+	
+	
+	public String getAnnotation(){
+		if (acidLookup==null)
+			loadLookup();
+		
+		String t = "";
+		
+		if(acidLookup.containsKey(this))
+			t = acidLookup.get(this).getAminoAcidChange();
+		
+		return t;
+		
+	}
+
+	private void loadLookup() {
+		acidLookup= new HashMap<Polymorphism, AnnotationAAC>();
+		String annotationPath = "aminoacidchange.txt";
+		InputStream annotationStream = this.getClass().getClassLoader().getResourceAsStream(annotationPath);
+		BufferedReader annotationFileReader;
+		if (annotationStream == null) {
+			
+			try {
+				annotationStream = new FileInputStream(new File("../HaplogrepServer/annotation/" + annotationPath));
+			
+			}
+			 catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		
+		
+		try{
+			annotationFileReader = new BufferedReader(new InputStreamReader(annotationStream));
+			String line = annotationFileReader.readLine();
+			line = annotationFileReader.readLine();
+				// Read-in each line
+				while (line != null) {
+					StringTokenizer mainTokenizer = new StringTokenizer(line, "\t");
+
+					String pos = mainTokenizer.nextToken();
+					String gen = mainTokenizer.nextToken();
+					short cod = Short.parseShort(mainTokenizer.nextToken());
+					String aachange = mainTokenizer.nextToken();
+					
+					AnnotationAAC aac = new AnnotationAAC(pos, gen, cod, aachange);
+					acidLookup.put(new Polymorphism(pos), aac);
+					line = annotationFileReader.readLine();
+				}
+				
+			} catch (InvalidPolymorphismException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+	
 }

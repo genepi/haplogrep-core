@@ -25,7 +25,7 @@ public class OverviewTreeInnerNode extends TreeNode {
 		
 	}
 	
-	public ArrayList<Polymorphism> getFoundPolys() {
+	public ArrayList<Polymorphism> getExpectedPoly() {
 		return foundPolys;
 	}
 

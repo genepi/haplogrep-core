@@ -54,7 +54,7 @@ public class OverviewTree {
 		boolean foundChild = false;
 		for(TreeNode currentChildNode : currentTreeRootNode.getChildren()){
 			if (currentChildNode instanceof OverviewTreeInnerNode &&  currentChildNode.getPhyloTreeNode().equals(pathToAdd.get(currentIteration).getPhyloTreeNode())) {
-				((OverviewTreeInnerNode) currentChildNode).addDistinctFoundPolys(currentNodeToAdd.getFoundPolys());
+				((OverviewTreeInnerNode) currentChildNode).addDistinctFoundPolys(currentNodeToAdd.getExpectedPolys());  //sets Phylotree 
 			
 				if(currentIteration + 1 < pathToAdd.size())
 					addNewPathNode(currentSample,currentChildNode,pathToAdd, currentIteration + 1);

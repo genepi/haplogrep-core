@@ -43,23 +43,43 @@ public class OverviewTreeLeafNode extends TreeNode {
 		
 		OverviewTreeInnerNode c = (OverviewTreeInnerNode) parent;
 		
-		while(c != null){
-			foundPolysAllSamples.addAll(c.getFoundPolys());
+	/*	while(c != null){
+			foundPolysAllSamples.addAll(c.getExpectedPoly());
 			c = (OverviewTreeInnerNode) c.getParent();
+		} */
+		for(Polymorphism currentRemaining : testSample.getResults().get(0).getSearchResult().getDetailedResult().getRemainingPolysInSample()){
+			if(includeHotspots || (!includeHotspots && !currentRemaining.isMTHotspot()))
+				remainingPolys.add(currentRemaining);
 		}
 		
-		for(Polymorphism currentSamplePoly : testSample.getSample().getPolymorphisms()){
-			if(!foundPolysAllSamples.contains(currentSamplePoly))
-				if(includeHotspots || (!includeHotspots && !currentSamplePoly.isMTHotspot()))
-				remainingPolys.add(currentSamplePoly);
+//		for(Polymorphism currentRemaining : testSample.getResults().get(0).getSearchResult().getDetailedResult().){
+//			if(includeHotspots || (!includeHotspots && !currentRemaining.isMTHotspot()))
+//				remainingPolys.add(currentRemaining);
+//		}
+//		
+		
+//		testSample.getResults().get(0).getSearchResult().getDetailedResult().getFoundNotFoundPolys()
+		
+		for(Polymorphism currentSamplePoly : testSample.getResults().get(0).getSearchResult().getDetailedResult().getExpectedPolys()){
+			if(!currentSamplePoly.isBackMutation() && !testSample.getSample().getPolymorphisms().contains(currentSamplePoly)){
+//				if(includeHotspots || (!includeHotspots && !currentSamplePoly.isMTHotspot()))
+//			remainingPolys.add(currentSamplePoly);
+			Polymorphism newBackmutation = new Polymorphism(currentSamplePoly);
+			
+//			System.out.println(currentSamplePoly.getPosition());
+			newBackmutation.setBackMutation(true);
+//			if( !testSample.getResults().get(0).getSearchResult().getDetailedResult().getExpectedPolys().contains(newBackmutation))
+			remainingPolys.add(newBackmutation);
+		}
 		}
 		
-		for(Polymorphism currentSamplePoly : foundPolysAllSamples){
+/*		for(Polymorphism currentSamplePoly : foundPolysAllSamples){
 			if(!currentSamplePoly.isBackMutation() && !testSample.getSample().getPolymorphisms().contains(currentSamplePoly)){
 				Polymorphism newBackmutation = new Polymorphism(currentSamplePoly);
 				
 //				System.out.println(currentSamplePoly.getPosition());
 				newBackmutation.setBackMutation(true);
+				if( !testSample.getResults().get(0).getSearchResult().getDetailedResult().getExpectedPolys().contains(newBackmutation))
 				remainingPolys.add(newBackmutation);
 			}
 		}
@@ -72,7 +92,7 @@ public class OverviewTreeLeafNode extends TreeNode {
 				newBackmutation.setBackMutation(true);
 				remainingPolys.add(newBackmutation);
 			}
-		}
+		}*/
 		
 	}
 	public ArrayList<Polymorphism> getRemainingPolys() {

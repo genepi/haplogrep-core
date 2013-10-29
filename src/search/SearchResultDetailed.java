@@ -48,8 +48,8 @@ public class SearchResultDetailed implements Serializable {
 		this.remainingPolys = new ArrayList<Polymorphism>();
 		this.remainingPolysNotInRange = new ArrayList<Polymorphism>();
 		this.correctedBackmutations = new ArrayList<Polymorphism>();
-		this.missingPolysOutOfRange = new ArrayList<Polymorphism>();
-	}
+		this.missingPolysOutOfRange = new ArrayList<Polymorphism>(); 
+	 }
 
 	/**
 	 * Generates all of the detailed content of this result instance.
@@ -64,17 +64,17 @@ public class SearchResultDetailed implements Serializable {
 						newNode.addFoundPoly(currentExpectedPoly);
 						newNode.addExpectedPoly(currentExpectedPoly);
 
-						Polymorphism newPoly = new Polymorphism(currentExpectedPoly);
-						newPoly.setBackMutation(!currentExpectedPoly.isBackMutation());
-						if (!expectedPolys.contains(currentExpectedPoly) && !expectedPolys.contains(newPoly))
-							expectedPolys.add(currentExpectedPoly);
-						else {
+						if(currentExpectedPoly.isBackMutation()){							
 							correctedBackmutations.add(currentExpectedPoly);
-							newNode.addCorrectedBackmutation(currentExpectedPoly);
 						}
+
+						expectedPolys.add(currentExpectedPoly);
 					} else {
 						newNode.addExpectedPoly(currentExpectedPoly);
-
+						if(currentExpectedPoly.isBackMutation()){
+						correctedBackmutations.add(currentExpectedPoly);
+						}
+						
 						Polymorphism newPoly = new Polymorphism(currentExpectedPoly);
 						newPoly.setBackMutation(!currentExpectedPoly.isBackMutation());
 						if (!expectedPolys.contains(currentExpectedPoly) && !expectedPolys.contains(newPoly))
@@ -94,22 +94,24 @@ public class SearchResultDetailed implements Serializable {
 			for (Polymorphism currentFoundPoly : currentNode.getFoundPolys()) {
 				foundPolys.add(currentFoundPoly);
 				
-//				if(!currentFoundPoly.isBackMutation())
+				if(!currentFoundPoly.isBackMutation())
 					remainingPolys.remove(currentFoundPoly);
-//				else{
-//					
-//				}
-				
-////				Polymorphism newPoly = new Polymorphism(currentFoundPoly);
-////				newPoly.setBackMutation(!currentFoundPoly.isBackMutation());
-//				if (!foundPolys.contains(currentFoundPoly) && !foundPolys.contains(newPoly)) {
-//										remainingPolys.remove(currentFoundPoly);
-//				}
-
 			}
 
 		}
-		remainingPolys.addAll(correctedBackmutations);
+		
+		ArrayList<Polymorphism> helper = new ArrayList<Polymorphism>();
+		for (Polymorphism current : expectedPolys) {
+			if (!foundPolys.contains(current)) {
+				if(current.isBackMutation() && correctedBackmutations.contains(current)){
+					Polymorphism newPoly = new Polymorphism(current);
+					newPoly.setBackMutation(false);
+					helper.add(newPoly);
+				}
+			}
+		}
+		
+		remainingPolys.addAll(helper);
 		Collections.reverse(path);
 	}
 
@@ -258,10 +260,15 @@ public class SearchResultDetailed implements Serializable {
 
 				else {
 					reasonUnusedPoly.setText("globalPrivateMutation");
-
-					result.addContent(reasonUnusedPoly);
-					result.addContent(newUnusedPoly);
-					results.addContent(result);
+					if (!currentPoly.equalsReference())
+					{
+						result.addContent(reasonUnusedPoly);
+					}
+					else
+						result.addContent(reasonUnusedPoly.setText("rCRS"));
+						result.addContent(newUnusedPoly);
+						results.addContent(result);
+					
 				}
 
 			}
@@ -276,7 +283,10 @@ public class SearchResultDetailed implements Serializable {
 				result.addContent(reasonUnusedPoly);
 				results.addContent(result);
 			}
-
+			
+			Element aac = new Element("aac");
+			aac.setText(currentPoly.getAnnotation());
+			result.addContent(aac);
 		}
 
 		return results;
