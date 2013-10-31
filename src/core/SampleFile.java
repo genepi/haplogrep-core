@@ -350,12 +350,12 @@ public class SampleFile {
 	 * @param format	The image format as string ('png' or 'svg')
 	 * @param resolution The image resolution in DPI
 	 * @param includeHotspots	True if mitochondrial hotspots should be included, false otherwise
-	 * @param includeMissingPolys	True if polymorphisms that are expected but not found for a test sample should be included
+	 * @param includeAAC	True if polymorphisms in remaining have non-synonymous SNPS
 	 * @return The generated overview file handle
 	 */
-	public File createOverviewImageFileBestResults(String sessionID, String format, int resolution, boolean includeHotspots, boolean includeMissingPolys){
+	public File createOverviewImageFileBestResults(String sessionID, String format, int resolution, boolean includeHotspots, boolean includeAAC){
 
-		OverviewTree resultTree = combineAllSamplesToXMLTree(includeHotspots, includeMissingPolys);
+		OverviewTree resultTree = combineAllSamplesToXMLTree(includeHotspots);
 //		Document d = new Document(resultTree);
 //		saveXMLToDisc(d);
 
@@ -371,12 +371,12 @@ public class SampleFile {
 		}
 		renderer.setDpi(resolution);
 
-		image = renderer.createImage(format, "Overview" + sessionID + "." + format, includeHotspots);
+		image = renderer.createImage(format, "Overview" + sessionID + "." + format, includeHotspots, includeAAC);
 
 		return image;
 	}
 
-	private OverviewTree combineAllSamplesToXMLTree(boolean includeHotspots, boolean includeMissingPolys) {
+	private OverviewTree combineAllSamplesToXMLTree(boolean includeHotspots) {
 //		PhyloTreeNode combinedResultTree = null;
 		OverviewTree newOverviewTree = new OverviewTree();
 //		int d = 0;
@@ -417,7 +417,7 @@ public class SampleFile {
 
 		}
 
-		newOverviewTree.generateLeafNodes(includeHotspots,includeMissingPolys);
+		newOverviewTree.generateLeafNodes(includeHotspots);
 		
 		return newOverviewTree;
 	}

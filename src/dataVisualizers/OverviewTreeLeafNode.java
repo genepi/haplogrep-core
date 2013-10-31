@@ -38,7 +38,7 @@ public class OverviewTreeLeafNode extends TreeNode {
 		return testSample;
 	}
 
-	public void updatePolys(boolean includeHotspots, boolean includeMissingPolys) {
+	public void updatePolys(boolean includeHotspots) {
 		ArrayList<Polymorphism> foundPolysAllSamples = new ArrayList<Polymorphism>();
 		
 		OverviewTreeInnerNode c = (OverviewTreeInnerNode) parent;

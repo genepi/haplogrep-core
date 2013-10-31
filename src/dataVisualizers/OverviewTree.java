@@ -172,10 +172,10 @@ public class OverviewTree {
 //		}
 	}
 
-	public void generateLeafNodes(boolean includeHotspots, boolean includeMissingPolys) {
+	public void generateLeafNodes(boolean includeHotspots) {
 		int i = 0;
 		for(OverviewTreeLeafNode currentLeafNode : leafNodes){
-			currentLeafNode.updatePolys(includeHotspots,includeMissingPolys);
+			currentLeafNode.updatePolys(includeHotspots);
 			
 		
 		}

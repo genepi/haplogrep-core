@@ -514,16 +514,16 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	}
 	
 	
-	public String getAnnotation(){
+	public AnnotationAAC getAnnotation(){
 		if (acidLookup==null)
 			loadLookup();
 		
-		String t = "";
+		AnnotationAAC annotation = null;
 		
 		if(acidLookup.containsKey(this))
-			t = acidLookup.get(this).getAminoAcidChange();
+			annotation = acidLookup.get(this);
 		
-		return t;
+		return annotation;
 		
 	}
 
@@ -536,9 +536,8 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 			
 			try {
 				annotationStream = new FileInputStream(new File("../HaplogrepServer/annotation/" + annotationPath));
-			
-			}
-			 catch (FileNotFoundException e) {
+				}
+				catch (FileNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -557,7 +556,6 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 					String gen = mainTokenizer.nextToken();
 					short cod = Short.parseShort(mainTokenizer.nextToken());
 					String aachange = mainTokenizer.nextToken();
-					
 					AnnotationAAC aac = new AnnotationAAC(pos, gen, cod, aachange);
 					acidLookup.put(new Polymorphism(pos), aac);
 					line = annotationFileReader.readLine();

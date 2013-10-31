@@ -285,7 +285,12 @@ public class SearchResultDetailed implements Serializable {
 			}
 			
 			Element aac = new Element("aac");
-			aac.setText(currentPoly.getAnnotation());
+			
+			try{
+			if (currentPoly.getAnnotation().getAminoAcidChange()!=null)
+			aac.setText(currentPoly.getAnnotation().getAminoAcidChange() );
+			}
+			catch(Exception e){};
 			result.addContent(aac);
 		}
 
