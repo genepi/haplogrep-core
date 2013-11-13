@@ -662,7 +662,6 @@ public class PhylotreeRenderer {
 				g2d.setColor(new Color(50, 180, 227));
 			}
 			
-			System.out.println("INCLUDE AAC " + includeAAC);
 			if (includeAAC) {
 				try {
 					if (currentPoly.getAnnotation()!=null)
