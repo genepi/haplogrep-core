@@ -127,7 +127,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	try{
 
 	}catch(Exception e){;}
-	
+	if (position!=0){
 		if (!isBackMutation && !this.mutation.equals("N")) {
 			if (this.mutation == Mutations.INS)
 				return position + numberOfIns + insertedPolys;
@@ -142,8 +142,9 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		else
 			return position + mutation.toString().trim() + "!";
 	}
-
-
+	else 
+		return "";
+	}
 
 
 	@Override
@@ -183,8 +184,10 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 				if (isTransitionPoly())
 					convertedString =  String.valueOf(position);
 
-				else
+				else{
+					if (position!=0)
 					convertedString =  position + mutation.toString().trim();
+				}
 			}
 //		}
 
@@ -230,7 +233,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	 * @return The polymorphism representing the reference
 	 */
 	private Polymorphism getReferenceBase(int position) {
-		if (position<16569){
+		if (position<16569 && position>0){
 		String base = String.valueOf(rCRS.charAt(position - 1));
 		base = base.toUpperCase();
 		try {
@@ -344,19 +347,23 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 				m.find();
 
 				try {
+					System.out.println(";;;;;" + stringToParse+ "::::");
+					if (stringToParse.trim().length()>0)
 					Integer.parseInt(stringToParse.substring(m.start(), m.end()), 10);
 				} catch (NumberFormatException e) {
 					throw new InvalidPolymorphismException(stringToParse);
 				}
-
-				int position = Integer.valueOf(stringToParse);
+				int position=0;
+				if (stringToParse.trim().length()>0){
+				 position = Integer.valueOf(stringToParse);
 				try {
 					getTransitionPoly(position);
 				} catch (InvalidBaseException e) {
 					// TODO Auto-generated catch block
+					position=0;
 					e.printStackTrace();
 				}
-
+				}
 			}
 		}
 	}

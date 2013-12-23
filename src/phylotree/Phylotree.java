@@ -95,13 +95,14 @@ public final class Phylotree {
 		parentNode.addSubHaplogroup(newNode);
 		// Update index
 		haplogroupLookup.put(newNode.getHaplogroup(), newNode);
-
+System.out.print(" " + newNode.getHaplogroup() + " ");
 		List<Element> polys = currentXMLElement.getChild("details").getChildren("poly");
 		for (Element currentPolyElement : polys) {
 			Polymorphism newExpectedPoly = new Polymorphism(currentPolyElement.getValue());
+			System.out.print(currentPolyElement.getValue()+ " ");
 			newNode.addExpectedPoly(newExpectedPoly);
 		}
-
+System.out.println();
 		List<Element> children = currentXMLElement.getChildren("haplogroup");
 		for (Element currentChildElement : children) {
 			buildPhylotree(newNode, currentChildElement);

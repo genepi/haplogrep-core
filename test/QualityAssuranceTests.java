@@ -83,6 +83,7 @@ public class QualityAssuranceTests {
 		SampleFile testFile = new  SampleFile("/testDataFiles/RSRS.hsd",true);
 		Phylotree phyoTree = PhylotreeManager.getInstance().getPhylotree("phylotree14.xml","weights14.txt");
 		
+		
 		testFile.updateClassificationResults(PhylotreeManager.getInstance().getPhylotree("phylotree14.xml","weights14.txt"), new HammingRanking());
 		
 		RuleSet rules = new RuleSet();
