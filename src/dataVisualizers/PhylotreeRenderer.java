@@ -6,10 +6,12 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -39,9 +41,7 @@ import org.jdom.Element;
 import org.w3c.dom.DOMImplementation;
 
 import phylotree.Phylotree;
-
 import search.SearchResultTreeNode;
-
 import core.Polymorphism;
 
 /**
@@ -154,12 +154,19 @@ public class PhylotreeRenderer {
 
 		document = domImpl.createDocument(svgNS, "svg", null);
 
+		
 		ctx = SVGGeneratorContext.createDefault(document);
 		ctx.setEmbeddedFontsOn(true);
 		// Create an instance of the SVG Generator.
 		svgGraphics2D = new SVGGraphics2D(document);
 		g2 = svgGraphics2D;// newImage.getGraphics();
 
+		//VectorGraphics freehep = new SVGGraphics2D(new File(path) , new Dimension(imageWidth, imageHeight));
+	
+		//freehep.startExport();
+		//g2 = freehep;
+		
+		
 		g2.setBackground(Color.white);
 
 		svgGraphics2D.setSVGCanvasSize(new Dimension(imageWidth, imageHeight));
@@ -205,30 +212,23 @@ public class PhylotreeRenderer {
 //			g2.drawImage(watermark, imageWidth - watermark.getWidth(), imageHeight - watermark.getHeight(), null);
 
 		if (format.equals("SVG")) {
-			File resultFile = new File(path);
+			File resultFile = new File(path);	
 			FileOutputStream outFile = new FileOutputStream(resultFile);
 			Writer out = new OutputStreamWriter(outFile, "UTF-8");
 			svgGraphics2D.stream(out, true);
 
 			return resultFile;
 		} else if (format.equals("PDF")) {
+			File resultFile = new File(path);	
+			FileOutputStream outFile = new FileOutputStream(resultFile);  
 			PDFTranscoder transcoder = new PDFTranscoder();
 			ByteArrayOutputStream outb = new ByteArrayOutputStream();
 			Writer out = new OutputStreamWriter(outb, "UTF-8");
 			svgGraphics2D.stream(out, true);
-
 			TranscoderInput input = new TranscoderInput(new ByteArrayInputStream(outb.toByteArray()));// (new
-																										// File("v.svg").toURL().toString());
-
-			File resultFile = new File(path);
-			FileOutputStream outFile = new FileOutputStream(resultFile);
-
 			TranscoderOutput output = new TranscoderOutput(outFile);
-
 			transcoder.addTranscodingHint(AbstractFOPTranscoder.KEY_STROKE_TEXT, new Boolean(false));
-
 			transcoder.transcode(input, output);
-
 			return resultFile;
 		}
 
@@ -294,15 +294,11 @@ public class PhylotreeRenderer {
 	int domi = 0;
 	//traverses tree and renders image using the graphics context..also subject to change
 	private RecData traverseTree(Graphics2D g2d, TreeNode result, int depth,RecData recData, int treeHeight, boolean includeAAC) throws Exception {
-		
-		
+			
 		int oldDepth = depth;
 		
 		g2d.setFont(polymorphismFont);
-		
-		
-		
-			
+				
 		List<TreeNode> list = result.getChildren();
 		
 				
@@ -318,8 +314,7 @@ public class PhylotreeRenderer {
 			if(recData.getMaxWidth() < maxPolyWidth)
 				recData.setMaxWidth(maxPolyWidth);
 			
-			
-			
+					
 			depth+= (1+numPolys) * (g2d.getFontMetrics().getHeight()+linePadding) + 15;
 			String haplogroupName = result.getPhyloTreeNode().getHaplogroup().toString();
 			
@@ -380,7 +375,7 @@ public class PhylotreeRenderer {
 			g2d.drawLine(lNodeData.getCenter(), depth  ,rNodeData.getCenter(), depth);
 			
 			//Draw vertical line
-			g2d.drawLine(superNodePosXCentered, depth -g2d.getFontMetrics().getHeight(),superNodePosXCentered, oldDepth);
+			g2d.drawLine(superNodePosXCentered, oldDepth +10, superNodePosXCentered,oldDepth);
 			
 			//Draw all polymorphisms
 			drawPolymorhismn(g2d, (OverviewTreeInnerNode) result,superNodePosXCentered, depth);
@@ -428,7 +423,9 @@ public class PhylotreeRenderer {
 			RecData newData = new RecData(center,right,recData.getMaxWidth(),depth);
 			//Draw vertical line to from up-bottom
 			g2d.setColor(Color.black);
-			g2d.drawLine(newData.getCenter(), oldDepth, newData.getCenter(),depth + g2d.getFontMetrics().getHeight() + 3);
+			g2d.drawLine(newData.getCenter(), oldDepth, newData.getCenter(),oldDepth + 10);
+			
+			//g2d.drawLine(newData.getCenter(), oldDepth, newData.getCenter(),depth + g2d.getFontMetrics().getHeight() + 3);
 			
 			//Draw all polymorphisms
 			//drawPolymorhismn(g2d, result, newData.getCenter(), depth);
@@ -638,7 +635,7 @@ public class PhylotreeRenderer {
 	 */
 	private int drawEndNode(Graphics2D g2d, OverviewTreeLeafNode leafNode, int center, int depth, int treeHeight, boolean includeAAC) {
 
-		g2d.drawLine(center, depth, center, treeHeight - 15);
+	
 
 		g2d.setFont(polymorphismFont);
 		depth += 10;
@@ -678,6 +675,8 @@ public class PhylotreeRenderer {
 
 		}	
 		
+		g2d.setColor(Color.black);
+		g2d.drawLine(center, depth, center, treeHeight - 15);
 		
 //		for (Polymorphism currentPoly :  leafNode.getMissingPolys()) {
 //			depth += g2d.getFontMetrics().getHeight() + linePadding;
@@ -753,7 +752,8 @@ public class PhylotreeRenderer {
 		int stringWidth = g2d.getFontMetrics().stringWidth(text);
 
 		// Clear background
-		g2d.clearRect(x - stringWidth / 2, y - (int) (g2d.getFontMetrics().getHeight() * 1.5), stringWidth, g2d.getFontMetrics().getHeight() + 1);
+		// HANSI removed white square 
+		//g2d.clearRect(x - stringWidth / 2, y - (int) (g2d.getFontMetrics().getHeight() * 1.5), stringWidth, g2d.getFontMetrics().getHeight() + 1);
 		g2d.drawString(text, x - stringWidth / 2, y - g2d.getFontMetrics().getHeight() / 2);
 	}
 }

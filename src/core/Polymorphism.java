@@ -347,7 +347,6 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 				m.find();
 
 				try {
-					System.out.println(";;;;;" + stringToParse+ "::::");
 					if (stringToParse.trim().length()>0)
 					Integer.parseInt(stringToParse.substring(m.start(), m.end()), 10);
 				} catch (NumberFormatException e) {
