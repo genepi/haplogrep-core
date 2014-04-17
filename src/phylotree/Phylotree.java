@@ -95,14 +95,15 @@ public final class Phylotree {
 		parentNode.addSubHaplogroup(newNode);
 		// Update index
 		haplogroupLookup.put(newNode.getHaplogroup(), newNode);
-System.out.print(" " + newNode.getHaplogroup() + " ");
+//System.out.print(" " + newNode.getHaplogroup() + " ");
+		
 		List<Element> polys = currentXMLElement.getChild("details").getChildren("poly");
 		for (Element currentPolyElement : polys) {
 			Polymorphism newExpectedPoly = new Polymorphism(currentPolyElement.getValue());
-			System.out.print(currentPolyElement.getValue()+ " ");
+			System.out.println(newNode.getHaplogroup() + "\t" +currentPolyElement.getValue()+ " ");
 			newNode.addExpectedPoly(newExpectedPoly);
 		}
-System.out.println();
+//System.out.println();
 		List<Element> children = currentXMLElement.getChildren("haplogroup");
 		for (Element currentChildElement : children) {
 			buildPhylotree(newNode, currentChildElement);
@@ -156,7 +157,9 @@ System.out.println();
 
 			List<Polymorphism> polys = currentElement.getExpectedPolys();
 			// Check all expected polys of the current haplogroup
+		
 			for (Polymorphism currentPoly : polys) {
+			
 				// Check whether polymorphism is in range
 				if (sample.getSample().getSampleRanges().contains(currentPoly)) {
 					// In case of a backmutation we have to correct the current
@@ -322,7 +325,6 @@ System.out.println();
 					complete = true;
 					break;
 				}
-				
 			
 		}
 		return distance;

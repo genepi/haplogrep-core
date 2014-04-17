@@ -274,7 +274,7 @@ public class TestSample implements Comparable<TestSample>{
 
 						else {
 							if (childNode.get("name").equals(currentPath.get(ipath).getHaplogroup())) {
-								System.out.print(currentPath.get(ipath).getHaplogroup() + " ");
+								System.out.print(currentPath.get(ipath).getHaplogroup() + " " + ";;;;;;;;");
 								// step = true;
 								currentNode = childNode;
 								currentChildren = currentNode.getJSONArray("children");
@@ -317,8 +317,6 @@ public class TestSample implements Comparable<TestSample>{
 					dataNode.append("polys", poly);
 
 				}
-
-				System.out.print("Neu " + currentPath.get(i1).getHaplogroup() + " ");
 
 				for (Polymorphism currentPoly : currentPath.get(i1).getNotInRangePolys()) {
 					JSONObject poly = new JSONObject();
@@ -423,7 +421,8 @@ public class TestSample implements Comparable<TestSample>{
 //			if (currentFragment == null)
 //				fragmentsHashMap.put(key, new ArrayList<Polymorphism>());
 			
-			fragmentsHashMap.get(key).add(currentPoly);
+		//	System.out.println("currentPoly " + currentPoly + " key " + key );
+	//		fragmentsHashMap.get(key).add(currentPoly);
 
 		}
 		int i = 0;

@@ -47,8 +47,7 @@ public class SearchResult {
 				remainingPolysSumWeights += getPhyloTree().getMutationRate(currentPoly);
 			}
 		}
-  
-	}
+  	}
 
 	/**
 	 * Copy constructor. Copies a given result and sets a new haplogroup name

@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.ConcurrentModificationException;
 
 import org.jdom.Element;
 
@@ -59,8 +58,11 @@ public class SearchResultDetailed implements Serializable {
 		while (startNode != null) {
 			SearchResultTreeNode newNode = new SearchResultTreeNode(startNode);
 			for (Polymorphism currentExpectedPoly : startNode.getExpectedPolys()) {
+			
+				if (!currentExpectedPoly.getMutation().equals("INS"))
 				if (searchResult.getSample().getSampleRanges().contains(currentExpectedPoly)) {
 					if (searchResult.getSample().containsWithBackmutation(currentExpectedPoly)) {
+						
 						newNode.addFoundPoly(currentExpectedPoly);
 						newNode.addExpectedPoly(currentExpectedPoly);
 
@@ -259,14 +261,26 @@ public class SearchResultDetailed implements Serializable {
 				}
 
 				else {
-					reasonUnusedPoly.setText("globalPrivateMutation");
+					if (currentPoly.isHeteroplasmy()){
+						reasonUnusedPoly.setText("globalPrivateMutationHP");
+					}
+					else
+					{
+						reasonUnusedPoly.setText("globalPrivateMutation");
+					}
 					if (!currentPoly.equalsReference())
 					{
 						result.addContent(reasonUnusedPoly);
 					}
 					else
-						result.addContent(reasonUnusedPoly.setText("rCRS"));
-						result.addContent(newUnusedPoly);
+					{
+						if (currentPoly.isHeteroplasmy())
+							result.addContent(reasonUnusedPoly.setText("rCRSHP"));
+						else
+							result.addContent(reasonUnusedPoly.setText("rCRS"));
+					}
+						
+					result.addContent(newUnusedPoly);
 						results.addContent(result);
 					
 				}
@@ -276,9 +290,13 @@ public class SearchResultDetailed implements Serializable {
 			else {
 				if (remainingPolysNotInRange.contains(currentPoly))
 					reasonUnusedPoly.setText("polyoutofrange");
-				else
-					reasonUnusedPoly.setText("localPrivateMutation");
-
+				else{
+					if (currentPoly.isHeteroplasmy()){
+					reasonUnusedPoly.setText("localPrivateMutationHP");
+					}
+					else
+						reasonUnusedPoly.setText("localPrivateMutation");
+				}
 				result.addContent(newUnusedPoly);
 				result.addContent(reasonUnusedPoly);
 				results.addContent(result);
@@ -340,8 +358,15 @@ public class SearchResultDetailed implements Serializable {
 				newExpectedPoly.setText(current.toStringShortVersion());
 				result.addContent(newExpectedPoly);
 
+			
 				Element newCorrectPoly = new Element("correct");
-				newCorrectPoly.setText("yes");
+				boolean isHetero= searchResult.getSample().getPolymorphisms().get(searchResult.getSample().getPolymorphisms().indexOf(current)).isHeteroplasmy();
+				if (isHetero){
+					newCorrectPoly.setText("yes [HP]");
+				}
+				else{
+					newCorrectPoly.setText("yes");			
+				}
 				result.addContent(newCorrectPoly);
 				unusedPolysArray.remove(current);
 				results.addContent(result);

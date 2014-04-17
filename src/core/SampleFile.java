@@ -57,6 +57,7 @@ public class SampleFile {
 			TestSample newSample;
 			try {
 				newSample = TestSample.parse(currentLine);
+				System.out.println(newSample);
 			} catch (HsdFileException e) {
 				e.setLineExceptionOccured(lineIndex);
 				throw e;
@@ -71,7 +72,6 @@ public class SampleFile {
 				}
 			else
 				testSamples.put(newSample.getSampleID(), newSample);
-			
 			lineIndex++;
 		}
 		
@@ -97,11 +97,13 @@ public class SampleFile {
 			System.out.println("%%%% " + userDir + pathToSampleFile);
 			sampleFileStream = new BufferedReader(new FileReader(sampleFile));
 		} else { // "Load Testdata" button
+			System.out.println("OKE");
 			InputStream testFile = this.getClass().getClassLoader().getResourceAsStream(pathToSampleFile);
 			sampleFileStream = new BufferedReader(new InputStreamReader(testFile));
 		}
 		
 		 String currentLine = sampleFileStream.readLine();
+		 System.out.println(currentLine);
 			if(!currentLine.startsWith("SampleId\tRange") ){
 				TestSample newSample = TestSample.parse(currentLine);
 				testSamples.put(newSample.getSampleID(), newSample);

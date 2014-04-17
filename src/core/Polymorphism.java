@@ -31,6 +31,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	boolean isBackMutation = false;
 	private String numberOfIns = "";
 	private String insertedPolys = "";
+	boolean isHeteroplasmy = false;
 	private int hashCode;
 	private static HashMap<Polymorphism, AnnotationAAC> acidLookup;
 	
@@ -63,6 +64,12 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	 */
 	public Polymorphism(String phyloString) throws InvalidPolymorphismException {
 		parse(phyloString);
+		hashCode = toString().hashCode();
+	}
+	
+	public Polymorphism(String phyloString, boolean Heteroplasmy) throws InvalidPolymorphismException {
+		parse(phyloString);
+		this.setHeteroplasmy(true);
 		hashCode = toString().hashCode();
 	}
 
@@ -275,6 +282,10 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 			stringToParse = stringToParse.replace("!", "");
 			isBackMutation = true;
 		}
+		if (stringToParse.contains("@")) {
+			stringToParse = stringToParse.replace("@", "");
+			isBackMutation = true;
+		}
 
 		// DELETIONS
 		if (stringToParse.contains("d") || stringToParse.contains("D")) {
@@ -325,20 +336,21 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 			this.insertedPolys = mutationString;
 		}
 
-		// TRANSVERSION If base is included, its a transversion, so just
+		// TRANSITION/TRANSVERSION If base is included, its a transversion, so just
 		// take it as it is.
 		else {
+			System.out.println("STRINGTOPARSE " + stringToParse);
+			
 			Pattern p = Pattern.compile("[a-zA-Z]");
 			Matcher m = p.matcher(stringToParse);
 			if (m.find()) {
-
 				try {
 					this.mutation = Mutations.getBase(stringToParse.substring(m.start(), m.end()));
 				} catch (InvalidBaseException e) {
 					throw new InvalidPolymorphismException(stringToParse, stringToParse.substring(m.start(), m.end()));
 				}
 				this.position = Integer.valueOf(stringToParse.replaceFirst("[a-zA-Z]", ""));
-			}
+				}
 
 			else {
 
@@ -467,6 +479,8 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 				return true;
 			if (this.equals(new Polymorphism("524d")))
 				return true;
+			if (this.equals(new Polymorphism("3107d")))
+				return true;
 			if (this.equals(new Polymorphism("16182C")))
 				return true;
 			if (this.equals(new Polymorphism("16183C")))
@@ -517,6 +531,17 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	public void setBackMutation(boolean isBackMutation) {
 		this.isBackMutation = isBackMutation;
 		hashCode = toString().hashCode();
+	}
+	
+	/**
+	 * @return True if the polymorphism is a heteroplasmy (R or Y), false if it is not
+	 */
+	public boolean isHeteroplasmy() {
+		return isHeteroplasmy;
+	}
+
+	public void setHeteroplasmy(boolean isHeteroplasmy) {
+		this.isHeteroplasmy = isHeteroplasmy;
 	}
 	
 	

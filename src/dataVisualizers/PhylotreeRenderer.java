@@ -47,7 +47,7 @@ import core.Polymorphism;
 /**
  * Renders an overview tree image given by an XML root node.
  * 
- * @author Dominic Pacher, Sebastian Schï¿½nherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schönherr, Hansi Weissensteiner
  * 
  */
 public class PhylotreeRenderer {

@@ -147,13 +147,13 @@ public class Sample {
 										{
 											if (buffer.length() < ipos - 1)
 												buffer.setLength(ipos - 1);
-											if (ipos>0) //09.10.213 recheck whith startpositions
+											if (ipos>0){ //09.10.2013 recheck whith startpositions
+												System.out.println(ipos + " " + currentPoly + " "  + token1);
+											
 											buffer.setCharAt(ipos - 2, token1.charAt(m.end()));
-
+											}
 										}
-
 									}
-
 								}
 							}
 							filteredSample.add(new Polymorphism(newInsert + buffer.toString()));
@@ -168,6 +168,7 @@ public class Sample {
 							filteredSample.add(newPoly);
 						}
 					}
+				
 					// CASE 3 rename in HaploSearchManager: if PhyloTree
 					// delivers 523.2C we accept it but only from PHYLOTREE
 					// call method 1 means PHYLOTREE
@@ -177,7 +178,21 @@ public class Sample {
 					}
 
 				}
-
+				//HETEROPLASMY - split in Bases
+				else if (currentPoly.contains("R")){
+					Polymorphism newPoly = new Polymorphism(currentPoly.replace("R", "A"), true);
+					filteredSample.add(newPoly);
+								newPoly = new Polymorphism(currentPoly.replace("R", "G"), true);
+					filteredSample.add(newPoly);
+				}
+				else if (currentPoly.contains("Y")){
+					Polymorphism newPoly = new Polymorphism(currentPoly.replace("Y", "C"), true);
+					filteredSample.add(newPoly);
+					System.out.println(":::" +newPoly + " "+ newPoly.isHeteroplasmy);
+								newPoly = new Polymorphism(currentPoly.replace("Y", "T"), true);
+					filteredSample.add(newPoly);
+					System.out.println(":-:" +newPoly+" "+ newPoly.isHeteroplasmy);
+				}
 				// Resolve deletation ranges e.g. 1800-1804d
 				else if (currentPoly.contains("-")) {
 					StringTokenizer st1 = new StringTokenizer(currentPoly, "-");
@@ -191,7 +206,6 @@ public class Sample {
 						startPosition++;
 					}
 				}
-
 				else {
 					Polymorphism newPoly = new Polymorphism(currentPoly);
 					filteredSample.add(newPoly);
