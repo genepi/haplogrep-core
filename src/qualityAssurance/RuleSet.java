@@ -23,14 +23,12 @@ public class RuleSet {
 	}
 	
 	public void addStandardRules() {
-//		addRule(new CheckForSampleRange(0));
-//		addRule(new CheckForSampleRCRSAligned(0));
-//		addRule(new CheckForSampleRSRSAligned(0));
-//
-//		addRule(new CheckExpectedHGMatchesDetectedHG(1));
-//		addRule(new CheckForReferencePolymorhisms(1));
-//		addRule(new CheckForTooManyGlobalPrivateMutations(1));
-		
+		addRule(new CheckForSampleRange(0));
+		addRule(new CheckForSampleRCRSAligned(0));
+		addRule(new CheckForSampleRSRSAligned(0));
+		addRule(new CheckExpectedHGMatchesDetectedHG(1));
+		addRule(new CheckForReferencePolymorhisms(1));
+		addRule(new CheckForTooManyGlobalPrivateMutations(1));
 		addRule(new CheckForRecombinationRule(4));
 	}
 	
@@ -42,17 +40,17 @@ public class RuleSet {
 		this.rules.get(newRule.getPriority()).add(newRule);
 	}
 	
-//	void reevaluateAllRules(QualityAssistent qualityAssistent, TestSample currentSample) {
-//		for (int i = 0; i < 10;i++)
-//			if(qualityAssistent.getIssues(currentSample).size() == 0)	
-//				reevaluateRules(qualityAssistent, i, currentSample);
-//				
-//
-//		for (int currentPriority : rules.keySet())
-//			if(currentSample.getQualityLevelReached() <= currentPriority)
-//				suppressRules(qualityAssistent, currentPriority, currentSample);
-//
-//	}
+	void reevaluateAllRules(QualityAssistent qualityAssistent, TestSample currentSample) {
+		for (int i = 0; i < 10;i++)
+			if(qualityAssistent.getIssues(currentSample).size() == 0)	
+				reevaluateRules(qualityAssistent, i, currentSample);
+				
+
+		for (int currentPriority : rules.keySet())
+			if(currentSample.getQualityLevelReached() <= currentPriority)
+				suppressRules(qualityAssistent, currentPriority, currentSample);
+
+	}
 	
 	private void reevaluateRules(QualityAssistent qualityAssistent,int priority,TestSample currentSample) {
 		for(HaplogrepRule currentRule : rules.get(priority)){

@@ -284,6 +284,7 @@ public class SampleFile {
 		usedRankingMethodLastRun = rankingMethod;
 		
 		if(qualityAssistent == null){
+			System.out.println("RUUUUULESs");
 			RuleSet rules = new RuleSet();
 			rules.addStandardRules();
 			qualityAssistent = new QualityAssistent(testSamples.values(), rules, phylotree);

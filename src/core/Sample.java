@@ -46,12 +46,33 @@ public class Sample {
 	 * 
 	 * @param polyToCheck
 	 *            The polymorphism to check
-	 * @return True if the polymorphism appears in this sample, false otherwise
+	 * @return 1 if the polymorphism appears in this sample, 
+	 * 		   2 if heteroplasmy
+	 * 		   0 otherwise
 	 */
-	public boolean contains(Polymorphism polyToCheck) {
-		return sample.contains(polyToCheck);
+	public int contains(Polymorphism polyToCheck) {
+		for (Polymorphism currentPoly : sample){
+			if (currentPoly.isHeteroplasmy){
+				if (currentPoly.getPosition() == polyToCheck.getPosition()) {
+					if (currentPoly.getMutation().toString().equals("Y") && (polyToCheck.getMutation().toString().equals("C") || polyToCheck.getMutation().toString().equals("T")))
+					{
+						return 2;
+					}
+						
+					if (currentPoly.getMutation().toString().equals("R") && (polyToCheck.getMutation().toString().equals("A") || polyToCheck.getMutation().toString().equals("G")))
+					{
+						return 2;
+					}
+				}
+			}
+			else if (currentPoly.equals(polyToCheck)){
+				return 1;
+			}
+		}
+		return 0;
 	}
-
+	
+	
 	/**
 	 * Same as contains() but takes back mutations into account.
 	 * 
@@ -78,6 +99,8 @@ public class Sample {
 
 		return false;
 	}
+	
+	
 
 	/*
 	 * (non-Javadoc)
@@ -180,18 +203,12 @@ public class Sample {
 				}
 				//HETEROPLASMY - split in Bases
 				else if (currentPoly.contains("R")){
-					Polymorphism newPoly = new Polymorphism(currentPoly.replace("R", "A"), true);
-					filteredSample.add(newPoly);
-								newPoly = new Polymorphism(currentPoly.replace("R", "G"), true);
+					Polymorphism newPoly = new Polymorphism(currentPoly, true);
 					filteredSample.add(newPoly);
 				}
 				else if (currentPoly.contains("Y")){
-					Polymorphism newPoly = new Polymorphism(currentPoly.replace("Y", "C"), true);
+					Polymorphism newPoly = new Polymorphism(currentPoly, true);
 					filteredSample.add(newPoly);
-					System.out.println(":::" +newPoly + " "+ newPoly.isHeteroplasmy);
-								newPoly = new Polymorphism(currentPoly.replace("Y", "T"), true);
-					filteredSample.add(newPoly);
-					System.out.println(":-:" +newPoly+" "+ newPoly.isHeteroplasmy);
 				}
 				// Resolve deletation ranges e.g. 1800-1804d
 				else if (currentPoly.contains("-")) {

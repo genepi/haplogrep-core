@@ -56,6 +56,8 @@ public class SearchResultDetailed implements Serializable {
 	void updateResult() {
 		PhyloTreeNode startNode = searchResult.getAttachedPhyloTreeNode();
 		while (startNode != null) {
+			
+		
 			SearchResultTreeNode newNode = new SearchResultTreeNode(startNode);
 			for (Polymorphism currentExpectedPoly : startNode.getExpectedPolys()) {
 			
@@ -338,9 +340,16 @@ public class SearchResultDetailed implements Serializable {
 				Element newExpectedPoly = new Element("expected");
 				newExpectedPoly.setText(current.toStringShortVersion());
 				result.addContent(newExpectedPoly);
-
+				System.out.println("NO "  + current.getPosition() + " " + current.isHeteroplasmy());
+			
 				Element newCorrectPoly = new Element("correct");
-				newCorrectPoly.setText("no");
+				if (current.isHeteroplasmy())
+					{
+						newCorrectPoly.setText("yes [HP]");
+					}
+					else
+						newCorrectPoly.setText("no");
+					
 				result.addContent(newCorrectPoly);
 
 				results.addContent(result);
@@ -360,13 +369,12 @@ public class SearchResultDetailed implements Serializable {
 
 			
 				Element newCorrectPoly = new Element("correct");
-				boolean isHetero= searchResult.getSample().getPolymorphisms().get(searchResult.getSample().getPolymorphisms().indexOf(current)).isHeteroplasmy();
-				if (isHetero){
-					newCorrectPoly.setText("yes [HP]");
-				}
-				else{
-					newCorrectPoly.setText("yes");			
-				}
+			
+				System.out.println(current.getPosition() + " " + current.isHeteroplasmy());
+				if (searchResult.getSample().getPolymorphisms().indexOf(current)>0)
+				
+						newCorrectPoly.setText("yes");			
+				
 				result.addContent(newCorrectPoly);
 				unusedPolysArray.remove(current);
 				results.addContent(result);

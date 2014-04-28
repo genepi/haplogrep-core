@@ -67,14 +67,14 @@ public class CheckForSampleRSRSAligned extends HaplogrepRule {
 	
 			
 		for(Polymorphism currentUniqueRSRSPoly : uniqueRSRSPolys)	
-			if(currentSample.getSample().contains(currentUniqueRSRSPoly)) 
+			if(currentSample.getSample().contains(currentUniqueRSRSPoly)>0) 
 				numRSRSPolysFound++;
 		
 		
 			if(numRSRSPolysFound > 1){
 				if(numRSRSPolysFound == 5){
 					for(Polymorphism currentUniqueRSRSPoly : uniqueRSRSPolys)	
-						if(currentSample.getSample().contains(currentUniqueRSRSPoly))
+						if(currentSample.getSample().contains(currentUniqueRSRSPoly)>0)
 								System.out.println(currentUniqueRSRSPoly);
 				}
 				

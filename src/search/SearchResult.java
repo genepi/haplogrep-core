@@ -138,7 +138,7 @@ public class SearchResult {
 		if (polyToRemove.isBackMutation()) {
 			Polymorphism newPoly = new Polymorphism(polyToRemove);
 			newPoly.setBackMutation(false);
-			if (sample.contains(newPoly)) {
+			if (sample.contains(newPoly)>0) { //TODO RECHECK IF OK WITH HP
 				foundPolysSumWeights -= getPhyloTree().getMutationRate(newPoly);
 				remainingPolysSumWeights += getPhyloTree().getMutationRate(newPoly);
 				
