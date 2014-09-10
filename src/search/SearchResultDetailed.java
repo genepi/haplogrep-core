@@ -92,7 +92,7 @@ public class SearchResultDetailed implements Serializable {
 			path.add(newNode);
 			startNode = startNode.getParent();
 		}
-
+		if (searchResult.getSample()!=null)
 		remainingPolys.addAll(searchResult.getSample().getPolymorphisms());
 		for (SearchResultTreeNode currentNode : path) {
 			for (Polymorphism currentFoundPoly : currentNode.getFoundPolys()) {
@@ -133,9 +133,7 @@ public class SearchResultDetailed implements Serializable {
 				if(current.isTransitionPoly())
 				sumTransitions += 1;
 			}
-
 		}
-		
 		return sumTransitions;
 	}
 	
@@ -370,10 +368,9 @@ public class SearchResultDetailed implements Serializable {
 			
 				Element newCorrectPoly = new Element("correct");
 			
-				System.out.println(current.getPosition() + " " + current.isHeteroplasmy());
-				if (searchResult.getSample().getPolymorphisms().indexOf(current)>0)
+				//if (searchResult.getSample().getPolymorphisms().indexOf(current)>0)
 				
-						newCorrectPoly.setText("yes");			
+				newCorrectPoly.setText("yes");			
 				
 				result.addContent(newCorrectPoly);
 				unusedPolysArray.remove(current);

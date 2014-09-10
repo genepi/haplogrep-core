@@ -371,7 +371,9 @@ public class TestSample implements Comparable<TestSample>{
 	 */
 	public void updateSearchResults(Phylotree phyloTreeToUse,RankingMethod rankingMethod) {
 		//if(qualityRulesLevelReached > 0){
+		
 			List<RankedResult> results = phyloTreeToUse.search(this, rankingMethod.clone());
+		
 			searchResults = (ArrayList<RankedResult>) results;
 			clusteredResults = new ClusteredSearchResults(results);
 		//}

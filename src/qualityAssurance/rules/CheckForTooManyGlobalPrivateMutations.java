@@ -14,10 +14,10 @@ public class CheckForTooManyGlobalPrivateMutations extends HaplogrepRule {
 
 	@Override
 	public void evaluate(QualityAssistent qualityAssistent, TestSample currentSample) {
-		
 		if(currentSample.getResults().size() != 0){
 		SearchResult topResult = currentSample.getResults().get(0).getSearchResult();
 		int numGlobalPrivateMuations = 0;
+		System.out.println("testsample  " + currentSample.getSampleID());
 		for(Polymorphism currentRemainingPoly : topResult.getDetailedResult().getRemainingPolysInSample()){
 			if(!currentRemainingPoly.isMTHotspot() && qualityAssistent.getUsedPhyloTree().getMutationRate(currentRemainingPoly) == 0)
 				numGlobalPrivateMuations++;
@@ -26,7 +26,6 @@ public class CheckForTooManyGlobalPrivateMutations extends HaplogrepRule {
 		if(numGlobalPrivateMuations > 2)
 			qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "The sample contains " + numGlobalPrivateMuations + " global private " +
 					"mutation(s) that are not known by phylotree"));
-
 		}
 	}
 

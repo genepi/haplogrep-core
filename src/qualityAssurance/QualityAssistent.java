@@ -19,9 +19,9 @@ public class QualityAssistent {
 	RuleSet rules;
 	HashMap<TestSample, ArrayList<QualityIssue>> allQualityIssuesLookup = new HashMap<TestSample, ArrayList<QualityIssue>>();
 	HashMap<Integer, QualityIssue> issueLookup = new HashMap<Integer, QualityIssue>();
-	// HashMap<String, ArrayList<QualityIssue>> issueGroupLookup = new
-	// HashMap<String, ArrayList<QualityIssue>>();
-	// ArrayList<QualityIssue> allQualityIssues = new ArrayList<QualityIssue>();
+	HashMap<String, ArrayList<QualityIssue>> issueGroupLookup = new
+	HashMap<String, ArrayList<QualityIssue>>();
+	ArrayList<QualityIssue> allQualityIssues = new ArrayList<QualityIssue>();
 
 	Phylotree usedPhyloTree = null;
 	int numIssues = 0;

@@ -24,7 +24,7 @@ public class Sample {
 
 		String[] polyTokens = sampleToParse.trim().split("\\s+");
 		ArrayList<String> listOfSampleTokens = new ArrayList<String>(Arrays.asList(polyTokens));
-
+System.out.println(listOfSampleTokens);
 		this.sample = parseSample(listOfSampleTokens, callMethod);
 		this.sampleRange = sampleRange;
 	}

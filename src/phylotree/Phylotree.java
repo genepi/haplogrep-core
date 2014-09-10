@@ -15,6 +15,7 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
+import qualityAssurance.rules.HaplogrepRule;
 import search.SearchResult;
 import search.ranking.RankingMethod;
 import search.ranking.results.RankedResult;
@@ -100,7 +101,7 @@ public final class Phylotree {
 		List<Element> polys = currentXMLElement.getChild("details").getChildren("poly");
 		for (Element currentPolyElement : polys) {
 			Polymorphism newExpectedPoly = new Polymorphism(currentPolyElement.getValue());
-			//System.out.println(newNode.getHaplogroup() +" "+ parentNode.getExpectedPolys() + "\t" +currentPolyElement.getValue()+ " ");
+	//		System.out.println(parentNode.getHaplogroup() +" "+ parentNode.getExpectedPolys() + "\t" +currentPolyElement.getValue()+ " ");
 			newNode.addExpectedPoly(newExpectedPoly);
 		}
 //System.out.println();
@@ -126,14 +127,22 @@ public final class Phylotree {
 		// Start at root node
 		SearchResult rootResult = new SearchResult(root, testSample);
 		// First call to RECURSIVE search function
+		
 		searchPhylotree(root, results, testSample, rootResult);
-
+		
+		//TODO uncomment in case new phylotree.hsd file needed
+		/////////////////
+		//getAllHaplogroups(root, results, rootResult);
+		
+		
 		rankingMethodToUse.setResults(testSample, results);
 
 		// set results to null (>20) to save memory.
 		results.clear();
 		return rankingMethodToUse.getResults();
 	}
+
+
 
 	/**
 	 * Traverses the complete phylo tree beginning at the rCRS. For each child a
@@ -158,6 +167,7 @@ public final class Phylotree {
 			List<Polymorphism> polys = currentElement.getExpectedPolys();
 		
 			// Check all expected polys of the current haplogroup
+			//System.out.println("HG:: " + currentElement.getHaplogroup() +  "\t " + newResult.getDetailedResult().getExpectedPolys().toString());
 		
 			for (Polymorphism currentPoly : polys) {
 		
@@ -205,9 +215,48 @@ public final class Phylotree {
 			// Add new result to the list of all results
 			results.add(newResult);
 			// RECURSIVE call
+	
 			searchPhylotree(currentElement, results, sample, newResult);
+		
 		}
 	}
+	
+	
+	/**
+	 * Traverses the complete phylo tree beginning at the rCRS. For each child a
+	 * new SerachResult object is created.
+	 * 
+	 * @param parent
+	 *            The XML parent node
+	 * @param results
+	 *            The list of all results
+	 * @param sample
+	 *            The test sample
+	 * @param parentResult
+	 *            SearchResult of the parent
+	 */
+	private void getAllHaplogroups(PhyloTreeNode parent, ArrayList<SearchResult> results,  SearchResult parentResult) {
+		// Query all child haplogroup nodes
+		List<PhyloTreeNode> children = parent.getSubHaplogroups();
+
+		for (PhyloTreeNode currentElement : children) {
+			SearchResult newResult = new SearchResult(currentElement, parentResult);
+
+			List<Polymorphism> polys = currentElement.getExpectedPolys();
+		
+			// Check all expected polys of the current haplogroup
+			System.out.println("HG_" + currentElement.getHaplogroup() +  "\t 1-16569\t" + currentElement.getHaplogroup()+"\t"+ newResult.getDetailedResult().getExpectedPolys().toString().replace(",","\t") );
+		
+			// Add new result to the list of all results
+			results.add(newResult);
+			// RECURSIVE call
+	
+			getAllHaplogroups(currentElement, results,  newResult);
+		
+		}
+	}
+	
+	
 
 	/**
 	 * Parses the pyhlo weights given by a file. Sets weights for all
@@ -275,7 +324,6 @@ public final class Phylotree {
 	 */
 	public boolean isSuperHaplogroup(Haplogroup superGroup, Haplogroup hgToCheck) {
 		PhyloTreeNode currentNode = haplogroupLookup.get(superGroup);
-
 		if (superGroup == null)
 			return false;
 
@@ -337,4 +385,5 @@ public final class Phylotree {
 		}
 		return distance;
 	}
+
 }

@@ -289,17 +289,19 @@ public class SampleFile {
 			rules.addStandardRules();
 			qualityAssistent = new QualityAssistent(testSamples.values(), rules, phylotree);
 		}
-		
+		System.out.println("START E");
+		long start = System.currentTimeMillis();
 		for (TestSample currenTestSample : testSamples.values()) {
 			if(!qualityAssistent.hasFatalIssues(currenTestSample))
 				currenTestSample.updateSearchResults(phylotree, rankingMethod);
 		}
+		System.out.println("STOP E: " + (System.currentTimeMillis()-start));
 
 	}
 
-//	/**
-//	 * Runs all rules to check each sample if it is ready for classification
-//	 */
+	/**
+	 * Runs all rules to check each sample if it is ready for classification
+	 */
 //	public void runPreClassficationChecks(Phylotree phylotree){	
 //			RuleSet rules = RuleSet.createPreClassificationRuleSet();
 //			preChecksQualityAssistent = new QualityAssistent(testSamples.values(), rules,phylotree);

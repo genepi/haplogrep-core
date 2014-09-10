@@ -49,6 +49,8 @@ public class SearchResult {
 		}
   	}
 
+	
+	
 	/**
 	 * Copy constructor. Copies a given result and sets a new haplogroup name
 	 * 
