@@ -25,13 +25,11 @@ public class CheckForQuality extends HaplogrepRule {
 	
 		if(currentSample.getResults().size()!=0){
 		double topResult = currentSample.getResults().get(0).getDistance();
-		int numGlobalPrivateMuations = 0;
-
 		
-		if(topResult <= 0.9 & topResult > 0.75)
+		if(topResult <= 0.9 & topResult > 0.8)
 			qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "The sample quality " + topResult + " is low "));
-		else if (topResult <= 0.75)
-			qualityAssistent.addNewIssue(new QualityFatal(qualityAssistent, currentSample, "The sample quality " + topResult + " is too low "));
+		else if (topResult <= 0.8)
+			qualityAssistent.addNewIssue(new QualityFatal(qualityAssistent, currentSample, "The sample quality " + topResult + " is very low "));
 		}
 	}
 
