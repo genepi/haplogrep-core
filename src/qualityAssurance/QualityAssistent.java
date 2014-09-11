@@ -177,7 +177,6 @@ public class QualityAssistent {
 		}
 
 		JSONArray jsonArray = JSONArray.fromObject(notSuppressedIssues, conf);
-		System.out.println(jsonArray.toString());
 
 		return jsonArray;
 	}

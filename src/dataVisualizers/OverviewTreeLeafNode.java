@@ -66,7 +66,6 @@ public class OverviewTreeLeafNode extends TreeNode {
 //			remainingPolys.add(currentSamplePoly);
 			Polymorphism newBackmutation = new Polymorphism(currentSamplePoly);
 			
-//			System.out.println(currentSamplePoly.getPosition());
 			newBackmutation.setBackMutation(true);
 //			if( !testSample.getResults().get(0).getSearchResult().getDetailedResult().getExpectedPolys().contains(newBackmutation))
 			remainingPolys.add(newBackmutation);
@@ -77,7 +76,6 @@ public class OverviewTreeLeafNode extends TreeNode {
 			if(!currentSamplePoly.isBackMutation() && !testSample.getSample().getPolymorphisms().contains(currentSamplePoly)){
 				Polymorphism newBackmutation = new Polymorphism(currentSamplePoly);
 				
-//				System.out.println(currentSamplePoly.getPosition());
 				newBackmutation.setBackMutation(true);
 				if( !testSample.getResults().get(0).getSearchResult().getDetailedResult().getExpectedPolys().contains(newBackmutation))
 				remainingPolys.add(newBackmutation);

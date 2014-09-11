@@ -14,6 +14,8 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.Format;
@@ -40,6 +42,9 @@ import exceptions.parse.samplefile.UniqueSampleIDException;
  * 
  */
 public class SampleFile {
+	
+	final Log log = LogFactory.getLog(SampleFile.class);
+	
 	Hashtable<String, TestSample> testSamples = new Hashtable<String, TestSample>();
 	QualityAssistent qualityAssistent = null;
 //	QualityAssistent preChecksQualityAssistent = null;
@@ -57,7 +62,7 @@ public class SampleFile {
 			TestSample newSample;
 			try {
 				newSample = TestSample.parse(currentLine);
-				System.out.println(newSample);
+				log.info("new sample " + newSample);
 			} catch (HsdFileException e) {
 				e.setLineExceptionOccured(lineIndex);
 				throw e;
@@ -92,18 +97,16 @@ public class SampleFile {
 		BufferedReader sampleFileStream;
 		if (testCase) { // for test cases
 			String userDir = new java.io.File("").getAbsolutePath();
-			System.out.println(userDir);
 			File sampleFile = new File(userDir + pathToSampleFile);
-			System.out.println("%%%% " + userDir + pathToSampleFile);
+			log.debug("%%%% " + userDir + pathToSampleFile);	
 			sampleFileStream = new BufferedReader(new FileReader(sampleFile));
 		} else { // "Load Testdata" button
-			System.out.println("OKE");
+			log.debug("loading ok");	
 			InputStream testFile = this.getClass().getClassLoader().getResourceAsStream(pathToSampleFile);
 			sampleFileStream = new BufferedReader(new InputStreamReader(testFile));
 		}
 		
 		 String currentLine = sampleFileStream.readLine();
-		 System.out.println(currentLine);
 			if(!currentLine.startsWith("SampleId\tRange") ){
 				TestSample newSample = TestSample.parse(currentLine);
 				testSamples.put(newSample.getSampleID(), newSample);
@@ -284,18 +287,17 @@ public class SampleFile {
 		usedRankingMethodLastRun = rankingMethod;
 		
 		if(qualityAssistent == null){
-			System.out.println("RUUUUULESs");
+			log.debug("rules");	
 			RuleSet rules = new RuleSet();
 			rules.addStandardRules();
 			qualityAssistent = new QualityAssistent(testSamples.values(), rules, phylotree);
 		}
-		System.out.println("START E");
 		long start = System.currentTimeMillis();
 		for (TestSample currenTestSample : testSamples.values()) {
 			if(!qualityAssistent.hasFatalIssues(currenTestSample))
 				currenTestSample.updateSearchResults(phylotree, rankingMethod);
 		}
-		System.out.println("STOP E: " + (System.currentTimeMillis()-start));
+		log.debug("time E: " + (System.currentTimeMillis()-start));
 
 	}
 
@@ -386,7 +388,6 @@ public class SampleFile {
 		OverviewTree newOverviewTree = new OverviewTree();
 //		int d = 0;
 		for (TestSample currentSample : testSamples.values()) {
-//			System.out.println(currentSample.getSampleID());
 			if(currentSample.searchResults.size() > 0)
 			if(currentSample.searchResults.size() > 0) // <-- neu
 			newOverviewTree.addNewPath(currentSample,currentSample.searchResults.get(0).getSearchResult().getDetailedResult().getPhyloTreePath());
@@ -579,7 +580,8 @@ public class SampleFile {
 				result.append("\n");
 			}
 		}
-		System.out.println("Time: "+ (new java.util.Date().getTime() - start));
+		
+		log.debug("TO HSD FILE TIME: " + (System.currentTimeMillis()-start));
 		return result.toString();
 	}
 }

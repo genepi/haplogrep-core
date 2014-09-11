@@ -24,7 +24,6 @@ public class Sample {
 
 		String[] polyTokens = sampleToParse.trim().split("\\s+");
 		ArrayList<String> listOfSampleTokens = new ArrayList<String>(Arrays.asList(polyTokens));
-System.out.println(listOfSampleTokens);
 		this.sample = parseSample(listOfSampleTokens, callMethod);
 		this.sampleRange = sampleRange;
 	}
@@ -171,7 +170,6 @@ System.out.println(listOfSampleTokens);
 											if (buffer.length() < ipos - 1)
 												buffer.setLength(ipos - 1);
 											if (ipos>0){ //09.10.2013 recheck whith startpositions
-												System.out.println(ipos + " " + currentPoly + " "  + token1);
 											
 											buffer.setCharAt(ipos - 2, token1.charAt(m.end()));
 											}
@@ -186,7 +184,6 @@ System.out.println(listOfSampleTokens);
 						// format is already correct: 523.1ACCCCCC, use it as it
 						// is
 						else if (currentPoly.matches("\\d+\\.1[a-zA-Z]{2,}")) {
-							System.out.println(currentPoly.toString());
 							Polymorphism newPoly = new Polymorphism(currentPoly);
 							filteredSample.add(newPoly);
 						}

@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -37,6 +39,7 @@ import exceptions.parse.sample.InvalidPolymorphismException;
  */
 public final class Phylotree {
 
+	final Log log = LogFactory.getLog(Phylotree.class);
 	private PhyloTreeNode root;
 	private HashMap<Polymorphism, Double> phyloGeneticWeights = new HashMap<Polymorphism, Double>();
 	private HashMap<Haplogroup, PhyloTreeNode> haplogroupLookup = new HashMap<Haplogroup, PhyloTreeNode>();
@@ -101,10 +104,8 @@ public final class Phylotree {
 		List<Element> polys = currentXMLElement.getChild("details").getChildren("poly");
 		for (Element currentPolyElement : polys) {
 			Polymorphism newExpectedPoly = new Polymorphism(currentPolyElement.getValue());
-	//		System.out.println(parentNode.getHaplogroup() +" "+ parentNode.getExpectedPolys() + "\t" +currentPolyElement.getValue()+ " ");
 			newNode.addExpectedPoly(newExpectedPoly);
 		}
-//System.out.println();
 		List<Element> children = currentXMLElement.getChildren("haplogroup");
 		for (Element currentChildElement : children) {
 			buildPhylotree(newNode, currentChildElement);
@@ -167,7 +168,6 @@ public final class Phylotree {
 			List<Polymorphism> polys = currentElement.getExpectedPolys();
 		
 			// Check all expected polys of the current haplogroup
-			//System.out.println("HG:: " + currentElement.getHaplogroup() +  "\t " + newResult.getDetailedResult().getExpectedPolys().toString());
 		
 			for (Polymorphism currentPoly : polys) {
 		
@@ -245,8 +245,7 @@ public final class Phylotree {
 			List<Polymorphism> polys = currentElement.getExpectedPolys();
 		
 			// Check all expected polys of the current haplogroup
-			System.out.println("HG_" + currentElement.getHaplogroup() +  "\t 1-16569\t" + currentElement.getHaplogroup()+"\t"+ newResult.getDetailedResult().getExpectedPolys().toString().replace(",","\t") );
-		
+			log.debug("HG_" + currentElement.getHaplogroup() +  "\t 1-16569\t" + currentElement.getHaplogroup()+"\t"+ newResult.getDetailedResult().getExpectedPolys().toString().replace(",","\t") );
 			// Add new result to the list of all results
 			results.add(newResult);
 			// RECURSIVE call

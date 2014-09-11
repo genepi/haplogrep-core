@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Scanner;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import qualityAssurance.QualityAssistent;
 import qualityAssurance.issues.QualityFatal;
 import core.Polymorphism;
@@ -19,6 +22,7 @@ import core.TestSample;
 import exceptions.parse.sample.InvalidPolymorphismException;
 
 public class CheckForSampleRSRSAligned extends HaplogrepRule {
+	static final Log log = LogFactory.getLog(CheckForSampleRSRSAligned.class);
 	static ArrayList<Polymorphism> uniqueRSRSPolys = null;
 	
 	public CheckForSampleRSRSAligned(int priority){
@@ -74,8 +78,10 @@ public class CheckForSampleRSRSAligned extends HaplogrepRule {
 			if(numRSRSPolysFound > 1){
 				if(numRSRSPolysFound == 5){
 					for(Polymorphism currentUniqueRSRSPoly : uniqueRSRSPolys)	
-						if(currentSample.getSample().contains(currentUniqueRSRSPoly)>0)
-								System.out.println(currentUniqueRSRSPoly);
+						if(currentSample.getSample().contains(currentUniqueRSRSPoly)>0){
+							log.debug(currentUniqueRSRSPoly);
+						}
+								
 				}
 				
 				qualityAssistent.addNewIssue(new QualityFatal(qualityAssistent, currentSample, numRSRSPolysFound + " common RSRS polymorphims found! " +

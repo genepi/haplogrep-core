@@ -1,10 +1,16 @@
 package qualityAssurance;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import qualityAssurance.issues.QualityIssue;
+import core.SampleFile;
 import core.TestSample;
 
 public class CorrectionMethod {
 
+	final Log log = LogFactory.getLog(CorrectionMethod.class);
+	
 	String description;
 	int methodID;
 	QualityIssue issue;

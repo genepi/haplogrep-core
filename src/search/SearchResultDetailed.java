@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jdom.Element;
 
 import phylotree.PhyloTreeNode;
@@ -22,6 +24,7 @@ import core.Polymorphism;
  */
 public class SearchResultDetailed implements Serializable {
 	private static final long serialVersionUID = 3578717605511291419L;
+	static final Log log = LogFactory.getLog(SearchResultDetailed.class);
 
 	private ArrayList<Polymorphism> expectedPolys;
 	private ArrayList<Polymorphism> foundPolys;
@@ -338,7 +341,7 @@ public class SearchResultDetailed implements Serializable {
 				Element newExpectedPoly = new Element("expected");
 				newExpectedPoly.setText(current.toStringShortVersion());
 				result.addContent(newExpectedPoly);
-				System.out.println("NO "  + current.getPosition() + " " + current.isHeteroplasmy());
+				log.debug("NO "  + current.getPosition() + " " + current.isHeteroplasmy());
 			
 				Element newCorrectPoly = new Element("correct");
 				if (current.isHeteroplasmy())

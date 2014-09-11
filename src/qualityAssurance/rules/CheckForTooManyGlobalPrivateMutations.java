@@ -1,5 +1,8 @@
 package qualityAssurance.rules;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import qualityAssurance.QualityAssistent;
 import qualityAssurance.issues.QualityWarning;
 import search.SearchResult;
@@ -8,6 +11,8 @@ import core.TestSample;
 
 public class CheckForTooManyGlobalPrivateMutations extends HaplogrepRule {
 
+	static final Log log = LogFactory.getLog(CheckForTooManyGlobalPrivateMutations.class);
+	
 	public CheckForTooManyGlobalPrivateMutations(int priority) {
 		super(priority);
 	}
@@ -17,7 +22,7 @@ public class CheckForTooManyGlobalPrivateMutations extends HaplogrepRule {
 		if(currentSample.getResults().size() != 0){
 		SearchResult topResult = currentSample.getResults().get(0).getSearchResult();
 		int numGlobalPrivateMuations = 0;
-		System.out.println("testsample  " + currentSample.getSampleID());
+		log.debug("testsample  " + currentSample.getSampleID());
 		for(Polymorphism currentRemainingPoly : topResult.getDetailedResult().getRemainingPolysInSample()){
 			if(!currentRemainingPoly.isMTHotspot() && qualityAssistent.getUsedPhyloTree().getMutationRate(currentRemainingPoly) == 0)
 				numGlobalPrivateMuations++;
