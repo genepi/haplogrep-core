@@ -18,10 +18,9 @@ public class readHaplogroups {
 		 
 	        StringBuilder sb = new StringBuilder();
 	        String line = br.readLine();
-	    	BufferedReader brfluct = new BufferedReader(new FileReader("../HaplogrepServer/weights/weights16.txt"));
 	        while (line != null) {
 	            sb.append(line);
-	            sb.append(System.lineSeparator());
+	            sb.append(System.getProperty("line.separator"));
 	            line = br.readLine();
 	        }
 	        String everything = sb.toString();

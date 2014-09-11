@@ -6,12 +6,10 @@ import java.util.HashMap;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JsonConfig;
-
 import phylotree.Phylotree;
 import qualityAssurance.issues.QualityFatal;
 import qualityAssurance.issues.QualityIssue;
 import qualityAssurance.rules.HaplogrepRule;
-
 import core.TestSample;
 
 public class QualityAssistent {

@@ -14,11 +14,9 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.hamcrest.core.Every;
 import org.junit.Assert;
 import org.junit.Test;
 
-import phylotree.PhyloTreeNode;
 import phylotree.Phylotree;
 import phylotree.PhylotreeManager;
 import qualityAssurance.QualityAssistent;
@@ -29,7 +27,6 @@ import qualityAssurance.rules.CheckForSampleRSRSAligned;
 import qualityAssurance.rules.CheckForSampleRange;
 import qualityAssurance.rules.CheckForTooManyGlobalPrivateMutations;
 import search.ranking.HammingRanking;
-import sun.org.mozilla.javascript.internal.regexp.SubString;
 import core.Haplogroup;
 import core.Polymorphism;
 import core.SampleFile;

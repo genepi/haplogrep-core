@@ -19,7 +19,6 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -36,12 +35,9 @@ import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.apache.fop.svg.AbstractFOPTranscoder;
 import org.apache.fop.svg.PDFTranscoder;
-import org.jdom.Document;
-import org.jdom.Element;
 import org.w3c.dom.DOMImplementation;
 
 import phylotree.Phylotree;
-import search.SearchResultTreeNode;
 import core.Polymorphism;
 
 /**
