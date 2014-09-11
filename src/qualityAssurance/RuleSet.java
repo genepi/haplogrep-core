@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import core.TestSample;
-
 import qualityAssurance.issues.QualityIssue;
 import qualityAssurance.rules.CheckExpectedHGMatchesDetectedHG;
+import qualityAssurance.rules.CheckForQuality;
 import qualityAssurance.rules.CheckForRecombinationRule;
 import qualityAssurance.rules.CheckForReferencePolymorhisms;
 import qualityAssurance.rules.CheckForSampleRCRSAligned;
@@ -28,7 +28,8 @@ public class RuleSet {
 		//addRule(new CheckForSampleRSRSAligned(0));
 	//	addRule(new CheckExpectedHGMatchesDetectedHG(1));
 		//addRule(new CheckForReferencePolymorhisms(1));
-	//	addRule(new CheckForTooManyGlobalPrivateMutations(0));
+		addRule(new CheckForTooManyGlobalPrivateMutations(1));
+		addRule(new CheckForQuality(1));
 	//	addRule(new CheckForRecombinationRule(4));
 		//TODO DEFINE RULES
 	}
