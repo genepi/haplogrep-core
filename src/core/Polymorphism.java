@@ -65,11 +65,13 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	public Polymorphism(String phyloString) throws InvalidPolymorphismException {
 		parse(phyloString);
 		hashCode = toString().hashCode();
+		this.setHeteroplasmy(false);
 	}
 	
 	public Polymorphism(String phyloString, boolean Heteroplasmy) throws InvalidPolymorphismException {
 		parse(phyloString);
-		this.setHeteroplasmy(true);
+		System.out.println(phyloString);
+		this.setHeteroplasmy(Heteroplasmy);
 		hashCode = toString().hashCode();
 	}
 

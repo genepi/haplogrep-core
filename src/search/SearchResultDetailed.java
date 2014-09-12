@@ -344,11 +344,13 @@ public class SearchResultDetailed implements Serializable {
 				log.debug("NO "  + current.getPosition() + " " + current.isHeteroplasmy());
 			
 				Element newCorrectPoly = new Element("correct");
-				if (current.isHeteroplasmy())
-					{
-						newCorrectPoly.setText("yes [HP]");
-					}
-					else
+				System.out.println("current " + current.getPosition() + " " + current.isHeteroplasmy());
+//TODO
+//				if (current.isHeteroplasmy())
+//					{
+//						newCorrectPoly.setText("yes [HP]");
+//					}
+//					else
 						newCorrectPoly.setText("no");
 					
 				result.addContent(newCorrectPoly);

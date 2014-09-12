@@ -2,6 +2,8 @@ package qualityAssurance.rules;
 
 
 
+import java.text.DecimalFormat;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -25,11 +27,11 @@ public class CheckForQuality extends HaplogrepRule {
 	
 		if(currentSample.getResults().size()!=0){
 		double topResult = currentSample.getResults().get(0).getDistance();
-		
+	
 		if(topResult <= 0.9 & topResult > 0.8)
-			qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "The sample quality " + topResult + " is low "));
+			qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "The sample quality " + new DecimalFormat("#0.00").format(topResult) + " is low "));
 		else if (topResult <= 0.8)
-			qualityAssistent.addNewIssue(new QualityFatal(qualityAssistent, currentSample, "The sample quality " + topResult + " is very low "));
+			qualityAssistent.addNewIssue(new QualityFatal(qualityAssistent, currentSample, "The sample quality " + new DecimalFormat("#0.00").format(topResult)+" is very low "));
 		}
 	}
 
