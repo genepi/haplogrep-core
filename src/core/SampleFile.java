@@ -10,9 +10,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Hashtable;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -21,13 +19,10 @@ import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
-import phylotree.PhyloTreeNode;
 import phylotree.Phylotree;
 import qualityAssurance.QualityAssistent;
 import qualityAssurance.RuleSet;
 import qualityAssurance.issues.QualityIssue;
-import search.SearchResult;
-import search.SearchResultTreeNode;
 import search.ranking.RankingMethod;
 import search.ranking.results.RankedResult;
 import dataVisualizers.OverviewTree;
@@ -107,10 +102,12 @@ public class SampleFile {
 		}
 		
 		 String currentLine = sampleFileStream.readLine();
+		 
 			if(!currentLine.startsWith("SampleId\tRange") ){
 				TestSample newSample = TestSample.parse(currentLine);
 				testSamples.put(newSample.getSampleID(), newSample);
 			}
+			
 		while ((currentLine =sampleFileStream.readLine())!= null) {
 			TestSample newSample = TestSample.parse(currentLine);
 			testSamples.put(newSample.getSampleID(), newSample);
@@ -203,11 +200,17 @@ public class SampleFile {
 			
 			
 			// if no haplogroup is expected, than set our result to		// predefinied
-			if (sample.getExpectedHaplogroup().toString().equals("") && sample.getDetectedHaplogroup() != null) {
+			if ((sample.getExpectedHaplogroup().toString().equals("") && sample.getDetectedHaplogroup() != null)) {
 				sample.setExpectedHaplogroup(sample.getDetectedHaplogroup());
 			}
-			if (sample.getDetectedHaplogroup() != null && !sample.getDetectedHaplogroup().equals(sample.getExpectedHaplogroup()))
-				newElement.setText(sample.getExpectedHaplogroup().toString() + " (" + sample.getDetectedHaplogroup().toString() + ")");
+			
+			if(sample.isReset()){
+				newElement.setText(sample.getExpectedHaplogroup().toString());
+			}
+			
+			else if (sample.getDetectedHaplogroup() != null && !sample.getDetectedHaplogroup().equals(sample.getExpectedHaplogroup())){
+			newElement.setText(sample.getExpectedHaplogroup().toString() + " (" + sample.getDetectedHaplogroup().toString() + ")");
+			}
 			else {
 				newElement.setText(sample.getExpectedHaplogroup().toString());
 			}

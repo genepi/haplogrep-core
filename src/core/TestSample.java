@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,13 +30,17 @@ import exceptions.parse.samplefile.InvalidColumnCountException;
  */
 public class TestSample implements Comparable<TestSample>{
 	
+	final Logger log = Logger.getLogger(TestSample.class);
+	
 	ArrayList<RankedResult> searchResults = new ArrayList<RankedResult>();
 	ClusteredSearchResults clusteredResults = new ClusteredSearchResults(searchResults);
 	
 	private String testSampleID = "Unknown";
 	private Haplogroup expectedHaplogroup;
+	private Haplogroup detectedHaplogroup;
 	private Sample sample;
 	private int qualityRulesLevelReached = 0;
+	private boolean reset = false;
 	
 	private TestSample(){
 		
@@ -122,8 +127,12 @@ public class TestSample implements Comparable<TestSample>{
 	 * @return The haplogroup of the best search result.
 	 */
 	public Haplogroup getDetectedHaplogroup() {
-		if(getTopResult() != null)
-			return getTopResult().getSearchResult().getHaplogroup();
+		if(getTopResult() != null){
+			
+			this.detectedHaplogroup = getTopResult().getSearchResult().getHaplogroup();
+			return detectedHaplogroup;
+		}
+		
 		else
 			return null;
 	}
@@ -274,7 +283,7 @@ public class TestSample implements Comparable<TestSample>{
 
 						else {
 							if (childNode.get("name").equals(currentPath.get(ipath).getHaplogroup())) {
-								System.out.print(currentPath.get(ipath).getHaplogroup() + " " + ";;;;;;;;");
+								log.info(currentPath.get(ipath).getHaplogroup() + " ");
 								// step = true;
 								currentNode = childNode;
 								currentChildren = currentNode.getJSONArray("children");
@@ -433,5 +442,17 @@ public class TestSample implements Comparable<TestSample>{
 		}
 		
 		return resultFragments;
+	}
+
+	public void setDetectedHaplogroup(Haplogroup detectedHaplogroup) {
+		this.detectedHaplogroup = detectedHaplogroup;
+	}
+
+	public boolean isReset() {
+		return reset;
+	}
+
+	public void setReset(boolean reset) {
+		this.reset = reset;
 	}
 }
