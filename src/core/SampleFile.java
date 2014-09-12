@@ -57,7 +57,7 @@ public class SampleFile {
 			TestSample newSample;
 			try {
 				newSample = TestSample.parse(currentLine);
-				log.info("new sample " + newSample);
+				//log.info("new sample " + newSample);
 			} catch (HsdFileException e) {
 				e.setLineExceptionOccured(lineIndex);
 				throw e;
