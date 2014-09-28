@@ -32,6 +32,10 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	private String numberOfIns = "";
 	private String insertedPolys = "";
 	boolean isHeteroplasmy = false;
+	int isReliable=0;
+
+	
+
 	private int hashCode;
 	private static HashMap<Polymorphism, AnnotationAAC> acidLookup;
 	
@@ -53,6 +57,13 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		this.position = newPosition;
 		hashCode = toString().hashCode();
 	}
+	
+	Polymorphism(int newPosition, Mutations mutatedBase, int isReliable) {
+		this.mutation = mutatedBase;
+		this.position = newPosition;
+		hashCode = toString().hashCode();
+		this.setReliable(isReliable);
+	}
 
 	/**
 	 * Creates a new Polymorphism instance by parsing an input string
@@ -66,6 +77,14 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		parse(phyloString);
 		hashCode = toString().hashCode();
 		this.setHeteroplasmy(false);
+	}
+	
+	
+	public Polymorphism(String phyloString, int isReliable) throws InvalidPolymorphismException {
+		parse(phyloString);
+		hashCode = toString().hashCode();
+		this.setHeteroplasmy(false);
+		this.setReliable(isReliable);
 	}
 	
 	public Polymorphism(String phyloString, boolean Heteroplasmy) throws InvalidPolymorphismException {
@@ -274,7 +293,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		// polymorphisms are possible
 		StringTokenizer st1 = null;
 		stringToParse = stringToParse.trim();
-
+		
 		// Only use part in parentheses
 		if (stringToParse.startsWith("("))
 			stringToParse = stringToParse.substring(1, stringToParse.length() - 1);
@@ -290,7 +309,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		}
 
 		// DELETIONS
-		if (stringToParse.contains("d") || stringToParse.contains("D")) {
+		if (stringToParse.toUpperCase().contains("D")) {
 			stringToParse = stringToParse.replace("del", "");
 			stringToParse = stringToParse.replace("d", "");
 			stringToParse = stringToParse.replace("DEL", "");
@@ -546,6 +565,13 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		this.isHeteroplasmy = isHeteroplasmy;
 	}
 	
+	public int isReliable() {
+		return isReliable;
+	}
+
+	public void setReliable(int isReliable) {
+		this.isReliable = isReliable;
+	}
 	
 	public AnnotationAAC getAnnotation(){
 		if (acidLookup==null)

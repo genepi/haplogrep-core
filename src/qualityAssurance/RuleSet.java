@@ -6,6 +6,8 @@ import java.util.HashMap;
 import core.TestSample;
 import qualityAssurance.issues.QualityIssue;
 import qualityAssurance.rules.CheckExpectedHGMatchesDetectedHG;
+import qualityAssurance.rules.CheckForAlignmentWarnings;
+import qualityAssurance.rules.CheckForHeteroplasmy;
 import qualityAssurance.rules.CheckForQuality;
 import qualityAssurance.rules.CheckForRecombinationRule;
 import qualityAssurance.rules.CheckForReferencePolymorhisms;
@@ -25,10 +27,12 @@ public class RuleSet {
 	public void addStandardRules() {
 	//	addRule(new CheckForSampleRange(0));
 	//	addRule(new CheckForSampleRCRSAligned(0));
-		//addRule(new CheckForSampleRSRSAligned(0));
+	//	addRule(new CheckForSampleRSRSAligned(0));
 	//	addRule(new CheckExpectedHGMatchesDetectedHG(1));
 		//addRule(new CheckForReferencePolymorhisms(1));
 		addRule(new CheckForTooManyGlobalPrivateMutations(1));
+		addRule(new CheckForAlignmentWarnings(1));
+		addRule(new CheckForHeteroplasmy(1));
 		addRule(new CheckForQuality(1));
 	//	addRule(new CheckForRecombinationRule(4));
 		//TODO DEFINE RULES

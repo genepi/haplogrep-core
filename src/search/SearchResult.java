@@ -71,7 +71,7 @@ public class SearchResult {
 		missingPolysSumWeights = resultToCopy.missingPolysSumWeights;
 		sumWeightedTransitions = resultToCopy.sumWeightedTransitions;
 		sumWeightedTransversions = resultToCopy.sumWeightedTransversions;
-	}
+	} 
 
 	/**
 	 * @return The detected haplogroup

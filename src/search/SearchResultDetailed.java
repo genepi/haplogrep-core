@@ -503,5 +503,5 @@ public class SearchResultDetailed implements Serializable {
 		return expectedPolys;
 	}
 	
-	
+	 
 }

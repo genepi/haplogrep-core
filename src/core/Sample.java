@@ -133,6 +133,15 @@ public class Sample {
 		ArrayList<Polymorphism> filteredSample = new ArrayList<Polymorphism>();
 		for (String currentPoly : sample) {
 			// TODO check this 2 special cases
+			System.out.println("CCCC " +currentPoly);
+			int isReliable=0;
+			if (currentPoly.contains("|")){
+				if (currentPoly.contains("|1"))
+					isReliable=1;
+				currentPoly=currentPoly.substring(0, currentPoly.length()-2);
+			}
+			System.out.println("TTTT " +currentPoly);
+			
 			if (!currentPoly.contains("5899.1d!") && !currentPoly.contains("65.1T(T)")) {
 				// poly in brackets (receiving from phylotree) are selected and
 				// handled as standard polys.
@@ -154,7 +163,13 @@ public class Sample {
 							// check for a further insertion on 523.1C -> e.g.
 							// 523.2C and sum them up to 523.1CC etc.
 							for (String currentPoly2 : sample) {
-
+							
+								if (currentPoly2.contains("|")){
+									if (currentPoly2.contains("|1"))
+										isReliable=1;
+									currentPoly2=currentPoly2.substring(0, currentPoly2.length()-2);
+								}
+					
 								if (!currentPoly2.equals(currentPoly) && currentPoly2.contains(position + ".")) {
 									st1 = new StringTokenizer(currentPoly2, ".");
 									String token = st1.nextToken();
@@ -170,14 +185,17 @@ public class Sample {
 											if (buffer.length() < ipos - 1)
 												buffer.setLength(ipos - 1);
 											if (ipos>0){ //09.10.2013 recheck whith startpositions
-											
+									
 											buffer.setCharAt(ipos - 2, token1.charAt(m.end()));
 											}
 										}
 									}
 								}
 							}
-							filteredSample.add(new Polymorphism(newInsert + buffer.toString()));
+							if (isReliable==0)
+								filteredSample.add(new Polymorphism(newInsert + buffer.toString()));
+							else
+								filteredSample.add(new Polymorphism(newInsert + buffer.toString(),1));
 
 						}
 
@@ -216,12 +234,18 @@ public class Sample {
 					int endPosition = Integer.valueOf(token.substring(0, token.length() - 1));
 					for (int i = startPosition; i <= endPosition; i++) {
 						// phyloString = firstInt + "del";
-						filteredSample.add(new Polymorphism(i, Mutations.DEL));
+						if (isReliable==0)
+							filteredSample.add(new Polymorphism(i, Mutations.DEL));
+						else
+							filteredSample.add(new Polymorphism(i, Mutations.DEL, 1));
 						startPosition++;
 					}
 				}
-				else {
-					Polymorphism newPoly = new Polymorphism(currentPoly);
+				else {Polymorphism newPoly;
+					if (isReliable==0)
+					 newPoly = new Polymorphism(currentPoly);
+					else
+						newPoly = new Polymorphism(currentPoly, 1);
 					filteredSample.add(newPoly);
 				}
 			}
