@@ -133,14 +133,14 @@ public class Sample {
 		ArrayList<Polymorphism> filteredSample = new ArrayList<Polymorphism>();
 		for (String currentPoly : sample) {
 			// TODO check this 2 special cases
-			System.out.println("CCCC " +currentPoly);
+		
 			int isReliable=0;
 			if (currentPoly.contains("|")){
 				if (currentPoly.contains("|1"))
 					isReliable=1;
 				currentPoly=currentPoly.substring(0, currentPoly.length()-2);
 			}
-			System.out.println("TTTT " +currentPoly);
+		
 			
 			if (!currentPoly.contains("5899.1d!") && !currentPoly.contains("65.1T(T)")) {
 				// poly in brackets (receiving from phylotree) are selected and

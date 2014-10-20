@@ -429,10 +429,10 @@ public class TestSample implements Comparable<TestSample>{
 			
 			ArrayList<Polymorphism> currentFragment = fragmentsHashMap.get(key);
 
-//			if (currentFragment == null)
-//				fragmentsHashMap.put(key, new ArrayList<Polymorphism>());
+			if (currentFragment == null)
+				fragmentsHashMap.put(key, new ArrayList<Polymorphism>());
 			
-	//		fragmentsHashMap.get(key).add(currentPoly);
+			fragmentsHashMap.get(key).add(currentPoly);
 
 		}
 		int i = 0;

@@ -7,8 +7,6 @@ import qualityAssurance.QualityAssistent;
 import qualityAssurance.issues.QualityFatal;
 import qualityAssurance.issues.QualityIssue;
 import qualityAssurance.issues.QualityWarning;
-
-
 import core.Haplogroup;
 import core.SampleRanges;
 import core.TestSample;
@@ -22,6 +20,7 @@ public class RecombinationIssue extends QualityWarning {
 	int distanceToReference = 0;
 	ArrayList<Haplogroup> referenceHaplogroups = null;
 	ArrayList<Haplogroup> currentSampleHaplogroups = null;
+	private String customRanges;
 
 	/**
 	 * @param assistent Reference to the QualityAssistent
@@ -29,13 +28,15 @@ public class RecombinationIssue extends QualityWarning {
 	 * @param distanceToReference The overall distance of the haplogroups (reference/sample) of all fragments
 	 * @param referenceHaplogroups	The detected haplogroups for each fragment of the reference sample
 	 * @param currentSampleHaplogroups The detected haplogroups for each fragment of the sampleOfissue
+	 * @param string 
 	 */
 	public RecombinationIssue(QualityAssistent assistent,TestSample sampleOfIssue, int distanceToReference,
-								ArrayList<Haplogroup> referenceHaplogroups,ArrayList<Haplogroup> currentSampleHaplogroups) {
+								ArrayList<Haplogroup> referenceHaplogroups,ArrayList<Haplogroup> currentSampleHaplogroups, String string) {
 		super(assistent, sampleOfIssue, "Possible recombination: ");
 		this.distanceToReference = distanceToReference;
 		this.referenceHaplogroups = referenceHaplogroups;
 		this.currentSampleHaplogroups = currentSampleHaplogroups;
+		this.customRanges = string;
 	}
 	
 	public String getDescription() {
@@ -54,6 +55,8 @@ public class RecombinationIssue extends QualityWarning {
 		for(int i = 0; i < currentSampleHaplogroups.size();i++){
 			result += currentSampleHaplogroups.get(i) + "\t";
 		}
+		if (customRanges!=null)
+		result+=customRanges+"\t";
 		return result;
 	}
 }

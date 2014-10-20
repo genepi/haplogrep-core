@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory;
 
 import qualityAssurance.QualityAssistent;
 import qualityAssurance.issues.QualityWarning;
+import qualityAssurance.issues.errors.AlignmentInfo;
 import search.SearchResult;
 import core.Polymorphism;
 import core.TestSample;
@@ -32,7 +33,7 @@ public class CheckForAlignmentWarnings extends HaplogrepRule {
 		}
 		
 		if(numAlignWarning > 0)
-			qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "Alignment check: " + numAlignWarning + " position to recheck: "+alignmentProblem 
+			qualityAssistent.addNewIssue(new AlignmentInfo(qualityAssistent, currentSample, "Alignment check: " + numAlignWarning + " position to recheck: "+alignmentProblem 
 	));
 		}
 	}

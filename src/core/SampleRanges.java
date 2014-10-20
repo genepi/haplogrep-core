@@ -74,7 +74,7 @@ public class SampleRanges {
 	 *             Thrown if the format is incorrect or the ranges are invalid
 	 *             (e.g. < 0)
 	 */
-	SampleRanges(String rangesToParse) throws InvalidRangeException {
+	public SampleRanges(String rangesToParse) throws InvalidRangeException {
 		if(metaboChipPositions == null){
 			metaboChipPositions = new HashSet<Integer>();
 			

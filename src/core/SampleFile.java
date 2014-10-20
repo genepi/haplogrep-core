@@ -23,6 +23,7 @@ import phylotree.Phylotree;
 import qualityAssurance.QualityAssistent;
 import qualityAssurance.RuleSet;
 import qualityAssurance.issues.QualityIssue;
+import qualityAssurance.rules.CheckForRecombinationRule;
 import search.ranking.RankingMethod;
 import search.ranking.results.RankedResult;
 import dataVisualizers.OverviewTree;
@@ -279,13 +280,20 @@ public class SampleFile {
 		return root;
 	}
 
-
 	/**
 	 * Updates the haplogrep classification results for all test sample(Restarts haplogroup search)
 	 * @param phylotree The phylotree version to use for the update process
 	 * @param rankingMethod The ranking method that should be used for the results (e.g. Hamming) 
 	 */
 	public void updateClassificationResults(Phylotree phylotree, RankingMethod rankingMethod){
+		updateClassificationResults( phylotree,  rankingMethod,   null);
+	}
+	/**
+	 * Updates the haplogrep classification results for all test sample(Restarts haplogroup search)
+	 * @param phylotree The phylotree version to use for the update process
+	 * @param rankingMethod The ranking method that should be used for the results (e.g. Hamming) 
+	 */
+	public void updateClassificationResults(Phylotree phylotree, RankingMethod rankingMethod, SampleRanges  fragmentsRanges){
 		usedPhyloTreeLastRun = phylotree;
 		usedRankingMethodLastRun = rankingMethod;
 		
@@ -295,6 +303,13 @@ public class SampleFile {
 			rules.addStandardRules();
 			qualityAssistent = new QualityAssistent(testSamples.values(), rules, phylotree);
 		}
+		if(fragmentsRanges != null){
+			RuleSet rules = new RuleSet();
+			rules.addStandardRules();
+			rules.addRule(new CheckForRecombinationRule(4,fragmentsRanges));
+			qualityAssistent = new QualityAssistent(testSamples.values(), rules, phylotree);
+			}
+		
 		long start = System.currentTimeMillis();
 		for (TestSample currenTestSample : testSamples.values()) {
 			if(!qualityAssistent.hasFatalIssues(currenTestSample))

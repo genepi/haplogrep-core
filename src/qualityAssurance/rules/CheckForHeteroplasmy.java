@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import qualityAssurance.QualityAssistent;
+import qualityAssurance.issues.QualityInfo;
 import qualityAssurance.issues.QualityWarning;
 import search.SearchResult;
 import core.Polymorphism;
@@ -29,7 +30,7 @@ public class CheckForHeteroplasmy extends HaplogrepRule {
 		}
 		
 		if(numAlignWarning > 0)
-			qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "The sample contains " + numAlignWarning + " heteroplasmic position " 
+			qualityAssistent.addNewIssue(new QualityInfo(qualityAssistent, currentSample, "The sample contains " + numAlignWarning + " heteroplasmic position " 
 	));
 		}
 	}

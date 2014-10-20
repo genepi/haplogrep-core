@@ -54,18 +54,8 @@ public class CheckForRecombinationRule extends HaplogrepRule {
 			
 			//Use standard fragments ranges for complete and control range sample if no custom range is given.
 			SampleRanges ranges = customFragmentRanges;
-			if(customFragmentRanges == null){
-				 ranges = new SampleRanges();
-				if(sampleToCheck.getSample().getSampleRanges().isCompleteRange()){
-					ranges.addCustomRange(2488, 10858);
-					ranges.addCustomRange(10898, 2687);
-				}
-				
-				else if(sampleToCheck.getSample().getSampleRanges().isControlRange()){
-					ranges.addCustomRange(16024, 16579);
-					ranges.addCustomRange(1,  576);
-				}
-			}
+			if(customFragmentRanges != null){
+
 			//Create fragments and determine their respective haplogroups
 			ArrayList<TestSample> fragmentsReference = haplogroupReferenceSample.createFragments(ranges);
 			ArrayList<TestSample> fragmentsSampleToCheck = sampleToCheck.createFragments(ranges);
@@ -91,7 +81,7 @@ public class CheckForRecombinationRule extends HaplogrepRule {
 			//If there differences (even with tolerance) create a recombination issue
 			if(overallDistance > haplogroupTolerance){
 				qualityAssistent.addNewIssue(new RecombinationIssue(qualityAssistent, sampleToCheck,
-						overallDistance,referenceHaplogroups,currentSampleHaplogroups));
+						overallDistance,referenceHaplogroups,currentSampleHaplogroups, customFragmentRanges.toString()));
 			
 				passedTest = true;
 			}
@@ -100,6 +90,7 @@ public class CheckForRecombinationRule extends HaplogrepRule {
 		//Increase quality level if no recombination has been found
 		if(passedTest)
 			sampleToCheck.setReachedQualityLevel(this.getPriority() + 1);
+	}
 	}
 	
 	public void suppressIssues(QualityAssistent qualityAssistent, TestSample currentSample) {
