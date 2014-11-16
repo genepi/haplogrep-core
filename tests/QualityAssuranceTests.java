@@ -291,14 +291,17 @@ public class QualityAssuranceTests<K> {
 		Assert.assertFalse(ranges.contains(new Polymorphism("2687G")));
 	}
 	
+	
+	
+	
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testSuperHaploGroup() throws Exception{
 		Phylotree phyloTree = PhylotreeManager.getInstance().getPhylotree("phylotree16.xml","weights16.txt");
-        
-		HashMap<String, HashSet<String>> phylotreeMemory = new HashMap<String, HashSet<String>>();
-		BufferedReader br = new BufferedReader(new FileReader("testDataFiles/phylotree16_blank.hsd.txt"));
-		BufferedReader brfluct = new BufferedReader(new FileReader("../HaplogrepServer/weights/weights16.txt"));
+       	HashMap<String, HashSet<String>> phylotreeMemory = new HashMap<String, HashSet<String>>();
+       	System.out.println(getClass().getResource("annotation/weights16.txt"));
+		BufferedReader br = new BufferedReader(new FileReader("annotation/phylotree16_blank.hsd"));
+		BufferedReader brfluct = new BufferedReader(new FileReader("annotation/weights16.txt"));
 		HashMap<String, Double> weights= new HashMap<String, Double>();
 	    try {
 	    	       

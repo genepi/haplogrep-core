@@ -106,6 +106,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		this.isBackMutation = polyToCopy.isBackMutation;
 		this.numberOfIns = polyToCopy.numberOfIns;
 		this.insertedPolys = polyToCopy.insertedPolys;
+		this.isHeteroplasmy = polyToCopy.isHeteroplasmy;
 		
 		hashCode = toString().hashCode();
 	}

@@ -341,16 +341,18 @@ public class SearchResultDetailed implements Serializable {
 				Element newExpectedPoly = new Element("expected");
 				newExpectedPoly.setText(current.toStringShortVersion());
 				result.addContent(newExpectedPoly);
-				log.debug("NO "  + current.getPosition() + " " + current.isHeteroplasmy());
+				log.debug("HETEROPLASMY"  + current.getPosition() + " " + current.isHeteroplasmy());
 			
 				Element newCorrectPoly = new Element("correct");
 				System.out.println("current " + current.getPosition() + " " + current.isHeteroplasmy());
 //TODO
-//				if (current.isHeteroplasmy())
-//					{
-//						newCorrectPoly.setText("yes [HP]");
-//					}
-//					else
+				if (current.isHeteroplasmy())
+					{
+					newCorrectPoly.setText("yes [HP]");
+					unusedPolysArray.remove(current);
+				
+				}
+					else
 						newCorrectPoly.setText("no");
 					
 				result.addContent(newCorrectPoly);
@@ -369,7 +371,6 @@ public class SearchResultDetailed implements Serializable {
 				Element newExpectedPoly = new Element("expected");
 				newExpectedPoly.setText(current.toStringShortVersion());
 				result.addContent(newExpectedPoly);
-
 			
 				Element newCorrectPoly = new Element("correct");
 			

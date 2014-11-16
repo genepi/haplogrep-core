@@ -53,12 +53,8 @@ public class Sample {
 		for (Polymorphism currentPoly : sample){
 			if (currentPoly.isHeteroplasmy){
 				if (currentPoly.getPosition() == polyToCheck.getPosition()) {
-					if (currentPoly.getMutation().toString().equals("Y") && (polyToCheck.getMutation().toString().equals("C") || polyToCheck.getMutation().toString().equals("T")))
-					{
-						return 2;
-					}
-						
-					if (currentPoly.getMutation().toString().equals("R") && (polyToCheck.getMutation().toString().equals("A") || polyToCheck.getMutation().toString().equals("G")))
+					if ((currentPoly.getMutation().toString().equals("Y") && (polyToCheck.getMutation().toString().equals("C") || polyToCheck.getMutation().toString().equals("T")))
+					||  (currentPoly.getMutation().toString().equals("R") && (polyToCheck.getMutation().toString().equals("A") || polyToCheck.getMutation().toString().equals("G"))))
 					{
 						return 2;
 					}

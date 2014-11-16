@@ -70,7 +70,7 @@ public class TestSample implements Comparable<TestSample>{
 				throw new InvalidColumnCountException(columns.length);
 
 			//Parse the test sample id
-			parsedSample.testSampleID = columns[0].trim();
+			parsedSample.testSampleID = columns[0].trim().replace("|", "_");
 
 			//Parse range
 			columns[1] = columns[1].replaceAll("\"", "");
@@ -83,7 +83,7 @@ public class TestSample implements Comparable<TestSample>{
 				columnPos=2;
 			else columnPos=1;*/
 			
-			sampleRange = new SampleRanges(columns[1]);
+			sampleRange = new SampleRanges(columns[1], true); //true for split Range
 
 			//Parse expected haplogroup
 			if (columns[2].equals("?") || columns[2].equals("SEQ"))
@@ -311,13 +311,14 @@ public class TestSample implements Comparable<TestSample>{
 
 					if (currentPath.get(i1).getFoundPolys().contains(currentPoly)) {
 						poly.put("state", "found");
+					}else	if (currentPoly.isHeteroplasmy) {
+						poly.put("state", "hetero");
 					}
 
 					else {
 						if (list != null) {
 							if (list.getSearchResult().getDetailedResult().getCorrectedBackmutations().contains(currentPoly))
 								poly.put("state", "corrected");
-
 							else
 								poly.put("state", "notfound");
 						}

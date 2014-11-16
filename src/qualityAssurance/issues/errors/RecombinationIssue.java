@@ -44,19 +44,20 @@ public class RecombinationIssue extends QualityWarning {
 	}
 	
 	public String toString(){
-		String result = "Possible recombination: " + " - Distance to reference: " + distanceToReference + "\r\n";
+		String result = "Possible recombination: " + " - Distance to reference: " + distanceToReference + "\t";
 
-		result += "\r\nHG Reference\t";
+		result += "\nHG [Reference\t";
 		for(int i = 0; i < referenceHaplogroups.size();i++){
 			result += referenceHaplogroups.get(i) + "\t";
 		}
 		
-		result += "\r\nSample\t\t";
+		result += "\t] [Sample\t\t";
 		for(int i = 0; i < currentSampleHaplogroups.size();i++){
 			result += currentSampleHaplogroups.get(i) + "\t";
 		}
+		
 		if (customRanges!=null)
-		result+=customRanges+"\t";
+		result+="] "+customRanges+"\t";
 		return result;
 	}
 }
