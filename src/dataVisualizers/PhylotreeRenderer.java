@@ -208,6 +208,7 @@ public class PhylotreeRenderer {
 //			g2.drawImage(watermark, imageWidth - watermark.getWidth(), imageHeight - watermark.getHeight(), null);
 
 		if (format.equals("SVG")) {
+		
 			File resultFile = new File(path);	
 			FileOutputStream outFile = new FileOutputStream(resultFile);
 			Writer out = new OutputStreamWriter(outFile, "UTF-8");
@@ -256,10 +257,12 @@ public class PhylotreeRenderer {
 			// Create the transcoder input
 
 			TranscoderInput input = new TranscoderInput(new ByteArrayInputStream(outb.toByteArray()));
-
+			
+			dpi=72;
+		
 			File resultFile = new File(pathToSaveFile);
 			FileOutputStream outFile = new FileOutputStream(resultFile);
-
+		
 			TranscoderOutput output = new TranscoderOutput(outFile);
 			transcoder.addTranscodingHint(SVGAbstractTranscoder.KEY_PIXEL_UNIT_TO_MILLIMETER, (float) (25.4 / 150.f));
 			transcoder.addTranscodingHint(SVGAbstractTranscoder.KEY_WIDTH, (float) ((widht) * dpi / 72.0) );

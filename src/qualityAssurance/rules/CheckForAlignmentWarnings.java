@@ -28,7 +28,7 @@ public class CheckForAlignmentWarnings extends HaplogrepRule {
 		for(Polymorphism current : currentSample.getSample().getPolymorphisms()){
 			if(current.isReliable()>0)
 				{numAlignWarning++;
-				alignmentProblem+=current+" ";
+				alignmentProblem+=current+" ("+current.isReliable()+") " ;
 				}
 		}
 		

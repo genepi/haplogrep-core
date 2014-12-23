@@ -89,7 +89,6 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	
 	public Polymorphism(String phyloString, boolean Heteroplasmy) throws InvalidPolymorphismException {
 		parse(phyloString);
-		System.out.println(phyloString);
 		this.setHeteroplasmy(Heteroplasmy);
 		hashCode = toString().hashCode();
 	}
@@ -210,6 +209,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 				convertedString =  position + "d";
 
 			else {
+			
 				if (isTransitionPoly())
 					convertedString =  String.valueOf(position);
 
@@ -218,6 +218,8 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 					convertedString =  position + mutation.toString().trim();
 				}
 			}
+
+
 //		}
 
 //		else
@@ -294,6 +296,23 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		// polymorphisms are possible
 		StringTokenizer st1 = null;
 		stringToParse = stringToParse.trim();
+		
+	   if (stringToParse.contains("R")) {
+ 	   this.position = Integer.valueOf(stringToParse.substring(1,stringToParse.length()-1));
+ 	   System.out.println(this.position + " ---------- " + getReferenceBase(position));
+		   if (getReferenceBase(position).equals("A"))
+			   this.mutation=Mutations.G;
+		   if (getReferenceBase(position).equals("G"))
+			   this.mutation=Mutations.A;
+	   }
+	   if (stringToParse.contains("Y")){
+		   this.position = Integer.valueOf(stringToParse.substring(1,stringToParse.length()-1));
+		   if (getReferenceBase(position).equals("C"))
+			   this.mutation=Mutations.T;
+		   if (getReferenceBase(position).equals("T"))
+			   this.mutation=Mutations.C;
+	   }
+		 
 		
 		// Only use part in parentheses
 		if (stringToParse.startsWith("("))
@@ -430,7 +449,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	}
 
 	public boolean isTransitionPoly() {
-
+	
 		if (this.mutation == Mutations.T && getReferenceBase().mutation == Mutations.C) {
 			return true;
 		}

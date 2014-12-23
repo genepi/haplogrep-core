@@ -215,6 +215,7 @@ public class Sample {
 				//HETEROPLASMY - split in Bases
 				else if (currentPoly.contains("R")){
 					Polymorphism newPoly = new Polymorphism(currentPoly, true);
+					System.out.println("PPPPPPPPPPPP "  + newPoly);
 					filteredSample.add(newPoly);
 				}
 				else if (currentPoly.contains("Y")){

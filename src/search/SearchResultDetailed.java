@@ -63,12 +63,16 @@ public class SearchResultDetailed implements Serializable {
 		
 			SearchResultTreeNode newNode = new SearchResultTreeNode(startNode);
 			for (Polymorphism currentExpectedPoly : startNode.getExpectedPolys()) {
+			System.out.println("CURRENT " + currentExpectedPoly + " "+currentExpectedPoly.isHeteroplasmy());
+
 			
-				if (!currentExpectedPoly.getMutation().equals("INS"))
+			if (!currentExpectedPoly.getMutation().equals("INS"))
+				
 				if (searchResult.getSample().getSampleRanges().contains(currentExpectedPoly)) {
 					if (searchResult.getSample().containsWithBackmutation(currentExpectedPoly)) {
 						
 						newNode.addFoundPoly(currentExpectedPoly);
+					
 						newNode.addExpectedPoly(currentExpectedPoly);
 
 						if(currentExpectedPoly.isBackMutation()){							
@@ -84,10 +88,17 @@ public class SearchResultDetailed implements Serializable {
 						
 						Polymorphism newPoly = new Polymorphism(currentExpectedPoly);
 						newPoly.setBackMutation(!currentExpectedPoly.isBackMutation());
-						if (!expectedPolys.contains(currentExpectedPoly) && !expectedPolys.contains(newPoly))
+						if (!expectedPolys.contains(currentExpectedPoly) && !expectedPolys.contains(newPoly) && !currentExpectedPoly.isHeteroplasmy())
+							{
 							expectedPolys.add(currentExpectedPoly);
+							}
+
 					}
-				} else {
+				}else if  (currentExpectedPoly.isBackMutation())
+					{
+					newNode.addFoundPoly(currentExpectedPoly);
+					}
+				else {
 					newNode.addNotInRangePoly(currentExpectedPoly);
 					missingPolysOutOfRange.add(currentExpectedPoly);
 				}
@@ -117,7 +128,11 @@ public class SearchResultDetailed implements Serializable {
 				}
 			}
 		}
-		
+		System.out.println(expectedPolys);
+		System.out.println("-------------");
+		System.out.println(remainingPolys);
+		System.out.println("-------------");
+		System.out.println(foundPolys);
 		remainingPolys.addAll(helper);
 		Collections.reverse(path);
 	}
@@ -153,7 +168,7 @@ public class SearchResultDetailed implements Serializable {
 			if (!foundPolys.contains(current)) {
 				if(!current.isTransitionPoly())
 					sumTransversions += 1;
-			}
+		}
 
 		}
 		
@@ -341,19 +356,10 @@ public class SearchResultDetailed implements Serializable {
 				Element newExpectedPoly = new Element("expected");
 				newExpectedPoly.setText(current.toStringShortVersion());
 				result.addContent(newExpectedPoly);
-				log.debug("HETEROPLASMY"  + current.getPosition() + " " + current.isHeteroplasmy());
 			
 				Element newCorrectPoly = new Element("correct");
-				System.out.println("current " + current.getPosition() + " " + current.isHeteroplasmy());
-//TODO
-				if (current.isHeteroplasmy())
-					{
-					newCorrectPoly.setText("yes [HP]");
-					unusedPolysArray.remove(current);
-				
-				}
-					else
-						newCorrectPoly.setText("no");
+
+				newCorrectPoly.setText("no");
 					
 				result.addContent(newCorrectPoly);
 

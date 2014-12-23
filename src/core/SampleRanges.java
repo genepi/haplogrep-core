@@ -183,7 +183,7 @@ public class SampleRanges {
 	 * @return True if the polymorphism is contained, false otherwise
 	 */
 	public boolean contains(Polymorphism polyToCheck) {
-	return getSubrangeID(polyToCheck) != -1 ? true : false;
+		return getSubrangeID(polyToCheck) != -1 ? true : false;
 }
 //	public boolean contains(Polymorphism polyToCheck) {
 //		return containsPosition(polyToCheck.getPosition());
@@ -247,6 +247,7 @@ public class SampleRanges {
 			return true;
 		if (obj == null)
 			return false;
+		
 		if (getClass() != obj.getClass())
 			return false;
 		SampleRanges other = (SampleRanges) obj;

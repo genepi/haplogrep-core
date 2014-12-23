@@ -311,7 +311,7 @@ public class TestSample implements Comparable<TestSample>{
 
 					if (currentPath.get(i1).getFoundPolys().contains(currentPoly)) {
 						poly.put("state", "found");
-					}else	if (currentPoly.isHeteroplasmy) {
+					}else if (currentPoly.isHeteroplasmy) {
 						poly.put("state", "hetero");
 					}
 

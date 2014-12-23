@@ -11,11 +11,11 @@ import search.SearchResult;
 import core.Polymorphism;
 import core.TestSample;
 
-public class CheckForTooManyGlobalPrivateMutations extends HaplogrepRule {
+public class CheckForTooManyLocalPrivateMutations extends HaplogrepRule {
 
-	static final Log log = LogFactory.getLog(CheckForTooManyGlobalPrivateMutations.class);
+	static final Log log = LogFactory.getLog(CheckForTooManyLocalPrivateMutations.class);
 	
-	public CheckForTooManyGlobalPrivateMutations(int priority) {
+	public CheckForTooManyLocalPrivateMutations(int priority) {
 		super(priority);
 	}
 
@@ -23,18 +23,21 @@ public class CheckForTooManyGlobalPrivateMutations extends HaplogrepRule {
 	public void evaluate(QualityAssistent qualityAssistent, TestSample currentSample) {
 		if(currentSample.getResults().size() != 0){
 		SearchResult topResult = currentSample.getResults().get(0).getSearchResult();
-		int numGlobalPrivateMuations = 0;
-
+		int numLocalPrivateMuations = 0;
+		StringBuffer sb = new StringBuffer();
+		
 		
 		log.debug("testsample  " + currentSample.getSampleID());
 		for(Polymorphism currentRemainingPoly : topResult.getDetailedResult().getRemainingPolysInSample()){
-			if(!currentRemainingPoly.isMTHotspot() && qualityAssistent.getUsedPhyloTree().getMutationRate(currentRemainingPoly) == 0 && !(currentRemainingPoly.equalsReference()))
-				numGlobalPrivateMuations++;
+			if(!currentRemainingPoly.isMTHotspot() && !(qualityAssistent.getUsedPhyloTree().getMutationRate(currentRemainingPoly) == 0) && !(currentRemainingPoly.equalsReference()))
+				{numLocalPrivateMuations++;
+				sb.append(currentRemainingPoly.toString()+" ");
+				}
 		}
 		
-		if(numGlobalPrivateMuations > 2)
-			qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "The sample contains " + numGlobalPrivateMuations + " global private " +
-					"mutation(s) that are not known by Phylotree"));
+		if(numLocalPrivateMuations > 1)
+			qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "The sample contains " + numLocalPrivateMuations + " local private " +
+					"mutation(s) associated with other Haplogroups: " + sb.toString()));
 		}
 	}
 
