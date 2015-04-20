@@ -16,6 +16,7 @@ import qualityAssurance.rules.CheckForSampleRSRSAligned;
 import qualityAssurance.rules.CheckForSampleRange;
 import qualityAssurance.rules.CheckForTooManyGlobalPrivateMutations;
 import qualityAssurance.rules.CheckForTooManyLocalPrivateMutations;
+import qualityAssurance.rules.CheckForTooManyLocalPrivateMutationsHaploGroup;
 import qualityAssurance.rules.HaplogrepRule;
 
 public class RuleSet {
@@ -31,8 +32,9 @@ public class RuleSet {
 	//	addRule(new CheckForSampleRSRSAligned(0));
 	//	addRule(new CheckExpectedHGMatchesDetectedHG(1));
 		addRule(new CheckForReferencePolymorhisms(1));
-		addRule(new CheckForTooManyGlobalPrivateMutations(1));
-		addRule(new CheckForTooManyLocalPrivateMutations(1));
+		addRule(new CheckForTooManyGlobalPrivateMutations(0));
+		addRule(new CheckForTooManyLocalPrivateMutations(0));
+		addRule(new CheckForTooManyLocalPrivateMutationsHaploGroup(0));
 		addRule(new CheckForAlignmentWarnings(1));
 		addRule(new CheckForHeteroplasmy(1));
 		addRule(new CheckForQuality(1));

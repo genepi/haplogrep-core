@@ -21,7 +21,7 @@ public class CheckForAlignmentWarnings extends HaplogrepRule {
 	@Override
 	public void evaluate(QualityAssistent qualityAssistent, TestSample currentSample) {
 		if(currentSample.getResults().size() != 0){
-		SearchResult topResult = currentSample.getResults().get(0).getSearchResult();
+
 		int numAlignWarning = 0;
 		String alignmentProblem="";
 		log.debug("testsample  " + currentSample.getSampleID());

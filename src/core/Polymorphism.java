@@ -299,7 +299,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		
 	   if (stringToParse.contains("R")) {
  	   this.position = Integer.valueOf(stringToParse.substring(1,stringToParse.length()-1));
- 	   System.out.println(this.position + " ---------- " + getReferenceBase(position));
+ 
 		   if (getReferenceBase(position).equals("A"))
 			   this.mutation=Mutations.G;
 		   if (getReferenceBase(position).equals("G"))

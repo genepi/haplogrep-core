@@ -1,9 +1,14 @@
 package phylotree;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -131,10 +136,15 @@ public final class Phylotree {
 		
 		searchPhylotree(root, results, testSample, rootResult);
 		
-		//TODO uncomment in case new phylotree.hsd file needed
-		/////////////////
-		//getAllHaplogroups(root, results, rootResult);
-		
+		//TODO WRITE HSD PHYLOTREE uncomment in case new phylotree.hsd file needed
+//					
+//		PrintWriter fileHSD;
+//		try {
+//			fileHSD = new PrintWriter("phylotree/phylotree16.hsd");
+//			getAllHaplogroups(root, results, rootResult, fileHSD);
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		}
 		
 		rankingMethodToUse.setResults(testSample, results);
 
@@ -236,24 +246,28 @@ public final class Phylotree {
 	 * @param parentResult
 	 *            SearchResult of the parent
 	 */
-	private void getAllHaplogroups(PhyloTreeNode parent, ArrayList<SearchResult> results,  SearchResult parentResult) {
+	private void getAllHaplogroups(PhyloTreeNode parent, ArrayList<SearchResult> results,  SearchResult parentResult, PrintWriter fileHSD) {
 		// Query all child haplogroup nodes
 		List<PhyloTreeNode> children = parent.getSubHaplogroups();
-
+	 
+	StringBuffer sb = new StringBuffer();
+			
 		for (PhyloTreeNode currentElement : children) {
 			SearchResult newResult = new SearchResult(currentElement, parentResult);
 
 			List<Polymorphism> polys = currentElement.getExpectedPolys();
-		
+		System.out.println("HG_" + currentElement.getHaplogroup() +  "\t 1-16569\t" + currentElement.getHaplogroup()+"\t"+ newResult.getDetailedResult().getExpectedPolys().toString().replace(",","\t").replace("[", "").replace("]", "").replace(" ", "")+"");
 			// Check all expected polys of the current haplogroup
-			log.debug("HG_" + currentElement.getHaplogroup() +  "\t 1-16569\t" + currentElement.getHaplogroup()+"\t"+ newResult.getDetailedResult().getExpectedPolys().toString().replace(",","\t") );
+			fileHSD.printf("" + currentElement.getHaplogroup() +  "\t 1-16569\t" + currentElement.getHaplogroup()+"\t"+ newResult.getDetailedResult().getExpectedPolys().toString().replace(",","\t").replace("[", "").replace("]", "").replace(" ", "")+"\n" );
 			// Add new result to the list of all results
 			results.add(newResult);
 			// RECURSIVE call
 	
-			getAllHaplogroups(currentElement, results,  newResult);
-		
+			getAllHaplogroups(currentElement, results,  newResult, fileHSD);
+			fileHSD.printf("ENDE " +  currentElement.getHaplogroup());
 		}
+		
+
 	}
 	
 	

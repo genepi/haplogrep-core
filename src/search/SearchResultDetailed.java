@@ -63,7 +63,7 @@ public class SearchResultDetailed implements Serializable {
 		
 			SearchResultTreeNode newNode = new SearchResultTreeNode(startNode);
 			for (Polymorphism currentExpectedPoly : startNode.getExpectedPolys()) {
-			System.out.println("CURRENT " + currentExpectedPoly + " "+currentExpectedPoly.isHeteroplasmy());
+//			System.out.println("CURRENT " + currentExpectedPoly + " "+currentExpectedPoly.isHeteroplasmy());
 
 			
 			if (!currentExpectedPoly.getMutation().equals("INS"))
@@ -128,11 +128,7 @@ public class SearchResultDetailed implements Serializable {
 				}
 			}
 		}
-		System.out.println(expectedPolys);
-		System.out.println("-------------");
-		System.out.println(remainingPolys);
-		System.out.println("-------------");
-		System.out.println(foundPolys);
+
 		remainingPolys.addAll(helper);
 		Collections.reverse(path);
 	}
