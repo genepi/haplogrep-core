@@ -62,7 +62,7 @@ public class CheckForTooManyLocalPrivateMutationsHaploGroup extends HaplogrepRul
 		log.debug("testsample  " + currentSample.getSampleID());
 		StringBuffer helpHGs=new StringBuffer();
 		for(Polymorphism currentRemainingPoly : topResult.getDetailedResult().getRemainingPolysInSample()){
-System.out.println("//////////////////// "+currentRemainingPoly.toString());
+
 			if(!currentRemainingPoly.isMTHotspot() && !(qualityAssistent.getUsedPhyloTree().getMutationRate(currentRemainingPoly) == 0) && !(currentRemainingPoly.equalsReference()))
 				{
 				numLocalPrivateMuations++;
@@ -71,7 +71,7 @@ System.out.println("//////////////////// "+currentRemainingPoly.toString());
 				StringTokenizer st = new StringTokenizer(polyHG.get(currentRemainingPoly.toString()), ",");
 				while (st.hasMoreTokens()){
 					String HG = st.nextToken();
-					System.out.println("////////\\///// "+HG);
+			//		System.out.println("////////\\///// "+HG);
 					if (map.containsKey(HG))
 					{
 					String count = map.get(HG);
