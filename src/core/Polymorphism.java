@@ -380,8 +380,6 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		// TRANSITION/TRANSVERSION If base is included, its a transversion, so just
 		// take it as it is.
 		else {
-			
-			
 			Pattern p = Pattern.compile("[a-zA-Z]");
 			Matcher m = p.matcher(stringToParse);
 			if (m.find()) {
