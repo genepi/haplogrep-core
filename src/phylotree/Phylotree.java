@@ -256,7 +256,7 @@ public final class Phylotree {
 			SearchResult newResult = new SearchResult(currentElement, parentResult);
 
 			List<Polymorphism> polys = currentElement.getExpectedPolys();
-		System.out.println("HG_" + currentElement.getHaplogroup() +  "\t 1-16569\t" + currentElement.getHaplogroup()+"\t"+ newResult.getDetailedResult().getExpectedPolys().toString().replace(",","\t").replace("[", "").replace("]", "").replace(" ", "")+"");
+		//System.out.println("HG_" + currentElement.getHaplogroup() +  "\t 1-16569\t" + currentElement.getHaplogroup()+"\t"+ newResult.getDetailedResult().getExpectedPolys().toString().replace(",","\t").replace("[", "").replace("]", "").replace(" ", "")+"");
 			// Check all expected polys of the current haplogroup
 			fileHSD.printf("" + currentElement.getHaplogroup() +  "\t 1-16569\t" + currentElement.getHaplogroup()+"\t"+ newResult.getDetailedResult().getExpectedPolys().toString().replace(",","\t").replace("[", "").replace("]", "").replace(" ", "")+"\n" );
 			// Add new result to the list of all results

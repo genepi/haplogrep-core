@@ -47,7 +47,7 @@ public class TestSample implements Comparable<TestSample>{
 	}
 	
 	public TestSample(String sampleID,ArrayList<Polymorphism> polymorphisms,SampleRanges sampleRange) {
-		this.testSampleID = sampleID;
+		this.testSampleID = sampleID.replace(" ", "_");
 		sample = new Sample(polymorphisms,sampleRange);
 	}
 
@@ -70,7 +70,7 @@ public class TestSample implements Comparable<TestSample>{
 				throw new InvalidColumnCountException(columns.length);
 
 			//Parse the test sample id
-			parsedSample.testSampleID = columns[0].trim().replace("|", "_");
+			parsedSample.testSampleID = columns[0].trim().replace("|", "_").replace(" ","_");
 
 			//Parse range
 			columns[1] = columns[1].replaceAll("\"", "");

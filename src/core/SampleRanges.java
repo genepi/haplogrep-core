@@ -52,7 +52,6 @@ public class SampleRanges {
 				sc.next();
 				Integer newPosition = Integer.parseInt(sc.next().replace("mt", ""));
 				metaboChipPositions.add(newPosition);
-				System.out.print(newPosition + ";");
 				currentLine = reader.readLine();
 			}
 

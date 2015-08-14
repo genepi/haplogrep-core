@@ -296,17 +296,17 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		// polymorphisms are possible
 		StringTokenizer st1 = null;
 		stringToParse = stringToParse.trim();
-		
+
 	   if (stringToParse.contains("R")) {
- 	   this.position = Integer.valueOf(stringToParse.substring(1,stringToParse.length()-1));
- 
+ 	   this.position = Integer.valueOf(stringToParse.substring(0,stringToParse.length()-1));
+
 		   if (getReferenceBase(position).equals("A"))
 			   this.mutation=Mutations.G;
 		   if (getReferenceBase(position).equals("G"))
 			   this.mutation=Mutations.A;
 	   }
 	   if (stringToParse.contains("Y")){
-		   this.position = Integer.valueOf(stringToParse.substring(1,stringToParse.length()-1));
+		   this.position = Integer.valueOf(stringToParse.substring(0,stringToParse.length()-1));
 		   if (getReferenceBase(position).equals("C"))
 			   this.mutation=Mutations.T;
 		   if (getReferenceBase(position).equals("T"))
@@ -517,6 +517,10 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 			if (this.equals(new Polymorphism("523d")))
 				return true;
 			if (this.equals(new Polymorphism("524d")))
+				return true;
+			if (this.equals(new Polymorphism("524.1AC")))
+				return true;
+			if (this.equals(new Polymorphism("524.1ACAC")))
 				return true;
 			if (this.equals(new Polymorphism("3107d")))
 				return true;

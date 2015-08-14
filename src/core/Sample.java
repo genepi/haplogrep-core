@@ -215,7 +215,6 @@ public class Sample {
 				//HETEROPLASMY - split in Bases
 				else if (currentPoly.contains("R")){
 					Polymorphism newPoly = new Polymorphism(currentPoly, true);
-					System.out.println("PPPPPPPPPPPP "  + newPoly);
 					filteredSample.add(newPoly);
 				}
 				else if (currentPoly.contains("Y")){
@@ -228,7 +227,6 @@ public class Sample {
 					String token = st1.nextToken();
 					int startPosition = Integer.valueOf(token);
 					token = st1.nextToken();
-					System.out.println("token: " + token);
 					int endPosition = Integer.valueOf(token.substring(0, token.length() - 1));
 					for (int i = startPosition; i <= endPosition; i++) {
 						// phyloString = firstInt + "del";

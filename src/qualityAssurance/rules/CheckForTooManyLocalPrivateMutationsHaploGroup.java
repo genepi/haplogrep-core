@@ -96,7 +96,7 @@ public class CheckForTooManyLocalPrivateMutationsHaploGroup extends HaplogrepRul
 				}
 		}
 		}
-		System.out.println("RESULLLLT  " + result);
+		
 		if(result.length() > 0)
 			qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, numLocalPrivateMuations + " local private " +
 					"mutation(s) found " + result));
@@ -110,7 +110,6 @@ public class CheckForTooManyLocalPrivateMutationsHaploGroup extends HaplogrepRul
 		br.readLine(); //skip Header
 		while ((line = br.readLine()) != null) {
 			StringTokenizer st = new StringTokenizer(line, "\t");
-		   System.out.println(line);
 		   String pos = st.nextToken();
 		   st.nextToken();
 		    st.nextToken();
