@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
@@ -34,7 +36,7 @@ import exceptions.parse.samplefile.UniqueSampleIDException;
 /**
  * Represents the entire file of test sample. Used as main object in haplogrep.
  * 
- * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schï¿½nherr, Hansi Weissensteiner
  * 
  */
 public class SampleFile {
@@ -200,7 +202,6 @@ public class SampleFile {
 			newElement = new Element("haplogroup");
 			
 			
-			// if no haplogroup is expected, than set our result to		// predefinied
 			if ((sample.getExpectedHaplogroup().toString().equals("") && sample.getDetectedHaplogroup() != null)) {
 				sample.setExpectedHaplogroup(sample.getDetectedHaplogroup());
 			}
@@ -229,9 +230,10 @@ public class SampleFile {
 
 			//matching quality of sample
 			newElement = new Element("hit");
+			NumberFormat formatter = new DecimalFormat("#0.0");   
 			RankedResult topResult = sample.getTopResult();
 			if(topResult != null)
-				newElement.setText(String.valueOf(topResult.getDistance()));
+				newElement.setText(formatter.format(topResult.getDistance()*100)+ " %");
 			else
 				newElement.setText(String.valueOf(0));
 			

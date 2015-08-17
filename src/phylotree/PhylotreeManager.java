@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * Manages all phylotree instances (versions).
  * 
- * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schï¿½nherr, Hansi Weissensteiner
  * 
  */
 public class PhylotreeManager {
