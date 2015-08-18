@@ -28,7 +28,11 @@ public class KylczynskiResult extends RankedResult {
 	 */
 	public KylczynskiResult(SearchResult phyloSearchData, Haplogroup expectedHaplogroup) {
 		super(phyloSearchData, expectedHaplogroup);
-		kylcinskiDistance = calcDistance();
+		
+		if (calcDistance()!=Double.NaN)
+				kylcinskiDistance = calcDistance();
+			else
+				kylcinskiDistance=0;
 	}
 
 	/*
@@ -73,7 +77,10 @@ public class KylczynskiResult extends RankedResult {
 	 */
 	@Override
 	public double getDistance() {
-		return kylcinskiDistance;
+		if (kylcinskiDistance!=Double.NaN)
+			return kylcinskiDistance;
+		else
+			return 0;
 	}
 
 	/*
@@ -86,9 +93,16 @@ public class KylczynskiResult extends RankedResult {
 	@Override
 	public void attachToJsonObject(JSONObject child) throws JSONException {
 		DecimalFormat df = new DecimalFormat("0.000", new DecimalFormatSymbols(Locale.US));
+
+		double help =0;
+		if (kylcinskiDistance ==Double.NaN)
+			kylcinskiDistance=0;
+		if (getCorrectPolyInTestSampleRatio()!=Double.NaN)
+			help=getCorrectPolyInTestSampleRatio();
+			
 		child.put("rank", df.format(kylcinskiDistance));
 		child.put("rankHG", df.format(getCorrectPolyInHaplogroupRatio()));
-		child.put("rankS", df.format(getCorrectPolyInTestSampleRatio()));
+		child.put("rankS", df.format(help));
 		child.put("name", searchResult.getHaplogroup().toString());
 		child.put("id", searchResult.getHaplogroup().toString());
 	}
