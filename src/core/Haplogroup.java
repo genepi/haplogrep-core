@@ -8,7 +8,7 @@ import phylotree.Phylotree;
 /**
  * Represents a single haplogroup.
  * 
- * @author Dominic Pacher, Sebastian Sch�nherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schoenherr, Hansi Weissensteiner
  * 
  */
 public class Haplogroup implements Serializable {

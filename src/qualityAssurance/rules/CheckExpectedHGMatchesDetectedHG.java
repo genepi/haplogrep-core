@@ -1,6 +1,5 @@
 package qualityAssurance.rules;
 
-import com.sun.org.apache.bcel.internal.generic.NEW;
 
 import qualityAssurance.QualityAssistent;
 import qualityAssurance.issues.QualityFatal;

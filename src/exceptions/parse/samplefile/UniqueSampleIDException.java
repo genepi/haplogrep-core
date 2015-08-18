@@ -9,7 +9,7 @@ import exceptions.parse.HsdFileException;
 /**
  * Represents a exception thrown if two identical test sample ids are observed
  * 
- * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Schoenherr, Hansi Weissensteiner
  * 
  */
 public class UniqueSampleIDException extends HsdFileException {

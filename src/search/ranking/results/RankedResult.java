@@ -9,7 +9,7 @@ import core.Haplogroup;
 /**
  * Encapsulates a Search Result instance to add ranking functionality
  * 
- * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schoenherr, Hansi Weissensteiner
  * 
  */
 

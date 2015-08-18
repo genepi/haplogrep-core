@@ -16,7 +16,7 @@ import exceptions.parse.sample.InvalidRangeException;
 /**
  * Represents the ranges of a sample.
  * 
- * @author Dominic Pacher, Sebastian Schnherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schoenherr, Hansi Weissensteiner
  * 
  */
 

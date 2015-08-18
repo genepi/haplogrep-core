@@ -3,7 +3,7 @@ package exceptions.parse.sample;
 /**
  * Represents a exception thrown if the polymorphism format is invalid.
  * 
- * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schoenherr, Hansi Weissensteiner
  * 
  */
 public class InvalidPolymorphismException extends HsdFileSampleParseException {

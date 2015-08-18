@@ -11,7 +11,7 @@ import core.TestSample;
 /**
  * Represents the Jaccard ranking method
  * 
- * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schoenherr, Hansi Weissensteiner
  * 
  */
 public class JaccardRanking extends RankingMethod {

@@ -19,7 +19,7 @@ import core.Polymorphism;
  * on first request. Since detailed results need more memory and cpu capacity to
  * create, they meant to be used only on the top ranking results.
  * 
- * @author Dominic Pacher, Sebastian Sch�nherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schoenherr, Hansi Weissensteiner
  * 
  */
 public class SearchResultDetailed implements Serializable {

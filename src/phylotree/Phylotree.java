@@ -1,10 +1,6 @@
 package phylotree;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -22,12 +18,9 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
-import qualityAssurance.rules.HaplogrepRule;
 import search.SearchResult;
 import search.ranking.RankingMethod;
 import search.ranking.results.RankedResult;
-
-import com.sun.media.sound.InvalidFormatException;
 
 import core.Haplogroup;
 import core.Polymorphism;
@@ -39,7 +32,7 @@ import exceptions.parse.sample.InvalidPolymorphismException;
  * Represents an instance of a phylotree. Includes phylogentic weights and
  * search code for haplogroup detection.
  * 
- * @author Dominic Pacher, Sebastian Sch�nherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schoenherr, Hansi Weissensteiner
  * 
  */
 public final class Phylotree {

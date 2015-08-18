@@ -8,7 +8,7 @@ import exceptions.parse.HsdFileException;
 /**
  * Root exceptions class for all exceptions dealing with parsing of hsd test samples
  * 
- * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schoenherr, Hansi Weissensteiner
  * 
  */
 public class HsdFileSampleParseException extends HsdFileException{

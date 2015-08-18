@@ -11,7 +11,7 @@ import exceptions.parse.sample.InvalidPolymorphismException;
 /**
  * Represents a sample including its sample ranges and polymorphisms
  * 
- * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schoenherr, Hansi Weissensteiner
  * 
  */
 // TODO Ask hansi to get rid of the callMethod parameters

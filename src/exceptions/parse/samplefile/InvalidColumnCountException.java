@@ -9,7 +9,7 @@ import exceptions.parse.HsdFileException;
 /**
  * Represents a exception thrown if a hsd don't show the right number of columns 
  * 
- * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schoenherr, Hansi Weissensteiner
  * 
  */
 public class InvalidColumnCountException extends HsdFileException {

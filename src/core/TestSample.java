@@ -25,7 +25,7 @@ import exceptions.parse.samplefile.InvalidColumnCountException;
  * Represents one test sample. Includes the expected and detected haplogroup. In addition it stores all 
  * search results for a test sample 
  * 
- * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schoenherr, Hansi Weissensteiner
  * 
  */
 public class TestSample implements Comparable<TestSample>{

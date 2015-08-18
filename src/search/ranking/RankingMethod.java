@@ -9,7 +9,7 @@ import core.TestSample;
 /**
  * Represents a abstract ranking method
  * 
- * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schoenherr, Hansi Weissensteiner
  * 
  */
 public abstract class RankingMethod {

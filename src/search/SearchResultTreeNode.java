@@ -11,7 +11,7 @@ import core.Polymorphism;
 /**
  * Represents a additional search information for a phylotree node.
  * 
- * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schoenherr, Hansi Weissensteiner
  * 
  */
 

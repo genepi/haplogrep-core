@@ -13,7 +13,7 @@ import core.Haplogroup;
 /**
  * Encapsulates a Search Result instance adding Kylczynski distance
  * 
- * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schoenherr, Hansi Weissensteiner
  * 
  */
 

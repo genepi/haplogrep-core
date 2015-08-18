@@ -10,7 +10,7 @@ import core.TestSample;
 /**
  * Represents the Hamming ranking method
  * 
- * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schoenherr, Hansi Weissensteiner
  * 
  */
 public class HammingRanking extends RankingMethod {

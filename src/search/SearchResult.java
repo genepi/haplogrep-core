@@ -11,7 +11,7 @@ import core.TestSample;
  * Represents a search result attached to a phylotree node. Calculates data to
  * rank the results.
  * 
- * @author Dominic Pacher, Sebastian Sch�nherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schoenherr, Hansi Weissensteiner
  * 
  */
 public class SearchResult {

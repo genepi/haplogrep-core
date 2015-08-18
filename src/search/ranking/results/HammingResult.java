@@ -13,7 +13,7 @@ import core.Haplogroup;
 /**
  * Encapsulates a Search Result instance adding Hamming distance
  * 
- * @author Dominic Pacher, Sebastian Schönherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schoenherr, Hansi Weissensteiner
  * 
  */
 public class HammingResult extends RankedResult {

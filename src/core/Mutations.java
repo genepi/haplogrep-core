@@ -5,7 +5,7 @@ import exceptions.parse.sample.InvalidBaseException;
 /**
  * Helper enum representing all possible mutations
  * 
- * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schoenherr, Hansi Weissensteiner
  * 
  */
 public enum Mutations {

@@ -7,7 +7,7 @@ import org.json.JSONObject;
 /**
  * Represents a exception thrown if the sample ranges are invalid.
  * 
- * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schoenherr, Hansi Weissensteiner
  * 
  */
 public class InvalidRangeException extends HsdFileSampleParseException {

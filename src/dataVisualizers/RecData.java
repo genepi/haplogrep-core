@@ -3,7 +3,7 @@ package dataVisualizers;
 /**
  * Helper class for tree recursion and rendering of the phlotreeRenderer.class
  * 
- * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schoenherr, Hansi Weissensteiner
  * 
  */
 class RecData {

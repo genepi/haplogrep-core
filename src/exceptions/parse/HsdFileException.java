@@ -6,7 +6,7 @@ import org.json.JSONObject;
 /**
  * Root exceptions class for all exceptions dealing with hsd files operations
  * 
- * @author Dominic Pacher, Sebastian Schšnherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schoenherr, Hansi Weissensteiner
  * 
  */
 public class HsdFileException extends Exception {

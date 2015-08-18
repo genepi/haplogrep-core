@@ -13,14 +13,13 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import sun.security.action.LoadLibraryAction;
 import exceptions.parse.sample.InvalidBaseException;
 import exceptions.parse.sample.InvalidPolymorphismException;
 
 /**
  * Represents one polymorphism
  * 
- * @author Dominic Pacher, Sebastian Schönherr, Hansi Weissensteiner
+ * @author Dominic Pacher, Sebastian Schoenherr, Hansi Weissensteiner
  * 
  */
 public class Polymorphism implements Comparable<Polymorphism>, Serializable {
