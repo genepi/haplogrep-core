@@ -47,10 +47,11 @@ public class HammingResult extends RankedResult {
 	}
 
 	private double calcDistance() {
-		if (searchResult.getWeightRemainingPolys() > 0 && searchResult.getSumMissingPhyloWeight() > 0) {
-			return (searchResult.getWeightRemainingPolys()) + searchResult.getSumMissingPhyloWeight();
-		} else
-			return 0;
+		double temp = 0;
+		if (searchResult.getWeightRemainingPolys() > 0) {
+			temp = searchResult.getWeightRemainingPolys();
+		}
+		return (temp + searchResult.getSumMissingPhyloWeight());
 	}
 
 	/*
