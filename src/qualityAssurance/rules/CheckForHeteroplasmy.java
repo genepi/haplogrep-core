@@ -23,7 +23,7 @@ public class CheckForHeteroplasmy extends HaplogrepRule {
 		if(currentSample.getResults().size() != 0){
 		SearchResult topResult = currentSample.getResults().get(0).getSearchResult();
 		int numAlignWarning = 0;
-		log.debug("testsample  " + currentSample.getSampleID());
+		//log.debug("testsample  " + currentSample.getSampleID());
 		for(Polymorphism currentRemainingPoly : currentSample.getSample().getPolymorphisms()){
 			if(currentRemainingPoly.isHeteroplasmy())
 				numAlignWarning++;

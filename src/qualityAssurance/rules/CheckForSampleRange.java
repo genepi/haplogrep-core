@@ -30,11 +30,7 @@ public class CheckForSampleRange extends HaplogrepRule {
 	
 	public CheckForSampleRange(int priority){
 		super(priority);
-//		if(metaboChipPositions == null){
-//			metaboChipPositions = new HashSet<Integer>();
-//			
-//			loadMetaboChipPositions();
-//		}
+
 	}
 	
 	

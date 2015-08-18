@@ -2,9 +2,12 @@ package qualityAssurance.rules;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,10 +46,12 @@ public class CheckForTooManyLocalPrivateMutationsHaploGroup extends HaplogrepRul
 		StringBuffer sb = new StringBuffer();
 		Set <String> addHG = new HashSet<String>();
 	
-		File fileHSD = new File("../HaploGrepServer/weights/phylotree16.hsd.byPOS.txt");
+		InputStream phyloFile = this.getClass().getClassLoader().getResourceAsStream("phylotree16.hsd.byPOS.txt");
+		
+	//	File fileHSD = new File("../HaploGrepServer/weights/phylotree16.hsd.byPOS.txt");
 		try {
 			if (polyHG.isEmpty())
-				readHSD(fileHSD);
+				readHSD(phyloFile);
 
 			
 		} catch (IOException e) {
@@ -59,7 +64,6 @@ public class CheckForTooManyLocalPrivateMutationsHaploGroup extends HaplogrepRul
 		Map<String, String> map = new HashMap<String, String>();
 		String result="";
 		int max=0;
-		log.debug("testsample  " + currentSample.getSampleID());
 		StringBuffer helpHGs=new StringBuffer();
 		for(Polymorphism currentRemainingPoly : topResult.getDetailedResult().getRemainingPolysInSample()){
 
@@ -103,9 +107,9 @@ public class CheckForTooManyLocalPrivateMutationsHaploGroup extends HaplogrepRul
 		}
 	}
 
-	private void readHSD(File fileHSD) throws IOException {
+	private void readHSD(InputStream fileHSD) throws IOException {
 		polyHG= new HashMap<String, String>();
-		BufferedReader br = new BufferedReader(new FileReader(fileHSD));
+		BufferedReader br = new BufferedReader(new InputStreamReader(fileHSD));
 		String line;
 		br.readLine(); //skip Header
 		while ((line = br.readLine()) != null) {

@@ -24,7 +24,6 @@ public class CheckForAlignmentWarnings extends HaplogrepRule {
 
 		int numAlignWarning = 0;
 		String alignmentProblem="";
-		log.debug("testsample  " + currentSample.getSampleID());
 		for(Polymorphism current : currentSample.getSample().getPolymorphisms()){
 			if(current.isReliable()>0)
 				{numAlignWarning++;

@@ -20,13 +20,11 @@ public class CheckForReferencePolymorhisms extends HaplogrepRule {
 	
 	public CheckForReferencePolymorhisms(int priority) {
 		super(priority);
-		log.error("errooooor tooo many rCRS");
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public void evaluate(QualityAssistent qualityAssistent, TestSample currentSample) {
-		log.error("too many");
 		ArrayList<Polymorphism> foundReferencePolys = new ArrayList<Polymorphism>();
 		
 		for(Polymorphism currentPoly : currentSample.getSample().getPolymorphisms()){
@@ -37,7 +35,6 @@ public class CheckForReferencePolymorhisms extends HaplogrepRule {
 		if(foundReferencePolys.size() > 0){
 			qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "The sample contains "+ foundReferencePolys.size() +" polymorphimsms " +
 					"that are equal to the reference."));	
-			log.error("too many");
 		}
 	}
 

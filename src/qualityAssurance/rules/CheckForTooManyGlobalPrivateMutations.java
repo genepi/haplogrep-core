@@ -1,7 +1,5 @@
 package qualityAssurance.rules;
 
-import java.util.ArrayList;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -26,7 +24,7 @@ public class CheckForTooManyGlobalPrivateMutations extends HaplogrepRule {
 		int numGlobalPrivateMuations = 0;
 
 		
-		log.debug("testsample  " + currentSample.getSampleID());
+		//log.debug("testsample  " + currentSample.getSampleID());
 		for(Polymorphism currentRemainingPoly : topResult.getDetailedResult().getRemainingPolysInSample()){
 			if(!currentRemainingPoly.isMTHotspot() && qualityAssistent.getUsedPhyloTree().getMutationRate(currentRemainingPoly) == 0 && !(currentRemainingPoly.equalsReference()))
 				numGlobalPrivateMuations++;

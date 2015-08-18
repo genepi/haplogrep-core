@@ -36,9 +36,9 @@ public class RuleSet {
 		addRule(new CheckForTooManyLocalPrivateMutations(0));
 		addRule(new CheckForTooManyLocalPrivateMutationsHaploGroup(0));
 		addRule(new CheckForAlignmentWarnings(1));
-		addRule(new CheckForHeteroplasmy(1));
+	//	addRule(new CheckForHeteroplasmy(1));
 		addRule(new CheckForQuality(1));
-		addRule(new CheckForRecombinationRule(4));
+	//	addRule(new CheckForRecombinationRule(4));
 		//TODO DEFINE RULES
 	}
 	
