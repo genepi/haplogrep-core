@@ -47,7 +47,10 @@ public class HammingResult extends RankedResult {
 	}
 
 	private double calcDistance() {
-		return (searchResult.getWeightRemainingPolys()) + searchResult.getSumMissingPhyloWeight();
+		if (searchResult.getWeightRemainingPolys() > 0 && searchResult.getSumMissingPhyloWeight() > 0) {
+			return (searchResult.getWeightRemainingPolys()) + searchResult.getSumMissingPhyloWeight();
+		} else
+			return 0;
 	}
 
 	/*
@@ -63,16 +66,23 @@ public class HammingResult extends RankedResult {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * search.ranking.results.RankedResult#attachToJsonObject(org.json.JSONObject
-	 * )
+	 * @see search.ranking.results.RankedResult#attachToJsonObject(org.json.
+	 * JSONObject )
 	 */
 	@Override
 	public void attachToJsonObject(JSONObject child) throws JSONException {
 		DecimalFormat df = new DecimalFormat("0.000", new DecimalFormatSymbols(Locale.US));
 		child.put("rank", df.format(hammingDistance));
-		child.put("rankHG", df.format(searchResult.getSumMissingPhyloWeight()));
-		child.put("rankS", df.format(searchResult.getWeightRemainingPolys()));
+		if (searchResult.getSumMissingPhyloWeight() > 0) {
+			child.put("rankHG", df.format(searchResult.getSumMissingPhyloWeight()));
+		} else {
+			child.put("rankHG", df.format(new Double(0)));
+		}
+		if (searchResult.getWeightRemainingPolys() > 0) {
+			child.put("rankS", df.format(searchResult.getWeightRemainingPolys()));
+		} else {
+			child.put("rankS", df.format(new Double(0)));
+		}
 		child.put("name", searchResult.getHaplogroup().toString());
 		child.put("id", searchResult.getHaplogroup().toString());
 	}

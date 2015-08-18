@@ -9,10 +9,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
+import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -230,10 +232,10 @@ public class SampleFile {
 
 			//matching quality of sample
 			newElement = new Element("hit");
-			NumberFormat formatter = new DecimalFormat("#0.0");   
+			DecimalFormat df = new DecimalFormat("0.000", new DecimalFormatSymbols(Locale.US));
 			RankedResult topResult = sample.getTopResult();
 			if(topResult != null)
-				newElement.setText(formatter.format(topResult.getDistance()*100)+ " %");
+				newElement.setText(df.format(topResult.getDistance()));
 			else
 				newElement.setText(String.valueOf(0));
 			
@@ -241,13 +243,7 @@ public class SampleFile {
 
 			
 			newElement = new Element("err");
-//			if(topResult == null){
-//				if(getPreChecksQualityAssistent() != null)
-//				newElement.setText(String.valueOf(getPreChecksQualityAssistent().getNumIssuedErrors(sample)));
-//				else
-//					newElement.setText("-");
-//			}
-//			else
+
 			if(getQualityAssistent() != null)
 				newElement.setText(String.valueOf(getQualityAssistent().getNumIssuedErrors(sample)));
 			else
@@ -255,13 +251,7 @@ public class SampleFile {
 			sampleRowElement.addContent(newElement);
 			
 			newElement = new Element("war");
-//			if(topResult == null){
-//				if(getPreChecksQualityAssistent() != null)
-//				newElement.setText(String.valueOf(getPreChecksQualityAssistent().getNumIssuedErrors(sample)));
-//				else
-//					newElement.setText("-");
-//			}
-//			else
+
 			if(getQualityAssistent() != null)
 				newElement.setText(String.valueOf(getQualityAssistent().getNumIssuedWarnings(sample)));
 			else
@@ -317,7 +307,7 @@ public class SampleFile {
 			if(!qualityAssistent.hasFatalIssues(currenTestSample))
 				currenTestSample.updateSearchResults(phylotree, rankingMethod);
 		}
-		log.debug("time E: " + (System.currentTimeMillis()-start));
+		log.debug("time executed: " + (System.currentTimeMillis()-start));
 
 	}
 

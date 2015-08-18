@@ -129,16 +129,6 @@ public final class Phylotree {
 		
 		searchPhylotree(root, results, testSample, rootResult);
 		
-		//TODO WRITE HSD PHYLOTREE uncomment in case new phylotree.hsd file needed
-//					
-//		PrintWriter fileHSD;
-//		try {
-//			fileHSD = new PrintWriter("phylotree/phylotree16.hsd");
-//			getAllHaplogroups(root, results, rootResult, fileHSD);
-//		} catch (FileNotFoundException e) {
-//			e.printStackTrace();
-//		}
-		
 		rankingMethodToUse.setResults(testSample, results);
 
 		// set results to null (>20) to save memory.

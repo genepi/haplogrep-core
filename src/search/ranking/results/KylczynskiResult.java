@@ -28,11 +28,7 @@ public class KylczynskiResult extends RankedResult {
 	 */
 	public KylczynskiResult(SearchResult phyloSearchData, Haplogroup expectedHaplogroup) {
 		super(phyloSearchData, expectedHaplogroup);
-		
-		if (calcDistance()!=Double.NaN)
-				kylcinskiDistance = calcDistance();
-			else
-				kylcinskiDistance=0;
+		this.kylcinskiDistance = calcDistance();
 	}
 
 	/*
@@ -56,7 +52,15 @@ public class KylczynskiResult extends RankedResult {
 	 * @return The calculated Kylczynski distance
 	 */
 	private double calcDistance() {
-		return (getCorrectPolyInTestSampleRatio() * 0.5 + getCorrectPolyInHaplogroupRatio() * 0.5);
+		if (getCorrectPolyInTestSampleRatio() > 0 && getCorrectPolyInHaplogroupRatio() > 0) {
+			return getCorrectPolyInTestSampleRatio() * 0.5 + getCorrectPolyInHaplogroupRatio() * 0.5;
+		} else if (getCorrectPolyInTestSampleRatio() > 0) {
+			return getCorrectPolyInTestSampleRatio() * 0.5;
+		} else if (getCorrectPolyInHaplogroupRatio() > 0) {
+			return getCorrectPolyInHaplogroupRatio() * 0.5;
+		} else {
+			return 0;
+		}
 	}
 
 	public double getCorrectPolyInTestSampleRatio() {
@@ -77,33 +81,35 @@ public class KylczynskiResult extends RankedResult {
 	 */
 	@Override
 	public double getDistance() {
-		if (kylcinskiDistance!=Double.NaN)
 			return kylcinskiDistance;
-		else
-			return 0;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * search.ranking.results.RankedResult#attachToJsonObject(org.json.JSONObject
-	 * )
+	 * @see search.ranking.results.RankedResult#attachToJsonObject(org.json.
+	 * JSONObject )
 	 */
 	@Override
 	public void attachToJsonObject(JSONObject child) throws JSONException {
 		DecimalFormat df = new DecimalFormat("0.000", new DecimalFormatSymbols(Locale.US));
 
-		double help =0;
-		if (kylcinskiDistance ==Double.NaN)
-			kylcinskiDistance=0;
-		if (getCorrectPolyInTestSampleRatio()!=Double.NaN)
-			help=getCorrectPolyInTestSampleRatio();
-			
 		child.put("rank", df.format(kylcinskiDistance));
-		child.put("rankHG", df.format(getCorrectPolyInHaplogroupRatio()));
-		child.put("rankS", df.format(help));
 		child.put("name", searchResult.getHaplogroup().toString());
 		child.put("id", searchResult.getHaplogroup().toString());
+		
+		if (!Double.isNaN(getCorrectPolyInTestSampleRatio())){
+			child.put("rankS", df.format(getCorrectPolyInTestSampleRatio()));
+		} else {
+			child.put("rankS", "-");
+		}
+		
+		if (!Double.isNaN(getCorrectPolyInHaplogroupRatio())){
+			child.put("rankHG", df.format(getCorrectPolyInHaplogroupRatio()));
+		} else {
+			child.put("rankHG", "-");
+		}
+		
+	
 	}
 }

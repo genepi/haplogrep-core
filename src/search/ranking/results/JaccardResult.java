@@ -52,11 +52,15 @@ public class JaccardResult extends RankedResult {
 	 * @return The calculated Kylczynski distance
 	 */
 	private double calcDistance() {
-		return ( getCorrectPolyInTestSample() /( getAllPoly()));
+		if (getCorrectPolyInTestSample() > 0 && getAllPoly() > 0) {
+			return (getCorrectPolyInTestSample() / (getAllPoly()));
+		} else {
+			return 0;
+		}
 	}
 
 	private double getCorrectPolyInTestSample() {
-		return searchResult.getWeightFoundPolys() ;
+		return searchResult.getWeightFoundPolys();
 	}
 
 	private double getAllPoly() {
@@ -76,17 +80,26 @@ public class JaccardResult extends RankedResult {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * search.ranking.results.RankedResult#attachToJsonObject(org.json.JSONObject
-	 * )
+	 * @see search.ranking.results.RankedResult#attachToJsonObject(org.json.
+	 * JSONObject )
 	 */
 	@Override
 	public void attachToJsonObject(JSONObject child) throws JSONException {
 		DecimalFormat df = new DecimalFormat("0.000", new DecimalFormatSymbols(Locale.US));
 		child.put("rank", df.format(jaccardDistance));
-		child.put("rankHG", df.format(getCorrectPolyInTestSample()));
-		child.put("rankS", df.format(getAllPoly()));
 		child.put("name", searchResult.getHaplogroup().toString());
 		child.put("id", searchResult.getHaplogroup().toString());
+
+		if (Double.isNaN(getCorrectPolyInTestSample())) {
+			child.put("rankHG", "-");
+		} else {
+			child.put("rankHG", df.format(getCorrectPolyInTestSample()));
+		}
+
+		if (Double.isNaN(getAllPoly())) {
+			child.put("rankS", "-");
+		} else {
+			child.put("rankS", df.format(getAllPoly()));
+		}
 	}
 }
