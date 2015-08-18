@@ -307,7 +307,7 @@ public class SampleFile {
 			if(!qualityAssistent.hasFatalIssues(currenTestSample))
 				currenTestSample.updateSearchResults(phylotree, rankingMethod);
 		}
-		log.debug("time executed: " + (System.currentTimeMillis()-start));
+		log.debug("time executed: " + (System.currentTimeMillis()-start) + " with " + rankingMethod.toString());
 
 	}
 
