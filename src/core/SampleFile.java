@@ -232,10 +232,10 @@ public class SampleFile {
 
 			//matching quality of sample
 			newElement = new Element("hit");
-			DecimalFormat df = new DecimalFormat("0.000", new DecimalFormatSymbols(Locale.US));
+			DecimalFormat df = new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.US));
 			RankedResult topResult = sample.getTopResult();
 			if(topResult != null)
-				newElement.setText(df.format(topResult.getDistance()));
+				newElement.setText(df.format(topResult.getDistance()* 100)+ " %");
 			else
 				newElement.setText(String.valueOf(0));
 			

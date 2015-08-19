@@ -27,11 +27,11 @@ public class RuleSet {
 	}
 	
 	public void addStandardRules() {
-		addRule(new CheckForSampleRange(0));
+	//	addRule(new CheckForSampleRange(0));
 	//	addRule(new CheckForSampleRCRSAligned(0));
 	//	addRule(new CheckForSampleRSRSAligned(0));
 	//	addRule(new CheckExpectedHGMatchesDetectedHG(1));
-		addRule(new CheckForReferencePolymorhisms(1));
+	//	addRule(new CheckForReferencePolymorhisms(1));
 		addRule(new CheckForTooManyGlobalPrivateMutations(0));
 		addRule(new CheckForTooManyLocalPrivateMutations(0));
 		addRule(new CheckForTooManyLocalPrivateMutationsHaploGroup(0));
