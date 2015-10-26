@@ -367,7 +367,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 			// Check for valid acid
 			int i = 0;
 			try {
-				for (i = 0; i < mutationString.length(); i++) {
+					for (i = 0; i < mutationString.length(); i++) {
 					Mutations.getBase(String.valueOf(mutationString.charAt(i)));
 				}
 			} catch (InvalidBaseException e) {
