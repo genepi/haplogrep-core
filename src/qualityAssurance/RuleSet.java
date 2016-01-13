@@ -39,15 +39,14 @@ public class RuleSet {
 	//	addRule(new CheckForHeteroplasmy(1));
 		addRule(new CheckForQuality(1));
 	//	addRule(new CheckForRecombinationRule(4));
+	//	addRule(new CheckForPhantomMutation(1));
 		//TODO DEFINE RULES
 	}
-	
 	
 	public void addRule(HaplogrepRule newRule){
 		 if(!rules.containsKey(newRule.getPriority()))
 			 rules.put(newRule.getPriority(), new ArrayList<HaplogrepRule>());
-		 
-		this.rules.get(newRule.getPriority()).add(newRule);
+		     this.rules.get(newRule.getPriority()).add(newRule);
 	}
 	
 	void reevaluateAllRules(QualityAssistent qualityAssistent, TestSample currentSample) {
@@ -59,7 +58,6 @@ public class RuleSet {
 		for (int currentPriority : rules.keySet())
 			if(currentSample.getQualityLevelReached() <= currentPriority)
 				suppressRules(qualityAssistent, currentPriority, currentSample);
-
 	}
 	
 	private void reevaluateRules(QualityAssistent qualityAssistent,int priority,TestSample currentSample) {

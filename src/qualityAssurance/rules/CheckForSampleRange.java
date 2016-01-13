@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Vector;
 
 import qualityAssurance.QualityAssistent;
 import qualityAssurance.issues.QualityIssue;

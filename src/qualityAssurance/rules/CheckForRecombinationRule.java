@@ -3,6 +3,7 @@ package qualityAssurance.rules;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import qualityAssurance.QualityAssistent;
 import qualityAssurance.issues.errors.RecombinationIssue;
@@ -96,4 +97,5 @@ public class CheckForRecombinationRule extends HaplogrepRule {
 	public void suppressIssues(QualityAssistent qualityAssistent, TestSample currentSample) {
 
 	}
+
 }

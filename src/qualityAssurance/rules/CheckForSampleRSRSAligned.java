@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -96,6 +97,6 @@ public class CheckForSampleRSRSAligned extends HaplogrepRule {
 	public void suppressIssues(QualityAssistent qualityAssistent, TestSample currentSample) {
 		// TODO Auto-generated method stub
 		
-	} 
+	}
 
 }

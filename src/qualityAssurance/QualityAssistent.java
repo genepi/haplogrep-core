@@ -3,6 +3,7 @@ package qualityAssurance;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Vector;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JsonConfig;
@@ -10,6 +11,8 @@ import phylotree.Phylotree;
 import qualityAssurance.issues.QualityFatal;
 import qualityAssurance.issues.QualityIssue;
 import qualityAssurance.rules.HaplogrepRule;
+import core.Polymorphism;
+import core.Sample;
 import core.TestSample;
 
 public class QualityAssistent {
@@ -40,15 +43,18 @@ public class QualityAssistent {
 
 		for (int i = 0; i < 10; i++) {
 			ArrayList<HaplogrepRule> rulesLevel = rules.getRulesLevel(i);
+			HashMap<TestSample, Vector<Polymorphism>> allPolys = new HashMap<TestSample, Vector<Polymorphism>>();
 			if (rulesLevel != null) {
 				for (TestSample currentSample : sampleToCheck) {
 					if (allQualityIssuesLookup.get(currentSample) == null || allQualityIssuesLookup.get(currentSample).size() == 0) {
 						for (HaplogrepRule currentRule : rulesLevel)
 							currentRule.evaluate(this, currentSample);
+						
 						for (HaplogrepRule currentRule : rulesLevel)
 							currentRule.suppressIssues(this, currentSample);
 					}
 				}
+				System.out.println("ALLPOLYS " + allPolys.size() + allPolys.keySet());
 			}
 		}
 	}

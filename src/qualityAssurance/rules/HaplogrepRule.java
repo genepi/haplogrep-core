@@ -1,6 +1,10 @@
 package qualityAssurance.rules;
 
 import qualityAssurance.QualityAssistent;
+
+import java.util.Vector;
+
+import core.Polymorphism;
 import core.TestSample;
 
 public abstract class HaplogrepRule {

@@ -4,7 +4,11 @@ package qualityAssurance.rules;
 import qualityAssurance.QualityAssistent;
 import qualityAssurance.issues.QualityFatal;
 import qualityAssurance.issues.QualityWarning;
+
+import java.util.Vector;
+
 import core.Haplogroup;
+import core.Polymorphism;
 import core.TestSample;
 
 public class CheckExpectedHGMatchesDetectedHG extends HaplogrepRule {
@@ -42,5 +46,6 @@ public class CheckExpectedHGMatchesDetectedHG extends HaplogrepRule {
 		// TODO Auto-generated method stub
 		
 	}
+
 
 }

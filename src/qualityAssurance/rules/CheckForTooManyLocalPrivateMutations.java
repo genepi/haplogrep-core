@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
+import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -62,4 +63,5 @@ public class CheckForTooManyLocalPrivateMutations extends HaplogrepRule {
 		
 	}
 
+	
 }

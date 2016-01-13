@@ -3,6 +3,7 @@ package qualityAssurance.rules;
 
 
 import java.text.DecimalFormat;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

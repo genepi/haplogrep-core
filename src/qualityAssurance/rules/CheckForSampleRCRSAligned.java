@@ -3,6 +3,9 @@ package qualityAssurance.rules;
 
 import qualityAssurance.QualityAssistent;
 import qualityAssurance.issues.QualityFatal;
+
+import java.util.Vector;
+
 import core.Polymorphism;
 import core.TestSample;
 import exceptions.parse.sample.InvalidPolymorphismException;
