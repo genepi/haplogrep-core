@@ -33,10 +33,19 @@ public  class Phantom implements Comparable<Phantom>{
 	}
 
 	public int compareTo(Phantom o) {
+		if (this.amount == o.amount)
+			{
+			return 0;
+			}
+			
 		if (this.amount < o.amount)
+			{
 			return 1;
+			}
 		else
+			{
 			return -1;
+			}
 		}
 
 
