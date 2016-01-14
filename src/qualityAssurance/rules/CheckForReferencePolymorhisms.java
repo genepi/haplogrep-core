@@ -8,6 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import qualityAssurance.QualityAssistent;
+import qualityAssurance.issues.IssueType;
 import qualityAssurance.issues.QualityFatal;
 import qualityAssurance.issues.QualityWarning;
 import core.Polymorphism;
@@ -35,7 +36,7 @@ public class CheckForReferencePolymorhisms extends HaplogrepRule {
 		
 		if(foundReferencePolys.size() > 0){
 			qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "The sample contains "+ foundReferencePolys.size() +" polymorphimsms " +
-					"that are equal to the reference."));	
+					"that are equal to the reference.", IssueType.QUAL));	
 		}
 	}
 

@@ -17,6 +17,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import qualityAssurance.QualityAssistent;
+import qualityAssurance.issues.IssueType;
 import qualityAssurance.issues.QualityFatal;
 import core.Polymorphism;
 import core.TestSample;
@@ -86,7 +87,7 @@ public class CheckForSampleRSRSAligned extends HaplogrepRule {
 				}
 				
 				qualityAssistent.addNewIssue(new QualityFatal(qualityAssistent, currentSample, numRSRSPolysFound + " common RSRS polymorphims found! " +
-						"The sample seems to be aligned to RSRS. Haplogrep only supports rCRS aligned samples."));
+						"The sample seems to be aligned to RSRS. Haplogrep only supports rCRS aligned samples.", IssueType.QUAL));
 				
 			}
 			else

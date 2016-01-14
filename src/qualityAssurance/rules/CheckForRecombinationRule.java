@@ -83,7 +83,6 @@ public class CheckForRecombinationRule extends HaplogrepRule {
 			if(overallDistance > haplogroupTolerance){
 				qualityAssistent.addNewIssue(new RecombinationIssue(qualityAssistent, sampleToCheck,
 						overallDistance,referenceHaplogroups,currentSampleHaplogroups, customFragmentRanges.toString()));
-			
 				passedTest = true;
 			}
 		}

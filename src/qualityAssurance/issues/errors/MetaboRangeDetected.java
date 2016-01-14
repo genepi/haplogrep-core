@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import qualityAssurance.CorrectionMethod;
 import qualityAssurance.QualityAssistent;
+import qualityAssurance.issues.IssueType;
 import qualityAssurance.issues.QualityFatal;
 import qualityAssurance.issues.QualityIssue;
 
@@ -26,7 +27,7 @@ public class MetaboRangeDetected extends QualityFatal {
     }
 	
 	public MetaboRangeDetected(QualityAssistent assistent, TestSample sampleOfIssue) {
-		super(assistent, sampleOfIssue, "MetaboChip range detected but does not match the indicated range");
+		super(assistent, sampleOfIssue, "MetaboChip range detected but does not match the indicated range", IssueType.RANGE);
 		correctionMethods.add(new SetMataboRange(correctionMethods.size(),this));
 	}
 

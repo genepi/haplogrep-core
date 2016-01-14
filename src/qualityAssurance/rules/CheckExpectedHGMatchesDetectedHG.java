@@ -2,6 +2,7 @@ package qualityAssurance.rules;
 
 
 import qualityAssurance.QualityAssistent;
+import qualityAssurance.issues.IssueType;
 import qualityAssurance.issues.QualityFatal;
 import qualityAssurance.issues.QualityWarning;
 
@@ -32,10 +33,10 @@ public class CheckExpectedHGMatchesDetectedHG extends HaplogrepRule {
 			if (!currentSample.getExpectedHaplogroup().isSuperHaplogroup(qualityAssistent.getUsedPhyloTree(), detectedHg)) {
 
 				qualityAssistent.addNewIssue(new QualityFatal(qualityAssistent, currentSample, "The expected haplogroup "
-						+ currentSample.getExpectedHaplogroup() + " is no super group of the detected haplogroup " + detectedHg));
+						+ currentSample.getExpectedHaplogroup() + " is no super group of the detected haplogroup " + detectedHg, IssueType.QUAL));
 			} else {
 				qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "The detected haplogroup " + detectedHg
-						+ " does not match the expected haplogroup " + currentSample.getExpectedHaplogroup() + " but represents a valid sub haplogroup"));
+						+ " does not match the expected haplogroup " + currentSample.getExpectedHaplogroup() + " but represents a valid sub haplogroup", IssueType.QUAL));
 			}
 		}
 		}

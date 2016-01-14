@@ -5,8 +5,8 @@ import core.TestSample;
 
 public class QualityFatal extends QualityIssue {
 
-	public QualityFatal(QualityAssistent assistent,TestSample sampleOfIssue,String desciption) {
-		super(assistent,1,sampleOfIssue,desciption);
+	public QualityFatal(QualityAssistent assistent,TestSample sampleOfIssue,String desciption, IssueType issue) {
+		super(assistent,1,sampleOfIssue,desciption, issue);
 		assistent.incNumErrors();
 	}
 	

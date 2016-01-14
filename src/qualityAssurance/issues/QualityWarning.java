@@ -5,8 +5,8 @@ import core.TestSample;
 
 public class QualityWarning extends QualityIssue {
 
-	public QualityWarning(QualityAssistent assistent,TestSample sampleOfIssue,String desciption) {
-		super(assistent,0, sampleOfIssue,desciption);
+	public QualityWarning(QualityAssistent assistent,TestSample sampleOfIssue,String desciption, IssueType issue) {
+		super(assistent,0, sampleOfIssue,desciption, issue);
 		assistent.incNumWarnings();
 	}
 	public String toString(){

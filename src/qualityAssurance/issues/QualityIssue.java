@@ -10,16 +10,20 @@ import core.TestSample;
 public class QualityIssue implements Comparable<QualityIssue>{
 	int issueID;
 	int priority;
+
+	IssueType issueType;
+	
 	String description;
 	TestSample sampleOfIssue;
 	boolean suppress = false;
 	protected ArrayList<CorrectionMethod> correctionMethods = new ArrayList<CorrectionMethod>();
 	
-	public QualityIssue(QualityAssistent qualityAssistent,int priority,TestSample sampleofIssue, String description){
+	public QualityIssue(QualityAssistent qualityAssistent,int priority,TestSample sampleofIssue, String description, IssueType issue){
 		this.issueID = qualityAssistent.getNewIssueID();
 		this.priority = priority;
 		this.sampleOfIssue = sampleofIssue;
 		this.description = description;
+		this.issueType = issue;
 	}
 
 	@Override
@@ -56,6 +60,14 @@ public class QualityIssue implements Comparable<QualityIssue>{
 	
 	public ArrayList<CorrectionMethod> getChildren(){
 		return correctionMethods;
+	}
+	
+	public IssueType getIssueType() {
+		return issueType;
+	}
+
+	public void setIssueType(IssueType issueType) {
+		this.issueType = issueType;
 	}
 
 	public void doAutoCorrection(QualityAssistent qualityAssistent,int correctionMethodID) {

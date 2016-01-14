@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import qualityAssurance.CorrectionMethod;
 import qualityAssurance.QualityAssistent;
+import qualityAssurance.issues.IssueType;
 import qualityAssurance.issues.QualityFatal;
 import qualityAssurance.issues.QualityIssue;
 import qualityAssurance.issues.QualityWarning;
@@ -32,7 +33,7 @@ public class RecombinationIssue extends QualityWarning {
 	 */
 	public RecombinationIssue(QualityAssistent assistent,TestSample sampleOfIssue, int distanceToReference,
 								ArrayList<Haplogroup> referenceHaplogroups,ArrayList<Haplogroup> currentSampleHaplogroups, String string) {
-		super(assistent, sampleOfIssue, "Possible recombination: ");
+		super(assistent, sampleOfIssue, "Possible recombination: ", IssueType.RECOMB1);
 		this.distanceToReference = distanceToReference;
 		this.referenceHaplogroups = referenceHaplogroups;
 		this.currentSampleHaplogroups = currentSampleHaplogroups;
@@ -44,20 +45,20 @@ public class RecombinationIssue extends QualityWarning {
 	}
 	
 	public String toString(){
-		String result = "Possible recombination: " + " - Distance to reference: " + distanceToReference + "\t";
+		String result = "Possible recombination: " + " - Distance to reference: \t" + distanceToReference + "\t";
 
-		result += "\nHG [Reference\t";
+		result += " HG [Reference \t";
 		for(int i = 0; i < referenceHaplogroups.size();i++){
-			result += referenceHaplogroups.get(i) + "\t";
+			result += referenceHaplogroups.get(i) + "  ";
 		}
 		
-		result += "\t] [Sample\t\t";
+		result += "\t ] [Sample \t";
 		for(int i = 0; i < currentSampleHaplogroups.size();i++){
-			result += currentSampleHaplogroups.get(i) + "\t";
+			result += currentSampleHaplogroups.get(i) + " ";
 		}
 		
 		if (customRanges!=null)
-		result+="] "+customRanges+"\t";
+		result+="\t]\t "+customRanges+" ";
 		return result;
 	}
 }

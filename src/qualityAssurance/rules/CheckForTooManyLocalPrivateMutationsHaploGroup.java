@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import qualityAssurance.QualityAssistent;
+import qualityAssurance.issues.IssueType;
 import qualityAssurance.issues.QualityWarning;
 import search.SearchResult;
 import core.Polymorphism;
@@ -94,7 +95,7 @@ public class CheckForTooManyLocalPrivateMutationsHaploGroup extends HaplogrepRul
 					if (count>=1) //at least 2 identical haplogroups per SNP
 						{
 						if (max<count){
-						result=" - "+(count+1)+" in "+entry.getKey()+" ["+entry.getValue()+"] ";
+						result=" - \t"+(count+1)+"\t in \t"+entry.getKey()+" \t["+entry.getValue()+"]\t ";
 						max=count;
 						}
 						}
@@ -104,7 +105,7 @@ public class CheckForTooManyLocalPrivateMutationsHaploGroup extends HaplogrepRul
 		
 		if(result.length() > 0)
 			qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, numLocalPrivateMuations + " local private " +
-					"mutation(s) found " + result));
+					"mutation(s) found " + result, IssueType.RECOMB2));
 		}
 	}
 

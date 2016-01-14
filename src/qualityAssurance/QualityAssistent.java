@@ -28,7 +28,7 @@ public class QualityAssistent {
 	int numIssues = 0;
 	int numIssuedWarnings = 0;
 	int numIssuedErrors = 0;
-
+	
 	public QualityAssistent(Collection<TestSample> fileToCheck, RuleSet usedRules, Phylotree usedPhyloTree) {
 		this.sampleToCheck = fileToCheck;
 		this.rules = usedRules;
@@ -185,6 +185,20 @@ public class QualityAssistent {
 		JSONArray jsonArray = JSONArray.fromObject(notSuppressedIssues, conf);
 
 		return jsonArray;
+	}
+	
+	public ArrayList<QualityIssue> getAllRecomb() {
+		
+		ArrayList<QualityIssue> notSuppressedIssues = new ArrayList<QualityIssue>();
+
+		for (QualityIssue currentIssue : issueLookup.values()) {
+			if (currentIssue.getPriority()>1){
+			if (!currentIssue.isSuppress())
+				notSuppressedIssues.add(currentIssue);
+			}
+		}
+		
+		return notSuppressedIssues;
 	}
 
 	public JSONArray getSampleIssues(TestSample testSample) {

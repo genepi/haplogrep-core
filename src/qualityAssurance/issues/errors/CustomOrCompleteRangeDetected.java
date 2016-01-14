@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import qualityAssurance.CorrectionMethod;
 import qualityAssurance.QualityAssistent;
+import qualityAssurance.issues.IssueType;
 import qualityAssurance.issues.QualityFatal;
 import qualityAssurance.issues.QualityIssue;
 
@@ -41,7 +42,7 @@ public class CustomOrCompleteRangeDetected extends QualityFatal {
     }
 	
 	public CustomOrCompleteRangeDetected(QualityAssistent assistent, TestSample sampleOfIssue) {
-		super(assistent, sampleOfIssue, "Complete or custom range recognized");
+		super(assistent, sampleOfIssue, "Complete or custom range recognized", IssueType.RANGE);
 		correctionMethods.add(new SetCompleteRange(correctionMethods.size(),this));
 		correctionMethods.add(new SetCustomRange(correctionMethods.size(),this));
 	}

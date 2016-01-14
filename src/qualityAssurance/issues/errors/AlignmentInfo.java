@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import qualityAssurance.CorrectionMethod;
 import qualityAssurance.QualityAssistent;
+import qualityAssurance.issues.IssueType;
 import qualityAssurance.issues.QualityFatal;
 import qualityAssurance.issues.QualityIssue;
 import qualityAssurance.issues.QualityWarning;
@@ -25,7 +26,7 @@ public class AlignmentInfo extends QualityWarning {
     }
 	
 	public AlignmentInfo(QualityAssistent assistent, TestSample sampleOfIssue,String id) {
-		super(assistent, sampleOfIssue,id);
+		super(assistent, sampleOfIssue,id,IssueType.ALIGN);
 		correctionMethods.add(new TestCorrectionMethod(correctionMethods.size(),this));
 	}
 

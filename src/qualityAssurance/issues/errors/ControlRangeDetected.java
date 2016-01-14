@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import qualityAssurance.CorrectionMethod;
 import qualityAssurance.QualityAssistent;
+import qualityAssurance.issues.IssueType;
 import qualityAssurance.issues.QualityFatal;
 import qualityAssurance.issues.QualityIssue;
 
@@ -26,7 +27,7 @@ public class ControlRangeDetected extends QualityFatal {
     }
 	
 	public ControlRangeDetected(QualityAssistent assistent, TestSample sampleOfIssue) {
-		super(assistent, sampleOfIssue, "Control range recognized");
+		super(assistent, sampleOfIssue, "Control range recognized", IssueType.RANGE);
 		correctionMethods.add(new SetControlRange(correctionMethods.size(),this));
 	}
 

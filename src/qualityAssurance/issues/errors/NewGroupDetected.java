@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import qualityAssurance.CorrectionMethod;
 import qualityAssurance.QualityAssistent;
+import qualityAssurance.issues.IssueType;
 import qualityAssurance.issues.QualityFatal;
 import qualityAssurance.issues.QualityIssue;
 import qualityAssurance.issues.QualityWarning;
@@ -49,7 +50,7 @@ public class NewGroupDetected extends QualityWarning {
 //		this.currentSampleHaplogroups = currentSampleHaplogroups;
 //	}
 	public NewGroupDetected(QualityAssistent assistent, TestSample sampleOfIssue,Haplogroup remainingHaplogroup,double remainingQuality) {
-		super(assistent, sampleOfIssue, "New haplogroup detected");
+		super(assistent, sampleOfIssue, "New haplogroup detected", IssueType.RECOMB2);
 		this.remainingHaplogroup = remainingHaplogroup;
 		this.remainingQuality = remainingQuality;
 	}

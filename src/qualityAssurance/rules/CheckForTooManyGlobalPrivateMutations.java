@@ -6,6 +6,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import qualityAssurance.QualityAssistent;
+import qualityAssurance.issues.IssueType;
 import qualityAssurance.issues.QualityWarning;
 import search.SearchResult;
 import core.Polymorphism;
@@ -33,7 +34,7 @@ public class CheckForTooManyGlobalPrivateMutations extends HaplogrepRule {
 		
 		if(numGlobalPrivateMuations > 2)
 			qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "The sample contains " + numGlobalPrivateMuations + " global private " +
-					"mutation(s) that are not known by Phylotree"));
+					"mutation(s) that are not known by Phylotree", IssueType.QUAL));
 		}
 	}
 

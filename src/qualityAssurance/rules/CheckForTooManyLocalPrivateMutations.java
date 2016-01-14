@@ -20,6 +20,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import qualityAssurance.QualityAssistent;
+import qualityAssurance.issues.IssueType;
 import qualityAssurance.issues.QualityInfo;
 import qualityAssurance.issues.QualityIssue;
 import qualityAssurance.issues.QualityWarning;
@@ -53,7 +54,7 @@ public class CheckForTooManyLocalPrivateMutations extends HaplogrepRule {
 		
 		if(numLocalPrivateMuations > 1)
 			qualityAssistent.addNewIssue(new QualityInfo(qualityAssistent, currentSample, "The sample contains " + numLocalPrivateMuations + " local private " +
-					"mutation(s) associated with other Haplogroups "));
+					"mutation(s) associated with other Haplogroups ", IssueType.QUAL));
 		}
 	}
 
