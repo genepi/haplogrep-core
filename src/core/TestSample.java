@@ -96,11 +96,13 @@ public class TestSample implements Comparable<TestSample>{
 			for (int i = 3; i < columns.length; i++) {
 				sampleString.append(columns[i] + " ");
 			}
-			parsedSample.sample = new Sample(sampleString.toString(),sampleRange, 0);
+				parsedSample.sample = new Sample(sampleString.toString(),sampleRange, 0);
+
 		} 
 		
 		//Something went wrong during the parse process. Throw exception.
 		 catch (InvalidPolymorphismException e) {
+			
 			HsdFileSampleParseException ex = new HsdFileSampleParseException(e.getMessage());
 			ex.setTestSampleID(parsedSample.testSampleID);
 			throw ex;

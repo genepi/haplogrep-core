@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 
 import qualityAssurance.QualityAssistent;
 import qualityAssurance.issues.IssueType;
+import qualityAssurance.issues.QualityFatal;
 import qualityAssurance.issues.QualityWarning;
 import search.SearchResult;
 import core.Polymorphism;
@@ -115,10 +116,10 @@ public class CheckForTooManyLocalPrivateMutationsHaploGroup extends HaplogrepRul
 		String line;
 		br.readLine(); //skip Header
 		while ((line = br.readLine()) != null) {
-			StringTokenizer st = new StringTokenizer(line, "\t");
+		   StringTokenizer st = new StringTokenizer(line, "\t");
 		   String pos = st.nextToken();
 		   st.nextToken();
-		    st.nextToken();
+		   st.nextToken();
 		   polyHG.put(pos, st.nextToken());
 		}
 		br.close();

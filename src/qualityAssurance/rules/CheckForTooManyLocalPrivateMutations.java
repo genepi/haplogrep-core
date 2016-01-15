@@ -53,7 +53,7 @@ public class CheckForTooManyLocalPrivateMutations extends HaplogrepRule {
 		}
 		
 		if(numLocalPrivateMuations > 1)
-			qualityAssistent.addNewIssue(new QualityInfo(qualityAssistent, currentSample, "The sample contains " + numLocalPrivateMuations + " local private " +
+			qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "The sample contains " + numLocalPrivateMuations + " local private " +
 					"mutation(s) associated with other Haplogroups ", IssueType.QUAL));
 		}
 	}

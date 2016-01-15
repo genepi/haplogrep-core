@@ -52,17 +52,20 @@ public class CheckForRecombinationRule extends HaplogrepRule {
 			ArrayList<Polymorphism> haplogroupDefiningPolys = resultSampleToCheck.get(0).getSearchResult().getDetailedResult().getExpectedPolys();	
 			TestSample haplogroupReferenceSample = new TestSample("hgReference", haplogroupDefiningPolys, sampleToCheck.getSample().getSampleRanges());
 			
+		
 			
 			//Use standard fragments ranges for complete and control range sample if no custom range is given.
 			SampleRanges ranges = customFragmentRanges;
+			try{
 			if(customFragmentRanges != null){
 
+				System.out.println(sampleToCheck.getSampleID() + " " + ranges );
 			//Create fragments and determine their respective haplogroups
 			ArrayList<TestSample> fragmentsReference = haplogroupReferenceSample.createFragments(ranges);
 			ArrayList<TestSample> fragmentsSampleToCheck = sampleToCheck.createFragments(ranges);
 			ArrayList<Haplogroup> referenceHaplogroups = new ArrayList<Haplogroup>();
 			ArrayList<Haplogroup> currentSampleHaplogroups = new ArrayList<Haplogroup>();
-			
+		
 			for(TestSample currentFragment : fragmentsReference){
 				referenceHaplogroups.add(
 				qualityAssistent.getUsedPhyloTree().search(currentFragment, new KylczynskiRanking(1)).get(0).getHaplogroup());
@@ -85,12 +88,18 @@ public class CheckForRecombinationRule extends HaplogrepRule {
 						overallDistance,referenceHaplogroups,currentSampleHaplogroups, customFragmentRanges.toString()));
 				passedTest = true;
 			}
+			
 		}
 		
 		//Increase quality level if no recombination has been found
 		if(passedTest)
 			sampleToCheck.setReachedQualityLevel(this.getPriority() + 1);
-	}
+	
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		}
 	}
 	
 	public void suppressIssues(QualityAssistent qualityAssistent, TestSample currentSample) {
