@@ -5,8 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import org.json.Kim;
+
 import qualityAssurance.QualityAssistent;
 import qualityAssurance.issues.errors.RecombinationIssue;
+import search.ranking.Kimura2PRanking;
 import search.ranking.KylczynskiRanking;
 import search.ranking.results.RankedResult;
 import core.Haplogroup;
@@ -68,18 +71,23 @@ public class CheckForRecombinationRule extends HaplogrepRule {
 		
 			for(TestSample currentFragment : fragmentsReference){
 				referenceHaplogroups.add(
-				qualityAssistent.getUsedPhyloTree().search(currentFragment, new KylczynskiRanking(1)).get(0).getHaplogroup());
+				qualityAssistent.getUsedPhyloTree().search(currentFragment, new Kimura2PRanking(1)).get(0).getHaplogroup());
 			}
 			
 			for(TestSample currentFragment : fragmentsSampleToCheck){
 				currentSampleHaplogroups.add(
-				qualityAssistent.getUsedPhyloTree().search(currentFragment, new KylczynskiRanking(1)).get(0).getHaplogroup());
+				qualityAssistent.getUsedPhyloTree().search(currentFragment, new Kimura2PRanking(1)).get(0).getHaplogroup());
 			}
 			
 			//Calculates the number of groups between reference and sample for each fragment and sums it up.
 			int overallDistance = 0;
 			for(int i = 0; i < referenceHaplogroups.size();i++){
-				overallDistance += qualityAssistent.getUsedPhyloTree().getDistanceBetweenHaplogroups(currentSampleHaplogroups.get(i),referenceHaplogroups.get(i));
+				if (!currentSampleHaplogroups.get(i).isSuperHaplogroup(qualityAssistent.getUsedPhyloTree(), referenceHaplogroups.get(i)))
+					{ 
+					//if (!referenceHaplogroups.get(i).isSuperHaplogroup(qualityAssistent.getUsedPhyloTree(), currentSampleHaplogroups.get(i))){
+						overallDistance += qualityAssistent.getUsedPhyloTree().getDistanceBetweenHaplogroups(currentSampleHaplogroups.get(i),referenceHaplogroups.get(i));
+					//}
+				}
 			}
 			
 			//If there differences (even with tolerance) create a recombination issue
