@@ -10,7 +10,7 @@ import org.json.Kim;
 import qualityAssurance.QualityAssistent;
 import qualityAssurance.issues.errors.RecombinationIssue;
 import search.ranking.Kimura2PRanking;
-import search.ranking.KylczynskiRanking;
+import search.ranking.KulczynskiRanking;
 import search.ranking.results.RankedResult;
 import core.Haplogroup;
 import core.Polymorphism;
@@ -51,7 +51,7 @@ public class CheckForRecombinationRule extends HaplogrepRule {
 		
 		if(!sampleToCheck.getSample().getSampleRanges().isCustomRange()){
 			//Create sample of the reference haplogroup
-			List<RankedResult> resultSampleToCheck = qualityAssistent.getUsedPhyloTree().search(sampleToCheck, new KylczynskiRanking(1));		
+			List<RankedResult> resultSampleToCheck = qualityAssistent.getUsedPhyloTree().search(sampleToCheck, new KulczynskiRanking(1));		
 			ArrayList<Polymorphism> haplogroupDefiningPolys = resultSampleToCheck.get(0).getSearchResult().getDetailedResult().getExpectedPolys();	
 			TestSample haplogroupReferenceSample = new TestSample("hgReference", haplogroupDefiningPolys, sampleToCheck.getSample().getSampleRanges());
 			
@@ -70,12 +70,12 @@ public class CheckForRecombinationRule extends HaplogrepRule {
 		
 			for(TestSample currentFragment : fragmentsReference){
 				referenceHaplogroups.add(
-				qualityAssistent.getUsedPhyloTree().search(currentFragment, new KylczynskiRanking(1)).get(0).getHaplogroup());
+				qualityAssistent.getUsedPhyloTree().search(currentFragment, new KulczynskiRanking(1)).get(0).getHaplogroup());
 			}
 			
 			for(TestSample currentFragment : fragmentsSampleToCheck){
 				currentSampleHaplogroups.add(
-				qualityAssistent.getUsedPhyloTree().search(currentFragment, new KylczynskiRanking(1)).get(0).getHaplogroup());
+				qualityAssistent.getUsedPhyloTree().search(currentFragment, new KulczynskiRanking(1)).get(0).getHaplogroup());
 			}
 			
 			//Calculates the number of groups between reference and sample for each fragment and sums it up.

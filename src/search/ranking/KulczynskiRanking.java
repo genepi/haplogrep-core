@@ -13,23 +13,23 @@ import core.TestSample;
  * @author Dominic Pacher, Sebastian Schoenherr, Hansi Weissensteiner
  * 
  */
-public class KylczynskiRanking extends RankingMethod {
+public class KulczynskiRanking extends RankingMethod {
 
 	/**
 	 * @see RankingMethod
 	 */
-	public KylczynskiRanking() {
+	public KulczynskiRanking() {
 		super();
 	}
 
 	/**
 	 * @see RankingMethod
 	 */
-	public KylczynskiRanking(int maxTopResults) {
+	public KulczynskiRanking(int maxTopResults) {
 		super(maxTopResults);
 	}
 	
-	public KylczynskiRanking(int maxTopResults, String name) {
+	public KulczynskiRanking(int maxTopResults, String name) {
 		super(maxTopResults, name);
 	}
 
@@ -58,6 +58,6 @@ public class KylczynskiRanking extends RankingMethod {
 	 */
 	@Override
 	public RankingMethod clone() {
-		return new KylczynskiRanking(maxTopResults);
+		return new KulczynskiRanking(maxTopResults);
 	}
 }

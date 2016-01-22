@@ -38,7 +38,7 @@ public class RuleSet {
 		addRule(new CheckForAlignmentWarnings(1));
 	//	addRule(new CheckForHeteroplasmy(1));
 		addRule(new CheckForQuality(1));
-	//	addRule(new CheckForRecombinationRule(4));
+		addRule(new CheckForRecombinationRule(4));
 	//	addRule(new CheckForPhantomMutation(1));
 		//TODO DEFINE RULES
 	}
