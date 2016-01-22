@@ -15,6 +15,7 @@ import core.TestSample;
 public abstract class RankingMethod {
 	ArrayList<RankedResult> results;
 	int maxTopResults = Integer.MAX_VALUE;
+	String name;
 
 	/**
 	 * Sets a new set of results for this ranking method
@@ -42,6 +43,20 @@ public abstract class RankingMethod {
 	RankingMethod(int maxTopResults) {
 		this.maxTopResults = maxTopResults;
 		results = new ArrayList<RankedResult>();
+	}
+	
+	RankingMethod(int maxTopResults, String name) {
+		this.maxTopResults = maxTopResults;
+		results = new ArrayList<RankedResult>();
+		this.name = name;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	/**

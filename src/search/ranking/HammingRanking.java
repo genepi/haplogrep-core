@@ -29,6 +29,10 @@ public class HammingRanking extends RankingMethod {
 		super(maxTopResults);
 	}
 	
+	public HammingRanking(int maxTopResults, String name){
+		super(maxTopResults,name);
+	}
+	
 	/* (non-Javadoc)
 	 * @see search.ranking.RankingMethod#setResults(core.TestSample, java.util.ArrayList)
 	 */

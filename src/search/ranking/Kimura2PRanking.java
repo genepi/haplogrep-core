@@ -16,7 +16,7 @@ import core.TestSample;
  * 
  */
 public class Kimura2PRanking extends RankingMethod {
-
+	
 	/**
 	 * @see RankingMethod
 	 */
@@ -29,6 +29,10 @@ public class Kimura2PRanking extends RankingMethod {
 	 */
 	public Kimura2PRanking(int maxTopResults) {
 		super(maxTopResults);
+	}
+	
+	public Kimura2PRanking(int maxTopResults, String name) {
+		super(maxTopResults, name);
 	}
 
 	/*

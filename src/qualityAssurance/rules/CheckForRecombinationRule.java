@@ -62,7 +62,6 @@ public class CheckForRecombinationRule extends HaplogrepRule {
 			try{
 			if(customFragmentRanges != null){
 
-				System.out.println(sampleToCheck.getSampleID() + " " + ranges );
 			//Create fragments and determine their respective haplogroups
 			ArrayList<TestSample> fragmentsReference = haplogroupReferenceSample.createFragments(ranges);
 			ArrayList<TestSample> fragmentsSampleToCheck = sampleToCheck.createFragments(ranges);
@@ -71,12 +70,12 @@ public class CheckForRecombinationRule extends HaplogrepRule {
 		
 			for(TestSample currentFragment : fragmentsReference){
 				referenceHaplogroups.add(
-				qualityAssistent.getUsedPhyloTree().search(currentFragment, new Kimura2PRanking(1)).get(0).getHaplogroup());
+				qualityAssistent.getUsedPhyloTree().search(currentFragment, new KylczynskiRanking(1)).get(0).getHaplogroup());
 			}
 			
 			for(TestSample currentFragment : fragmentsSampleToCheck){
 				currentSampleHaplogroups.add(
-				qualityAssistent.getUsedPhyloTree().search(currentFragment, new Kimura2PRanking(1)).get(0).getHaplogroup());
+				qualityAssistent.getUsedPhyloTree().search(currentFragment, new KylczynskiRanking(1)).get(0).getHaplogroup());
 			}
 			
 			//Calculates the number of groups between reference and sample for each fragment and sums it up.

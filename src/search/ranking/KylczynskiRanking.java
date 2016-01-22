@@ -28,6 +28,10 @@ public class KylczynskiRanking extends RankingMethod {
 	public KylczynskiRanking(int maxTopResults) {
 		super(maxTopResults);
 	}
+	
+	public KylczynskiRanking(int maxTopResults, String name) {
+		super(maxTopResults, name);
+	}
 
 	/*
 	 * (non-Javadoc)

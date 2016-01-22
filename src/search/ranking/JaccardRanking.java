@@ -29,6 +29,10 @@ public class JaccardRanking extends RankingMethod {
 	public JaccardRanking(int maxTopResults) {
 		super(maxTopResults);
 	}
+	
+	public JaccardRanking(int maxTopResults, String name) {
+		super(maxTopResults, name);
+	}
 
 	/*
 	 * (non-Javadoc)
