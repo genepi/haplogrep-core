@@ -7,6 +7,7 @@ import org.apache.commons.logging.LogFactory;
 
 import qualityAssurance.QualityAssistent;
 import qualityAssurance.issues.IssueType;
+import qualityAssurance.issues.QualityFatal;
 import qualityAssurance.issues.QualityWarning;
 import search.SearchResult;
 import core.Polymorphism;
@@ -24,17 +25,9 @@ public class CheckForTooManyNotFound extends HaplogrepRule {
 	public void evaluate(QualityAssistent qualityAssistent, TestSample currentSample) {
 		if(currentSample.getResults().size() != 0){
 		SearchResult topResult = currentSample.getResults().get(0).getSearchResult();
-		int numGlobalPrivateMuations = 0;
-
 		
-		for(Polymorphism currentRemainingPoly : topResult.getDetailedResult().getRemainingPolysInSample()){
-			if(!currentRemainingPoly.isMTHotspot() && qualityAssistent.getUsedPhyloTree().getMutationRate(currentRemainingPoly) == 0 && !(currentRemainingPoly.equalsReference()))
-				numGlobalPrivateMuations++;
-		}
-		
-		if(numGlobalPrivateMuations > 2)
-			qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "The sample contains " + numGlobalPrivateMuations + " global private " +
-					"mutation(s) that are not known by Phylotree", IssueType.QUAL));
+		if(topResult.getDetailedResult().getFoundNotFoundPolysArray().size() > 2)
+			qualityAssistent.addNewIssue(new QualityFatal(qualityAssistent, currentSample, "The sample misses " + topResult.getDetailedResult().getFoundNotFoundPolysArray().size() + " expected polymorphisms ", IssueType.QUAL));
 		}
 	}
 

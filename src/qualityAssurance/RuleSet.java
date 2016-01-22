@@ -7,6 +7,7 @@ import core.TestSample;
 import qualityAssurance.issues.QualityIssue;
 import qualityAssurance.rules.CheckExpectedHGMatchesDetectedHG;
 import qualityAssurance.rules.CheckForAlignmentWarnings;
+import qualityAssurance.rules.CheckForAmbiguosResult;
 import qualityAssurance.rules.CheckForHeteroplasmy;
 import qualityAssurance.rules.CheckForQuality;
 import qualityAssurance.rules.CheckForRecombinationRule;
@@ -17,6 +18,7 @@ import qualityAssurance.rules.CheckForSampleRange;
 import qualityAssurance.rules.CheckForTooManyGlobalPrivateMutations;
 import qualityAssurance.rules.CheckForTooManyLocalPrivateMutations;
 import qualityAssurance.rules.CheckForTooManyLocalPrivateMutationsHaploGroup;
+import qualityAssurance.rules.CheckForTooManyNotFound;
 import qualityAssurance.rules.HaplogrepRule;
 
 public class RuleSet {
@@ -33,6 +35,8 @@ public class RuleSet {
 		addRule(new CheckExpectedHGMatchesDetectedHG(1));
 	//	addRule(new CheckForReferencePolymorhisms(1));
 		addRule(new CheckForTooManyGlobalPrivateMutations(1));
+		addRule(new CheckForTooManyNotFound(1));
+		addRule(new CheckForAmbiguosResult(1));
 		addRule(new CheckForTooManyLocalPrivateMutations(1));
 		addRule(new CheckForTooManyLocalPrivateMutationsHaploGroup(1));
 		addRule(new CheckForAlignmentWarnings(1));

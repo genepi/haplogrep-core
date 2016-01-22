@@ -386,6 +386,33 @@ public class SearchResultDetailed implements Serializable {
 
 		return results;
 	}
+	
+	
+	/**
+	 * Converts all found and not found polymorphisms to one xml representation.
+	 * 
+	 * @return The root element of the xml representation
+	 */
+	public ArrayList<Polymorphism> getFoundNotFoundPolysArray() {
+		
+		Collections.sort(expectedPolys);
+		ArrayList<Polymorphism> results= new ArrayList<Polymorphism>();
+		ArrayList<Polymorphism> unusedPolysArray = new ArrayList<Polymorphism>();
+		unusedPolysArray.addAll(searchResult.getSample().getPolymorphisms());
+
+		for (Polymorphism current : expectedPolys) {
+
+			// The polymorphism is contained in this haplogroup
+			if (!foundPolys.contains(current)) {
+				
+				results.add(current);
+			}
+
+		}
+
+		return results;
+	}
+	
 
 	/**
 	 * Converts the path of this result to an xml representation
