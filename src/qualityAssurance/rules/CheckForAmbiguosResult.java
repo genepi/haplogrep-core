@@ -8,6 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import qualityAssurance.QualityAssistent;
 import qualityAssurance.issues.IssueType;
 import qualityAssurance.issues.QualityFatal;
+import qualityAssurance.issues.QualityInfo;
 import qualityAssurance.issues.QualityWarning;
 import search.SearchResult;
 import search.ranking.results.KylczynskiResult;
@@ -31,7 +32,7 @@ public class CheckForAmbiguosResult extends HaplogrepRule {
 			secondResult = currentSample.getResults().get(1).getSearchResult();
 		
 		if (topResult.getSumWeightsAllPolysSample() == secondResult.getSumWeightsAllPolysSample() && topResult.getWeightFoundPolys() == secondResult.getWeightFoundPolys() && topResult.getWeightRemainingPolys() == secondResult.getWeightRemainingPolys())
-				qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "The sample shows ambigous best results  " + topResult.getHaplogroup() + " / " + secondResult.getHaplogroup(), IssueType.QUAL));
+				qualityAssistent.addNewIssue(new QualityInfo(qualityAssistent, currentSample, "The sample shows ambigous best results  " + topResult.getHaplogroup() + " / " + secondResult.getHaplogroup(), IssueType.QUAL));
 		}
 	}
 
