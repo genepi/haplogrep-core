@@ -20,6 +20,7 @@ import qualityAssurance.rules.CheckForTooManyLocalPrivateMutations;
 import qualityAssurance.rules.CheckForTooManyLocalPrivateMutationsHaploGroup;
 import qualityAssurance.rules.CheckForTooManyN;
 import qualityAssurance.rules.CheckForTooManyNotFound;
+import qualityAssurance.rules.CheckForTooManyRCRSpos;
 import qualityAssurance.rules.HaplogrepRule;
 
 public class RuleSet {
@@ -43,6 +44,7 @@ public class RuleSet {
 		addRule(new CheckForAlignmentWarnings(1));
 		addRule(new CheckForHeteroplasmy(1));
 		addRule(new CheckForTooManyN(1));
+		addRule(new CheckForTooManyRCRSpos(1));
 		addRule(new CheckForQuality(1));
 		addRule(new CheckForRecombinationRule(4));
 	//	addRule(new CheckForPhantomMutation(1));
