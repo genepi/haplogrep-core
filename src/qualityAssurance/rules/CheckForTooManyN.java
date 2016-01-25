@@ -10,14 +10,15 @@ import qualityAssurance.issues.IssueType;
 import qualityAssurance.issues.QualityInfo;
 import qualityAssurance.issues.QualityWarning;
 import search.SearchResult;
+import core.Mutations;
 import core.Polymorphism;
 import core.TestSample;
 
-public class CheckForHeteroplasmy extends HaplogrepRule {
+public class CheckForTooManyN extends HaplogrepRule {
 
-	static final Log log = LogFactory.getLog(CheckForHeteroplasmy.class);
+	static final Log log = LogFactory.getLog(CheckForTooManyN.class);
 	
-	public CheckForHeteroplasmy(int priority) {
+	public CheckForTooManyN(int priority) {
 		super(priority);
 	}
 
@@ -29,16 +30,16 @@ public class CheckForHeteroplasmy extends HaplogrepRule {
 		StringBuffer listHeteroplasmy = new StringBuffer();
 		
 		for(Polymorphism currentRemainingPoly : currentSample.getSample().getPolymorphisms()){
-			if(currentRemainingPoly.isHeteroplasmy()){
+			if(currentRemainingPoly.getMutation().equals(Mutations.N)){
 			listHeteroplasmy.append(currentRemainingPoly+"\t");
 				numAlignWarning++;
 			}
 		}
 		
 		if(numAlignWarning == 1)
-			qualityAssistent.addNewIssue(new QualityInfo(qualityAssistent, currentSample, "The sample contains " + numAlignWarning + " heteroplasmic position: " + listHeteroplasmy, IssueType.HETEROPLASMY)); 
+			qualityAssistent.addNewIssue(new QualityInfo(qualityAssistent, currentSample, "The sample contains " + numAlignWarning + " undetermined variant: " + listHeteroplasmy, IssueType.ALIGN)); 
 		else if(numAlignWarning > 1)
-			qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "The sample contains " + numAlignWarning + " heteroplasmic positions: " + listHeteroplasmy, IssueType.HETEROPLASMY)); 
+			qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "The sample contains " + numAlignWarning + " undetermined variants: " + listHeteroplasmy, IssueType.ALIGN)); 
 		}
 	}
 

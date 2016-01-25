@@ -88,7 +88,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	
 	public Polymorphism(String phyloString, boolean Heteroplasmy) throws InvalidPolymorphismException {
 		parse(phyloString);
-		this.setHeteroplasmy(false); //TODO CHECK HETEREOPLASMY
+		this.setHeteroplasmy(Heteroplasmy); //TODO CHECK HETEREOPLASMY
 		hashCode = toString().hashCode();
 	}
 

@@ -146,7 +146,7 @@ public class PhylotreeRenderer {
 			imageWidth = 300;
 
 		int treeHeight = r.getMaxHeight() + 50;
-		int imageHeight = treeHeight + g2.getFontMetrics().getHeight() * 6 + 10;
+		int imageHeight = treeHeight + g2.getFontMetrics().getHeight() * 7 + 10; //7 lines in Box
 
 		document = domImpl.createDocument(svgNS, "svg", null);
 
@@ -197,12 +197,17 @@ public class PhylotreeRenderer {
 		g2.drawString("@ = assumed back mutation", 30, boxY);
 		boxY += g2.getFontMetrics().getHeight();
 		g2.drawString("or missing mutation", 30 + g2.getFontMetrics().stringWidth("@ = "), boxY);
+		boxY += g2.getFontMetrics().getHeight();
+		g2.setColor(Color.gray);
+		g2.drawString("Heteroplasmic mutation", 30, boxY);
+		boxY += g2.getFontMetrics().getHeight();
+		boxY += g2.getFontMetrics().getHeight();
 //		g2.setColor(Color.black);
 //		g2.drawString("mis = missing mutation", 30, boxY);
 		// boxY += g2.getFontMetrics().getHeight();
 
 		g2.setColor(new Color(0, 0, 0));
-		g2.draw3DRect(20, treeHeight, boxWidth, boxY + 5 - treeHeight, true);
+		g2.draw3DRect(20, treeHeight, boxWidth, boxY + 10 - treeHeight, true);
 
 //		if (watermark != null && imageWidth - boxWidth > watermark.getWidth())
 //			g2.drawImage(watermark, imageWidth - watermark.getWidth(), imageHeight - watermark.getHeight(), null);
@@ -651,6 +656,10 @@ public class PhylotreeRenderer {
 			else if (currentPoly.isBackMutation()) {
 				g2d.setColor(Color.black);
 			}
+			else if (currentPoly.isHeteroplasmy()) {
+				g2d.setColor(Color.gray);
+			}
+			
 			else if (phyloTree.getMutationRate(currentPoly) == 0) {
 				g2d.setColor(Color.red);
 			}		
