@@ -58,7 +58,6 @@ public class CheckForTooManyLocalPrivateMutationsHaploGroup extends HaplogrepRul
 
 			
 		} catch (IOException e) {
-			System.out.println(e);
 			e.printStackTrace();
 		}
 		
@@ -78,7 +77,6 @@ public class CheckForTooManyLocalPrivateMutationsHaploGroup extends HaplogrepRul
 				StringTokenizer st = new StringTokenizer(polyHG.get(currentRemainingPoly.toString()), ",");
 				while (st.hasMoreTokens()){
 					String HG = st.nextToken();
-			//		System.out.println("////////\\///// "+HG);
 					if (map.containsKey(HG))
 					{
 					String count = map.get(HG);

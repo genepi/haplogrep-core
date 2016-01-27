@@ -235,7 +235,7 @@ public class QualityAssuranceTests<K> {
 		for(TestSample currentSample : samplesToRecombinate.getTestSamples()){
 			Haplogroup haplogroup = phylotee.search(currentSample, new HammingRanking(1)).get(0).getHaplogroup();
 			haplogroupsOfFragments.add(haplogroup);
-			fragments.add(currentSample.createFragments(ranges));
+			fragments.add(currentSample.createFragmentsSimple(ranges));
 		}
 		
 		Random r = new Random(5);

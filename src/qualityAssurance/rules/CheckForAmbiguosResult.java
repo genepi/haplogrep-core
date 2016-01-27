@@ -28,7 +28,7 @@ public class CheckForAmbiguosResult extends HaplogrepRule {
 		if(currentSample.getResults().size() != 0){
 		SearchResult topResult = currentSample.getResults().get(0).getSearchResult();
 		SearchResult secondResult= null;
-		if (currentSample.getResults().size()>2)
+		if (currentSample.getResults().size()>=2)
 			secondResult = currentSample.getResults().get(1).getSearchResult();
 		
 		if (topResult.getSumWeightsAllPolysSample() == secondResult.getSumWeightsAllPolysSample() && topResult.getWeightFoundPolys() == secondResult.getWeightFoundPolys() && topResult.getWeightRemainingPolys() == secondResult.getWeightRemainingPolys())

@@ -25,6 +25,8 @@ public class SampleRanges {
 	private ArrayList<Integer> starts = new ArrayList<Integer>();
 	private ArrayList<Integer> ends = new ArrayList<Integer>();
 	static HashSet<Integer> metaboChipPositions = null;
+	private int length;
+	
 	/**
 	 * Creates empty range.
 	 */
@@ -84,6 +86,8 @@ public class SampleRanges {
 			return;
 
 		String[] ranges = rangesToParse.split(";");
+		
+		this.length = ranges.length;
 
 		for (int i = 0; i < ranges.length; i++) {
 			// A range was defined
@@ -326,4 +330,14 @@ public class SampleRanges {
 		newSubrange.addCustomRange(starts.get(i), ends.get(i));
 		return newSubrange;
 	}
+	
+	public int getLength() {
+		return length;
+	}
+
+	public void setLength(int length) {
+		this.length = length;
+	}
+
+	
 }

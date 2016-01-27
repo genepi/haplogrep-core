@@ -29,7 +29,7 @@ public class TestSamplesTests {
 		fragmentRanges.addCustomRange(101, 2000);
 		fragmentRanges.addCustomRange(2000, 16000);
 		fragmentRanges.addCustomRange(16000, 100);
-		ArrayList<TestSample> fragments = testSample.createFragments(fragmentRanges);
+		ArrayList<TestSample> fragments = testSample.createFragmentsSimple(fragmentRanges);
 		
 		Assert.assertNotNull(fragments);
 		Assert.assertEquals(fragments.get(0).getSample().getPolymorphisms().get(0), new Polymorphism("236G"));

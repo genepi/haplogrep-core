@@ -76,12 +76,6 @@ public class TestSample implements Comparable<TestSample>{
 			columns[1] = columns[1].replaceAll("\"", "");
 			
 			/** Haplogrep 2.0 calculates complete range every time, decided not to use it */
-			/*columns[1] = columns[1].replaceAll("\\s", "");
-			String a = columns[1].trim();
-			Matcher m = p.matcher(a);
-			if(m.matches())
-				columnPos=2;
-			else columnPos=1;*/
 			
 			sampleRange = new SampleRanges(columns[1], true); //true for split Range
 
@@ -419,7 +413,7 @@ public class TestSample implements Comparable<TestSample>{
 		this.qualityRulesLevelReached = level;
 	}
 	
-	public ArrayList<TestSample> createFragments(SampleRanges fragmentRanges) {
+	public ArrayList<TestSample> createFragmentsOld(SampleRanges fragmentRanges) {
 
 		HashMap<Integer, ArrayList<Polymorphism>> fragmentsHashMap = new HashMap<Integer, ArrayList<Polymorphism>>(); // MultiMap
 		ArrayList<TestSample> resultFragments = new ArrayList<TestSample>();
@@ -439,12 +433,25 @@ public class TestSample implements Comparable<TestSample>{
 
 		}
 		int i = 0;
+		
 		for(ArrayList<Polymorphism> currentFragment : fragmentsHashMap.values()){
 			resultFragments.add( new TestSample(testSampleID  + "_Frag_" + (fragmentRanges.getStarts().get(i)), currentFragment,fragmentRanges.getSubrange(i)));
 			i++;
 		}
 		
 		return resultFragments;
+	}
+	
+	public ArrayList<TestSample> createFragmentsSimple(SampleRanges fragmentRanges) {
+
+	ArrayList<TestSample> resultFragments = new ArrayList<TestSample>();
+
+	
+	for(int i = 0; i <  fragmentRanges.getStarts().size();i++){
+		resultFragments.add( new TestSample(testSampleID  + "_Frag_" + (fragmentRanges.getStarts().get(i)), sample.getPolymorphisms(),fragmentRanges.getSubrange(i)));
+			
+	}
+	return resultFragments;
 	}
 
 	public void setDetectedHaplogroup(Haplogroup detectedHaplogroup) {

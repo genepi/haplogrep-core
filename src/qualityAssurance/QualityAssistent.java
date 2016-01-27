@@ -54,7 +54,6 @@ public class QualityAssistent {
 							currentRule.suppressIssues(this, currentSample);
 					}
 				}
-				System.out.println("ALLPOLYS " + allPolys.size() + allPolys.keySet());
 			}
 		}
 	}

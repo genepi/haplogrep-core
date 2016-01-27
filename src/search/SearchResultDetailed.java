@@ -62,8 +62,6 @@ public class SearchResultDetailed implements Serializable {
 
 			SearchResultTreeNode newNode = new SearchResultTreeNode(startNode);
 			for (Polymorphism currentExpectedPoly : startNode.getExpectedPolys()) {
-				// System.out.println("CURRENT " + currentExpectedPoly +
-				// " "+currentExpectedPoly.isHeteroplasmy());
 
 				if (!currentExpectedPoly.getMutation().equals("INS"))
 

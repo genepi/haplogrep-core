@@ -1,6 +1,5 @@
 package qualityAssurance.rules;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -18,8 +17,7 @@ import core.SampleRanges;
 import core.TestSample;
 
 /**
- * @author Dominic
- *	Checks a given sample for recombination. 
+ * @author Dominic Checks a given sample for recombination.
  */
 public class CheckForRecombinationRule extends HaplogrepRule {
 	ArrayList<Polymorphism> foundReferencePolys = new ArrayList<Polymorphism>();
@@ -28,87 +26,88 @@ public class CheckForRecombinationRule extends HaplogrepRule {
 	 * Custom fragment ranges to use. If NULL standard ranges are used
 	 */
 	SampleRanges customFragmentRanges = null;
-	
+
 	/**
 	 * The number of haplogroups the sample may differ overall fragments
 	 */
 	int haplogroupTolerance;
-	
-	public CheckForRecombinationRule(int tolerance){
+
+	public CheckForRecombinationRule(int tolerance) {
 		super(0);
-		this.haplogroupTolerance =tolerance;
+		this.haplogroupTolerance = tolerance;
 	}
-	
-	public CheckForRecombinationRule(int tolerance,SampleRanges customFragmentRanges){
+
+	public CheckForRecombinationRule(int tolerance, SampleRanges customFragmentRanges) {
 		super(0);
 		this.customFragmentRanges = customFragmentRanges;
 		this.haplogroupTolerance = tolerance;
 	}
-	
+
 	@Override
 	public void evaluate(QualityAssistent qualityAssistent, TestSample sampleToCheck) {
 		boolean passedTest = true;
-		
-		if(!sampleToCheck.getSample().getSampleRanges().isCustomRange()){
-			//Create sample of the reference haplogroup
-			List<RankedResult> resultSampleToCheck = qualityAssistent.getUsedPhyloTree().search(sampleToCheck, new KulczynskiRanking(1));		
-			ArrayList<Polymorphism> haplogroupDefiningPolys = resultSampleToCheck.get(0).getSearchResult().getDetailedResult().getExpectedPolys();	
-			TestSample haplogroupReferenceSample = new TestSample("hgReference", haplogroupDefiningPolys, sampleToCheck.getSample().getSampleRanges());
-			
-		
-			
-			//Use standard fragments ranges for complete and control range sample if no custom range is given.
-			SampleRanges ranges = customFragmentRanges;
-			try{
-			if(customFragmentRanges != null){
 
-			//Create fragments and determine their respective haplogroups
-			ArrayList<TestSample> fragmentsReference = haplogroupReferenceSample.createFragments(ranges);
-			ArrayList<TestSample> fragmentsSampleToCheck = sampleToCheck.createFragments(ranges);
-			ArrayList<Haplogroup> referenceHaplogroups = new ArrayList<Haplogroup>();
-			ArrayList<Haplogroup> currentSampleHaplogroups = new ArrayList<Haplogroup>();
-		
-			for(TestSample currentFragment : fragmentsReference){
-				referenceHaplogroups.add(
-				qualityAssistent.getUsedPhyloTree().search(currentFragment, new KulczynskiRanking(1)).get(0).getHaplogroup());
-			}
-			
-			for(TestSample currentFragment : fragmentsSampleToCheck){
-				currentSampleHaplogroups.add(
-				qualityAssistent.getUsedPhyloTree().search(currentFragment, new KulczynskiRanking(1)).get(0).getHaplogroup());
-			}
-			
-			//Calculates the number of groups between reference and sample for each fragment and sums it up.
-			int overallDistance = 0;
-			for(int i = 0; i < referenceHaplogroups.size();i++){
-				if (!currentSampleHaplogroups.get(i).isSuperHaplogroup(qualityAssistent.getUsedPhyloTree(), referenceHaplogroups.get(i)))
-					{ 
-					//if (!referenceHaplogroups.get(i).isSuperHaplogroup(qualityAssistent.getUsedPhyloTree(), currentSampleHaplogroups.get(i))){
-						overallDistance += qualityAssistent.getUsedPhyloTree().getDistanceBetweenHaplogroups(currentSampleHaplogroups.get(i),referenceHaplogroups.get(i));
-					//}
+		if (!sampleToCheck.getSample().getSampleRanges().isCustomRange()) {
+			// Create sample of the reference haplogroup
+			List<RankedResult> resultSampleToCheck = qualityAssistent.getUsedPhyloTree().search(sampleToCheck, new KulczynskiRanking(1));
+			ArrayList<Polymorphism> haplogroupDefiningPolys = resultSampleToCheck.get(0).getSearchResult().getDetailedResult().getExpectedPolys();
+			TestSample haplogroupReferenceSample = new TestSample("hgReference", haplogroupDefiningPolys, sampleToCheck.getSample().getSampleRanges());
+
+			// Use standard fragments ranges for complete and control range
+			// sample if no custom range is given.
+			SampleRanges ranges = customFragmentRanges;
+			try {
+
+				if (customFragmentRanges != null) {
+					haplogroupReferenceSample.createFragmentsSimple(ranges);
+					ArrayList<TestSample> fragmentsReference = haplogroupReferenceSample.createFragmentsSimple(ranges);
+					ArrayList<TestSample> fragmentsSampleToCheck = sampleToCheck.createFragmentsSimple(ranges);
+					ArrayList<Haplogroup> referenceHaplogroups = new ArrayList<Haplogroup>();
+					ArrayList<Haplogroup> currentSampleHaplogroups = new ArrayList<Haplogroup>();
+
+					for (TestSample currentFragment : fragmentsReference) {
+						referenceHaplogroups.add(qualityAssistent.getUsedPhyloTree().search(currentFragment, new KulczynskiRanking(1)).get(0).getHaplogroup());
+					}
+
+					for (TestSample currentFragment : fragmentsSampleToCheck) {
+						currentSampleHaplogroups.add(qualityAssistent.getUsedPhyloTree().search(currentFragment, new KulczynskiRanking(1)).get(0)
+								.getHaplogroup());
+					}
+
+					// Calculates the number of groups between reference and
+					// sample for each fragment and sums it up.
+					int overallDistance = 0;
+					for (int i = 0; i < referenceHaplogroups.size(); i++) {
+						if (!currentSampleHaplogroups.get(i).isSuperHaplogroup(qualityAssistent.getUsedPhyloTree(), referenceHaplogroups.get(i))) {
+							// if
+							// (!referenceHaplogroups.get(i).isSuperHaplogroup(qualityAssistent.getUsedPhyloTree(),
+							// currentSampleHaplogroups.get(i))){
+							overallDistance += qualityAssistent.getUsedPhyloTree().getDistanceBetweenHaplogroups(currentSampleHaplogroups.get(i),
+									referenceHaplogroups.get(i));
+							// }
+						}
+					}
+
+					// If there differences (even with tolerance) create a
+					// recombination issue
+					if (overallDistance > haplogroupTolerance) {
+						qualityAssistent.addNewIssue(new RecombinationIssue(qualityAssistent, sampleToCheck, overallDistance, referenceHaplogroups,
+								currentSampleHaplogroups, customFragmentRanges.toString()));
+						passedTest = true;
+					}
+
 				}
+
+				// Increase quality level if no recombination has been found
+				if (passedTest)
+					sampleToCheck.setReachedQualityLevel(this.getPriority() + 1);
+
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			
-			//If there differences (even with tolerance) create a recombination issue
-			if(overallDistance > haplogroupTolerance){
-				qualityAssistent.addNewIssue(new RecombinationIssue(qualityAssistent, sampleToCheck,
-						overallDistance,referenceHaplogroups,currentSampleHaplogroups, customFragmentRanges.toString()));
-				passedTest = true;
-			}
-			
-		}
-		
-		//Increase quality level if no recombination has been found
-		if(passedTest)
-			sampleToCheck.setReachedQualityLevel(this.getPriority() + 1);
-	
-		}catch(Exception e)
-		{
-			e.printStackTrace();
-		}
 		}
 	}
-	
+
 	public void suppressIssues(QualityAssistent qualityAssistent, TestSample currentSample) {
 
 	}
