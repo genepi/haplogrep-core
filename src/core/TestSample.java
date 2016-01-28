@@ -394,6 +394,13 @@ public class TestSample implements Comparable<TestSample>{
 		return 
 				new JSONArray();
 	}
+	
+	/**
+	 * @return The search results in clustered by the equal distances. Ranked by the used ranking method
+	 */
+	public ClusteredSearchResults getClusteredSearchResultsSeb() {
+		return clusteredResults;
+	}
 
 	/**
 	 * @return The top result of for this test sample

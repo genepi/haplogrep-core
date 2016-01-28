@@ -388,7 +388,7 @@ public class SampleFile {
 		}
 		renderer.setDpi(resolution);
 
-		image = renderer.createImage(format, "Overview" + sessionID + "." + format, includeHotspots, includeAAC);
+		image = renderer.createImage(format, "download/phylogeneticTree_" + System.currentTimeMillis() + "." + format, includeHotspots, includeAAC);
 
 		return image;
 	}
