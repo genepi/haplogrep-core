@@ -296,21 +296,26 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		StringTokenizer st1 = null;
 		stringToParse = stringToParse.trim();
 
-	   if (stringToParse.contains("R")) {
- 	   this.position = Integer.valueOf(stringToParse.substring(0,stringToParse.length()-1));
-
-		   if (getReferenceBase(position).equals("A"))
-			   this.mutation=Mutations.G;
-		   if (getReferenceBase(position).equals("G"))
-			   this.mutation=Mutations.A;
-	   }
-	   if (stringToParse.contains("Y")){
+	   try {
+		if (stringToParse.contains("R")) {
 		   this.position = Integer.valueOf(stringToParse.substring(0,stringToParse.length()-1));
-		   if (getReferenceBase(position).equals("C"))
-			   this.mutation=Mutations.T;
-		   if (getReferenceBase(position).equals("T"))
-			   this.mutation=Mutations.C;
-	   }
+
+			   if (getReferenceBase(position).equals("A"))
+				   this.mutation=Mutations.G;
+			   if (getReferenceBase(position).equals("G"))
+				   this.mutation=Mutations.A;
+		   }
+		   if (stringToParse.contains("Y")){
+			   this.position = Integer.valueOf(stringToParse.substring(0,stringToParse.length()-1));
+			   if (getReferenceBase(position).equals("C"))
+				   this.mutation=Mutations.T;
+			   if (getReferenceBase(position).equals("T"))
+				   this.mutation=Mutations.C;
+		   }
+	} catch (NumberFormatException e1) {
+		// TODO Auto-generated catch block
+		throw new InvalidPolymorphismException(stringToParse);
+	}
 		 
 		
 		// Only use part in parentheses
@@ -384,10 +389,14 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 			if (m.find()) {
 				try {
 					this.mutation = Mutations.getBase(stringToParse.substring(m.start(), m.end()));
+					this.position = Integer.valueOf(stringToParse.replaceFirst("[a-zA-Z]", ""));
 				} catch (InvalidBaseException e) {
 					throw new InvalidPolymorphismException(stringToParse, stringToParse.substring(m.start(), m.end()));
 				}
-				this.position = Integer.valueOf(stringToParse.replaceFirst("[a-zA-Z]", ""));
+				catch (NumberFormatException e) {
+					throw new InvalidPolymorphismException(stringToParse);
+				}
+				
 				}
 
 			else {
@@ -407,7 +416,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 				 position = Integer.valueOf(stringToParse);
 				try {
 					getTransitionPoly(position);
-				} catch (InvalidBaseException e) {
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					position=0;
 					e.printStackTrace();
