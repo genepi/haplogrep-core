@@ -1,5 +1,6 @@
 package qualityAssurance.rules;
 
+import java.util.ArrayList;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -10,8 +11,10 @@ import qualityAssurance.issues.IssueType;
 import qualityAssurance.issues.QualityFatal;
 import qualityAssurance.issues.QualityInfo;
 import qualityAssurance.issues.QualityWarning;
+import search.ClusteredSearchResults;
 import search.SearchResult;
 import search.ranking.results.KylczynskiResult;
+import search.ranking.results.RankedResult;
 import core.Polymorphism;
 import core.TestSample;
 
@@ -26,13 +29,10 @@ public class CheckForAmbiguosResult extends HaplogrepRule {
 	@Override
 	public void evaluate(QualityAssistent qualityAssistent, TestSample currentSample) {
 		if(currentSample.getResults().size() != 0){
-		SearchResult topResult = currentSample.getResults().get(0).getSearchResult();
-		SearchResult secondResult= null;
-		if (currentSample.getResults().size()>=2)
-			secondResult = currentSample.getResults().get(1).getSearchResult();
+		 ArrayList<RankedResult> topResult = currentSample.getClusteredSearchResultsAsObject().getCluster(currentSample.getTopResult().getHaplogroup());
 		
-		if (topResult.getSumWeightsAllPolysSample() == secondResult.getSumWeightsAllPolysSample() && topResult.getWeightFoundPolys() == secondResult.getWeightFoundPolys() && topResult.getWeightRemainingPolys() == secondResult.getWeightRemainingPolys())
-				qualityAssistent.addNewIssue(new QualityInfo(qualityAssistent, currentSample, "The sample shows ambigous best results  " + topResult.getHaplogroup() + " / " + secondResult.getHaplogroup(), IssueType.QUAL));
+	if (topResult.size()>1)
+			qualityAssistent.addNewIssue(new QualityInfo(qualityAssistent, currentSample, "The sample shows ambigous best results "  , IssueType.QUAL));
 		}
 	}
 
