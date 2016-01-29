@@ -289,14 +289,14 @@ public class SampleFile {
 		usedPhyloTreeLastRun = phylotree;
 		usedRankingMethodLastRun = rankingMethod;
 		
-		if(qualityAssistent == null){
+		//if(qualityAssistent == null){
 			log.debug("rules");	
 			RuleSet rules = new RuleSet();
 			rules.addStandardRules();
 			qualityAssistent = new QualityAssistent(testSamples.values(), rules, phylotree);
-		}
+	//	}
 		if(fragmentsRanges != null){
-			RuleSet rules = new RuleSet();
+			rules = new RuleSet();
 			rules.addStandardRules();
 			rules.addRule(new CheckForRecombinationRule(4,fragmentsRanges));
 			qualityAssistent = new QualityAssistent(testSamples.values(), rules, phylotree);

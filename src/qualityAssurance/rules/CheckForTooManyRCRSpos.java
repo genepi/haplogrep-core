@@ -1,7 +1,5 @@
 package qualityAssurance.rules;
 
-import java.util.Vector;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -9,9 +7,7 @@ import qualityAssurance.QualityAssistent;
 import qualityAssurance.issues.IssueType;
 import qualityAssurance.issues.QualityFatal;
 import qualityAssurance.issues.QualityInfo;
-import qualityAssurance.issues.QualityWarning;
 import search.SearchResult;
-import core.Mutations;
 import core.Polymorphism;
 import core.TestSample;
 
