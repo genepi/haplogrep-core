@@ -398,7 +398,7 @@ public class TestSample implements Comparable<TestSample>{
 	/**
 	 * @return The search results in clustered by the equal distances. Ranked by the used ranking method
 	 */
-	public ClusteredSearchResults getClusteredSearchResultsSeb() {
+	public ClusteredSearchResults getClusteredSearchResultsAsObject() {
 		return clusteredResults;
 	}
 
