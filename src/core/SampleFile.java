@@ -100,10 +100,8 @@ public class SampleFile {
 		if (testCase) { // for test cases
 			String userDir = new java.io.File("").getAbsolutePath();
 			File sampleFile = new File(userDir + pathToSampleFile);
-			log.debug("%%%% " + userDir + pathToSampleFile);
 			sampleFileStream = new BufferedReader(new FileReader(sampleFile));
 		} else { // "Load Testdata" button
-			log.debug("loading ok");
 			InputStream testFile = this.getClass().getClassLoader().getResourceAsStream(pathToSampleFile);
 			sampleFileStream = new BufferedReader(new InputStreamReader(testFile));
 		}

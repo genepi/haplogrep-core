@@ -76,11 +76,12 @@ public class SampleRanges {
 	 *             (e.g. < 0)
 	 */
 	public SampleRanges(String rangesToParse, boolean splitRange16569) throws InvalidRangeException {
-		if(metaboChipPositions == null){
+		
+		/*if(metaboChipPositions == null){
 			metaboChipPositions = new HashSet<Integer>();
 			
 			loadMetaboChipPositions();
-		}
+		}*/
 		
 		if (rangesToParse.equals(""))
 			return;
@@ -115,8 +116,7 @@ public class SampleRanges {
 						{
 						this.addCustomRange(from, 16569);
 						this.addCustomRange(1, to);
-						}
-						else
+						} else
 							this.addCustomRange(Integer.parseInt(rangeParts[0].trim()), Integer.parseInt(rangeParts[1].trim()));
 					}
 					// standard
