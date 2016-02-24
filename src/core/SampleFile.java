@@ -389,8 +389,10 @@ public class SampleFile {
 		// saveXMLToDisc(d);
 
 		File image = null;
-		PhylotreeRenderer renderer = new PhylotreeRenderer(testSamples.values().iterator().next().searchResults.get(0).getSearchResult()
+		PhylotreeRenderer renderer = new PhylotreeRenderer(testSamples.values().iterator().next().getResult(testSamples.values().iterator().next().getExpectedHaplogroup()).getSearchResult()
 				.getAttachedPhyloTreeNode().getTree(), resultTree);
+		
+		System.out.println(testSamples.values().iterator().next().searchResults.get(0).getHaplogroup() + " topresult " +testSamples.values().iterator().next().getTopResult().getHaplogroup());
 		URL url = this.getClass().getClassLoader().getResource("haplogrepGray.png");
 
 		try {
@@ -413,7 +415,7 @@ public class SampleFile {
 		for (TestSample currentSample : testSamples.values()) {
 			if (currentSample.searchResults.size() > 0)
 				if (currentSample.searchResults.size() > 0) // <-- neu
-					newOverviewTree.addNewPath(currentSample, currentSample.searchResults.get(0).getSearchResult().getDetailedResult().getPhyloTreePath());
+					newOverviewTree.addNewPath(currentSample, currentSample.getResult(currentSample.getExpectedHaplogroup()).getSearchResult().getDetailedResult().getPhyloTreePath());
 
 			// if(d==3)break;
 			//

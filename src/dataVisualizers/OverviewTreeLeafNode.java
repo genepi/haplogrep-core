@@ -47,7 +47,7 @@ public class OverviewTreeLeafNode extends TreeNode {
 			foundPolysAllSamples.addAll(c.getExpectedPoly());
 			c = (OverviewTreeInnerNode) c.getParent();
 		} */
-		for(Polymorphism currentRemaining : testSample.getResults().get(0).getSearchResult().getDetailedResult().getRemainingPolysInSample()){
+		for(Polymorphism currentRemaining : testSample.getResult(testSample.getExpectedHaplogroup()).getSearchResult().getDetailedResult().getRemainingPolysInSample()){
 			if(includeHotspots || (!includeHotspots && !currentRemaining.isMTHotspot()))
 				remainingPolys.add(currentRemaining);
 		}
@@ -60,7 +60,7 @@ public class OverviewTreeLeafNode extends TreeNode {
 		
 //		testSample.getResults().get(0).getSearchResult().getDetailedResult().getFoundNotFoundPolys()
 		
-		for(Polymorphism currentSamplePoly : testSample.getResults().get(0).getSearchResult().getDetailedResult().getExpectedPolys()){
+		for(Polymorphism currentSamplePoly : testSample.getResult(testSample.getExpectedHaplogroup()).getSearchResult().getDetailedResult().getExpectedPolys()){
 			if(!currentSamplePoly.isBackMutation() && !testSample.getSample().getPolymorphisms().contains(currentSamplePoly)){
 //				if(includeHotspots || (!includeHotspots && !currentSamplePoly.isMTHotspot()))
 //			remainingPolys.add(currentSamplePoly);

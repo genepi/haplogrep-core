@@ -33,6 +33,9 @@ import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
+import org.apache.batik.transcoder.wmf.tosvg.WMFPainter;
+import org.apache.batik.transcoder.wmf.tosvg.WMFRecordStore;
+import org.apache.batik.transcoder.wmf.tosvg.WMFTranscoder;
 import org.apache.fop.svg.AbstractFOPTranscoder;
 import org.apache.fop.svg.PDFTranscoder;
 import org.w3c.dom.DOMImplementation;
@@ -233,7 +236,6 @@ public class PhylotreeRenderer {
 			transcoder.transcode(input, output);
 			return resultFile;
 		}
-
 		else
 			return rescale( svgGraphics2D, r.getCurrentPos() + r.getMaxWidth() / 2, r.getMaxHeight() + g2.getFontMetrics().getHeight() * 4, path);
 	}

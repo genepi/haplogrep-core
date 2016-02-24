@@ -165,7 +165,6 @@ public final class Phylotree {
 			for (Polymorphism currentPoly : polys) {
 		
 				// Check whether polymorphism is in range
-		
 				
 				if (sample.getSample().getSampleRanges().contains(currentPoly)) {
 					// In case of a backmutation we have to correct the current
@@ -200,8 +199,9 @@ public final class Phylotree {
 				}
 
 				// Polymorphism is not in sample range
-				else
+				else{
 					newResult.addMissingOutOfRangeWeight(currentPoly);
+				}
 
 			}
 
