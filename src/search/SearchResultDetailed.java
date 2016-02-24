@@ -11,6 +11,7 @@ import org.jdom.Element;
 
 import phylotree.PhyloTreeNode;
 import core.Polymorphism;
+import core.SampleRanges;
 
 /**
  * Represents a DETAILED search result attached to normal SearchResult instance.
@@ -62,7 +63,6 @@ public class SearchResultDetailed implements Serializable {
 
 			SearchResultTreeNode newNode = new SearchResultTreeNode(startNode);
 			for (Polymorphism currentExpectedPoly : startNode.getExpectedPolys()) {
-
 				if (!currentExpectedPoly.getMutation().equals("INS"))
 
 					if (searchResult.getSample().getSampleRanges().contains(currentExpectedPoly)) {
@@ -74,10 +74,10 @@ public class SearchResultDetailed implements Serializable {
 
 							if (currentExpectedPoly.isBackMutation()) {
 								correctedBackmutations.add(currentExpectedPoly);
-							}
+								}
 
 							expectedPolys.add(currentExpectedPoly);
-						} else {
+							} else {
 							newNode.addExpectedPoly(currentExpectedPoly);
 							if (currentExpectedPoly.isBackMutation()) {
 								correctedBackmutations.add(currentExpectedPoly);
@@ -128,6 +128,14 @@ public class SearchResultDetailed implements Serializable {
 			}
 		}
 
+		System.out.println(" helper  " + helper.size() +" - "+  remainingPolys);
+		//NEW missingpolysoutofRange
+		for (int i=0; i <remainingPolys.size(); i++){
+			if (!searchResult.getSample().getSampleRanges().contains(remainingPolys.get(i))){
+				remainingPolysNotInRange.add(remainingPolys.get(i));
+				System.out.println(remainingPolys.get(i));
+			}
+		}
 		remainingPolys.addAll(helper);
 		Collections.reverse(path);
 	}
@@ -254,7 +262,15 @@ public class SearchResultDetailed implements Serializable {
 			newUnusedPoly.setText(currentPoly.toStringShortVersion());
 
 			Element reasonUnusedPoly = new Element("reasonUnused");
-
+System.out.println("CURRENT  " + currentPoly);
+			if (remainingPolysNotInRange.contains(currentPoly)){
+				reasonUnusedPoly.setText("polyoutofrange");
+			System.out.println("Da is mal was " + currentPoly);
+				result.addContent(newUnusedPoly);
+				result.addContent(reasonUnusedPoly);
+				results.addContent(result);			}
+			else{
+				
 			if (searchResult.getPhyloTree().getMutationRate(currentPoly) == 0) {
 				if (currentPoly.isBackMutation()) {
 					reasonUnusedPoly.setText("globalPrivateMutation");
@@ -293,18 +309,14 @@ public class SearchResultDetailed implements Serializable {
 					results.addContent(result);
 
 				}
-
 			}
-
+		
 			else {
-				if (remainingPolysNotInRange.contains(currentPoly))
-					reasonUnusedPoly.setText("polyoutofrange");
-				else {
 					if (currentPoly.isHeteroplasmy()) {
 						reasonUnusedPoly.setText("localPrivateMutationHP");
 					} else
 						reasonUnusedPoly.setText("localPrivateMutation");
-				}
+				
 				result.addContent(newUnusedPoly);
 				result.addContent(reasonUnusedPoly);
 				results.addContent(result);
@@ -320,7 +332,7 @@ public class SearchResultDetailed implements Serializable {
 			;
 			result.addContent(aac);
 		}
-
+		}
 		return results;
 
 	}

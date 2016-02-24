@@ -259,7 +259,7 @@ public class SampleRanges {
 				return false;
 		} 
 		
-		else{
+		else{ 
 			for(int i : ends)
 				if(!other.ends.contains(i))
 					return false;

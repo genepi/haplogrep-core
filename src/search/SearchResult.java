@@ -22,6 +22,7 @@ public class SearchResult {
 
 	private double sumWeightsAllPolysSample = 0;
 	private double remainingPolysSumWeights = 0;
+	private double outSeb = 0;
 	private double foundPolysSumWeights = 0;
 	private double expectedPolsysSumWeight = 0;
 	private double missingPolysSumWeights = 0;
@@ -45,6 +46,8 @@ public class SearchResult {
 
 			if (parentResult.getSample().getSampleRanges().contains(currentPoly)) {
 				remainingPolysSumWeights += getPhyloTree().getMutationRate(currentPoly);
+			} else{
+					outSeb += getPhyloTree().getMutationRate(currentPoly);
 			}
 		}
   	}
@@ -94,6 +97,10 @@ public class SearchResult {
 	 */
 	public double getSumWeightsAllPolysSample() {
 		return sumWeightsAllPolysSample;
+	}
+	
+	public double getSeb() {
+		return outSeb;
 	}
 
 	/**
