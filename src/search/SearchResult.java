@@ -22,7 +22,6 @@ public class SearchResult {
 
 	private double sumWeightsAllPolysSample = 0;
 	private double remainingPolysSumWeights = 0;
-	private double outSeb = 0;
 	private double foundPolysSumWeights = 0;
 	private double expectedPolsysSumWeight = 0;
 	private double missingPolysSumWeights = 0;
@@ -42,13 +41,12 @@ public class SearchResult {
 		this.attachedPhyloTreeNode = phyloNode;
 
 		for (Polymorphism currentPoly : sampleChecked.getPolymorphisms()) {
-			sumWeightsAllPolysSample += getPhyloTree().getMutationRate(currentPoly);
-
+		
 			if (parentResult.getSample().getSampleRanges().contains(currentPoly)) {
+				  //HACK BY HANSI - only calculate values if in range
+				sumWeightsAllPolysSample += getPhyloTree().getMutationRate(currentPoly);
 				remainingPolysSumWeights += getPhyloTree().getMutationRate(currentPoly);
-			} else{
-					outSeb += getPhyloTree().getMutationRate(currentPoly);
-			}
+			} 
 		}
   	}
 
@@ -99,10 +97,6 @@ public class SearchResult {
 		return sumWeightsAllPolysSample;
 	}
 	
-	public double getSeb() {
-		return outSeb;
-	}
-
 	/**
 	 * @return The sum of weights of all polymorphisms found for this haplogroup
 	 */

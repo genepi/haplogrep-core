@@ -128,12 +128,10 @@ public class SearchResultDetailed implements Serializable {
 			}
 		}
 
-		System.out.println(" helper  " + helper.size() +" - "+  remainingPolys);
 		//NEW missingpolysoutofRange
 		for (int i=0; i <remainingPolys.size(); i++){
 			if (!searchResult.getSample().getSampleRanges().contains(remainingPolys.get(i))){
 				remainingPolysNotInRange.add(remainingPolys.get(i));
-				System.out.println(remainingPolys.get(i));
 			}
 		}
 		remainingPolys.addAll(helper);
@@ -262,10 +260,9 @@ public class SearchResultDetailed implements Serializable {
 			newUnusedPoly.setText(currentPoly.toStringShortVersion());
 
 			Element reasonUnusedPoly = new Element("reasonUnused");
-System.out.println("CURRENT  " + currentPoly);
+
 			if (remainingPolysNotInRange.contains(currentPoly)){
 				reasonUnusedPoly.setText("polyoutofrange");
-			System.out.println("Da is mal was " + currentPoly);
 				result.addContent(newUnusedPoly);
 				result.addContent(reasonUnusedPoly);
 				results.addContent(result);			}

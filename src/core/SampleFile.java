@@ -392,8 +392,7 @@ public class SampleFile {
 		PhylotreeRenderer renderer = new PhylotreeRenderer(testSamples.values().iterator().next().getResult(testSamples.values().iterator().next().getExpectedHaplogroup()).getSearchResult()
 				.getAttachedPhyloTreeNode().getTree(), resultTree);
 		
-		System.out.println(testSamples.values().iterator().next().searchResults.get(0).getHaplogroup() + " topresult " +testSamples.values().iterator().next().getTopResult().getHaplogroup());
-		URL url = this.getClass().getClassLoader().getResource("haplogrepGray.png");
+			URL url = this.getClass().getClassLoader().getResource("haplogrepGray.png");
 
 		try {
 			renderer.setWatermark(url);

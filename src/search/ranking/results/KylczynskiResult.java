@@ -52,6 +52,7 @@ public class KylczynskiResult extends RankedResult {
 	 * @return The calculated Kylczynski distance
 	 */
 	private double calcDistance() {
+	
 		if (getCorrectPolyInTestSampleRatio() > 0 && getCorrectPolyInHaplogroupRatio() > 0) {
 			return getCorrectPolyInTestSampleRatio() * 0.5 + getCorrectPolyInHaplogroupRatio() * 0.5;
 		} else if (getCorrectPolyInTestSampleRatio() > 0) {
@@ -64,7 +65,7 @@ public class KylczynskiResult extends RankedResult {
 	}
 
 	public double getCorrectPolyInTestSampleRatio() {
-		return searchResult.getWeightFoundPolys() / (searchResult.getSumWeightsAllPolysSample() - searchResult.getSeb());
+		return (searchResult.getWeightFoundPolys() / (searchResult.getSumWeightsAllPolysSample()));
 	}
 
 	private double getCorrectPolyInHaplogroupRatio() {
