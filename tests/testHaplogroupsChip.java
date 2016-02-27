@@ -18,7 +18,7 @@ public class testHaplogroupsChip {
 			//SampleFile testFile = new  SampleFile("/testDataFiles/phylotree16_Affy6_filledHG.txt",true);
 			SampleFile testFile = new  SampleFile("/testDataFiles/Burma_final.hsd",true);
 			Phylotree phyoTree = PhylotreeManager.getInstance().getPhylotree("phylotree16.xml","weights16.txt");
-			testFile.updateClassificationResults(phyoTree, new HammingRanking(), null);
+			testFile.updateClassificationResults(phyoTree, new HammingRanking());
 			
 			RuleSet rules = new RuleSet();
 			rules.addStandardRules();
@@ -26,9 +26,8 @@ public class testHaplogroupsChip {
 			QualityAssistent newQualityAssistent = new QualityAssistent(testFile.getTestSamples(),rules,phyoTree);
 			
 			newQualityAssistent.reevaluateRules();
-			testFile.updateClassificationResults(phyoTree, new HammingRanking(), null);
+			testFile.updateClassificationResults(phyoTree, new HammingRanking());
 			newQualityAssistent.reevaluateRules();
-			System.out.println(newQualityAssistent);
 			 newQualityAssistent.getNumIssuedWarnings();
 			
 			

@@ -281,20 +281,6 @@ public class SampleFile {
 	 *            Hamming)
 	 */
 	public void updateClassificationResults(Phylotree phylotree, RankingMethod rankingMethod) {
-		updateClassificationResults(phylotree, rankingMethod, null);
-	}
-
-	/**
-	 * Updates the haplogrep classification results for all test sample(Restarts
-	 * haplogroup search)
-	 * 
-	 * @param phylotree
-	 *            The phylotree version to use for the update process
-	 * @param rankingMethod
-	 *            The ranking method that should be used for the results (e.g.
-	 *            Hamming)
-	 */
-	public void updateClassificationResults(Phylotree phylotree, RankingMethod rankingMethod, SampleRanges fragmentsRanges) {
 		usedPhyloTreeLastRun = phylotree;
 		usedRankingMethodLastRun = rankingMethod;
 
