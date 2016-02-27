@@ -1,4 +1,4 @@
-package qualityAssurance.rules;
+/*package qualityAssurance.rules;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,20 +16,20 @@ import core.Polymorphism;
 import core.SampleRanges;
 import core.TestSample;
 
-/**
+*//**
  * @author Dominic Checks a given sample for recombination.
- */
+ *//*
 public class CheckForRecombinationRule extends HaplogrepRule {
 	ArrayList<Polymorphism> foundReferencePolys = new ArrayList<Polymorphism>();
 
-	/**
+	*//**
 	 * Custom fragment ranges to use. If NULL standard ranges are used
-	 */
+	 *//*
 	SampleRanges customFragmentRanges = null;
 
-	/**
+	*//**
 	 * The number of haplogroups the sample may differ overall fragments
-	 */
+	 *//*
 	int haplogroupTolerance;
 
 	public CheckForRecombinationRule(int tolerance) {
@@ -113,3 +113,4 @@ public class CheckForRecombinationRule extends HaplogrepRule {
 	}
 
 }
+*/

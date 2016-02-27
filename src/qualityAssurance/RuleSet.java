@@ -10,7 +10,6 @@ import qualityAssurance.rules.CheckForAlignmentWarnings;
 import qualityAssurance.rules.CheckForAmbiguosResult;
 import qualityAssurance.rules.CheckForHeteroplasmy;
 import qualityAssurance.rules.CheckForQuality;
-import qualityAssurance.rules.CheckForRecombinationRule;
 import qualityAssurance.rules.CheckForReferencePolymorhisms;
 import qualityAssurance.rules.CheckForSampleRCRSAligned;
 import qualityAssurance.rules.CheckForSampleRSRSAligned;
@@ -31,11 +30,7 @@ public class RuleSet {
 	}
 	
 	public void addStandardRules() {
-	//	addRule(new CheckForSampleRange(0));
-	//	addRule(new CheckForSampleRCRSAligned(0));
-	//	addRule(new CheckForSampleRSRSAligned(0));
 		addRule(new CheckExpectedHGMatchesDetectedHG(1));
-	//	addRule(new CheckForReferencePolymorhisms(1));
 		addRule(new CheckForTooManyGlobalPrivateMutations(1));
 		addRule(new CheckForTooManyNotFound(1));
 		addRule(new CheckForAmbiguosResult(1));
@@ -46,9 +41,6 @@ public class RuleSet {
 		addRule(new CheckForTooManyN(1));
 		addRule(new CheckForTooManyRCRSpos(1));
 		addRule(new CheckForQuality(1));
-		addRule(new CheckForRecombinationRule(4));
-	//	addRule(new CheckForPhantomMutation(1));
-		//TODO DEFINE RULES
 	}
 	
 	public void addRule(HaplogrepRule newRule){

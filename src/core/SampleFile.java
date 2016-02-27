@@ -27,7 +27,6 @@ import phylotree.Phylotree;
 import qualityAssurance.QualityAssistent;
 import qualityAssurance.RuleSet;
 import qualityAssurance.issues.QualityIssue;
-import qualityAssurance.rules.CheckForRecombinationRule;
 import search.ranking.RankingMethod;
 import search.ranking.results.RankedResult;
 import dataVisualizers.OverviewTree;
@@ -301,15 +300,9 @@ public class SampleFile {
 
 		long start = System.currentTimeMillis();
 		
-		if (fragmentsRanges != null) {
-			RuleSet rules = new RuleSet();
-			rules.addRule(new CheckForRecombinationRule(4, fragmentsRanges));
-			qualityAssistent = new QualityAssistent(testSamples.values(), rules, phylotree);
-		} else {
 			for (TestSample currenTestSample : testSamples.values()) {
 				currenTestSample.updateSearchResults(phylotree, rankingMethod);
 			}
-		}
 		log.debug("time executed: " + (System.currentTimeMillis() - start) + " with " + rankingMethod.toString());
 
 	}

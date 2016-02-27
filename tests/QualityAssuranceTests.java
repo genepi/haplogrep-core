@@ -23,7 +23,6 @@ import phylotree.Phylotree;
 import phylotree.PhylotreeManager;
 import qualityAssurance.QualityAssistent;
 import qualityAssurance.RuleSet;
-import qualityAssurance.rules.CheckForRecombinationRule;
 import qualityAssurance.rules.CheckForSampleRCRSAligned;
 import qualityAssurance.rules.CheckForSampleRSRSAligned;
 import qualityAssurance.rules.CheckForSampleRange;
@@ -150,41 +149,6 @@ public class QualityAssuranceTests<K> {
 		assertEquals(3, newQualityAssistent.getNumIssuedWarnings());
 	}
 	
-	@Test
-	public void testRecombinationControlRegion() throws Exception {
-		SampleFile testFile = new  SampleFile("/testDataFiles/Bandelt.txt",true);
-		Phylotree phyoTree = PhylotreeManager.getInstance().getPhylotree("phylotree15.xml","weights15.txt");
-//	ArrayList<TestSample> file = generateRecombination(phyoTree,testFile);
-//	file.addAll(testFile.getTestSamples());
-//		
-		RuleSet rules = new RuleSet();
-		rules.addRule(new CheckForRecombinationRule(4));
-		QualityAssistent newQualityAssistent = new QualityAssistent(testFile.getTestSamples(),rules,phyoTree);
-		
-		newQualityAssistent.reevaluateRules();
-		System.out.println(newQualityAssistent);
-		System.out.println(newQualityAssistent.getAllIssuesJSON().toString());
-//		newQualityAssistent.getIssueByID(0).getDescription()
-//		assertEquals(3, newQualityAssistent.getNumIssuedWarnings());
-	}
-	
-	@Test
-	public void testRecombinationRule() throws Exception {
-		SampleFile testFile = new  SampleFile("/testDataFiles/test4Recombination.hsd",true);
-		Phylotree phyoTree = PhylotreeManager.getInstance().getPhylotree("phylotree15.xml","weights15.txt");
-	ArrayList<TestSample> file = generateRecombination(phyoTree,testFile);
-	file.addAll(testFile.getTestSamples());
-//		
-		RuleSet rules = new RuleSet();
-		rules.addRule(new CheckForRecombinationRule(4));
-		QualityAssistent newQualityAssistent = new QualityAssistent(file,rules,phyoTree);
-		
-		newQualityAssistent.reevaluateRules();
-		System.out.println(newQualityAssistent);
-		System.out.println(newQualityAssistent.getAllIssuesJSON().toString());
-//		newQualityAssistent.getIssueByID(0).getDescription()
-//		assertEquals(3, newQualityAssistent.getNumIssuedWarnings());
-	}
 	
 	@Test
 	public void test() throws HsdFileException, IOException {
