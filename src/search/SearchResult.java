@@ -141,8 +141,10 @@ public class SearchResult {
 		if (polyToRemove.isBackMutation()) {
 			Polymorphism newPoly = new Polymorphism(polyToRemove);
 			newPoly.setBackMutation(false);
-			if (sample.contains(newPoly)>0) { //TODO RECHECK IF OK WITH HP
+		
+			if (sample.contains(newPoly)>0 ) { //TODO RECHECK IF OK WITH HP
 				foundPolysSumWeights -= getPhyloTree().getMutationRate(newPoly);
+				
 				remainingPolysSumWeights += getPhyloTree().getMutationRate(newPoly);
 				
 				if(newPoly.isTransitionPoly())
@@ -152,8 +154,10 @@ public class SearchResult {
 				
 			}
 		} else
+		{
 			foundPolysSumWeights -= getPhyloTree().getMutationRate(polyToRemove);
-	}
+		}
+		}
 
 	/**
 	 * Adds weight of newly expected polymorphism

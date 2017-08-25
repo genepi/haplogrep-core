@@ -17,9 +17,6 @@ public class InvalidRangeException extends HsdFileSampleParseException {
 	public InvalidRangeException(String rangesToParse) {
 		super("Invalid sample range format detected. " + rangesToParse + " could not be read!");
 	}
-	public InvalidRangeException() {
-		super("Invalid sample range. Region allowed: 1-16569");
-	}
 	
 	/* (non-Javadoc)
 	 * @see exceptions.parse.sample.HsdFileSampleParseException#toJSON()

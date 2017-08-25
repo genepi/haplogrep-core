@@ -63,6 +63,14 @@ public class SampleFile {
 		for (String currentLine : sampleLines) {
 			TestSample newSample;
 			try {
+				String[] splits = currentLine.split("\t");
+				//if no polymorphisms have been found make a fake line (e.g. for VCF)
+				if(splits.length ==2){
+					StringBuilder build = new StringBuilder();
+					build.append(splits[0]+"\t");
+					build.append(splits[1]+"\t?\t.");
+					currentLine = build.toString();
+				}
 				newSample = TestSample.parse(currentLine);
 				// log.info("new sample " + newSample);
 			} catch (HsdFileException e) {

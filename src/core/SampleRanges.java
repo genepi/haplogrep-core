@@ -107,7 +107,7 @@ public class SampleRanges {
 					throw new InvalidRangeException(rangeParts[0] + " " + rangeParts[1]);
 				}
 				if (to > 16570 || from > 16570)
-					throw new InvalidRangeException();
+					throw new InvalidRangeException(to + " > " + from);
 
 				try {
 					// make one range to two ranges
