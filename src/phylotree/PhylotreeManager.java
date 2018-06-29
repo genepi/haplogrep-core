@@ -46,8 +46,8 @@ public class PhylotreeManager {
 			InputStream flucRates = this.getClass().getClassLoader().getResourceAsStream(phyloGeneticWeightsPath);
 			try {
 				if (phyloFile == null) {
-					phyloFile = new FileInputStream(new File("../HaplogrepServer/phylotree/" + phylotreePath));
-					flucRates = new FileInputStream(new File("../HaplogrepServer/weights/" + phyloGeneticWeightsPath));
+					phyloFile = new FileInputStream(new File(phylotreePath));
+					flucRates = new FileInputStream(new File(phyloGeneticWeightsPath));
 				}
 
 			} catch (FileNotFoundException e) {
