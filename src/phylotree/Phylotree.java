@@ -39,7 +39,7 @@ public final class Phylotree {
 
 	final Log log = LogFactory.getLog(Phylotree.class);
 	private PhyloTreeNode root;
-	private HashMap<Polymorphism, Double> phyloGeneticWeights = new HashMap<Polymorphism, Double>();
+	private HashMap<String, Double> phyloGeneticWeights = new HashMap<String, Double>();
 	private HashMap<Haplogroup, PhyloTreeNode> haplogroupLookup = new HashMap<Haplogroup, PhyloTreeNode>();
 
 	/**
@@ -279,7 +279,7 @@ public final class Phylotree {
 
 			// TODO remove with fixed phylotree 8 BUG 2232.12A
 			try {
-				phyloGeneticWeights.put(new Polymorphism(polyString), phyloGeneticWeight);
+				phyloGeneticWeights.put(polyString, phyloGeneticWeight);
 			} catch (Exception e) {
 				// TODO: handle exception
 			}
@@ -296,8 +296,8 @@ public final class Phylotree {
 	 * @return The phylogenetic weight of the polymorphism
 	 */
 	public double getMutationRate(Polymorphism polyToCheck) {
-		if (phyloGeneticWeights.containsKey(polyToCheck))
-			return phyloGeneticWeights.get(polyToCheck);
+		if (phyloGeneticWeights.containsKey(polyToCheck.toString()))
+			return phyloGeneticWeights.get(polyToCheck.toString());
 
 		else
 			return 0;
