@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 
 import exceptions.parse.sample.InvalidBaseException;
 import exceptions.parse.sample.InvalidPolymorphismException;
+import phylotree.Annotation;
 
 /**
  * Represents one polymorphism
@@ -33,10 +34,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	boolean isHeteroplasmy = false;
 	int isReliable=0;
 
-	
-
 	private int hashCode;
-	private static HashMap<Polymorphism, AnnotationAAC> acidLookup;
 	
 	/**
 	 * rCRS reference sequence
@@ -481,7 +479,49 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	}
 
 	/* (non-Javadoc)
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 * @see java.lang.Comparable#compareTo(java.lang.O
+	private void loadLookup() {
+		acidLookup= new HashMap<Polymorphism, AnnotationAAC>();
+		String annotationPath = "aminoacidchange.txt";
+		InputStream annotationStream = this.getClass().getClassLoader().getResourceAsStream(annotationPath);
+		BufferedReader annotationFileReader;
+		if (annotationStream == null) {
+			
+			try {
+				annotationStream = new FileInputStream(new File(annotationPath));
+				}
+				catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		
+		
+		try{
+			annotationFileReader = new BufferedReader(new InputStreamReader(annotationStream));
+			String line = annotationFileReader.readLine();
+			line = annotationFileReader.readLine();
+				// Read-in each line
+				while (line != null) {
+					StringTokenizer mainTokenizer = new StringTokenizer(line, "\t");
+
+					String pos = mainTokenizer.nextToken();
+					String gen = mainTokenizer.nextToken();
+					short cod = Short.parseShort(mainTokenizer.nextToken());
+					String aachange = mainTokenizer.nextToken();
+					AnnotationAAC aac = new AnnotationAAC(pos, gen, cod, aachange);
+					acidLookup.put(new Polymorphism(pos), aac);
+					line = annotationFileReader.readLine();
+				}
+				
+			} catch (InvalidPolymorphismException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}bject)
 	 */
 	@Override
 	public int compareTo(Polymorphism o) {
@@ -604,60 +644,16 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	}
 	
 	public AnnotationAAC getAnnotation(){
-		if (acidLookup==null)
-			loadLookup();
+		
+		HashMap<Polymorphism, AnnotationAAC> annotationLookup = Annotation.getInstance();
 		
 		AnnotationAAC annotation = null;
 		
-		if(acidLookup.containsKey(this))
-			annotation = acidLookup.get(this);
+		if(annotationLookup.containsKey(this))
+			annotation = annotationLookup.get(this);
 		
 		return annotation;
 		
 	}
 
-	private void loadLookup() {
-		acidLookup= new HashMap<Polymorphism, AnnotationAAC>();
-		String annotationPath = "aminoacidchange.txt";
-		InputStream annotationStream = this.getClass().getClassLoader().getResourceAsStream(annotationPath);
-		BufferedReader annotationFileReader;
-		if (annotationStream == null) {
-			
-			try {
-				annotationStream = new FileInputStream(new File("../HaplogrepServer/annotation/" + annotationPath));
-				}
-				catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-		}
-		
-		
-		try{
-			annotationFileReader = new BufferedReader(new InputStreamReader(annotationStream));
-			String line = annotationFileReader.readLine();
-			line = annotationFileReader.readLine();
-				// Read-in each line
-				while (line != null) {
-					StringTokenizer mainTokenizer = new StringTokenizer(line, "\t");
-
-					String pos = mainTokenizer.nextToken();
-					String gen = mainTokenizer.nextToken();
-					short cod = Short.parseShort(mainTokenizer.nextToken());
-					String aachange = mainTokenizer.nextToken();
-					AnnotationAAC aac = new AnnotationAAC(pos, gen, cod, aachange);
-					acidLookup.put(new Polymorphism(pos), aac);
-					line = annotationFileReader.readLine();
-				}
-				
-			} catch (InvalidPolymorphismException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-	
 }

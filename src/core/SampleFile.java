@@ -42,7 +42,7 @@ import exceptions.parse.samplefile.UniqueSampleIDException;
  */
 public class SampleFile {
 
-	final Log log = LogFactory.getLog(SampleFile.class);
+	//final Log log = LogFactory.getLog(SampleFile.class);
 
 	Hashtable<String, TestSample> testSamples = new Hashtable<String, TestSample>();
 	QualityAssistent qualityAssistent = null;
@@ -297,7 +297,7 @@ public class SampleFile {
 			for (TestSample currenTestSample : testSamples.values()) {
 				currenTestSample.updateSearchResults(phylotree, rankingMethod);
 			}
-		log.debug("time executed: " + (System.currentTimeMillis() - start) + " with " + rankingMethod.toString());
+		//log.debug("time executed: " + (System.currentTimeMillis() - start) + " with " + rankingMethod.toString());
 
 	}
 
@@ -612,7 +612,7 @@ public class SampleFile {
 			}
 		}
 
-		log.debug("TO HSD FILE TIME: " + (System.currentTimeMillis() - start));
+		//log.debug("TO HSD FILE TIME: " + (System.currentTimeMillis() - start));
 		return result.toString();
 	}
 }
