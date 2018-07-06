@@ -18,8 +18,7 @@ public class InvalidColumnCountException extends HsdFileException {
 
 	public InvalidColumnCountException(int columns)
 	{
-		super("A hsd file consists of more than 4 tab seperated columns. " +
-				"The used file had only " + columns + " column(s)");
+		super("File includes " + columns + " column(s) only. No variants detected.");
 	}
 	
 	public JSONObject toJSON() throws JSONException
