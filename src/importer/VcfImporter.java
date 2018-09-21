@@ -14,7 +14,7 @@ import htsjdk.variant.vcf.VCFHeader;
 
 public class VcfImporter {
 
-	public ArrayList<String> vcfToHsd(File file, boolean chip) throws Exception {
+	public ArrayList<String> load(File file, boolean chip) throws Exception {
 
 		final VCFFileReader vcfReader = new VCFFileReader(file, false);
 

@@ -12,7 +12,7 @@ import exceptions.parse.HsdFileException;
 
 public class HsdImporter {
 	
-	public ArrayList<String> loadHsd(File file)
+	public ArrayList<String> load(File file)
 			throws FileNotFoundException, IOException, HsdFileException {
 
 		ArrayList<String> lines = new ArrayList<String>();

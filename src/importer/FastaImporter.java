@@ -2,7 +2,6 @@ package importer;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -17,7 +16,6 @@ import com.github.lindenb.jbwa.jni.BwaIndex;
 import com.github.lindenb.jbwa.jni.BwaMem;
 import com.github.lindenb.jbwa.jni.ShortRead;
 
-import exceptions.parse.HsdFileException;
 import htsjdk.samtools.reference.FastaSequenceFile;
 import genepi.io.FileUtil;
 import htsjdk.samtools.SAMFileHeader;
@@ -28,7 +26,7 @@ import htsjdk.samtools.reference.ReferenceSequence;
 
 public class FastaImporter {
 
-	public ArrayList<String> loadFasta(File file, boolean rsrs) throws FileNotFoundException, IOException, HsdFileException {
+	public ArrayList<String> load(File file, boolean rsrs) throws FileNotFoundException, IOException {
 
 		String jbwaDir = "jbwa";
 		
@@ -163,7 +161,7 @@ public class FastaImporter {
 
 				if (base != base2) {
 
-					pos.append(currentPos + "" + base + " ");
+					pos.append("\t" + currentPos + "" + base);
 
 				}
 
@@ -174,9 +172,7 @@ public class FastaImporter {
 
 		StringBuilder profile = new StringBuilder();
 
-		profile.append(samRecord.getReadName() + "\t" + "1-16569" + "\t" + "?" + "\t" + pos.toString());
-
-		System.out.println("profile is " + profile.toString());
+		profile.append(samRecord.getReadName() + "\t" + "1-16569" + "\t" + "?" + pos.toString());
 
 		return profile.toString();
 	}
