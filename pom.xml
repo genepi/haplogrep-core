@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>genepi</groupId>
@@ -8,9 +9,9 @@
 	<properties>
 		<skipTests>true</skipTests>
 	</properties>
-	
+
 	<repositories>
-			<repository>
+		<repository>
 			<id>genepi</id>
 			<url>https://raw.github.com/genepi/maven-repository/mvn-repo/</url>
 			<snapshots>
@@ -31,7 +32,7 @@
 					<exclude>**/*.java</exclude>
 				</excludes>
 			</resource>
-				<resource>
+			<resource>
 				<directory>resources</directory>
 			</resource>
 		</resources>
@@ -91,19 +92,27 @@
 			<artifactId>junit</artifactId>
 			<version>4.11</version>
 		</dependency>
-		
+
+		<!-- https://mvnrepository.com/artifact/commons-lang/commons-lang -->
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+		</dependency>
+
+
 		<dependency>
 			<groupId>genepi</groupId>
 			<artifactId>genepi-io</artifactId>
 			<version>1.0.6</version>
 		</dependency>
-		
-				<dependency>
+
+		<dependency>
 			<groupId>com.github.samtools</groupId>
 			<artifactId>htsjdk</artifactId>
 			<version>2.14.0</version>
 		</dependency>
-		
+
 
 	</dependencies>
 
