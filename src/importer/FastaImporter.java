@@ -18,6 +18,8 @@ import com.github.lindenb.jbwa.jni.ShortRead;
 
 import htsjdk.samtools.reference.FastaSequenceFile;
 import genepi.io.FileUtil;
+import htsjdk.samtools.CigarElement;
+import htsjdk.samtools.CigarOperator;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMLineParser;
 import htsjdk.samtools.SAMRecord;
@@ -29,17 +31,17 @@ public class FastaImporter {
 	public ArrayList<String> load(File file, boolean rsrs) throws FileNotFoundException, IOException {
 
 		String jbwaDir = "jbwa";
-		
+
 		String ref = "rCRS.fasta";
-		
-		if(rsrs) {
+
+		if (rsrs) {
 			ref = "rsrs.fasta";
 		}
-		
+
 		ArrayList<String> lines = new ArrayList<String>();
 
 		extractZip(jbwaDir);
-		
+
 		String reference = readInReference(FileUtil.path(jbwaDir, ref));
 
 		String jbwaLib = FileUtil.path(new File(jbwaDir + "/libbwajni.so").getAbsolutePath());
@@ -47,7 +49,6 @@ public class FastaImporter {
 		System.load(jbwaLib);
 		BwaIndex index = new BwaIndex(new File(FileUtil.path(jbwaDir, ref)));
 		BwaMem mem = new BwaMem(index);
-
 
 		FastaSequenceFile refFasta = new FastaSequenceFile(file, true);
 
@@ -149,25 +150,93 @@ public class FastaImporter {
 
 		StringBuilder pos = new StringBuilder();
 
+		System.out.println("cc " + samRecord.getCigar());
+
 		for (int i = 0; i < readString.length(); i++) {
 
 			int currentPos = samRecord.getReferencePositionAtReadPosition(i + 1);
 
-			char base = readString.charAt(i);
+			char inputBase = readString.charAt(i);
 
 			if (currentPos > 0) {
 
-				char base2 = reference.charAt(currentPos - 1);
+				char referenceBase = reference.charAt(currentPos - 1);
 
-				if (base != base2) {
+				if (inputBase != referenceBase) {
 
-					pos.append("\t" + currentPos + "" + base);
+					pos.append("\t" + currentPos + "" + inputBase);
 
 				}
 
 			} else {
 
 			}
+		}
+
+		Integer currentReferencePos = samRecord.getAlignmentStart();
+
+		int currentPosForIns = 0;
+
+		for (CigarElement cigarElement : samRecord.getCigar().getCigarElements()) {
+
+			Integer cigarElementLength = cigarElement.getLength();
+
+			if (cigarElement.getOperator() == CigarOperator.D) {
+
+				// start of D is currentRefPos: Don't add 1 before!
+				Integer cigarElementStart = currentReferencePos;
+
+				Integer cigarElementEnd = currentReferencePos + cigarElementLength;
+
+				while (cigarElementStart < cigarElementEnd) {
+
+					pos.append("\t" + cigarElementStart + "d");
+
+					cigarElementStart++;
+				}
+
+			}
+
+			// update read position (not included in consumesReferenceBases)
+			if (cigarElement.getOperator() == CigarOperator.S) {
+
+				currentPosForIns = currentPosForIns + cigarElement.getLength();
+
+			}
+
+			if (cigarElement.getOperator() == CigarOperator.I) {
+
+				int i = 1;
+
+				int length = cigarElement.getLength();
+
+				while (i <= length) {
+
+					// -1 since array starts at 0
+					int arrayPos = currentPosForIns + i - 1;
+
+					char insBase = samRecord.getReadString().charAt(arrayPos);
+
+					pos.append("\t" + currentPosForIns + "." + i + "" + insBase);
+
+					i++;
+				}
+
+				// update read position (not included in consumesReferenceBases)
+				currentPosForIns = currentPosForIns + cigarElement.getLength();
+
+			}
+
+			// only M and D operators consume bases
+			if (cigarElement.getOperator().consumesReferenceBases()) {
+				currentReferencePos = currentReferencePos + cigarElement.getLength();
+
+				// don't increase D, since not included in base string!
+				if (cigarElement.getOperator() != CigarOperator.D) {
+					currentPosForIns = currentPosForIns + cigarElement.getLength();
+				}
+			}
+
 		}
 
 		StringBuilder profile = new StringBuilder();
