@@ -93,16 +93,15 @@ public class FastaTest {
 		String file = "test-data/fasta/InsertionTest.fasta";
 		StringBuilder actual = new StringBuilder();
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), true);
+		ArrayList<String> samples = impFasta.load(new File(file), false);
 
 		String[] splits = samples.get(0).split("\t");
 		
 		for (int i = 3; i < splits.length; i++) {
+			System.out.println(splits[i]);
 			actual.append(splits[i] + ",");
 		}
 		
-		
-
 	}
 	
 

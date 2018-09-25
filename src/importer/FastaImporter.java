@@ -60,6 +60,11 @@ public class FastaImporter {
 			SAMFileHeader header = new SAMFileHeader();
 			SAMLineParser parser = new SAMLineParser(header);
 
+			StringBuilder profile = new StringBuilder();
+
+			profile.append(sequence.getName() + "\t" + "1-16569" + "\t" + "?");
+
+			// also include supplemental alignments
 			for (AlnRgn alignedRead : mem.align(read)) {
 
 				if (header.getSequence(alignedRead.getChrom()) == null) {
@@ -68,12 +73,13 @@ public class FastaImporter {
 				}
 
 				StringBuilder samRecordBulder = new StringBuilder();
+
 				samRecordBulder.append(sequence.getName()); // READNAME
+
 				samRecordBulder.append("\t");
 
 				samRecordBulder.append(0); // FLAGS FORWARD, PRIMARY ALIGNMENT
 
-				// samRecordBulder.append(key.toString()); // READNAME
 				samRecordBulder.append("\t");
 
 				samRecordBulder.append(alignedRead.getChrom()); // REFERENCE
@@ -103,16 +109,128 @@ public class FastaImporter {
 
 				SAMRecord samRecord = parser.parseLine(samRecordBulder.toString());
 
-				String line = samToHsd(samRecord, reference);
+				String variants = readCigar(samRecord, reference);
 
-				lines.add(line);
+				profile.append(variants);
 
 			}
+
+			lines.add(profile.toString());
 
 		}
 
 		refFasta.close();
+
 		return lines;
+	}
+
+	private String readCigar(SAMRecord samRecord, String reference) {
+
+		String readString = samRecord.getReadString();
+
+		StringBuilder pos = new StringBuilder();
+
+		for (int i = 0; i < readString.length(); i++) {
+
+			int currentPos = samRecord.getReferencePositionAtReadPosition(i + 1);
+
+			char inputBase = readString.charAt(i);
+
+			if (currentPos > 0) {
+
+				char referenceBase = reference.charAt(currentPos - 1);
+
+				if (inputBase != referenceBase) {
+
+					pos.append("\t" + currentPos + "" + inputBase);
+
+				}
+
+			} else {
+
+			}
+		}
+
+		Integer currentReferencePos = samRecord.getAlignmentStart();
+
+		for (CigarElement cigarElement : samRecord.getCigar().getCigarElements()) {
+
+			Integer cigarElementLength = cigarElement.getLength();
+
+			if (cigarElement.getOperator() == CigarOperator.D) {
+
+				// start of D is currentRefPos: Don't add 1 before!
+				Integer cigarElementStart = currentReferencePos;
+
+				Integer cigarElementEnd = currentReferencePos + cigarElementLength;
+
+				while (cigarElementStart < cigarElementEnd) {
+
+					pos.append("\t" + cigarElementStart + "d");
+
+					cigarElementStart++;
+				}
+
+			}
+
+			if (cigarElement.getOperator() == CigarOperator.I) {
+
+				// returns e.g. 310 but Insertion need to be added to last pos (so 309)
+				int currentReferencePosIns = currentReferencePos - 1;
+
+				int i = 1;
+
+				int length = cigarElement.getLength();
+
+				while (i <= length) {
+
+					// -1 since array starts at 0
+					int arrayPos = currentReferencePosIns + i - 1;
+
+					char insBase = samRecord.getReadString().charAt(arrayPos);
+
+					pos.append("\t" + currentReferencePosIns + "." + i + "" + insBase);
+
+					i++;
+				}
+
+			}
+
+			// only M and D operators consume bases
+			if (cigarElement.getOperator().consumesReferenceBases()) {
+				currentReferencePos = currentReferencePos + cigarElement.getLength();
+			}
+
+		}
+
+		return pos.toString();
+	}
+
+	public static String readInReference(String file) {
+		StringBuilder stringBuilder = null;
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(file));
+			String line = null;
+			stringBuilder = new StringBuilder();
+
+			while ((line = reader.readLine()) != null) {
+
+				if (!line.startsWith(">"))
+					stringBuilder.append(line);
+
+			}
+
+			reader.close();
+
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return stringBuilder.toString();
 	}
 
 	private void extractZip(String jbwaDir) throws IOException, FileNotFoundException {
@@ -144,132 +262,4 @@ public class FastaImporter {
 		}
 	}
 
-	private String samToHsd(SAMRecord samRecord, String reference) {
-
-		String readString = samRecord.getReadString();
-
-		StringBuilder pos = new StringBuilder();
-
-		System.out.println("cc " + samRecord.getCigar());
-
-		for (int i = 0; i < readString.length(); i++) {
-
-			int currentPos = samRecord.getReferencePositionAtReadPosition(i + 1);
-
-			char inputBase = readString.charAt(i);
-
-			if (currentPos > 0) {
-
-				char referenceBase = reference.charAt(currentPos - 1);
-
-				if (inputBase != referenceBase) {
-
-					pos.append("\t" + currentPos + "" + inputBase);
-
-				}
-
-			} else {
-
-			}
-		}
-
-		Integer currentReferencePos = samRecord.getAlignmentStart();
-
-		int currentPosForIns = 0;
-
-		for (CigarElement cigarElement : samRecord.getCigar().getCigarElements()) {
-
-			Integer cigarElementLength = cigarElement.getLength();
-
-			if (cigarElement.getOperator() == CigarOperator.D) {
-
-				// start of D is currentRefPos: Don't add 1 before!
-				Integer cigarElementStart = currentReferencePos;
-
-				Integer cigarElementEnd = currentReferencePos + cigarElementLength;
-
-				while (cigarElementStart < cigarElementEnd) {
-
-					pos.append("\t" + cigarElementStart + "d");
-
-					cigarElementStart++;
-				}
-
-			}
-
-			// update read position (not included in consumesReferenceBases)
-			if (cigarElement.getOperator() == CigarOperator.S) {
-
-				currentPosForIns = currentPosForIns + cigarElement.getLength();
-
-			}
-
-			if (cigarElement.getOperator() == CigarOperator.I) {
-
-				int i = 1;
-
-				int length = cigarElement.getLength();
-
-				while (i <= length) {
-
-					// -1 since array starts at 0
-					int arrayPos = currentPosForIns + i - 1;
-
-					char insBase = samRecord.getReadString().charAt(arrayPos);
-
-					pos.append("\t" + currentPosForIns + "." + i + "" + insBase);
-
-					i++;
-				}
-
-				// update read position (not included in consumesReferenceBases)
-				currentPosForIns = currentPosForIns + cigarElement.getLength();
-
-			}
-
-			// only M and D operators consume bases
-			if (cigarElement.getOperator().consumesReferenceBases()) {
-				currentReferencePos = currentReferencePos + cigarElement.getLength();
-
-				// don't increase D, since not included in base string!
-				if (cigarElement.getOperator() != CigarOperator.D) {
-					currentPosForIns = currentPosForIns + cigarElement.getLength();
-				}
-			}
-
-		}
-
-		StringBuilder profile = new StringBuilder();
-
-		profile.append(samRecord.getReadName() + "\t" + "1-16569" + "\t" + "?" + pos.toString());
-
-		return profile.toString();
-	}
-
-	public static String readInReference(String file) {
-		StringBuilder stringBuilder = null;
-		try {
-			BufferedReader reader = new BufferedReader(new FileReader(file));
-			String line = null;
-			stringBuilder = new StringBuilder();
-
-			while ((line = reader.readLine()) != null) {
-
-				if (!line.startsWith(">"))
-					stringBuilder.append(line);
-
-			}
-
-			reader.close();
-
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return stringBuilder.toString();
-	}
 }
