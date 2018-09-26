@@ -30,7 +30,7 @@ public class FastaImporter {
 
 	public ArrayList<String> load(File file, boolean rsrs) throws FileNotFoundException, IOException {
 
-		String jbwaDir = FileUtil.path(System.getProperty("java.io.tmpdir"),"jbwa-v1");
+		String jbwaDir = FileUtil.path(System.getProperty("java.io.tmpdir"), "jbwa-v1");
 
 		String ref = "rCRS.fasta";
 
@@ -67,6 +67,11 @@ public class FastaImporter {
 			// also include supplemental alignments ("chimeric reads")
 			for (AlnRgn alignedRead : mem.align(read)) {
 
+				// as defined by BWA
+				if (alignedRead.getAs() < 30) {
+					continue;
+				}
+
 				if (header.getSequence(alignedRead.getChrom()) == null) {
 					// add contig with mtSequence length
 					header.addSequence(new SAMSequenceRecord(alignedRead.getChrom(), 16569));
@@ -86,7 +91,7 @@ public class FastaImporter {
 
 				samRecordBulder.append("\t");
 
-				samRecordBulder.append(alignedRead.getPos() + 1); // LEFT MOST POS
+				samRecordBulder.append(alignedRead.getPos()); // LEFT MOST POS
 
 				samRecordBulder.append("\t");
 
@@ -105,7 +110,7 @@ public class FastaImporter {
 
 				samRecordBulder.append("*\t");
 
-				samRecordBulder.append("AS:i:" + alignedRead.getNm());
+				samRecordBulder.append("AS:i:" + alignedRead.getAs());
 
 				SAMRecord samRecord = parser.parseLine(samRecordBulder.toString());
 
@@ -120,7 +125,7 @@ public class FastaImporter {
 		}
 
 		refFasta.close();
-		
+
 		return lines;
 	}
 
@@ -168,7 +173,7 @@ public class FastaImporter {
 				Integer cigarElementEnd = currentReferencePos + cigarElementLength;
 
 				while (cigarElementStart < cigarElementEnd) {
-					
+
 					pos.append("\t" + cigarElementStart + "d");
 
 					cigarElementStart++;
