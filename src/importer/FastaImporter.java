@@ -30,7 +30,7 @@ public class FastaImporter {
 
 	public ArrayList<String> load(File file, boolean rsrs) throws FileNotFoundException, IOException {
 
-		String jbwaDir = "jbwa";
+		String jbwaDir = FileUtil.path(System.getProperty("java.io.tmpdir"),"jbwa-v1");
 
 		String ref = "rCRS.fasta";
 
@@ -120,7 +120,7 @@ public class FastaImporter {
 		}
 
 		refFasta.close();
-
+		
 		return lines;
 	}
 
