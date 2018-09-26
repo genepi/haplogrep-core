@@ -32,7 +32,7 @@ public class FastaImporter {
 		
 		final String BWA_VERSION = "0.7.17";
 
-		String jbwaDir = FileUtil.path(System.getProperty("java.io.tmpdir"), "jbwa-v1");
+		String jbwaDir = FileUtil.path(System.getProperty("java.io.tmpdir"), "jbwa-"+BWA_VERSION);
 
 		String ref = "rCRS.fasta";
 
