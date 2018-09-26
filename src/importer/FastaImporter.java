@@ -169,8 +169,6 @@ public class FastaImporter {
 
 				while (cigarElementStart < cigarElementEnd) {
 					
-					System.out.println(cigarElementStart + "d");
-
 					pos.append("\t" + cigarElementStart + "d");
 
 					cigarElementStart++;
@@ -192,8 +190,6 @@ public class FastaImporter {
 					char insBase = samRecord.getReadString().charAt(sequencePos + i - 1);
 
 					pos.append("\t" + currentReferencePosIns + "." + i + "" + insBase);
-
-					System.out.println("INSERTION " + currentReferencePosIns + "." + i + "" + insBase);
 
 					i++;
 				}
