@@ -29,6 +29,8 @@ import htsjdk.samtools.reference.ReferenceSequence;
 public class FastaImporter {
 
 	public ArrayList<String> load(File file, boolean rsrs) throws FileNotFoundException, IOException {
+		
+		final String BWA_VERSION = "0.7.17";
 
 		String jbwaDir = FileUtil.path(System.getProperty("java.io.tmpdir"), "jbwa-v1");
 
