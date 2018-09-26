@@ -64,7 +64,7 @@ public class FastaImporter {
 
 			profile.append(sequence.getName() + "\t" + "1-16569" + "\t" + "?");
 
-			// also include supplemental alignments
+			// also include supplemental alignments ("chimeric reads")
 			for (AlnRgn alignedRead : mem.align(read)) {
 
 				if (header.getSequence(alignedRead.getChrom()) == null) {
@@ -136,6 +136,7 @@ public class FastaImporter {
 
 			char inputBase = readString.charAt(i);
 
+			// e.g. INS having currentPos 0
 			if (currentPos > 0) {
 
 				char referenceBase = reference.charAt(currentPos - 1);
@@ -153,6 +154,8 @@ public class FastaImporter {
 
 		Integer currentReferencePos = samRecord.getAlignmentStart();
 
+		int sequencePos = 0;
+
 		for (CigarElement cigarElement : samRecord.getCigar().getCigarElements()) {
 
 			Integer cigarElementLength = cigarElement.getLength();
@@ -165,6 +168,8 @@ public class FastaImporter {
 				Integer cigarElementEnd = currentReferencePos + cigarElementLength;
 
 				while (cigarElementStart < cigarElementEnd) {
+					
+					System.out.println(cigarElementStart + "d");
 
 					pos.append("\t" + cigarElementStart + "d");
 
@@ -184,12 +189,11 @@ public class FastaImporter {
 
 				while (i <= length) {
 
-					// -1 since array starts at 0
-					int arrayPos = currentReferencePosIns + i - 1;
-
-					char insBase = samRecord.getReadString().charAt(arrayPos);
+					char insBase = samRecord.getReadString().charAt(sequencePos + i - 1);
 
 					pos.append("\t" + currentReferencePosIns + "." + i + "" + insBase);
+
+					System.out.println("INSERTION " + currentReferencePosIns + "." + i + "" + insBase);
 
 					i++;
 				}
@@ -199,6 +203,11 @@ public class FastaImporter {
 			// only M and D operators consume bases
 			if (cigarElement.getOperator().consumesReferenceBases()) {
 				currentReferencePos = currentReferencePos + cigarElement.getLength();
+			}
+
+			// give back current readPos, only increase if read bases are consumed!
+			if (cigarElement.getOperator().consumesReadBases()) {
+				sequencePos = sequencePos + cigarElement.getLength();
 			}
 
 		}
