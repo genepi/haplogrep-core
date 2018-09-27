@@ -10,6 +10,7 @@ import java.util.Set;
 import org.junit.Test;
 
 import importer.FastaImporter;
+import importer.FastaImporter.References;
 import importer.VcfImporter;
 import junit.framework.Assert;
 
@@ -20,7 +21,7 @@ public class FastaTest {
 		String file = "test-data/fasta/rCRS.fasta";
 		StringBuilder actual = new StringBuilder();
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), false);
+		ArrayList<String> samples = impFasta.load(new File(file), References.RCRS);
 
 		String[] splits = samples.get(0).split("\t");
 		for (int i = 3; i < splits.length; i++) {
@@ -35,7 +36,7 @@ public class FastaTest {
 		String file = "test-data/fasta/rsrs.fasta";
 		StringBuilder actual = new StringBuilder();
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), true);
+		ArrayList<String> samples = impFasta.load(new File(file), References.RSRS);
 
 		String[] splits = samples.get(0).split("\t");
 		for (int i = 3; i < splits.length; i++) {
@@ -51,7 +52,7 @@ public class FastaTest {
 		String file = "test-data/fasta/rCRS.fasta";
 		StringBuilder actual = new StringBuilder();
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), true);
+		ArrayList<String> samples = impFasta.load(new File(file), References.RSRS);
 
 		String[] splits = samples.get(0).split("\t");
 
@@ -69,7 +70,7 @@ public class FastaTest {
 		String file = "test-data/fasta/AY195749.fasta";
 		StringBuilder actual = new StringBuilder();
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), true);
+		ArrayList<String> samples = impFasta.load(new File(file), References.RSRS);
 
 		String[] splits = samples.get(0).split("\t");
 
@@ -90,7 +91,7 @@ public class FastaTest {
 	public void parseSampleWithInsertionsDeletions() throws Exception {
 		String file = "test-data/fasta/InsertionTest.fasta";
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), false);
+		ArrayList<String> samples = impFasta.load(new File(file), References.RCRS);
 
 		String[] splits = samples.get(0).split("\t");
 		HashSet<String> set = new HashSet<String>();
@@ -120,7 +121,7 @@ public class FastaTest {
 	public void parseSampleWithInsertionsDeletionsShuffle() throws Exception {
 		String file = "test-data/fasta/InsertionTest2.fasta";
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), false);
+		ArrayList<String> samples = impFasta.load(new File(file), References.RCRS);
 
 		String[] splits = samples.get(0).split("\t");
 		HashSet<String> set = new HashSet<String>();
@@ -150,7 +151,7 @@ public class FastaTest {
 	public void parseSampleWithInsertionsDeletionsShuffle2() throws Exception {
 		String file = "test-data/fasta/InsertionTest3.fasta";
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), false);
+		ArrayList<String> samples = impFasta.load(new File(file), References.RCRS);
 
 		String[] splits = samples.get(0).split("\t");
 		HashSet<String> set = new HashSet<String>();

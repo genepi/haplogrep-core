@@ -28,15 +28,23 @@ import htsjdk.samtools.reference.ReferenceSequence;
 
 public class FastaImporter {
 
-	public ArrayList<String> load(File file, boolean rsrs) throws FileNotFoundException, IOException {
-		
+	public enum References {
+		RCRS, RSRS;
+	}
+
+	public ArrayList<String> load(File file, References referenceType) throws FileNotFoundException, IOException {
+
 		final String BWA_VERSION = "0.7.17";
 
-		String jbwaDir = FileUtil.path(System.getProperty("java.io.tmpdir"), "jbwa-"+BWA_VERSION);
+		String jbwaDir = FileUtil.path(System.getProperty("java.io.tmpdir"), "jbwa-" + BWA_VERSION);
 
-		String ref = "rCRS.fasta";
+		String ref = "";
 
-		if (rsrs) {
+		if (referenceType == References.RCRS) {
+			ref = "rCRS.fasta";
+		}
+
+		else if (referenceType == References.RSRS) {
 			ref = "rsrs.fasta";
 		}
 
@@ -44,7 +52,7 @@ public class FastaImporter {
 
 		extractZip(jbwaDir);
 
-		String reference = readInReference(FileUtil.path(jbwaDir, ref));
+		String referenceAsString = readInReference(FileUtil.path(jbwaDir, ref));
 
 		String jbwaLib = FileUtil.path(new File(jbwaDir + "/libbwajni.so").getAbsolutePath());
 
@@ -116,7 +124,7 @@ public class FastaImporter {
 
 				SAMRecord samRecord = parser.parseLine(samRecordBulder.toString());
 
-				String variants = readCigar(samRecord, reference);
+				String variants = readCigar(samRecord, referenceAsString);
 
 				profile.append(variants);
 
