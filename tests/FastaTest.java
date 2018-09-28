@@ -3,16 +3,12 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Set;
 
 import org.junit.Test;
 
 import importer.FastaImporter;
 import importer.FastaImporter.References;
-import importer.VcfImporter;
-import junit.framework.Assert;
 
 public class FastaTest {
 
@@ -173,6 +169,25 @@ public class FastaTest {
 		assertEquals(true, set.contains("8275d"));
 		assertEquals(true, set.contains("8276d"));
 		assertEquals(true, set.contains("8277d"));
+
+	}
+	
+	// random shuffle
+	@Test
+	public void test() throws Exception {
+		String file = "test-data/fasta/ANI152.fasta";
+		FastaImporter impFasta = new FastaImporter();
+		ArrayList<String> samples = impFasta.load(new File(file), References.RCRS);
+
+		String[] splits = samples.get(0).split("\t");
+		HashSet<String> set = new HashSet<String>();
+		
+		for (int i = 3; i < splits.length; i++) {
+			System.out.println(splits[i]);
+			set.add(splits[i]);
+		}
+
+
 
 	}
 	

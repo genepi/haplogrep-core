@@ -1,50 +1,41 @@
 package contamination;
 
-
 public class HSDEntry {
-	
-	public HSDEntry(String iD, String rANGE, StringBuffer pROFILES) {
-		super();
-		ID = iD;
-		RANGE = rANGE;
-		PROFILES = pROFILES;
-	}
-	
+
+	String id;
+	String range;
+	StringBuffer profile;
+
 	public HSDEntry() {
-		super();
-		ID = "";
-		RANGE = "";
-		PROFILES = new StringBuffer();
+		range = "1-16569";
+		profile = new StringBuffer();
 	}
 
-	String ID;
-	String RANGE;
-	StringBuffer PROFILES;
-	
-	public String getID() {
-		return ID;
+	public String getId() {
+		return id;
 	}
-	public void setID(String iD) {
-		ID = iD;
+
+	public void setId(String id) {
+		this.id = id;
 	}
-	public String getRANGE() {
-		return RANGE;
+
+	public String getRange() {
+		return range;
 	}
-	public void setRANGE(String rANGE) {
-		RANGE = rANGE;
+
+	public void setRange(String range) {
+		this.range = range;
 	}
-	public StringBuffer getPROFILES() {
-		return PROFILES;
+
+	public StringBuffer getProfile() {
+		return profile;
 	}
-	public void setPROFILES(StringBuffer pROFILES) {
-		PROFILES = pROFILES;
+
+	public void appendToProfile(String pos) {
+		profile.append("\t" + pos);
 	}
-	
-	public void appendPROFILES(String profile){
-		PROFILES.append(profile+"\t");
-	}
-	
-	public String getString(){
-		return (ID+"\t"+RANGE+"\t?\t"+PROFILES);
+
+	public String getString() {
+		return (id + "\t" + range + "\t?" + profile);
 	}
 }

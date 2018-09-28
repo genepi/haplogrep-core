@@ -82,6 +82,7 @@ public class FastaImporter {
 					continue;
 				}
 
+				System.out.println(alignedRead.getCigar());
 				if (header.getSequence(alignedRead.getChrom()) == null) {
 					// add contig with mtSequence length
 					header.addSequence(new SAMSequenceRecord(alignedRead.getChrom(), 16569));
