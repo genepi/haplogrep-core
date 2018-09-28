@@ -61,7 +61,7 @@ public class ContaminationChecker {
 			}
 		}
 
-		printMap(profiles);
+		// printMap(profiles);
 		
 		return lines;
 

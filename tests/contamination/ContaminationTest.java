@@ -8,6 +8,7 @@ import java.util.HashSet;
 import org.junit.Test;
 
 import core.SampleFile;
+import core.TestSample;
 import phylotree.Phylotree;
 import phylotree.PhylotreeManager;
 
@@ -149,5 +150,113 @@ public class ContaminationTest {
 		assertEquals("U5a2e", samples.getTestSamples().get(1).getTopResult().getHaplogroup().toString());
 		
 	}
+	
+	@Test
+	public void HighChipMix1000GTest() throws Exception {
+		
+		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt");
+
+		ContaminationChecker contChecker = new ContaminationChecker();
+		ArrayList<String> profiles = contChecker.splitFile("test-data/contamination/baq-mapQ30/high-chip-mix-1000G.txt");
+
+		HashSet<String> set = new HashSet<String>();
+
+		String[] splits = profiles.get(0).split("\t");
+
+		for (int i = 3; i < splits.length; i++) {
+			set.add(splits[i]);
+		}
+		
+		SampleFile samples = contChecker.calculateHaplogrops(phylotree, profiles);
+		
+		for (TestSample sample : samples.getTestSamples()) {
+		
+			System.out.println(sample.getSampleID());
+			System.out.println(sample.getTopResult().getHaplogroup());
+		}
+
+		
+	}	
+	
+	@Test
+	public void HighFreeMix1000GTest() throws Exception {
+		
+		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt");
+
+		ContaminationChecker contChecker = new ContaminationChecker();
+		ArrayList<String> profiles = contChecker.splitFile("test-data/contamination/baq-mapQ30/high-free-mix-1000G.txt");
+
+		HashSet<String> set = new HashSet<String>();
+
+		String[] splits = profiles.get(0).split("\t");
+
+		for (int i = 3; i < splits.length; i++) {
+			set.add(splits[i]);
+		}
+		
+		SampleFile samples = contChecker.calculateHaplogrops(phylotree, profiles);
+		
+		for (TestSample sample : samples.getTestSamples()) {
+		
+			System.out.println(sample.getSampleID());
+			System.out.println(sample.getTopResult().getHaplogroup());
+		}
+
+		
+	}	
+	
+	@Test
+	public void Swap1000GTest() throws Exception {
+		
+		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt");
+
+		ContaminationChecker contChecker = new ContaminationChecker();
+		ArrayList<String> profiles = contChecker.splitFile("test-data/contamination/baq-mapQ30/possible-swap-1000G.txt");
+
+		HashSet<String> set = new HashSet<String>();
+
+		String[] splits = profiles.get(0).split("\t");
+
+		for (int i = 3; i < splits.length; i++) {
+			set.add(splits[i]);
+		}
+		
+		SampleFile samples = contChecker.calculateHaplogrops(phylotree, profiles);
+		
+		for (TestSample sample : samples.getTestSamples()) {
+		
+			System.out.println(sample.getSampleID());
+			System.out.println(sample.getTopResult().getHaplogroup());
+		}
+
+		
+	}
+	
+	@Test
+	public void NotContaminatedTest() throws Exception {
+		
+		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt");
+
+		ContaminationChecker contChecker = new ContaminationChecker();
+		ArrayList<String> profiles = contChecker.splitFile("test-data/contamination/baq-mapQ30/no-contamination-1000G.txt");
+
+		HashSet<String> set = new HashSet<String>();
+
+		String[] splits = profiles.get(0).split("\t");
+
+		for (int i = 3; i < splits.length; i++) {
+			set.add(splits[i]);
+		}
+		
+		SampleFile samples = contChecker.calculateHaplogrops(phylotree, profiles);
+		
+		for (TestSample sample : samples.getTestSamples()) {
+		
+			System.out.println(sample.getSampleID());
+			System.out.println(sample.getTopResult().getHaplogroup());
+		}
+
+		
+	}	
 	
 }
