@@ -1,4 +1,4 @@
-package contamination;
+package contamination.objects;
 
 public class HSDEntry {
 
