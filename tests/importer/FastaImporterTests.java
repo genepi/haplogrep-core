@@ -1,3 +1,4 @@
+package importer;
 
 import static org.junit.Assert.*;
 
@@ -10,10 +11,10 @@ import org.junit.Test;
 import importer.FastaImporter;
 import importer.FastaImporter.References;
 
-public class FastaTest {
+public class FastaImporterTests {
 
 	@Test
-	public void rcrsTest() throws Exception {
+	public void testRcrs() throws Exception {
 		String file = "test-data/fasta/rCRS.fasta";
 		StringBuilder actual = new StringBuilder();
 		FastaImporter impFasta = new FastaImporter();
@@ -28,7 +29,7 @@ public class FastaTest {
 	}
 
 	@Test
-	public void rsrsTest() throws Exception {
+	public void testRsrs() throws Exception {
 		String file = "test-data/fasta/rsrs.fasta";
 		StringBuilder actual = new StringBuilder();
 		FastaImporter impFasta = new FastaImporter();
@@ -44,7 +45,7 @@ public class FastaTest {
 	}
 
 	@Test
-	public void rCrsWithRsrsReferenceTest() throws Exception {
+	public void testRCrsWithRsrsReference() throws Exception {
 		String file = "test-data/fasta/rCRS.fasta";
 		StringBuilder actual = new StringBuilder();
 		FastaImporter impFasta = new FastaImporter();
@@ -62,7 +63,7 @@ public class FastaTest {
 	}
 
 	@Test
-	public void parseSampleWithDeletions() throws Exception {
+	public void testParseSampleWithDeletions() throws Exception {
 		String file = "test-data/fasta/AY195749.fasta";
 		StringBuilder actual = new StringBuilder();
 		FastaImporter impFasta = new FastaImporter();
@@ -84,7 +85,7 @@ public class FastaTest {
 	}
 
 	@Test
-	public void parseSampleWithInsertionsDeletions() throws Exception {
+	public void testParseSampleWithInsertionsDeletions() throws Exception {
 		String file = "test-data/fasta/InsertionTest.fasta";
 		FastaImporter impFasta = new FastaImporter();
 		ArrayList<String> samples = impFasta.load(new File(file), References.RCRS);
@@ -114,7 +115,7 @@ public class FastaTest {
 	
 	// copied first two lines of fasta (including 309.1C etc to end of line)
 	@Test
-	public void parseSampleWithInsertionsDeletionsShuffle() throws Exception {
+	public void testParseSampleWithInsertionsDeletionsShuffle() throws Exception {
 		String file = "test-data/fasta/InsertionTest2.fasta";
 		FastaImporter impFasta = new FastaImporter();
 		ArrayList<String> samples = impFasta.load(new File(file), References.RCRS);
@@ -144,7 +145,7 @@ public class FastaTest {
 	
 	// random shuffle
 	@Test
-	public void parseSampleWithInsertionsDeletionsShuffle2() throws Exception {
+	public void testParseSampleWithInsertionsDeletionsShuffleRandom() throws Exception {
 		String file = "test-data/fasta/InsertionTest3.fasta";
 		FastaImporter impFasta = new FastaImporter();
 		ArrayList<String> samples = impFasta.load(new File(file), References.RCRS);
