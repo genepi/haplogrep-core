@@ -8,8 +8,14 @@ import contamination.objects.Sample;
 import genepi.io.table.reader.CsvTableReader;
 
 public class MutationServerReader {
+	
+	private String file;
+	
+	public MutationServerReader(String file) {
+		this.file = file;
+	}
 
-	public ArrayList<Sample> parse(String file) {
+	public ArrayList<Sample> parse() {
 
 		CsvTableReader reader = new CsvTableReader(new File(file).getAbsolutePath(), '\t');
 		ArrayList<Sample> samples = new ArrayList<Sample>();

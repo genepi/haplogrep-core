@@ -46,6 +46,8 @@ public class HaplogroupClassifierTests {
 		assertEquals("U5a2e", samples.getTestSamples().get(1).getTopResult().getHaplogroup().toString());
 
 		String hgFile = "test-data/contamination/lab-mixture/variants-mixture-hg.txt";
+		
+		MutationServerReader reader = new MutationServerReader("test-data/contamination/lab-mixture/variants-mixture-hg.txt");
 
 		ContaminationCheckerTests.createFakeReport(samples.getTestSamples(), new File(hgFile));
 
@@ -55,11 +57,12 @@ public class HaplogroupClassifierTests {
 
 		contChecker.calcContamination(hgFile, variantFile, out, 0.01);
 
-		CsvTableReader reader = new CsvTableReader(out, '\t');
-		reader.next();
-		System.out.println(reader.getString("Contamination"));
+		CsvTableReader readerContamination = new CsvTableReader(out, '\t');
+		readerContamination.next();
+		
+		System.out.println(readerContamination.getString("Contamination"));
 
-		assertEquals("HG_conflict", reader.getString("Contamination"));
+		assertEquals("HG_conflict", readerContamination.getString("Contamination"));
 
 		FileUtil.deleteFile(hgFile);
 		FileUtil.deleteFile(out);

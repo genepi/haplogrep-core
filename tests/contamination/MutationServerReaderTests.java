@@ -15,8 +15,8 @@ public class MutationServerReaderTests {
 	@Test
 	public void testReadVariantFile() throws Exception {
 
-		MutationServerReader reader = new MutationServerReader();
-		ArrayList<Sample> samples = reader.parse("test-data/contamination/lab-mixture/variants-mixture.txt");
+		MutationServerReader reader = new MutationServerReader("test-data/contamination/lab-mixture/variants-mixture.txt");
+		ArrayList<Sample> samples = reader.parse();
 		ArrayList<Integer> posArray = new ArrayList<>();
 		for (Sample sample : samples) {
 			HashSet<Position> positions = sample.getPositions();
@@ -51,8 +51,8 @@ public class MutationServerReaderTests {
 	@Test
 	public void testReadVariantFile2() throws Exception {
 
-		MutationServerReader reader = new MutationServerReader();
-		ArrayList<Sample> samples = reader.parse("test-data/contamination/test-mixture/variants-mixture-2samples.txt");
+		MutationServerReader reader = new MutationServerReader("test-data/contamination/test-mixture/variants-mixture-2samples.txt");
+		ArrayList<Sample> samples = reader.parse();
 		ArrayList<Integer> posArray = new ArrayList<>();
 		int countS1 = 0;
 		int countS3 = 0;
