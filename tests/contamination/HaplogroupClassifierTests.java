@@ -17,7 +17,7 @@ import phylotree.PhylotreeManager;
 public class HaplogroupClassifierTests {
 
 	@Test
-	public void testSsplitAndClassify() throws Exception {
+	public void testSplitAndClassify() throws Exception {
 
 		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt");
 		String variantFile = "test-data/contamination/lab-mixture/variants-mixture.txt";

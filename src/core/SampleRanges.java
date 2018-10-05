@@ -34,7 +34,7 @@ public class SampleRanges {
 		if(metaboChipPositions == null){
 			metaboChipPositions = new HashSet<Integer>();
 			
-			loadMetaboChipPositions();
+			//loadMetaboChipPositions();
 		}
 	}
 

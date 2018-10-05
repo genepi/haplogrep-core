@@ -11,7 +11,7 @@ import core.TestSample;
 import exceptions.parse.sample.InvalidPolymorphismException;
 
 
-public class TestSamplesTests {
+public class SamplesTests {
 
 	@Test
 	public void testCreateFragments() throws InvalidPolymorphismException {

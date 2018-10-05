@@ -10,9 +10,9 @@ import genepi.io.table.reader.CsvTableReader;
 
 public class VariantSplitter {
 
-	public ArrayList<String> splitFile(String file) {
+	public ArrayList<String> splitFile(String variantFile) {
 
-		CsvTableReader reader = new CsvTableReader(new File(file).getAbsolutePath(), '\t');
+		CsvTableReader reader = new CsvTableReader(new File(variantFile).getAbsolutePath(), '\t');
 		ArrayList<String> lines = new ArrayList<String>();
 
 		TreeMap<String, ArrayList<HSDEntry>> profiles = new TreeMap<String, ArrayList<HSDEntry>>();
@@ -55,8 +55,6 @@ public class VariantSplitter {
 				lines.add(ent.getString());
 			}
 		}
-
-		// printMap(profiles);
 
 		return lines;
 

@@ -19,79 +19,73 @@ import java.util.Vector;
 import contamination.objects.ContaminationEntry;
 import contamination.objects.HSDEntry;
 import core.Haplogroup;
-import core.SampleFile;
-import exceptions.parse.HsdFileException;
 import genepi.io.table.TableReaderFactory;
 import genepi.io.table.reader.CsvTableReader;
 import genepi.io.table.reader.ITableReader;
 import phylotree.Phylotree;
 import phylotree.PhylotreeManager;
-import search.ranking.KulczynskiRanking;
 
 public class ContaminationChecker {
 
-	public int calcContamination(String inHG2, String inVar, String outfile, double threshold) {
+	public int calcContamination(String inHG2, String variantFile, String outfile, double threshold) {
 
 		int countEntries = 0;
 		int countPossibleContaminated = 0;
 		int countContaminated = 0;
 		int countCovLow = 0;
 		int countTooCovLow = 0;
+
 		String ID = "";
-		Vector vecov = new Vector<>();
 		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt");
 
 		try {
 
-			ITableReader readTableLevels = TableReaderFactory.getReader(inVar);
+			ITableReader readVariants = TableReaderFactory.getReader(variantFile);
 
-			HashMap<String, ArrayList<Integer>> coverageMap = new HashMap<String, ArrayList<Integer>>();
 			// hahslevels contains key = sampleid+"-"+pos+variant. e.g.: HG00096-152C
 			HashMap<String, Double> heteroLevels = new HashMap<String, Double>();
 			HashMap<String, Integer> homoplasmies = new HashMap<String, Integer>();
 			HashMap<String, Integer> homoplasmiesMeta = new HashMap<String, Integer>();
-			boolean withCoverage = false;
+			HashMap<String, ArrayList<Integer>> coverageMap = new HashMap<String, ArrayList<Integer>>();
 
 			try {
-				while (readTableLevels.next()) {
-					String[] columns = (readTableLevels.getColumns());
-					if (Arrays.asList(columns).contains(HeaderNames.Coverage.colname())) {
-						withCoverage = true;
-					}
-					double vaf = readTableLevels.getDouble(HeaderNames.VariantLevel.colname());
-					ID = readTableLevels.getString(HeaderNames.SampleId.colname());
-					String key = ID + "-" + readTableLevels.getString(HeaderNames.Position.colname())
-							+ readTableLevels.getString(HeaderNames.VariantBase.colname());
-					double value = readTableLevels.getDouble(HeaderNames.VariantLevel.colname());
+				while (readVariants.next()) {
+
+					double vaf = readVariants.getDouble(HeaderNames.VariantLevel.colname());
+					ID = readVariants.getString(HeaderNames.SampleId.colname());
+					String key = ID + "-" + readVariants.getString(HeaderNames.Position.colname()) + readVariants.getString(HeaderNames.VariantBase.colname());
+					double value = readVariants.getDouble(HeaderNames.VariantLevel.colname());
 
 					int cov = -1;
-
-					if (withCoverage) {
-						cov = readTableLevels.getInteger(HeaderNames.Coverage.colname());
-						vecov.add(cov);
-					}
 
 					if (vaf < 1 - threshold) {
 						heteroLevels.put(key, value);
 					} else {
-						if (homoplasmiesMeta.containsKey(ID))
-							homoplasmiesMeta.put(ID, homoplasmiesMeta.get(ID) + 1);
-						else
-							homoplasmiesMeta.put(ID, 1);
-
 						homoplasmies.put(key, 1);
-					}
-					if (withCoverage) {
-						if (coverageMap.get(ID) == null) {
-							coverageMap.put(ID, new ArrayList<Integer>());
+
+						if (homoplasmiesMeta.containsKey(ID)) {
+							homoplasmiesMeta.put(ID, homoplasmiesMeta.get(ID) + 1);
+						} else {
+							homoplasmiesMeta.put(ID, 1);
 						}
-						coverageMap.get(ID).add(cov);
 					}
+					if (coverageMap.get(ID) == null) {
+						coverageMap.put(ID, new ArrayList<Integer>());
+					}
+					coverageMap.get(ID).add(cov);
 				}
-				readTableLevels.close();
+				
+				readVariants.close();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+
+			//printMap(homoplasmiesMeta);
+			
+			//printMap(homoplasmies);
+			
+			printMapDouble(heteroLevels);
+			//printMapDouble(coverageMap);
 
 			replaceSpecialCharacter(inHG2);
 
@@ -213,11 +207,9 @@ public class ContaminationChecker {
 				e.printStackTrace();
 			}
 
-			System.out.println("");
-			System.out.println("---Verdict---");
 			if (countEntries == 1) {
 				System.out.println("Sample: " + ID);
-				System.out.println("Mean Variant Coverage:   " + getMean(vecov));
+				// System.out.println("Mean Variant Coverage: " + getMean(vecov));
 			} else {
 				System.out.println("Samples: " + countEntries);
 			}
@@ -339,6 +331,20 @@ public class ContaminationChecker {
 			for (HSDEntry ent : entry.getValue()) {
 				System.out.println(ent.getString());
 			}
+		}
+	}
+
+	public void printMap(HashMap<String, Integer> map) {
+		for (Map.Entry<String, Integer> entry : map.entrySet()) {
+			System.out.println(entry.getKey());
+			System.out.println(entry.getValue());
+		}
+	}
+
+	public void printMapDouble(HashMap<String, Double> map) {
+		for (Map.Entry<String, Double> entry : map.entrySet()) {
+			System.out.println(entry.getKey());
+			System.out.println(entry.getValue());
 		}
 	}
 
