@@ -238,15 +238,21 @@ public class ContaminationCheckerTests {
 		contChecker.calcContamination(hgFile, variantFile, out, 0.01);
 
 		CsvTableReader reader = new CsvTableReader(out, '\t');
-		int count = 0;
+		int countHigh = 0;
+		int countLow = 0;
 		while(reader.next()) {
 			if(reader.getString("Contamination").equals("HG_conflict")) {
-				count++;
+				countHigh++;
+				
+			}
+			if(reader.getString("Contamination").equals("HG_conflict_low")) {
+				countLow++;
 				
 			}
 		}
 		
-		assertEquals(120, count);
+		assertEquals(120, countHigh);
+		assertEquals(45, countLow);
 		
 		FileUtil.deleteFile(hgFile);
 		FileUtil.deleteFile(out);
