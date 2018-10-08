@@ -207,6 +207,51 @@ public class ContaminationCheckerTests {
 		FileUtil.deleteFile(out);
 
 	}	
+	
+	@Test
+	public void test1000G() throws Exception {
+
+		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt");
+
+		String variantFile = "test-data/contamination/baq-mapQ30/1000G-All-Samples/1000G.txt";
+		VariantSplitter splitter = new VariantSplitter();
+		ArrayList<String> profiles = splitter.splitFile(variantFile);
+
+		HashSet<String> set = new HashSet<String>();
+
+		String[] splits = profiles.get(0).split("\t");
+
+		for (int i = 3; i < splits.length; i++) {
+			set.add(splits[i]);
+		}
+
+		ContaminationChecker contChecker = new ContaminationChecker();
+		
+		HaplogroupClassifier classifier = new HaplogroupClassifier();
+		SampleFile samples = classifier.calculateHaplogrops(phylotree, profiles);
+
+		String hgFile = "test-data/contamination/baq-mapQ30/possible-swap/hg.txt";
+		
+		createFakeReport(samples.getTestSamples(), new File(hgFile));
+
+		String out = "test-data/contamination/baq-mapQ30/possible-swap/report.txt";
+		contChecker.calcContamination(hgFile, variantFile, out, 0.01);
+
+		CsvTableReader reader = new CsvTableReader(out, '\t');
+		int count = 0;
+		while(reader.next()) {
+			if(reader.getString("Contamination").equals("HG_conflict")) {
+				count++;
+				
+			}
+		}
+		
+		assertEquals(120, count);
+		
+		FileUtil.deleteFile(hgFile);
+		FileUtil.deleteFile(out);
+
+	}	
 
 	public static void createFakeReport(List<TestSample> sampleCollection, File out) throws IOException {
 
