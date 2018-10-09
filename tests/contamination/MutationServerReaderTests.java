@@ -3,11 +3,12 @@ package contamination;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import org.junit.Test;
 
-import contamination.objects.Position;
+import contamination.objects.Variant;
 import contamination.objects.Sample;
 
 public class MutationServerReaderTests {
@@ -16,13 +17,13 @@ public class MutationServerReaderTests {
 	public void testReadVariantFile() throws Exception {
 
 		MutationServerReader reader = new MutationServerReader("test-data/contamination/lab-mixture/variants-mixture.txt");
-		ArrayList<Sample> samples = reader.parse();
+		HashMap<String, Sample> samples = reader.parse();
 		ArrayList<Integer> posArray = new ArrayList<>();
-		for (Sample sample : samples) {
-			HashSet<Position> positions = sample.getPositions();
+		for (Sample sample : samples.values()) {
+			HashMap<String, Variant> variants = sample.getPositions();
 			int count = 0;
-			System.out.println(positions.size());
-			for (Position pos : positions) {
+
+			for (Variant pos : variants.values()) {
 				posArray.add(pos.getPos());
 				count++;
 
@@ -39,10 +40,9 @@ public class MutationServerReaderTests {
 				}
 			}
 
-			System.out.println(sample.getMeanCoverage());
 			assertEquals(26, count);
-			assertEquals(8, sample.getHomoplasmies());
-			assertEquals(18, sample.getHeteroplasmies());
+			assertEquals(7, sample.getAmountHomoplasmies());
+			assertEquals(18, sample.getAmountHeteroplasmies());
 			assertEquals(true, posArray.contains(11719));
 			assertEquals(true, posArray.contains(15236));
 		}
@@ -52,35 +52,33 @@ public class MutationServerReaderTests {
 	public void testReadVariantFile2() throws Exception {
 
 		MutationServerReader reader = new MutationServerReader("test-data/contamination/test-mixture/variants-mixture-2samples.txt");
-		ArrayList<Sample> samples = reader.parse();
+		HashMap<String, Sample> samples = reader.parse();
 		ArrayList<Integer> posArray = new ArrayList<>();
+
 		int countS1 = 0;
 		int countS3 = 0;
 		int countS4 = 0;
 
-		for (Sample sample : samples) {
+		for (Sample sample : samples.values()) {
 
-			HashSet<Position> positions = sample.getPositions();
+			HashMap<String, Variant> variants = sample.getPositions();
 
 			if (sample.getId().equals("s1")) {
-				for (Position pos : positions) {
-					System.out.println(pos.toString());
+				for (Variant pos : variants.values()) {
 					posArray.add(pos.getPos());
 					countS1++;
 				}
 			}
 
 			if (sample.getId().equals("s3")) {
-				for (Position pos : positions) {
-					System.out.println(pos.toString());
+				for (Variant pos : variants.values()) {
 					posArray.add(pos.getPos());
 					countS3++;
 				}
 			}
 
 			if (sample.getId().equals("s4")) {
-				for (Position pos : positions) {
-					System.out.println(pos.toString());
+				for (Variant pos : variants.values()) {
 					posArray.add(pos.getPos());
 					countS4++;
 				}

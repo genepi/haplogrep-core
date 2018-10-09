@@ -9,23 +9,159 @@ import java.io.Reader;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.TreeMap;
-import java.util.Vector;
 
 import contamination.objects.ContaminationEntry;
-import contamination.objects.HSDEntry;
+import contamination.objects.Variant;
+import contamination.objects.Sample;
 import core.Haplogroup;
 import genepi.io.table.TableReaderFactory;
 import genepi.io.table.reader.CsvTableReader;
 import genepi.io.table.reader.ITableReader;
+import genepi.io.table.writer.CsvTableWriter;
 import phylotree.Phylotree;
 import phylotree.PhylotreeManager;
 
 public class ContaminationChecker {
+
+	// TODO add threshold variable
+	public int calcContaminationSeb(HashMap<String, Sample> samples, String inHG2, String out) {
+
+		int countEntries = 0;
+		int countPossibleContaminated = 0;
+		int countContaminated = 0;
+		int countCovLow = 0;
+
+		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt");
+
+		CsvTableWriter contaminationWriter = new CsvTableWriter(out, '\t');
+		
+		String[] columnsWrite = { "SampleID", "Contamination", "MajorHG", "MajorLevel", "MajorSNPs", "MajorHGvariants", "MinorHG", "MinorLevel", "MinorSNPs",
+				"MinorHGvariants", "MeanCoverage", "HG_Distance" };
+		contaminationWriter.setColumns(columnsWrite);
+		
+		NumberFormat formatter = new DecimalFormat("#0.000");
+
+		try {
+
+			replaceSpecialCharacter(inHG2);
+
+			CsvTableReader haplogrepTable = new CsvTableReader(inHG2, '\t', true);
+
+			ArrayList<ContaminationEntry> contArray = new ArrayList<ContaminationEntry>();
+
+			while (haplogrepTable.next()) {
+
+				ContaminationEntry centry = new ContaminationEntry();
+
+				countEntries++;
+
+				String id = haplogrepTable.getString("SampleID"); // ID
+
+				centry.setSampleId(id.split("_maj")[0]);
+				centry.setMajorId(haplogrepTable.getString("Haplogroup")); // Major
+				String notfound = haplogrepTable.getString("Not_Found_Polys");
+				centry.setMajorRemaining(notfound.length() - notfound.replaceAll(" ", "").length());
+				String majorfound = haplogrepTable.getString("Found_Polys");
+
+				Sample currentSample = samples.get(centry.getSampleId());
+
+				double meanMajor = getMeanScores(currentSample, majorfound);
+				int countMajorHomoplasmies = countHomoplasmies(currentSample, majorfound);
+				int sampleHomoplasmies = currentSample.getAmountHomoplasmies();
+
+				double meanCov = currentSample.getTotalCoverage() / currentSample.getAmountVariants();
+
+				// check second pair entry
+				haplogrepTable.next();
+
+				centry.setMinorId(haplogrepTable.getString("Haplogroup"));
+				notfound = haplogrepTable.getString("Not_Found_Polys");
+				centry.setMinorRemaining(notfound.length() - notfound.replaceAll(" ", "").length());
+				String minorfound = haplogrepTable.getString("Found_Polys");
+
+				double meanMinor = getMeanScores(currentSample, minorfound);
+
+				int countMinorHomoplasmies = countHomoplasmies(currentSample, minorfound);
+
+				int majMutfound = majorfound.length() - majorfound.replaceAll(" ", "").length();
+				int minMutfound = minorfound.length() - minorfound.replaceAll(" ", "").length();
+
+				String homoplMajor = countMajorHomoplasmies + "/" + sampleHomoplasmies;
+				String homoplMinor = countMinorHomoplasmies + "/" + sampleHomoplasmies;
+
+				int distanceHG = 0;
+
+				String status;
+
+				// check if Haplogroup names are different:
+				if (!centry.getMajorId().equals(centry.getMinorId())) {
+					contArray.add(centry);
+
+					Haplogroup haplogrMajor = new Haplogroup(centry.getMajorId());
+					Haplogroup haplogrMinor = new Haplogroup(centry.getMinorId());
+
+					if (haplogrMajor.isSuperHaplogroup(phylotree, haplogrMinor)) {
+						distanceHG = haplogrMajor.distanceToSuperHaplogroup(phylotree, haplogrMinor);
+					} else if (haplogrMinor.isSuperHaplogroup(phylotree, haplogrMajor)) {
+						distanceHG = haplogrMinor.distanceToSuperHaplogroup(phylotree, haplogrMajor);
+					} else {
+						distanceHG = haplogrMajor.distanceToSuperHaplogroup(phylotree, haplogrMinor);
+					}
+
+					// check if one of the haplogroups is defined by at least 2 heteroplasmic
+					// variants and haplogroup with different snps found (distance -1 not related
+					// HGs)
+
+					if (((majMutfound - countMajorHomoplasmies) > 2 || (minMutfound - countMinorHomoplasmies) > 2) && (distanceHG > 1 || distanceHG == -1)) {
+						countContaminated++;
+						status = "HG_conflict";
+					} else if (((minMutfound - countMinorHomoplasmies) > 1) || distanceHG > 1) {
+						countPossibleContaminated++;
+						status = "HG_conflict_low";
+					} else {
+						status = "None";
+					}
+				} else if (meanCov < 200) {
+					countCovLow++;
+					status = "Low_Coverage";
+				} else {
+					status = "None";
+				}
+
+				contaminationWriter.setString(0, centry.getSampleId());
+				contaminationWriter.setString(1, status);
+				contaminationWriter.setString(2, centry.getMajorId());
+				contaminationWriter.setString(3, formatter.format(meanMajor));
+				contaminationWriter.setString(4, homoplMajor);
+				contaminationWriter.setInteger(5, majMutfound - countMajorHomoplasmies);
+				contaminationWriter.setString(6, centry.getMinorId());
+				contaminationWriter.setString(7, formatter.format(meanMinor));
+				contaminationWriter.setString(8, homoplMinor);
+				contaminationWriter.setInteger(9, minMutfound - countMinorHomoplasmies);
+				contaminationWriter.setDouble(10, meanCov);
+				contaminationWriter.setInteger(11, distanceHG);
+
+				contaminationWriter.next();
+			}
+
+			haplogrepTable.close();
+
+			System.out.println("Haplogroup based conflicts: " + countContaminated + " of " + countEntries);
+			System.out.println("Minor haplogroup conflicts: " + countPossibleContaminated);
+			System.out.println("Coverage low (<200x) : " + countCovLow);
+
+			contaminationWriter.close();
+
+		} catch (Exception e) {
+			System.out.println("ERROR");
+			e.printStackTrace();
+			return -1;
+		}
+		// Everything fine
+		return 0;
+	}
 
 	public int calcContamination(String inHG2, String variantFile, String outfile, double threshold) {
 
@@ -79,16 +215,9 @@ public class ContaminationChecker {
 				e.printStackTrace();
 			}
 
-			// printMap(homoplasmiesMeta);
-
-			// printMap(homoplasmies);
-
-			printMapDouble(heteroLevels);
-			// printMapDouble(coverageMap);
-
 			replaceSpecialCharacter(inHG2);
 
-			CsvTableReader readTableHaploGrep = new CsvTableReader(inHG2, '\t', true);
+			CsvTableReader haplogrepTable = new CsvTableReader(inHG2, '\t', true);
 			NumberFormat formatter = new DecimalFormat("#0.000");
 
 			ArrayList<ContaminationEntry> contArray = new ArrayList<ContaminationEntry>();
@@ -98,33 +227,33 @@ public class ContaminationChecker {
 			fw.write(System.lineSeparator());
 
 			try {
-				while (readTableHaploGrep.next()) {
-					
-					ContaminationEntry centry = new ContaminationEntry();
-					
-					countEntries++;
-					String id = readTableHaploGrep.getString("SampleID"); // ID
+				while (haplogrepTable.next()) {
 
-					double weight = readTableHaploGrep.getDouble("Overall_Rank"); // Rank
+					ContaminationEntry centry = new ContaminationEntry();
+
+					countEntries++;
+					String id = haplogrepTable.getString("SampleID"); // ID
+
+					double weight = haplogrepTable.getDouble("Overall_Rank"); // Rank
 					System.out.println("weight " + weight);
 					// centry.setMajorId(readTableHaploGrep.getString("weight")); //Major
 
 					centry.setSampleId(id.split("_maj")[0]);
-					centry.setMajorId(readTableHaploGrep.getString("Haplogroup")); // Major
+					centry.setMajorId(haplogrepTable.getString("Haplogroup")); // Major
 
-					String notfound = readTableHaploGrep.getString("Not_Found_Polys");
+					String notfound = haplogrepTable.getString("Not_Found_Polys");
 					centry.setMajorRemaining(notfound.length() - notfound.replaceAll(" ", "").length());
-					String majorfound = readTableHaploGrep.getString("Found_Polys");
+					String majorfound = haplogrepTable.getString("Found_Polys");
 					double meanMajor = getMeanScores(centry.getSampleId(), majorfound, heteroLevels);
 					int[] countHomoplMajor = countHomoplasmies(centry.getSampleId(), majorfound, homoplasmies, homoplasmiesMeta);
 					double meanCov = getMeanCoverage(id.split("_maj")[0], coverageMap);
 
 					// check second pair entry
-					readTableHaploGrep.next();
-					centry.setMinorId(readTableHaploGrep.getString("Haplogroup")); // Minor
-					notfound = readTableHaploGrep.getString("Not_Found_Polys");
+					haplogrepTable.next();
+					centry.setMinorId(haplogrepTable.getString("Haplogroup")); // Minor
+					notfound = haplogrepTable.getString("Not_Found_Polys");
 					centry.setMinorRemaining(notfound.length() - notfound.replaceAll(" ", "").length());
-					String minorfound = readTableHaploGrep.getString("Found_Polys");
+					String minorfound = haplogrepTable.getString("Found_Polys");
 					double meanMinor = getMeanScores(centry.getSampleId(), minorfound, heteroLevels);
 					int[] countHomoplMinor = countHomoplasmies(centry.getSampleId(), minorfound, homoplasmies, homoplasmiesMeta);
 
@@ -177,7 +306,7 @@ public class ContaminationChecker {
 							+ (minMutfound - countHomoplMinor[0]) + "\t" + meanCov + "\t" + distanceHG + "\n");
 				}
 
-				readTableHaploGrep.close();
+				haplogrepTable.close();
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -205,12 +334,24 @@ public class ContaminationChecker {
 		return 0;
 	}
 
-	private double getMean(Vector vecov) {
-		int help = 0;
-		for (int i = 0; i < vecov.size(); i++) {
-			help += Integer.parseInt(vecov.get(i) + "");
+	private double getMeanScores(Sample currentSample, String found) {
+
+		double sum = 0.0;
+		int count = 0;
+
+		String[] splitsFound = found.split(" ");
+
+		for (String split : splitsFound) {
+
+			Variant variant = currentSample.getPositions().get(split);
+
+			if (variant != null && variant.getType() == 2) {
+				sum += variant.getLevel();
+				count++;
+			}
+
 		}
-		return help / vecov.size();
+		return sum / count;
 	}
 
 	private double getMeanScores(String sampleId, String found, HashMap<String, Double> hmap) {
@@ -230,10 +371,6 @@ public class ContaminationChecker {
 				double value = hmap.get(sampleId + "-" + variant);
 				if (value < 0.99) {
 					sum1 += value;
-					/*
-					 * sum2+=Math.pow(value, 2); stdev = Math.sqrt(i*sum2 - Math.pow(sum1, 2))/i;
-					 * System.out.println(stdev);
-					 */
 					i++;
 				}
 			}
@@ -289,26 +426,21 @@ public class ContaminationChecker {
 		}
 	}
 
-	public void printMap(TreeMap<String, ArrayList<HSDEntry>> map) {
-		for (Map.Entry<String, ArrayList<HSDEntry>> entry : map.entrySet()) {
-			for (HSDEntry ent : entry.getValue()) {
-				System.out.println(ent.getString());
+	private int countHomoplasmies(Sample currentSample, String majorfound) {
+
+		int count = 0;
+		String[] majorSplits = majorfound.split(" ");
+
+		for (String split : majorSplits) {
+
+			Variant variant = currentSample.getPositions().get(split);
+
+			if (variant != null && variant.getType() == 1) {
+				count++;
 			}
-		}
-	}
 
-	public void printMap(HashMap<String, Integer> map) {
-		for (Map.Entry<String, Integer> entry : map.entrySet()) {
-			System.out.println(entry.getKey());
-			System.out.println(entry.getValue());
 		}
-	}
-
-	public void printMapDouble(HashMap<String, Double> map) {
-		for (Map.Entry<String, Double> entry : map.entrySet()) {
-			System.out.println(entry.getKey());
-			System.out.println(entry.getValue());
-		}
+		return count;
 	}
 
 	private int[] countHomoplasmies(String sampleId, String found, HashMap<String, Integer> hmap, HashMap<String, Integer> hmapSize) {
@@ -333,8 +465,7 @@ public class ContaminationChecker {
 				common++;
 		}
 		long start = System.currentTimeMillis();
-		result[0] = common; // Maps.difference(hmap, helpMap).entriesInCommon().size();
-		// System.out.println(System.currentTimeMillis()-start);
+		result[0] = common;
 
 		if (hmapSize.containsKey(sampleId))
 			result[1] = hmapSize.get(sampleId);

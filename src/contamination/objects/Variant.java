@@ -1,6 +1,6 @@
 package contamination.objects;
 
-public class Position {
+public class Variant {
 
 	private int pos;
 	private char ref;

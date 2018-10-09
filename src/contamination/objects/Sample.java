@@ -1,21 +1,22 @@
 package contamination.objects;
 
-import java.util.HashSet;
+import java.util.HashMap;
 
 public class Sample {
 
 	private String id;
-	private HashSet<Position> positions;
-	private int homoplasmies;
-	private int heteroplasmies;
+	private HashMap<String, Variant> variants;
+	private int amountHomoplasmies;
+	private int amountVariants;
+	private int amountHeteroplasmies;
 	private float totalCoverage = 0;
 
 	public Sample() {
-		positions = new HashSet<>();
+		variants = new HashMap<String, Variant>();
 	}
 
-	public HashSet<Position> getPositions() {
-		return positions;
+	public HashMap<String, Variant> getPositions() {
+		return variants;
 	}
 
 	public String getId() {
@@ -26,22 +27,24 @@ public class Sample {
 		this.id = id;
 	}
 
-	public void setPositions(HashSet<Position> positions) {
-		this.positions = positions;
+	public void setPositions(HashMap<String, Variant> variants) {
+		this.variants = variants;
 	}
 
-	public void addPosition(Position pos) {
-		positions.add(pos);
+	public void addPosition(Variant var) {
+		variants.put(var.getPos()+String.valueOf(var.getVariant()), var);
 	}
 
 	public void updateCount(int type) {
+		
+		amountVariants +=1;
 
 		if (type == 1) {
-			homoplasmies += 1;
+			amountHomoplasmies += 1;
 		}
 
 		if (type == 2) {
-			heteroplasmies += 1;
+			amountHeteroplasmies += 1;
 		}
 	}
 
@@ -50,27 +53,36 @@ public class Sample {
 		totalCoverage += coverage;
 	}
 
-	public int getHomoplasmies() {
-		return homoplasmies;
+
+	public int getAmountHomoplasmies() {
+		return amountHomoplasmies;
 	}
 
-	public void setHomoplasmies(int homoplasmies) {
-		this.homoplasmies = homoplasmies;
+	public void setAmountHomoplasmies(int amountHomoplasmies) {
+		this.amountHomoplasmies = amountHomoplasmies;
 	}
 
-	public int getHeteroplasmies() {
-		return heteroplasmies;
+	public int getAmountVariants() {
+		return amountVariants;
 	}
 
-	public void setHeteroplasmies(int heteroplasmies) {
-		this.heteroplasmies = heteroplasmies;
+	public void setAmountVariants(int amountVariants) {
+		this.amountVariants = amountVariants;
 	}
 
-	public float getMeanCoverage() {
+	public int getAmountHeteroplasmies() {
+		return amountHeteroplasmies;
+	}
+
+	public void setAmountHeteroplasmies(int amountHeteroplasmies) {
+		this.amountHeteroplasmies = amountHeteroplasmies;
+	}
+
+	public float getTotalCoverage() {
 		return totalCoverage;
 	}
 
-	public void setMeanCoverage(int totalCoverage) {
+	public void setTotalCoverage(float totalCoverage) {
 		this.totalCoverage = totalCoverage;
 	}
 }
