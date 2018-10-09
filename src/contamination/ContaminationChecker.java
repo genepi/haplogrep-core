@@ -49,8 +49,6 @@ public class ContaminationChecker {
 
 			CsvTableReader haplogrepTable = new CsvTableReader(inHG2, '\t', true);
 
-			ArrayList<ContaminationEntry> contArray = new ArrayList<ContaminationEntry>();
-
 			while (haplogrepTable.next()) {
 
 				ContaminationEntry centry = new ContaminationEntry();
@@ -79,8 +77,8 @@ public class ContaminationChecker {
 				centry.setMinorId(haplogrepTable.getString("Haplogroup"));
 				notfound = haplogrepTable.getString("Not_Found_Polys");
 				centry.setMinorRemaining(notfound.length() - notfound.replaceAll(" ", "").length());
+				
 				String minorfound = haplogrepTable.getString("Found_Polys");
-
 				double meanMinor = getMeanScores(currentSample, minorfound);
 
 				int countMinorHomoplasmies = countHomoplasmies(currentSample, minorfound);
@@ -92,13 +90,9 @@ public class ContaminationChecker {
 				String homoplMinor = countMinorHomoplasmies + "/" + sampleHomoplasmies;
 
 				int distanceHG = 0;
-
 				String status;
 
-				// check if Haplogroup names are different:
 				if (!centry.getMajorId().equals(centry.getMinorId())) {
-					contArray.add(centry);
-
 					Haplogroup haplogrMajor = new Haplogroup(centry.getMajorId());
 					Haplogroup haplogrMinor = new Haplogroup(centry.getMinorId());
 
@@ -155,11 +149,10 @@ public class ContaminationChecker {
 			contaminationWriter.close();
 
 		} catch (Exception e) {
-			System.out.println("ERROR");
 			e.printStackTrace();
 			return -1;
 		}
-		// Everything fine
+
 		return 0;
 	}
 
