@@ -14,6 +14,7 @@ import java.util.Locale;
 
 import org.junit.Test;
 
+import contamination.Contamination.Status;
 import contamination.objects.Sample;
 import core.Polymorphism;
 import core.SampleFile;
@@ -32,14 +33,14 @@ public class ContaminationCheckerTests {
 
 		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt");
 
-		VariantSplitter splitter = new VariantSplitter();
-		
 		String variantFile = "test-data/contamination/baq-mapQ30/high-chip-mix/high-chip-mix-1000G.txt";
-		
+
+		VariantSplitter splitter = new VariantSplitter();
+
 		MutationServerReader reader = new MutationServerReader(variantFile);
-		
-		HashMap<String, Sample> samples2 = reader.parse();
-		
+
+		HashMap<String, Sample> mutationServerSamples = reader.parse();
+
 		ArrayList<String> profiles = splitter.splitFile(variantFile);
 
 		HashSet<String> set = new HashSet<String>();
@@ -50,46 +51,43 @@ public class ContaminationCheckerTests {
 			set.add(splits[i]);
 		}
 
-		ContaminationChecker contChecker = new ContaminationChecker();
-		
+		Contamination contamination = new Contamination();
+
 		HaplogroupClassifier classifier = new HaplogroupClassifier();
-		SampleFile samples = classifier.calculateHaplogrops(phylotree, profiles);
+		SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
 
-		String hgFile = "test-data/contamination/baq-mapQ30/high-chip-mix/hg.txt";
-		
-		createFakeReport(samples.getTestSamples(), new File(hgFile));
+		String output = "test-data/contamination/baq-mapQ30/high-chip-mix/report.txt";
+		contamination.calcContamination(mutationServerSamples, haplogrepSamples.getTestSamples(), output);
 
-		String out = "test-data/contamination/baq-mapQ30/high-chip-mix/report.txt";
-		contChecker.calcContaminationSeb(samples2, hgFile, out);
+		CsvTableReader readerOut = new CsvTableReader(output, '\t');
 
-		CsvTableReader readerOut = new CsvTableReader(out, '\t');
-		
 		int count = 0;
-		while(readerOut.next()) {
-			if(readerOut.getString("Contamination").equals("HG_conflict")) {
+		while (readerOut.next()) {
+			if (readerOut.getString("Contamination").equals(Status.HG_Conflict_High.name())) {
 				count++;
-				
+
 			}
 		}
-		
+
 		assertEquals(26, count);
-		
-		FileUtil.deleteFile(hgFile);
-		FileUtil.deleteFile(out);
+
+		FileUtil.deleteFile(output);
 
 	}
-	
+
 	@Test
 	public void testHighFreeMix1000G() throws Exception {
 
 		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt");
 
-		ContaminationChecker contChecker = new ContaminationChecker();
-		
 		String variantFile = "test-data/contamination/baq-mapQ30/high-free-mix/high-free-mix-1000G.txt";
+
+		Contamination contamination = new Contamination();
+
 		MutationServerReader reader = new MutationServerReader(variantFile);
-		HashMap<String, Sample> samples2 = reader.parse();
-		
+
+		HashMap<String, Sample> mutationServerSamples = reader.parse();
+
 		VariantSplitter splitter = new VariantSplitter();
 		ArrayList<String> profiles = splitter.splitFile(variantFile);
 
@@ -102,42 +100,39 @@ public class ContaminationCheckerTests {
 		}
 
 		HaplogroupClassifier classifier = new HaplogroupClassifier();
-		SampleFile samples = classifier.calculateHaplogrops(phylotree, profiles);
+		SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
 
-		String hgFile = "test-data/contamination/baq-mapQ30/high-free-mix/hg.txt";
-		
-		createFakeReport(samples.getTestSamples(), new File(hgFile));
+		String output = "test-data/contamination/baq-mapQ30/high-free-mix/report.txt";
 
-		String out = "test-data/contamination/baq-mapQ30/high-free-mix/report.txt";
-		contChecker.calcContaminationSeb(samples2, hgFile, out);
+		contamination.calcContamination(mutationServerSamples, haplogrepSamples.getTestSamples(), output);
 
-		CsvTableReader readerOut = new CsvTableReader(out, '\t');
+		CsvTableReader readerOut = new CsvTableReader(output, '\t');
 		int count = 0;
-		while(readerOut.next()) {
-			if(readerOut.getString("Contamination").equals("HG_conflict")) {
+		while (readerOut.next()) {
+			if (readerOut.getString("Contamination").equals(Status.HG_Conflict_High.name())) {
 				count++;
-				
+
 			}
 		}
-		
+
 		assertEquals(7, count);
-		
-		FileUtil.deleteFile(hgFile);
-		FileUtil.deleteFile(out);
+
+		FileUtil.deleteFile(output);
 
 	}
-	
+
 	@Test
 	public void testNoContamination1000G() throws Exception {
 
 		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt");
 
-		ContaminationChecker contChecker = new ContaminationChecker();
-		
 		String variantFile = "test-data/contamination/baq-mapQ30/no-contamination/no-contamination-1000G.txt";
+
+		Contamination contamination = new Contamination();
+
 		MutationServerReader reader = new MutationServerReader(variantFile);
-		HashMap<String, Sample> samples2 = reader.parse();
-		
+		HashMap<String, Sample> mutationserverSamples = reader.parse();
+
 		VariantSplitter splitter = new VariantSplitter();
 		ArrayList<String> profiles = splitter.splitFile(variantFile);
 
@@ -150,40 +145,36 @@ public class ContaminationCheckerTests {
 		}
 
 		HaplogroupClassifier classifier = new HaplogroupClassifier();
-		SampleFile samples = classifier.calculateHaplogrops(phylotree, profiles);
+		SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
 
-		String hgFile = "test-data/contamination/baq-mapQ30/no-contamination/hg.txt";
-		
-		createFakeReport(samples.getTestSamples(), new File(hgFile));
+		String output = "test-data/contamination/baq-mapQ30/no-contamination/report.txt";
+		contamination.calcContamination(mutationserverSamples, haplogrepSamples.getTestSamples(), output);
 
-		String out = "test-data/contamination/baq-mapQ30/no-contamination/report.txt";
-		contChecker.calcContaminationSeb(samples2, hgFile, out);
-
-		CsvTableReader readerOut = new CsvTableReader(out, '\t');
+		CsvTableReader readerOut = new CsvTableReader(output, '\t');
 		int count = 0;
-		while(readerOut.next()) {
-			if(readerOut.getString("Contamination").equals("HG_conflict")) {
+		while (readerOut.next()) {
+			if (readerOut.getString("Contamination").equals(Status.HG_Conflict_High.name())) {
 				count++;
-				
+
 			}
 		}
-		
-		assertEquals(0, count);
-		
-		FileUtil.deleteFile(hgFile);
-		FileUtil.deleteFile(out);
 
-	}	
-	
+		assertEquals(0, count);
+
+		FileUtil.deleteFile(output);
+
+	}
+
 	@Test
 	public void testPossibleSwap() throws Exception {
 
 		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt");
-		
+
 		String variantFile = "test-data/contamination/baq-mapQ30/possible-swap/possible-swap-1000G.txt";
+
 		MutationServerReader reader = new MutationServerReader(variantFile);
-		HashMap<String, Sample> samples2 = reader.parse();
-		
+		HashMap<String, Sample> mutationserverSamples = reader.parse();
+
 		VariantSplitter splitter = new VariantSplitter();
 		ArrayList<String> profiles = splitter.splitFile(variantFile);
 
@@ -195,43 +186,38 @@ public class ContaminationCheckerTests {
 			set.add(splits[i]);
 		}
 
-		ContaminationChecker contChecker = new ContaminationChecker();
-		
+		Contamination contamination = new Contamination();
+
 		HaplogroupClassifier classifier = new HaplogroupClassifier();
-		SampleFile samples = classifier.calculateHaplogrops(phylotree, profiles);
+		SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
 
-		String hgFile = "test-data/contamination/baq-mapQ30/possible-swap/hg.txt";
-		
-		createFakeReport(samples.getTestSamples(), new File(hgFile));
+		String output = "test-data/contamination/baq-mapQ30/possible-swap/report.txt";
+		contamination.calcContamination(mutationserverSamples, haplogrepSamples.getTestSamples(), output);
 
-		String out = "test-data/contamination/baq-mapQ30/possible-swap/report.txt";
-		contChecker.calcContaminationSeb(samples2, hgFile, out);
-
-		CsvTableReader readerOut = new CsvTableReader(out, '\t');
+		CsvTableReader readerOut = new CsvTableReader(output, '\t');
 		int count = 0;
-		while(readerOut.next()) {
-			if(readerOut.getString("Contamination").equals("HG_conflict")) {
+		while (readerOut.next()) {
+			if (readerOut.getString("Contamination").equals(Status.HG_Conflict_High.name())) {
 				count++;
-				
+
 			}
 		}
-		
-		assertEquals(0, count);
-		
-		FileUtil.deleteFile(hgFile);
-		FileUtil.deleteFile(out);
 
-	}	
-	
+		assertEquals(0, count);
+
+		FileUtil.deleteFile(output);
+
+	}
+
 	@Test
 	public void test1000G() throws Exception {
 
 		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt");
-		
+
 		String variantFile = "test-data/contamination/baq-mapQ30/1000G-All-Samples/1000G.txt";
-		
+
 		MutationServerReader reader = new MutationServerReader(variantFile);
-		HashMap<String, Sample> samples2 = reader.parse();
+		HashMap<String, Sample> mutationserverSamples = reader.parse();
 
 		VariantSplitter splitter = new VariantSplitter();
 		ArrayList<String> profiles = splitter.splitFile(variantFile);
@@ -244,40 +230,35 @@ public class ContaminationCheckerTests {
 			set.add(splits[i]);
 		}
 
-		ContaminationChecker contChecker = new ContaminationChecker();
-		
+		Contamination contamination = new Contamination();
+
 		HaplogroupClassifier classifier = new HaplogroupClassifier();
-		SampleFile samples = classifier.calculateHaplogrops(phylotree, profiles);
+		SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
 
-		String hgFile = "test-data/contamination/baq-mapQ30/possible-swap/hg.txt";
-		
-		createFakeReport(samples.getTestSamples(), new File(hgFile));
-
-		String out = "test-data/contamination/baq-mapQ30/possible-swap/report.txt";
-		contChecker.calcContaminationSeb(samples2, hgFile, out);
+		String out = "test-data/contamination/baq-mapQ30/1000G-All-Samples/report.txt";
+		contamination.calcContamination(mutationserverSamples, haplogrepSamples.getTestSamples(), out);
 
 		CsvTableReader readerOut = new CsvTableReader(out, '\t');
 		int countHigh = 0;
 		int countLow = 0;
-		while(readerOut.next()) {
-			if(readerOut.getString("Contamination").equals("HG_conflict")) {
+		while (readerOut.next()) {
+			if (readerOut.getString("Contamination").equals(Status.HG_Conflict_High.name())) {
 				countHigh++;
-				
+
 			}
-			if(readerOut.getString("Contamination").equals("HG_conflict_low")) {
+			if (readerOut.getString("Contamination").equals(Status.HG_Conflict_Low.name())) {
 				countLow++;
-				
+
 			}
 		}
-		
+
 		// hansi had 120 and 45 but type comes now from mutation server
-		assertEquals(113, countHigh);
-		assertEquals(41, countLow);
-		
-		FileUtil.deleteFile(hgFile);
+		assertEquals(126, countHigh);
+		assertEquals(33, countLow);
+
 		FileUtil.deleteFile(out);
 
-	}	
+	}
 
 	public static void createFakeReport(List<TestSample> sampleCollection, File out) throws IOException {
 
