@@ -26,7 +26,7 @@ import phylotree.Phylotree;
 import phylotree.PhylotreeManager;
 import search.ranking.results.RankedResult;
 
-public class ContaminationCheckerTests {
+public class ContaminationTests {
 
 	@Test
 	public void testHighChipMix1000G() throws Exception {
@@ -41,7 +41,7 @@ public class ContaminationCheckerTests {
 
 		HashMap<String, Sample> mutationServerSamples = reader.parse();
 
-		ArrayList<String> profiles = splitter.splitFile(variantFile);
+		ArrayList<String> profiles = splitter.split(mutationServerSamples);
 
 		HashSet<String> set = new HashSet<String>();
 
@@ -89,7 +89,7 @@ public class ContaminationCheckerTests {
 		HashMap<String, Sample> mutationServerSamples = reader.parse();
 
 		VariantSplitter splitter = new VariantSplitter();
-		ArrayList<String> profiles = splitter.splitFile(variantFile);
+		ArrayList<String> profiles = splitter.split(mutationServerSamples);
 
 		HashSet<String> set = new HashSet<String>();
 
@@ -134,7 +134,7 @@ public class ContaminationCheckerTests {
 		HashMap<String, Sample> mutationserverSamples = reader.parse();
 
 		VariantSplitter splitter = new VariantSplitter();
-		ArrayList<String> profiles = splitter.splitFile(variantFile);
+		ArrayList<String> profiles = splitter.split(mutationserverSamples);
 
 		HashSet<String> set = new HashSet<String>();
 
@@ -176,7 +176,7 @@ public class ContaminationCheckerTests {
 		HashMap<String, Sample> mutationserverSamples = reader.parse();
 
 		VariantSplitter splitter = new VariantSplitter();
-		ArrayList<String> profiles = splitter.splitFile(variantFile);
+		ArrayList<String> profiles = splitter.split(mutationserverSamples);
 
 		HashSet<String> set = new HashSet<String>();
 
@@ -217,11 +217,11 @@ public class ContaminationCheckerTests {
 		String variantFile = "test-data/contamination/baq-mapQ30/1000G-All-Samples/1000G.txt";
 
 		MutationServerReader reader = new MutationServerReader(variantFile);
-		HashMap<String, Sample> mutationserverSamples = reader.parse();
+		HashMap<String, Sample> mutationServerSamples = reader.parse();
 
 		VariantSplitter splitter = new VariantSplitter();
-		ArrayList<String> profiles = splitter.splitFile(variantFile);
-
+		ArrayList<String> profiles = splitter.split(mutationServerSamples);
+		
 		HashSet<String> set = new HashSet<String>();
 
 		String[] splits = profiles.get(0).split("\t");
@@ -236,7 +236,7 @@ public class ContaminationCheckerTests {
 		SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
 
 		String out = "test-data/contamination/baq-mapQ30/1000G-All-Samples/report.txt";
-		contamination.calcContamination(mutationserverSamples, haplogrepSamples.getTestSamples(), out);
+		contamination.calcContamination(mutationServerSamples, haplogrepSamples.getTestSamples(), out);
 
 		CsvTableReader readerOut = new CsvTableReader(out, '\t');
 		int countHigh = 0;
@@ -254,7 +254,7 @@ public class ContaminationCheckerTests {
 
 		// hansi had 120 and 45 but type comes now from mutation server
 		assertEquals(126, countHigh);
-		assertEquals(33, countLow);
+		assertEquals(34, countLow);
 
 		FileUtil.deleteFile(out);
 

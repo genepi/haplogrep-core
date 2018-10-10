@@ -3,9 +3,14 @@ package contamination;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import org.junit.Test;
+
+import contamination.objects.Sample;
 
 public class VariantSplitterTests {
 
@@ -13,8 +18,12 @@ public class VariantSplitterTests {
 	public void testContaminationMajor() throws Exception {
 
 		VariantSplitter splitter = new VariantSplitter();
+		
+		MutationServerReader reader = new MutationServerReader("test-data/contamination/lab-mixture/variants-mixture.txt");
 
-		ArrayList<String> profiles = splitter.splitFile("test-data/contamination/lab-mixture/variants-mixture.txt");
+		HashMap<String, Sample> mutationServerSamples = reader.parse();
+
+		ArrayList<String> profiles = splitter.split(mutationServerSamples);
 
 		HashSet<String> set = new HashSet<String>();
 
@@ -23,6 +32,7 @@ public class VariantSplitterTests {
 		int count = 0;
 		for (int i = 3; i < splits.length; i++) {
 			count++;
+			System.out.println(splits[i]);
 			set.add(splits[i]);
 		}
 
@@ -58,11 +68,13 @@ public class VariantSplitterTests {
 	@Test
 	public void testContaminationMinor() throws Exception {
 
-		VariantSplitter contChecker = new VariantSplitter();
-		ArrayList<String> profiles = contChecker.splitFile("test-data/contamination/lab-mixture/variants-mixture.txt");
+		MutationServerReader reader = new MutationServerReader("test-data/contamination/lab-mixture/variants-mixture.txt");
+		HashMap<String, Sample> mutationServerSamples = reader.parse();
 
+		VariantSplitter splitter = new VariantSplitter();
+		ArrayList<String> profiles = splitter.split(mutationServerSamples);
+		
 		HashSet<String> set = new HashSet<String>();
-
 		String[] splits = profiles.get(1).split("\t");
 
 		int count = 0;
@@ -96,26 +108,17 @@ public class VariantSplitterTests {
 	}
 
 	@Test
-	public void testContamination2Samples() throws Exception {
+	public void testContamination4Samples() throws Exception {
 
 		VariantSplitter contChecker = new VariantSplitter();
-		ArrayList<String> profiles = contChecker.splitFile("test-data/contamination/test-mixture/variants-mixture-2samples.txt");
+		
+		MutationServerReader reader = new MutationServerReader("test-data/contamination/test-mixture/variants-mixture-4samples.txt");
 
-		HashSet<String> set = new HashSet<String>();
+		HashMap<String, Sample> mutationServerSamples = reader.parse();
 
-		String[] splits = profiles.get(0).split("\t");
+		ArrayList<String> profiles = contChecker.split(mutationServerSamples);
 
-		int count = 0;
-
-		for (int i = 3; i < splits.length; i++) {
-			count++;
-			set.add(splits[i]);
-		}
-
-		assertEquals(3, count);
-		assertEquals(true, set.contains("11719G"));
-		assertEquals(true, set.contains("12308A"));
-		assertEquals(true, set.contains("1438G"));
+		assertEquals(8, profiles.size());
 	}
 
 }

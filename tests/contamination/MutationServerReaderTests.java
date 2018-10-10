@@ -51,7 +51,7 @@ public class MutationServerReaderTests {
 	@Test
 	public void testReadVariantFile2() throws Exception {
 
-		MutationServerReader reader = new MutationServerReader("test-data/contamination/test-mixture/variants-mixture-2samples.txt");
+		MutationServerReader reader = new MutationServerReader("test-data/contamination/test-mixture/variants-mixture-4samples.txt");
 		HashMap<String, Sample> samples = reader.parse();
 		ArrayList<Integer> posArray = new ArrayList<>();
 

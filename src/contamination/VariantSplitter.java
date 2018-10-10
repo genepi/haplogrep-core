@@ -2,20 +2,55 @@ package contamination;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
 import contamination.objects.HSDEntry;
+import contamination.objects.Sample;
+import contamination.objects.Variant;
 import genepi.io.table.reader.CsvTableReader;
 
 public class VariantSplitter {
 
-	public ArrayList<String> splitFile(String variantFile) {
+	public ArrayList<String> split(HashMap<String, Sample> samples) {
+
+		ArrayList<String> lines = new ArrayList<String>();
+
+		for (Sample sample : samples.values()) {
+
+			HSDEntry majorProfile = new HSDEntry();
+			HSDEntry minorProfile = new HSDEntry();
+			majorProfile.setId(sample.getId() + "_maj");
+			minorProfile.setId(sample.getId() + "_min");
+
+			for (Variant variant : sample.getPositions().values()) {
+				
+				if (variant.getType() == 1) {
+					majorProfile.appendToProfile(variant.getPos() + "" + variant.getMajor());
+					minorProfile.appendToProfile(variant.getPos() + "" + variant.getMajor());
+				} else if (variant.getType() == 2) {
+					majorProfile.appendToProfile(variant.getPos() + "" + variant.getMajor());
+					minorProfile.appendToProfile(variant.getPos() + "" + variant.getMinor());
+				}
+			
+			}
+
+			lines.add(majorProfile.toString());
+			lines.add(minorProfile.toString());
+		}
+
+		return lines;
+
+	}
+
+	public ArrayList<String> splitFileTmp(String variantFile) {
 
 		CsvTableReader reader = new CsvTableReader(new File(variantFile).getAbsolutePath(), '\t');
 		ArrayList<String> lines = new ArrayList<String>();
 
 		TreeMap<String, ArrayList<HSDEntry>> profiles = new TreeMap<String, ArrayList<HSDEntry>>();
+
 		while (reader.next()) {
 
 			String id = reader.getString("SampleID");
@@ -52,12 +87,12 @@ public class VariantSplitter {
 
 		for (Map.Entry<String, ArrayList<HSDEntry>> entry : profiles.entrySet()) {
 			for (HSDEntry ent : entry.getValue()) {
-				lines.add(ent.getString());
+				lines.add(ent.toString());
 			}
 		}
 
 		return lines;
 
 	}
-	
+
 }

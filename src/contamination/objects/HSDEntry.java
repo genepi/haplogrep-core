@@ -34,8 +34,9 @@ public class HSDEntry {
 	public void appendToProfile(String pos) {
 		profile.append("\t" + pos);
 	}
-
-	public String getString() {
-		return (id + "\t" + range + "\t?" + profile);
+	
+	@Override
+	public String toString() {
+		return (id + "\t" + range + "\t" +"?" + profile);
 	}
 }

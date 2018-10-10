@@ -25,11 +25,11 @@ public class HaplogroupClassifierTests {
 		String variantFile = "test-data/contamination/lab-mixture/variants-mixture.txt";
 		
 		MutationServerReader reader = new MutationServerReader(variantFile);
+		HashMap<String, Sample> mutationServerSamples = reader.parse();
 
 		VariantSplitter splitter = new VariantSplitter();
-
-		ArrayList<String> profiles = splitter.splitFile(variantFile);
-
+		ArrayList<String> profiles = splitter.split(mutationServerSamples);
+		
 		HashSet<String> set = new HashSet<String>();
 
 		String[] splits = profiles.get(0).split("\t");
@@ -55,8 +55,6 @@ public class HaplogroupClassifierTests {
 
 		Contamination contChecker = new Contamination();
 		
-		HashMap<String, Sample> mutationServerSamples = reader.parse();
-
 		contChecker.calcContamination(mutationServerSamples, haploGroupSamples.getTestSamples(), out);
 
 		CsvTableReader readerContamination = new CsvTableReader(out, '\t');
