@@ -4,7 +4,7 @@ public class Variant {
 
 	private int pos;
 	private char ref;
-	private char variant;
+	private char variantBase;
 	private double level;
 	private char major;
 	private char minor;
@@ -30,11 +30,11 @@ public class Variant {
 	}
 
 	public char getVariant() {
-		return variant;
+		return variantBase;
 	}
 
-	public void setVariant(char variant) {
-		this.variant = variant;
+	public void setVariantBase(char variant) {
+		this.variantBase = variant;
 	}
 
 	public double getLevel() {
@@ -94,7 +94,7 @@ public class Variant {
 	}
 
 	public String toString() {
-		return pos + "\t" + ref + "\t" + variant + "\t" + level + "\t" + major + "\t" + majorLevel + "\t" + minor + "\t" + minorLevel + "\t"
+		return pos + "\t" + ref + "\t" + variantBase + "\t" + level + "\t" + major + "\t" + majorLevel + "\t" + minor + "\t" + minorLevel + "\t"
 				+ coverage + "\t" + type;
 	}
 }

@@ -33,7 +33,7 @@ public class Sample {
 		this.variants = variants;
 	}
 
-	public void addPosition(Variant var) {
+	public void addVariant(Variant var) {
 		variants.put(var.getPos()+String.valueOf(var.getVariant()), var);
 	}
 

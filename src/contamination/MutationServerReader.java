@@ -19,7 +19,7 @@ public class MutationServerReader {
 		return parse(0.00);
 	}
 	
-	public HashMap<String, Sample> parse(double minHetLevel) {
+	public HashMap<String, Sample> parse(double requiredHetLevel) {
 
 		CsvTableReader reader = new CsvTableReader(new File(file).getAbsolutePath(), '\t');
 		HashMap<String, Sample> samples = new HashMap<String, Sample>();
@@ -38,7 +38,7 @@ public class MutationServerReader {
 
 			int pos = reader.getInteger("Pos");
 			char ref = reader.getString("Ref").charAt(0);
-			char variant = reader.getString("Variant").charAt(0);
+			char var = reader.getString("Variant").charAt(0);
 			double level = reader.getDouble("Variant-Level");
 			char major = reader.getString("Major/Minor").split("/")[0].charAt(0);
 			char minor = reader.getString("Major/Minor").split("/")[1].charAt(0);
@@ -49,28 +49,28 @@ public class MutationServerReader {
 
 			sample.setId(id);
 			
-			if(type == 2 && minorLevel < minHetLevel) {
+			if(type == 2 && minorLevel < requiredHetLevel) {
 				continue;
 			}
 			
-			Variant position = new Variant();
-			position.setPos(pos);
-			position.setRef(ref);
-			position.setVariant(variant);
-			position.setLevel(level);
-			position.setMajor(major);
-			position.setMinor(minor);
-			position.setMajorLevel(majorLevel);
-			position.setMinorLevel(minorLevel);
-			position.setCoverage(coverage);
-			position.setType(type);
+			Variant variant = new Variant();
+			variant.setPos(pos);
+			variant.setRef(ref);
+			variant.setVariantBase(var);
+			variant.setLevel(level);
+			variant.setMajor(major);
+			variant.setMinor(minor);
+			variant.setMajorLevel(majorLevel);
+			variant.setMinorLevel(minorLevel);
+			variant.setCoverage(coverage);
+			variant.setType(type);
 
-			if (position.getRef() != 'N') {
+			if (variant.getRef() != 'N') {
 				sample.updateCount(type);
 				sample.updateCoverage(coverage);
 			}
 
-			sample.addPosition(position);
+			sample.addVariant(variant);
 			tmp = id;
 		}
 		samples.put(sample.getId(), sample);
