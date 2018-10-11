@@ -219,7 +219,7 @@ public class ContaminationTests {
 
 		VariantSplitter splitter = new VariantSplitter();
 		ArrayList<String> profiles = splitter.split(mutationServerSamples);
-		
+
 		HashSet<String> set = new HashSet<String>();
 
 		String[] splits = profiles.get(0).split("\t");
@@ -240,21 +240,43 @@ public class ContaminationTests {
 		int countHigh = 0;
 		int countLow = 0;
 		while (readerOut.next()) {
+
 			if (readerOut.getString("Contamination").equals(Status.HG_Conflict_High.name())) {
 				countHigh++;
-
 			}
+
 			if (readerOut.getString("Contamination").equals(Status.HG_Conflict_Low.name())) {
 				countLow++;
-
 			}
 		}
 
+		// FileUtil.deleteFile(out);
+
+		CsvTableReader reader1000G = new CsvTableReader("test-data/contamination/baq-mapQ30/1000G-All-Samples/verifybam-1000G.txt", '\t');
+		CsvTableReader readerContamination = new CsvTableReader(out, '\t');
+		FileWriter writer = new FileWriter("test-data/contamination/baq-mapQ30/1000G-All-Samples/report-data.txt");
+		writer.write("SAMPLE" +"\t"+ "CONT_FREE" + "\t" + "CONT_MIX"+"\t" + "MINOR_LEVEL" + "\t" + "STATUS" +"\n");
+		HashMap<String, String> samples = new HashMap<String, String>();
+		while (readerContamination.next()) {
+			String id = readerContamination.getString("SampleID");
+			id = id.split("\\.",2)[0];
+			String level = readerContamination.getString("MinorLevel");
+			String status = readerContamination.getString("Contamination");
+			samples.put(id, level + "\t" + status);
+		}
+
+		while (reader1000G.next()) {
+			String id = reader1000G.getString("ID");
+			String free = reader1000G.getString("free_contam");
+			String chip = reader1000G.getString("chip_contam");
+			String add = samples.get(id);
+			writer.write(id + "\t" + free + "\t" + chip + "\t" + add+"\n");
+		}
+		writer.close();
+		
 		// hansi had 120 and 45 but type comes now from mutation server
 		assertEquals(126, countHigh);
 		assertEquals(34, countLow);
-
-		FileUtil.deleteFile(out);
 
 	}
 

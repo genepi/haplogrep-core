@@ -80,8 +80,8 @@ public class Contamination {
 				int countMajorHomoplasmiesInSample = countHomoplasmies(currentSample, foundMajorHg);
 				int countMinorHomoplasmiesInSample = countHomoplasmies(currentSample, foundMinorHg);
 
-				double meanHeteroplasmyMajor = getMeanHeteroplasmy(currentSample, foundMajorHg);
-				double meanheteroplasmyMinor = getMeanHeteroplasmy(currentSample, foundMinorHg);
+				double meanHeteroplasmyMajor = getMeanHeteroplasmy(currentSample, foundMajorHg, true);
+				double meanheteroplasmyMinor = getMeanHeteroplasmy(currentSample, foundMinorHg, false);
 
 				if (!centry.getMajorId().equals(centry.getMinorId())) {
 
@@ -169,22 +169,30 @@ public class Contamination {
 		return count;
 	}
 
-	private double getMeanHeteroplasmy(Sample currentSample, ArrayList<Polymorphism> found) {
+	private double getMeanHeteroplasmy(Sample currentSample, ArrayList<Polymorphism> found, boolean majorComponent) {
 
 		double sum = 0.0;
-		int count = 0;
+		double count = 0;
 
 		for (Polymorphism split : found) {
-
 			Variant variant = currentSample.getPositions().get(split.toString());
 
 			if (variant != null && variant.getType() == 2) {
-				sum += variant.getLevel();
+				if (majorComponent) {
+					sum += variant.getMajorLevel();
+				} else {
+
+					sum += variant.getMinorLevel();
+				}
 				count++;
 			}
 
 		}
-		return sum / count;
+		if (count > 0) {
+			return sum / count;
+		} else {
+			return 0.0;
+		}
 	}
 
 	private int countHomoplasmies(Sample currentSample, ArrayList<Polymorphism> found) {

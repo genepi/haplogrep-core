@@ -69,7 +69,7 @@ public class HaplogroupClassifierTests {
 		assertEquals("H1c6", readerContamination.getString("MajorHG"));
 		assertEquals("U5a2e", readerContamination.getString("MinorHG"));
 
-		FileUtil.deleteFile(out);
+		//FileUtil.deleteFile(out);
 	}
 
 }

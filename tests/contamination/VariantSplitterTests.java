@@ -32,7 +32,6 @@ public class VariantSplitterTests {
 		int count = 0;
 		for (int i = 3; i < splits.length; i++) {
 			count++;
-			System.out.println(splits[i]);
 			set.add(splits[i]);
 		}
 
