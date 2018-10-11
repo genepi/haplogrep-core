@@ -16,6 +16,10 @@ public class MutationServerReader {
 	}
 
 	public HashMap<String, Sample> parse() {
+		return parse(0.00);
+	}
+	
+	public HashMap<String, Sample> parse(double minHetLevel) {
 
 		CsvTableReader reader = new CsvTableReader(new File(file).getAbsolutePath(), '\t');
 		HashMap<String, Sample> samples = new HashMap<String, Sample>();
@@ -44,6 +48,11 @@ public class MutationServerReader {
 			int type = reader.getInteger("Variant-Type");
 
 			sample.setId(id);
+			
+			if(type == 2 && minorLevel < minHetLevel) {
+				continue;
+			}
+			
 			Variant position = new Variant();
 			position.setPos(pos);
 			position.setRef(ref);
@@ -63,7 +72,6 @@ public class MutationServerReader {
 
 			sample.addPosition(position);
 			tmp = id;
-
 		}
 		samples.put(sample.getId(), sample);
 

@@ -122,9 +122,9 @@ public class Contamination {
 			}
 
 			System.out.println("Total amount of samples: " + countEntries);
-			System.out.println("Coverage too low for contamination check (<" + requiredCoverage + "x): " + countCovLow);
 			System.out.println("Major haplogroup conflicts: " + countContaminated);
 			System.out.println("Minor haplogroup conflicts: " + countPossibleContaminated);
+			System.out.println("Coverage too low for contamination check (<" + requiredCoverage + "x): " + countCovLow);
 			System.out.println("No conflicts: " + countNone);
 			contaminationWriter.close();
 
@@ -186,7 +186,6 @@ public class Contamination {
 				}
 				count++;
 			}
-
 		}
 		if (count > 0) {
 			return sum / count;
