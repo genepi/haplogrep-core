@@ -1,18 +1,16 @@
 package contamination;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 
 import contamination.objects.Variant;
 import contamination.objects.Sample;
 import genepi.io.table.reader.CsvTableReader;
 
 public class MutationServerReader {
-	
+
 	private String file;
-	
+
 	public MutationServerReader(String file) {
 		this.file = file;
 	}
@@ -29,7 +27,7 @@ public class MutationServerReader {
 
 			String id = reader.getString("SampleID");
 
-			if (tmp!=null && !id.equals(tmp)) {
+			if (tmp != null && !id.equals(tmp)) {
 				samples.put(sample.getId(), sample);
 				sample = new Sample();
 			}
@@ -57,12 +55,12 @@ public class MutationServerReader {
 			position.setMinorLevel(minorLevel);
 			position.setCoverage(coverage);
 			position.setType(type);
-			
-			if(position.getRef() != 'N') {
-			sample.updateCount(type);
-			sample.updateCoverage(coverage);
+
+			if (position.getRef() != 'N') {
+				sample.updateCount(type);
+				sample.updateCoverage(coverage);
 			}
-			
+
 			sample.addPosition(position);
 			tmp = id;
 

@@ -5,12 +5,11 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-
 import org.junit.Test;
-
 import contamination.Contamination.Status;
 import contamination.objects.Sample;
 import core.SampleFile;
+import genepi.io.FileUtil;
 import genepi.io.table.reader.CsvTableReader;
 import phylotree.Phylotree;
 import phylotree.PhylotreeManager;
@@ -58,6 +57,7 @@ public class HaplogroupClassifierTests {
 		contChecker.calcContamination(mutationServerSamples, haploGroupSamples.getTestSamples(), out);
 
 		CsvTableReader readerContamination = new CsvTableReader(out, '\t');
+		//get first line
 		readerContamination.next();
 
 		assertEquals(Status.HG_Conflict_High.name(), readerContamination.getString("Contamination"));
@@ -69,7 +69,7 @@ public class HaplogroupClassifierTests {
 		assertEquals("H1c6", readerContamination.getString("MajorHG"));
 		assertEquals("U5a2e", readerContamination.getString("MinorHG"));
 
-		// FileUtil.deleteFile(out);
+		FileUtil.deleteFile(out);
 	}
 
 }

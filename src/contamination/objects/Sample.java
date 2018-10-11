@@ -10,6 +10,8 @@ public class Sample {
 	private int amountVariants;
 	private int amountHeteroplasmies;
 	private float totalCoverage = 0;
+	private float meanHeteroplasmyLevel = 0;
+	private float meanCoverage = 0;
 
 	public Sample() {
 		variants = new HashMap<String, Variant>();
@@ -84,5 +86,21 @@ public class Sample {
 
 	public void setTotalCoverage(float totalCoverage) {
 		this.totalCoverage = totalCoverage;
+	}
+
+	public float getMeanHeteroplasmyLevel() {
+		return meanHeteroplasmyLevel;
+	}
+
+	public void setMeanHeteroplasmyLevel(float meanHeteroplasmyLevel) {
+		this.meanHeteroplasmyLevel = meanHeteroplasmyLevel;
+	}
+
+	public float getMeanCoverage() {
+		return meanCoverage;
+	}
+
+	public void setMeanCoverage(float meanCoverage) {
+		this.meanCoverage = meanCoverage;
 	}
 }

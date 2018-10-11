@@ -18,10 +18,9 @@ import phylotree.Phylotree;
 import phylotree.PhylotreeManager;
 
 public class Contamination {
-	
-	enum Status 
-	{ 
-		HG_Conflict_High, HG_Conflict_Low, Low_Coverage, None; 
+
+	enum Status {
+		HG_Conflict_High, HG_Conflict_Low, Low_Coverage, None;
 	}
 
 	// TODO add threshold variable
@@ -31,15 +30,18 @@ public class Contamination {
 		int countPossibleContaminated = 0;
 		int countContaminated = 0;
 		int countCovLow = 0;
+		int countNone = 0;
+
+		int requiredCoverage = 200;
 
 		Collections.sort((List<TestSample>) haplogrepSamples);
-		
+
 		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt");
 
 		CsvTableWriter contaminationWriter = new CsvTableWriter(out, '\t');
 
 		String[] columnsWrite = { "SampleID", "Contamination", "MajorHG", "MajorLevel", "MajorSNPs", "MajorHGvariants", "MinorHG", "MinorLevel", "MinorSNPs",
-				"MinorHGvariants", "MeanCoverage", "HG_Distance"};
+				"MinorHGvariants", "MeanCoverage", "HG_Distance" };
 		contaminationWriter.setColumns(columnsWrite);
 
 		NumberFormat formatter = new DecimalFormat("#0.000");
@@ -47,84 +49,83 @@ public class Contamination {
 		try {
 
 			for (int i = 0; i < haplogrepSamples.size(); i += 2) {
-				
+
 				countEntries++;
 				int distanceHG = 0;
 				Status status;
 
 				TestSample sampleMajor = haplogrepSamples.get(i);
 				TestSample sampleMinor = haplogrepSamples.get(i + 1);
-				
-				ArrayList<Polymorphism> foundMajor = sampleMajor.getTopResult().getSearchResult().getDetailedResult().getFoundPolys();
-				ArrayList<Polymorphism> expectedMajor = sampleMajor.getTopResult().getSearchResult().getDetailedResult().getExpectedPolys();
-				ArrayList<Polymorphism> foundMinor = sampleMinor.getTopResult().getSearchResult().getDetailedResult().getFoundPolys();
-				ArrayList<Polymorphism> expectedMinor = sampleMinor.getTopResult().getSearchResult().getDetailedResult().getExpectedPolys();
 
-				int notFoundMajor = countNotFound(foundMajor, expectedMajor);
-				int notFoundMinor = countNotFound(foundMinor, expectedMinor);
+				ArrayList<Polymorphism> foundMajorHg = sampleMajor.getTopResult().getSearchResult().getDetailedResult().getFoundPolys();
+				ArrayList<Polymorphism> expectedMajorHg = sampleMajor.getTopResult().getSearchResult().getDetailedResult().getExpectedPolys();
+				ArrayList<Polymorphism> foundMinorHg = sampleMinor.getTopResult().getSearchResult().getDetailedResult().getFoundPolys();
+				ArrayList<Polymorphism> expectedMinorHg = sampleMinor.getTopResult().getSearchResult().getDetailedResult().getExpectedPolys();
+
+				int notFoundMajorHg = countNotFound(foundMajorHg, expectedMajorHg);
+				int notFoundMinorHg = countNotFound(foundMinorHg, expectedMinorHg);
 
 				ContaminationEntry centry = new ContaminationEntry();
 				centry.setSampleId(sampleMajor.getSampleID().split("_maj")[0]);
-				
+
 				Sample currentSample = mutationSamples.get(centry.getSampleId());
 				int sampleHomoplasmies = currentSample.getAmountHomoplasmies();
-				double meanCov = currentSample.getTotalCoverage() / currentSample.getAmountVariants();
-				
+				double meanCoverageSample = currentSample.getTotalCoverage() / currentSample.getAmountVariants();
+
 				centry.setMajorId(sampleMajor.getTopResult().getHaplogroup().toString());
-				centry.setMajorRemaining(notFoundMajor);
+				centry.setMajorRemaining(notFoundMajorHg);
 				centry.setMinorId(sampleMinor.getTopResult().getHaplogroup().toString());
-				centry.setMajorRemaining(notFoundMinor);
+				centry.setMajorRemaining(notFoundMinorHg);
 
-				int countMajorHomoplasmies = countHomoplasmies(currentSample, foundMajor);
-				int countMinorHomoplasmies = countHomoplasmies(currentSample, foundMinor);
+				int countMajorHomoplasmiesInSample = countHomoplasmies(currentSample, foundMajorHg);
+				int countMinorHomoplasmiesInSample = countHomoplasmies(currentSample, foundMinorHg);
 
-				double meanMajor = getMeanScores(currentSample, foundMajor);
-				double meanMinor = getMeanScores(currentSample, foundMinor);
-
-				String amountHomoplasmyMajor = countMajorHomoplasmies + "/" + sampleHomoplasmies;
-				String homoplHomoplasmyMinor = countMinorHomoplasmies + "/" + sampleHomoplasmies;
+				double meanHeteroplasmyMajor = getMeanHeteroplasmy(currentSample, foundMajorHg);
+				double meanheteroplasmyMinor = getMeanHeteroplasmy(currentSample, foundMinorHg);
 
 				if (!centry.getMajorId().equals(centry.getMinorId())) {
 
 					distanceHG = calcDistance(centry, phylotree);
 
-					if ( ((foundMajor.size() - countMajorHomoplasmies) > 2 || (foundMinor.size() - countMinorHomoplasmies) > 2)
+					if (((foundMajorHg.size() - countMajorHomoplasmiesInSample) > 2 || (foundMinorHg.size() - countMinorHomoplasmiesInSample) > 2)
 							&& (distanceHG > 1 || distanceHG == -1)) {
 						countContaminated++;
 						status = Status.HG_Conflict_High;
-					} else if (((foundMinor.size() - countMinorHomoplasmies) > 1) || distanceHG > 1) {
+					} else if (((foundMinorHg.size() - countMinorHomoplasmiesInSample) > 1) || distanceHG > 1) {
 						countPossibleContaminated++;
-						status =  Status.HG_Conflict_Low;
+						status = Status.HG_Conflict_Low;
 					} else {
 						status = Status.None;
 					}
-				} else if (meanCov < 200) {
+				} else if (meanCoverageSample < requiredCoverage) {
 					countCovLow++;
 					status = Status.Low_Coverage;
 				} else {
+					countNone++;
 					status = Status.None;
 				}
 
 				contaminationWriter.setString(0, centry.getSampleId());
 				contaminationWriter.setString(1, status.toString());
 				contaminationWriter.setString(2, centry.getMajorId());
-				contaminationWriter.setString(3, formatter.format(meanMajor));
-				contaminationWriter.setString(4, amountHomoplasmyMajor);
-				contaminationWriter.setInteger(5, foundMajor.size() - countMajorHomoplasmies);
+				contaminationWriter.setString(3, formatter.format(meanHeteroplasmyMajor));
+				contaminationWriter.setString(4, countMajorHomoplasmiesInSample + "/" + sampleHomoplasmies);
+				contaminationWriter.setInteger(5, foundMajorHg.size() - countMajorHomoplasmiesInSample);
 				contaminationWriter.setString(6, centry.getMinorId());
-				contaminationWriter.setString(7, formatter.format(meanMinor));
-				contaminationWriter.setString(8, homoplHomoplasmyMinor);
-				contaminationWriter.setInteger(9, foundMinor.size() - countMinorHomoplasmies);
-				contaminationWriter.setDouble(10, meanCov);
+				contaminationWriter.setString(7, formatter.format(meanheteroplasmyMinor));
+				contaminationWriter.setString(8, countMinorHomoplasmiesInSample + "/" + sampleHomoplasmies);
+				contaminationWriter.setInteger(9, foundMinorHg.size() - countMinorHomoplasmiesInSample);
+				contaminationWriter.setDouble(10, meanCoverageSample);
 				contaminationWriter.setInteger(11, distanceHG);
 
 				contaminationWriter.next();
 			}
 
-			System.out.println("Haplogroup based conflicts: " + countContaminated + " of " + countEntries);
+			System.out.println("Total amount of samples: " + countEntries);
+			System.out.println("Coverage too low for contamination check (<" + requiredCoverage + "x): " + countCovLow);
+			System.out.println("Major haplogroup conflicts: " + countContaminated);
 			System.out.println("Minor haplogroup conflicts: " + countPossibleContaminated);
-			System.out.println("Coverage low (<200x) : " + countCovLow);
-
+			System.out.println("No conflicts: " + countNone);
 			contaminationWriter.close();
 
 		} catch (Exception e) {
@@ -136,29 +137,39 @@ public class Contamination {
 	}
 
 	private int calcDistance(ContaminationEntry centry, Phylotree phylotree) {
+
 		int distanceHG;
+
 		Haplogroup hgMajor = new Haplogroup(centry.getMajorId());
+
 		Haplogroup hgMinor = new Haplogroup(centry.getMinorId());
+
 		if (hgMajor.isSuperHaplogroup(phylotree, hgMinor)) {
+
 			distanceHG = hgMajor.distanceToSuperHaplogroup(phylotree, hgMinor);
+
 		} else if (hgMinor.isSuperHaplogroup(phylotree, hgMajor)) {
+
 			distanceHG = hgMinor.distanceToSuperHaplogroup(phylotree, hgMajor);
+
 		} else {
+
 			distanceHG = hgMajor.distanceToSuperHaplogroup(phylotree, hgMinor);
+
 		}
 		return distanceHG;
 	}
 
 	private int countNotFound(ArrayList<Polymorphism> found, ArrayList<Polymorphism> expected) {
-		int notFoundMajor = 0;
+		int count = 0;
 		for (Polymorphism currentPoly : expected) {
 			if (!found.contains(currentPoly))
-				notFoundMajor++;
+				count++;
 		}
-		return notFoundMajor;
+		return count;
 	}
 
-	private double getMeanScores(Sample currentSample, ArrayList<Polymorphism> found) {
+	private double getMeanHeteroplasmy(Sample currentSample, ArrayList<Polymorphism> found) {
 
 		double sum = 0.0;
 		int count = 0;

@@ -82,10 +82,7 @@ public class ContaminationTests {
 
 		String variantFile = "test-data/contamination/baq-mapQ30/high-free-mix/high-free-mix-1000G.txt";
 
-		Contamination contamination = new Contamination();
-
 		MutationServerReader reader = new MutationServerReader(variantFile);
-
 		HashMap<String, Sample> mutationServerSamples = reader.parse();
 
 		VariantSplitter splitter = new VariantSplitter();
@@ -104,6 +101,7 @@ public class ContaminationTests {
 
 		String output = "test-data/contamination/baq-mapQ30/high-free-mix/report.txt";
 
+		Contamination contamination = new Contamination();
 		contamination.calcContamination(mutationServerSamples, haplogrepSamples.getTestSamples(), output);
 
 		CsvTableReader readerOut = new CsvTableReader(output, '\t');
