@@ -208,11 +208,12 @@ public class ContaminationTests {
 	}
 
 	@Test
-	public void test1000G() throws Exception {
+	public void testBaq1000G() throws Exception {
 
 		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt");
 
-		String variantFile = "test-data/contamination/baq-mapQ30/1000G-All-Samples/1000G.txt";
+		String variantFile = "test-data/contamination/1000G/BAQ_M30/1000G_BAQ.txt";
+		String out = "test-data/contamination/1000G/BAQ_M30/1000G_BAQ_report.txt";
 
 		MutationServerReader reader = new MutationServerReader(variantFile);
 		HashMap<String, Sample> mutationServerSamples = reader.parse();
@@ -233,7 +234,6 @@ public class ContaminationTests {
 		HaplogroupClassifier classifier = new HaplogroupClassifier();
 		SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
 
-		String out = "test-data/contamination/baq-mapQ30/1000G-All-Samples/report.txt";
 		contamination.calcContamination(mutationServerSamples, haplogrepSamples.getTestSamples(), out);
 
 		CsvTableReader readerOut = new CsvTableReader(out, '\t');
@@ -252,9 +252,9 @@ public class ContaminationTests {
 
 		// FileUtil.deleteFile(out);
 
-		CsvTableReader reader1000G = new CsvTableReader("test-data/contamination/baq-mapQ30/1000G-All-Samples/verifybam-1000G.txt", '\t');
+		CsvTableReader reader1000G = new CsvTableReader("test-data/contamination/1000G/verifybam-1000G.txt", '\t');
 		CsvTableReader readerContamination = new CsvTableReader(out, '\t');
-		FileWriter writer = new FileWriter("test-data/contamination/baq-mapQ30/1000G-All-Samples/report-data.txt");
+		FileWriter writer = new FileWriter("test-data/contamination/1000G/BAQ_M30/verify-report.txt");
 		writer.write("SAMPLE" +"\t"+ "CONT_FREE" + "\t" + "CONT_MIX"+"\t" + "MINOR_LEVEL" + "\t" + "STATUS" +"\n");
 		HashMap<String, String> samples = new HashMap<String, String>();
 		while (readerContamination.next()) {
@@ -274,8 +274,79 @@ public class ContaminationTests {
 		}
 		writer.close();
 		
-		// hansi had 120 and 45 but type comes now from mutation server
 		assertEquals(126, countHigh);
+		assertEquals(34, countLow);
+
+	}
+	
+	@Test
+	public void testNoBaq1000G() throws Exception {
+
+		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt");
+
+		String variantFile = "test-data/contamination/1000G/NOBAQ_M30/1000G_NOBAQ.txt";
+		String out = "test-data/contamination/1000G/NOBAQ_M30/1000G_NOBAQ_report.txt";
+		FileWriter writer = new FileWriter("test-data/contamination/1000G/NOBAQ_M30/verify-report.txt");
+
+		MutationServerReader reader = new MutationServerReader(variantFile);
+		HashMap<String, Sample> mutationServerSamples = reader.parse(0.00);
+
+		VariantSplitter splitter = new VariantSplitter();
+		ArrayList<String> profiles = splitter.split(mutationServerSamples);
+
+		HashSet<String> set = new HashSet<String>();
+
+		String[] splits = profiles.get(0).split("\t");
+
+		for (int i = 3; i < splits.length; i++) {
+			set.add(splits[i]);
+		}
+
+		Contamination contamination = new Contamination();
+
+		HaplogroupClassifier classifier = new HaplogroupClassifier();
+		SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
+
+		contamination.calcContamination(mutationServerSamples, haplogrepSamples.getTestSamples(), out);
+
+		CsvTableReader readerOut = new CsvTableReader(out, '\t');
+		int countHigh = 0;
+		int countLow = 0;
+		while (readerOut.next()) {
+
+			if (readerOut.getString("Contamination").equals(Status.HG_Conflict_High.name())) {
+				countHigh++;
+			}
+
+			if (readerOut.getString("Contamination").equals(Status.HG_Conflict_Low.name())) {
+				countLow++;
+			}
+		}
+
+		// FileUtil.deleteFile(out);
+
+		CsvTableReader reader1000G = new CsvTableReader("test-data/contamination/1000G/verifybam-1000G.txt", '\t');
+		CsvTableReader readerContamination = new CsvTableReader(out, '\t');
+		writer.write("SAMPLE" +"\t"+ "CONT_FREE" + "\t" + "CONT_MIX"+"\t" + "MINOR_LEVEL" + "\t" + "STATUS" +"\n");
+		HashMap<String, String> samples = new HashMap<String, String>();
+		while (readerContamination.next()) {
+			String id = readerContamination.getString("SampleID");
+			id = id.split("\\.",2)[0];
+			String level = readerContamination.getString("MinorLevel");
+			String status = readerContamination.getString("Contamination");
+			samples.put(id, level + "\t" + status);
+		}
+
+		while (reader1000G.next()) {
+			String id = reader1000G.getString("ID");
+			String free = reader1000G.getString("free_contam");
+			String chip = reader1000G.getString("chip_contam");
+			String add = samples.get(id);
+			writer.write(id + "\t" + free + "\t" + chip + "\t" + add+"\n");
+		}
+		writer.close();
+		
+		assertEquals(121, countHigh);
 		assertEquals(34, countLow);
 
 	}

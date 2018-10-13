@@ -97,13 +97,15 @@ public class Contamination {
 					} else {
 						status = Status.None;
 					}
-				} else if (meanCoverageSample < requiredCoverage) {
-					countCovLow++;
-					status = Status.Low_Coverage;
 				} else {
 					countNone++;
 					status = Status.None;
 				}
+				
+				/*if (meanCoverageSample < requiredCoverage) {
+					countCovLow++;
+					status = Status.Low_Coverage;
+				}*/
 
 				contaminationWriter.setString(0, centry.getSampleId());
 				contaminationWriter.setString(1, status.toString());

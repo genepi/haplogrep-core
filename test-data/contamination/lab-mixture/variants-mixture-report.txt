@@ -1,0 +1,2 @@
+"SampleID"	"Contamination"	"MajorHG"	"MajorLevel"	"MajorSNPs"	"MajorHGvariants"	"MinorHG"	"MinorLevel"	"MinorSNPs"	"MinorHGvariants"	"MeanCoverage"	"HG_Distance"
+"s4"	"HG_Conflict_High"	"H1c6"	"0.987"	"7/7"	"2"	"U5a2e"	"0.011"	"6/7"	"12"	"6301.8798828125"	"-1"
