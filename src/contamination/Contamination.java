@@ -96,7 +96,7 @@ public class Contamination {
 				int heteroplasmiesMinor = countHeteroplasmies(currentSample, foundMinor);
 
 				double meanHeteroplasmyMajor = calcMeanHeteroplasmy(currentSample, foundMajor, true);
-				double meanheteroplasmyMinor = calcMeanHeteroplasmy(currentSample, foundMinor, false);
+				double meanHeteroplasmyMinor = calcMeanHeteroplasmy(currentSample, foundMinor, false);
 
 				if (!centry.getMajorHg().equals(centry.getMinorHg())) {
 
@@ -134,7 +134,7 @@ public class Contamination {
 				contaminationWriter.setString(10, formatter.format(hgQualityMinor));
 				contaminationWriter.setInteger(11, homoplasmiesMinor);
 				contaminationWriter.setInteger(12, heteroplasmiesMinor);
-				contaminationWriter.setString(13, formatter.format(meanheteroplasmyMinor));
+				contaminationWriter.setString(13, formatter.format(meanHeteroplasmyMinor));
 				contaminationWriter.setDouble(14, meanCoverageSample);
 				contaminationWriter.setInteger(15, distanceHG);
 				contaminationWriter.next();
