@@ -206,6 +206,52 @@ public class ContaminationTests {
 		FileUtil.deleteFile(output);
 
 	}
+	
+	@Test
+	public void test1Sample1000G() throws Exception {
+
+		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt");
+
+		String variantFile = "test-data/contamination/1000G-1sample/HG02508.txt";
+		String out = "test-data/contamination/1000G-1sample/HG02508_report.txt";
+
+		MutationServerReader reader = new MutationServerReader(variantFile);
+		HashMap<String, Sample> mutationServerSamples = reader.parse();
+
+		VariantSplitter splitter = new VariantSplitter();
+		ArrayList<String> profiles = splitter.split(mutationServerSamples);
+
+		HashSet<String> set = new HashSet<String>();
+
+		String[] splits = profiles.get(0).split("\t");
+
+		for (int i = 3; i < splits.length; i++) {
+			set.add(splits[i]);
+		}
+
+		Contamination contamination = new Contamination();
+
+		HaplogroupClassifier classifier = new HaplogroupClassifier();
+		SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
+
+		contamination.calcContamination(mutationServerSamples, haplogrepSamples.getTestSamples(), out);
+
+		CsvTableReader readerOut = new CsvTableReader(out, '\t');
+		int countHigh = 0;
+		int countLow = 0;
+		while (readerOut.next()) {
+
+			if (readerOut.getString("Contamination").equals(Status.HG_Conflict_High.name())) {
+				countHigh++;
+			}
+
+			if (readerOut.getString("Contamination").equals(Status.HG_Conflict_Low.name())) {
+				countLow++;
+			}
+		}
+
+
+	}
 
 	@Test
 	public void testBaq1000G() throws Exception {

@@ -40,8 +40,8 @@ public class Contamination {
 
 		CsvTableWriter contaminationWriter = new CsvTableWriter(out, '\t');
 
-		String[] columnsWrite = { "SampleID", "Contamination", "MajorHG", "MajorLevel", "MajorSNPs", "MajorHGvariants", "MinorHG", "MinorLevel", "MinorSNPs",
-				"MinorHGvariants", "MeanCoverage", "HG_Distance" };
+		String[] columnsWrite = { "SampleID", "Contamination", "MajorHG", "MajorLevel", "MajorSNPs", "MajorHetVariants", "MinorHG", "MinorLevel", "MinorSNPs",
+				"MinorHetVariants", "MeanCoverage", "HG_Distance" };
 		contaminationWriter.setColumns(columnsWrite);
 
 		NumberFormat formatter = new DecimalFormat("#0.000");
@@ -54,44 +54,46 @@ public class Contamination {
 				int distanceHG = 0;
 				Status status;
 
-				TestSample sampleMajor = haplogrepSamples.get(i);
-				TestSample sampleMinor = haplogrepSamples.get(i + 1);
+				TestSample majorSample = haplogrepSamples.get(i);
+				TestSample minorSample = haplogrepSamples.get(i + 1);
 
-				ArrayList<Polymorphism> foundMajorHg = sampleMajor.getTopResult().getSearchResult().getDetailedResult().getFoundPolys();
-				ArrayList<Polymorphism> expectedMajorHg = sampleMajor.getTopResult().getSearchResult().getDetailedResult().getExpectedPolys();
-				ArrayList<Polymorphism> foundMinorHg = sampleMinor.getTopResult().getSearchResult().getDetailedResult().getFoundPolys();
-				ArrayList<Polymorphism> expectedMinorHg = sampleMinor.getTopResult().getSearchResult().getDetailedResult().getExpectedPolys();
+				ArrayList<Polymorphism> foundMajor = majorSample.getTopResult().getSearchResult().getDetailedResult().getFoundPolys();
+				ArrayList<Polymorphism> expectedMajor = majorSample.getTopResult().getSearchResult().getDetailedResult().getExpectedPolys();
+				ArrayList<Polymorphism> foundMinor = minorSample.getTopResult().getSearchResult().getDetailedResult().getFoundPolys();
+				ArrayList<Polymorphism> expectedMinor = minorSample.getTopResult().getSearchResult().getDetailedResult().getExpectedPolys();
 
-				int notFoundMajorHg = countNotFound(foundMajorHg, expectedMajorHg);
-				int notFoundMinorHg = countNotFound(foundMinorHg, expectedMinorHg);
+				int notFoundMajor = countNotFound(foundMajor, expectedMajor);
+				int notFoundMinor = countNotFound(foundMinor, expectedMinor);
 
 				ContaminationEntry centry = new ContaminationEntry();
-				centry.setSampleId(sampleMajor.getSampleID().split("_maj")[0]);
+				centry.setSampleId(majorSample.getSampleID().split("_maj")[0]);
 
 				Sample currentSample = mutationSamples.get(centry.getSampleId());
 				int sampleHomoplasmies = currentSample.getAmountHomoplasmies();
 				double meanCoverageSample = currentSample.getTotalCoverage() / currentSample.getAmountVariants();
 
-				centry.setMajorId(sampleMajor.getTopResult().getHaplogroup().toString());
-				centry.setMajorRemaining(notFoundMajorHg);
-				centry.setMinorId(sampleMinor.getTopResult().getHaplogroup().toString());
-				centry.setMajorRemaining(notFoundMinorHg);
+				centry.setMajorId(majorSample.getTopResult().getHaplogroup().toString());
+				centry.setMajorRemaining(notFoundMajor);
+				centry.setMinorId(minorSample.getTopResult().getHaplogroup().toString());
+				centry.setMajorRemaining(notFoundMinor);
 
-				int countMajorHomoplasmiesInSample = countHomoplasmies(currentSample, foundMajorHg);
-				int countMinorHomoplasmiesInSample = countHomoplasmies(currentSample, foundMinorHg);
+				int homoplasmiesMajor = countHomoplasmies(currentSample, foundMajor);
+				int heteroplasmiesMajor = foundMajor.size() - homoplasmiesMajor;
 
-				double meanHeteroplasmyMajor = getMeanHeteroplasmy(currentSample, foundMajorHg, true);
-				double meanheteroplasmyMinor = getMeanHeteroplasmy(currentSample, foundMinorHg, false);
+				int homoplasmiesMinor = countHomoplasmies(currentSample, foundMinor);
+				int heteroplasmiesMinor = foundMinor.size() - homoplasmiesMinor;
+
+				double meanHeteroplasmyMajor = calcMeanHeteroplasmy(currentSample, foundMajor, true);
+				double meanheteroplasmyMinor = calcMeanHeteroplasmy(currentSample, foundMinor, false);
 
 				if (!centry.getMajorId().equals(centry.getMinorId())) {
 
 					distanceHG = calcDistance(centry, phylotree);
 
-					if (((foundMajorHg.size() - countMajorHomoplasmiesInSample) > 2 || (foundMinorHg.size() - countMinorHomoplasmiesInSample) > 2)
-							&& (distanceHG > 1 || distanceHG == -1)) {
+					if ((heteroplasmiesMajor > 2 || heteroplasmiesMinor > 2) && (distanceHG > 1 || distanceHG == -1)) {
 						countContaminated++;
 						status = Status.HG_Conflict_High;
-					} else if (((foundMinorHg.size() - countMinorHomoplasmiesInSample) > 1) || distanceHG > 1) {
+					} else if ((heteroplasmiesMinor > 1) || distanceHG > 1) {
 						countPossibleContaminated++;
 						status = Status.HG_Conflict_Low;
 					} else {
@@ -101,25 +103,24 @@ public class Contamination {
 					countNone++;
 					status = Status.None;
 				}
-				
-				/*if (meanCoverageSample < requiredCoverage) {
-					countCovLow++;
-					status = Status.Low_Coverage;
-				}*/
+
+				/*
+				 * if (meanCoverageSample < requiredCoverage) { countCovLow++; status =
+				 * Status.Low_Coverage; }
+				 */
 
 				contaminationWriter.setString(0, centry.getSampleId());
 				contaminationWriter.setString(1, status.toString());
 				contaminationWriter.setString(2, centry.getMajorId());
 				contaminationWriter.setString(3, formatter.format(meanHeteroplasmyMajor));
-				contaminationWriter.setString(4, countMajorHomoplasmiesInSample + "/" + sampleHomoplasmies);
-				contaminationWriter.setInteger(5, foundMajorHg.size() - countMajorHomoplasmiesInSample);
+				contaminationWriter.setString(4, homoplasmiesMajor + "/" + sampleHomoplasmies);
+				contaminationWriter.setInteger(5, heteroplasmiesMajor);
 				contaminationWriter.setString(6, centry.getMinorId());
 				contaminationWriter.setString(7, formatter.format(meanheteroplasmyMinor));
-				contaminationWriter.setString(8, countMinorHomoplasmiesInSample + "/" + sampleHomoplasmies);
-				contaminationWriter.setInteger(9, foundMinorHg.size() - countMinorHomoplasmiesInSample);
+				contaminationWriter.setString(8, homoplasmiesMinor + "/" + sampleHomoplasmies);
+				contaminationWriter.setInteger(9, heteroplasmiesMinor);
 				contaminationWriter.setDouble(10, meanCoverageSample);
 				contaminationWriter.setInteger(11, distanceHG);
-
 				contaminationWriter.next();
 			}
 
@@ -171,7 +172,7 @@ public class Contamination {
 		return count;
 	}
 
-	private double getMeanHeteroplasmy(Sample currentSample, ArrayList<Polymorphism> found, boolean majorComponent) {
+	private double calcMeanHeteroplasmy(Sample currentSample, ArrayList<Polymorphism> found, boolean majorComponent) {
 
 		double sum = 0.0;
 		double count = 0;
@@ -183,7 +184,6 @@ public class Contamination {
 				if (majorComponent) {
 					sum += variant.getMajorLevel();
 				} else {
-
 					sum += variant.getMinorLevel();
 				}
 				count++;
@@ -205,6 +205,22 @@ public class Contamination {
 			Variant variant = currentSample.getPositions().get(split.toString());
 
 			if (variant != null && variant.getType() == 1) {
+				count++;
+			}
+
+		}
+		return count;
+	}
+	
+	private int countHeteroplasmies(Sample currentSample, ArrayList<Polymorphism> found) {
+
+		int count = 0;
+
+		for (Polymorphism split : found) {
+
+			Variant variant = currentSample.getPositions().get(split.toString());
+
+			if (variant != null && variant.getType() == 2) {
 				count++;
 			}
 

@@ -65,7 +65,7 @@ public class HaplogroupClassifierTests {
 		assertEquals("0.987", readerContamination.getString("MajorLevel"));
 		assertEquals("6/7", readerContamination.getString("MinorSNPs"));
 		assertEquals("0.011", readerContamination.getString("MinorLevel"));
-		assertEquals("12", readerContamination.getString("MinorHGvariants"));
+		assertEquals("12", readerContamination.getString("MinorHetVariants"));
 		assertEquals("H1c6", readerContamination.getString("MajorHG"));
 		assertEquals("U5a2e", readerContamination.getString("MinorHG"));
 
