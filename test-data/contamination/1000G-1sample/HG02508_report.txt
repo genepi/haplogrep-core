@@ -1,2 +1,2 @@
-"SampleID"	"Contamination"	"MajorHG"	"MajorLevel"	"MajorSNPs"	"MajorHGvariants"	"MinorHG"	"MinorLevel"	"MinorSNPs"	"MinorHGvariants"	"MeanCoverage"	"HG_Distance"
-"HG00097.mapped.ILLUMINA.bwa.GBR.low_coverage.20130415.bam"	"None"	"T2f1a1"	"0.983"	"34/35"	"3"	"T2f1a1"	"0.000"	"34/35"	"0"	"2371.419921875"	"0"
+"SampleID"	"Contamination"	"SampleHomoplasmies"	"SampleHeteroplasmies"	"MajorHG"	"MajorHGQuality"	"MajorLevel"	"MajorHomoplasmies"	"MajorHeteroplasmies"	"MinorHG"	"MinorHGQuality"	"MinorLevel"	"MinorHomoplasmies"	"MinorHeteroplasmies"	"MeanCoverage"	"HG_Distance"
+"HG00097.mapped.ILLUMINA.bwa.GBR.low_coverage.20130415.bam"	"None"	"35"	"15"	"T2f1a1"	"0.920"	"0.983"	"34"	"3"	"T2f1a1"	"0.887"	"0.000"	"34"	"0"	"2371.419921875"	"0"

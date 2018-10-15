@@ -1,2 +1,2 @@
-"SampleID"	"Contamination"	"MajorHG"	"MajorLevel"	"MajorSNPs"	"MajorHGvariants"	"MinorHG"	"MinorLevel"	"MinorSNPs"	"MinorHGvariants"	"MeanCoverage"	"HG_Distance"
-"s4"	"HG_Conflict_High"	"H1c6"	"0.987"	"7/7"	"2"	"U5a2e"	"0.011"	"6/7"	"12"	"6301.8798828125"	"-1"
+"SampleID"	"Contamination"	"SampleHomoplasmies"	"SampleHeteroplasmies"	"MajorHG"	"MajorHGQuality"	"MajorLevel"	"MajorHomoplasmies"	"MajorHeteroplasmies"	"MinorHG"	"MinorHGQuality"	"MinorLevel"	"MinorHomoplasmies"	"MinorHeteroplasmies"	"MeanCoverage"	"HG_Distance"
+"s4"	"HG_Conflict_High"	"7"	"18"	"H1c6"	"1.000"	"0.987"	"7"	"2"	"U5a2e"	"0.765"	"0.011"	"6"	"12"	"6301.8798828125"	"-1"

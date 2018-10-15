@@ -24,16 +24,16 @@ public String getSampleId() {
 public void setSampleId(String sampleId) {
 	SampleId = sampleId;
 }
-public String getMajorId() {
+public String getMajorHg() {
 	return majorHG;
 }
-public void setMajorId(String majorId) {
+public void setMajorHg(String majorId) {
 	this.majorHG = majorId;
 }
-public String getMinorId() {
+public String getMinorHg() {
 	return minorHG;
 }
-public void setMinorId(String minorId) {
+public void setMinorHg(String minorId) {
 	this.minorHG = minorId;
 }
 public int getMajorFound() {

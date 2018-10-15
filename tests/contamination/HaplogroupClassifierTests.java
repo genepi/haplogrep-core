@@ -61,11 +61,13 @@ public class HaplogroupClassifierTests {
 		readerContamination.next();
 
 		assertEquals(Status.HG_Conflict_High.name(), readerContamination.getString("Contamination"));
-		assertEquals("7/7", readerContamination.getString("MajorSNPs"));
+		assertEquals("7", readerContamination.getString("MajorHomoplasmies"));
+		assertEquals("7", readerContamination.getString("SampleHomoplasmies"));
 		assertEquals("0.987", readerContamination.getString("MajorLevel"));
-		assertEquals("6/7", readerContamination.getString("MinorSNPs"));
+		assertEquals("6", readerContamination.getString("MinorHomoplasmies"));
 		assertEquals("0.011", readerContamination.getString("MinorLevel"));
-		assertEquals("12", readerContamination.getString("MinorHetVariants"));
+		assertEquals("12", readerContamination.getString("MinorHeteroplasmies"));
+		assertEquals("18", readerContamination.getString("SampleHeteroplasmies"));
 		assertEquals("H1c6", readerContamination.getString("MajorHG"));
 		assertEquals("U5a2e", readerContamination.getString("MinorHG"));
 
