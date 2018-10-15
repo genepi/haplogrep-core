@@ -40,8 +40,8 @@ public class Contamination {
 
 		CsvTableWriter contaminationWriter = new CsvTableWriter(out, '\t');
 
-		String[] columnsWrite = { "SampleID", "Contamination", "MajorHG", "MajorLevel", "MajorSNPs", "MajorHetVariants", "MinorHG", "MinorLevel", "MinorSNPs",
-				"MinorHetVariants", "MeanCoverage", "HG_Distance" };
+		String[] columnsWrite = { "SampleID", "Contamination", "SampleHomoplasmies", "SampleHeteroplasmies", "MajorHG", "MajorHGQuality", "MajorLevel", "MajorHomoplasmies", "MajorHeteroplasmies", "MinorHG", "MinorHGQuality", "MinorLevel", "MinorHomoplasmies",
+				"MinorHeteroplasmies", "MeanCoverage", "HG_Distance" };
 		contaminationWriter.setColumns(columnsWrite);
 
 		NumberFormat formatter = new DecimalFormat("#0.000");
@@ -67,15 +67,21 @@ public class Contamination {
 
 				ContaminationEntry centry = new ContaminationEntry();
 				centry.setSampleId(majorSample.getSampleID().split("_maj")[0]);
+				double qualityMajor = majorSample.getTopResult().getDistance();
+				double qualityMinor = minorSample.getTopResult().getDistance();
 
 				Sample currentSample = mutationSamples.get(centry.getSampleId());
+				
 				int sampleHomoplasmies = currentSample.getAmountHomoplasmies();
+				int sampleHeteroplasmies = currentSample.getAmountHeteroplasmies();
+				
 				double meanCoverageSample = currentSample.getTotalCoverage() / currentSample.getAmountVariants();
 
 				centry.setMajorId(majorSample.getTopResult().getHaplogroup().toString());
 				centry.setMajorRemaining(notFoundMajor);
+				
 				centry.setMinorId(minorSample.getTopResult().getHaplogroup().toString());
-				centry.setMajorRemaining(notFoundMinor);
+				centry.setMinorRemaining(notFoundMinor);
 
 				int homoplasmiesMajor = countHomoplasmies(currentSample, foundMajor);
 				int homoplasmiesMinor = countHomoplasmies(currentSample, foundMinor);
@@ -94,7 +100,7 @@ public class Contamination {
 
 					distanceHG = calcDistance(centry, phylotree);
 
-					if ((heteroplasmiesMajor > 3 || heteroplasmiesMinor > 3) && (distanceHG > 1 || distanceHG == -1)) {
+					if ((heteroplasmiesMajor > 2 || heteroplasmiesMinor > 2) && (distanceHG > 1 || distanceHG == -1)) {
 						countContaminated++;
 						status = Status.HG_Conflict_High;
 					} else if ((heteroplasmiesMinor > 1) || distanceHG > 1) {
@@ -115,16 +121,20 @@ public class Contamination {
 
 				contaminationWriter.setString(0, centry.getSampleId());
 				contaminationWriter.setString(1, status.toString());
-				contaminationWriter.setString(2, centry.getMajorId());
-				contaminationWriter.setString(3, formatter.format(meanHeteroplasmyMajor));
-				contaminationWriter.setString(4, homoplasmiesMajor + "/" + sampleHomoplasmies);
-				contaminationWriter.setInteger(5, heteroplasmiesMajor);
-				contaminationWriter.setString(6, centry.getMinorId());
-				contaminationWriter.setString(7, formatter.format(meanheteroplasmyMinor));
-				contaminationWriter.setString(8, homoplasmiesMinor + "/" + sampleHomoplasmies);
-				contaminationWriter.setInteger(9, heteroplasmiesMinor);
-				contaminationWriter.setDouble(10, meanCoverageSample);
-				contaminationWriter.setInteger(11, distanceHG);
+				contaminationWriter.setInteger(2, sampleHomoplasmies);
+				contaminationWriter.setInteger(3, sampleHeteroplasmies);
+				contaminationWriter.setString(4, centry.getMajorId());
+				contaminationWriter.setString(5, formatter.format(qualityMajor));
+				contaminationWriter.setString(6, formatter.format(meanHeteroplasmyMajor));
+				contaminationWriter.setInteger(7, homoplasmiesMajor);
+				contaminationWriter.setInteger(8, heteroplasmiesMajor);
+				contaminationWriter.setString(9, centry.getMinorId());
+				contaminationWriter.setString(10, formatter.format(qualityMinor));
+				contaminationWriter.setString(11, formatter.format(meanheteroplasmyMinor));
+				contaminationWriter.setInteger(12, homoplasmiesMinor);
+				contaminationWriter.setInteger(13, heteroplasmiesMinor);
+				contaminationWriter.setDouble(14, meanCoverageSample);
+				contaminationWriter.setInteger(15, distanceHG);
 				contaminationWriter.next();
 			}
 
