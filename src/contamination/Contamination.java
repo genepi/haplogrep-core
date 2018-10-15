@@ -78,10 +78,14 @@ public class Contamination {
 				centry.setMajorRemaining(notFoundMinor);
 
 				int homoplasmiesMajor = countHomoplasmies(currentSample, foundMajor);
-				int heteroplasmiesMajor = foundMajor.size() - homoplasmiesMajor;
-
 				int homoplasmiesMinor = countHomoplasmies(currentSample, foundMinor);
-				int heteroplasmiesMinor = foundMinor.size() - homoplasmiesMinor;
+				
+				//TODO talk to hansi: foundMinor from Haplogrep also include back mutations, gives a wrong result back!
+				//int heteroplasmiesMajor = foundMajor.size() - homoplasmiesMajor;
+				//int heteroplasmiesMinor = foundMinor.size() - homoplasmiesMinor;
+				
+				int heteroplasmiesMajor = countHeteroplasmies(currentSample, foundMajor);
+				int heteroplasmiesMinor = countHeteroplasmies(currentSample, foundMinor);
 
 				double meanHeteroplasmyMajor = calcMeanHeteroplasmy(currentSample, foundMajor, true);
 				double meanheteroplasmyMinor = calcMeanHeteroplasmy(currentSample, foundMinor, false);
@@ -90,7 +94,7 @@ public class Contamination {
 
 					distanceHG = calcDistance(centry, phylotree);
 
-					if ((heteroplasmiesMajor > 2 || heteroplasmiesMinor > 2) && (distanceHG > 1 || distanceHG == -1)) {
+					if ((heteroplasmiesMajor > 3 || heteroplasmiesMinor > 3) && (distanceHG > 1 || distanceHG == -1)) {
 						countContaminated++;
 						status = Status.HG_Conflict_High;
 					} else if ((heteroplasmiesMinor > 1) || distanceHG > 1) {
@@ -211,7 +215,7 @@ public class Contamination {
 		}
 		return count;
 	}
-	
+
 	private int countHeteroplasmies(Sample currentSample, ArrayList<Polymorphism> found) {
 
 		int count = 0;

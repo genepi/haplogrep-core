@@ -115,7 +115,7 @@ public class ContaminationTests {
 
 		assertEquals(7, count);
 
-		FileUtil.deleteFile(output);
+		//FileUtil.deleteFile(output);
 
 	}
 
@@ -320,8 +320,8 @@ public class ContaminationTests {
 		}
 		writer.close();
 		
-		assertEquals(126, countHigh);
-		assertEquals(34, countLow);
+		assertEquals(121, countHigh);
+		assertEquals(29, countLow);
 
 	}
 	
@@ -392,8 +392,8 @@ public class ContaminationTests {
 		}
 		writer.close();
 		
-		assertEquals(121, countHigh);
-		assertEquals(34, countLow);
+		assertEquals(117, countHigh);
+		assertEquals(28, countLow);
 
 	}
 
