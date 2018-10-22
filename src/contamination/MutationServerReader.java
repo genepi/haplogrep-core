@@ -66,7 +66,8 @@ public class MutationServerReader {
 			variant.setType(type);
 
 			if (variant.getRef() != 'N') {
-				sample.updateCount(type);
+				sample.updateVariantCount(type);
+				sample.updateHetLevels(minorLevel);
 				sample.updateCoverage(coverage);
 			}
 

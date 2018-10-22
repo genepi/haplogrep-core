@@ -39,9 +39,8 @@ public class Contamination {
 
 		CsvTableWriter contaminationWriter = new CsvTableWriter(out, '\t');
 
-		String[] columnsWrite = { "SampleID", "Contamination", "SampleHomoplasmies", "SampleHeteroplasmies", "MajorHG", "MajorHGQuality", "MajorHomoplasmies",
-				"MajorHeteroplasmies", "MajorHetLevel", "MinorHG", "MinorHGQuality", "MinorHomoplasmies", "MinorHeteroplasmies", "MinorHetLevel",
-				"MeanCoverage", "HG_Distance" };
+		String[] columnsWrite = { "SampleID", "Contamination", "SampleHomoplasmies", "SampleHeteroplasmies","SampleMeanHeteroplasmyLevel", "SampleMeanCoverage", "MajorHG", "MajorHGQuality", "MajorHomoplasmies",
+				"MajorHeteroplasmies", "MajorMeanHetLevel", "MinorHG", "MinorHGQuality", "MinorHomoplasmies", "MinorHeteroplasmies", "MinorMeanHetLevel","HG_Distance" };
 		contaminationWriter.setColumns(columnsWrite);
 
 		NumberFormat formatter = new DecimalFormat("#0.000");
@@ -76,6 +75,7 @@ public class Contamination {
 				int sampleHeteroplasmies = currentSample.getAmountHeteroplasmies();
 
 				double meanCoverageSample = currentSample.getTotalCoverage() / currentSample.getAmountVariants();
+				double meanHetLevelSample = currentSample.getCountHeteroplasmyLevel() / currentSample.getAmountHeteroplasmies();
 
 				centry.setMajorHg(majorSample.getTopResult().getHaplogroup().toString());
 				centry.setMajorNotFound(notFoundMajor);
@@ -120,18 +120,19 @@ public class Contamination {
 				contaminationWriter.setString(1, status.toString());
 				contaminationWriter.setInteger(2, sampleHomoplasmies);
 				contaminationWriter.setInteger(3, sampleHeteroplasmies);
-				contaminationWriter.setString(4, centry.getMajorHg());
-				contaminationWriter.setString(5, formatter.format(hgQualityMajor));
-				contaminationWriter.setInteger(6, homoplasmiesMajor);
-				contaminationWriter.setInteger(7, heteroplasmiesMajor);
-				contaminationWriter.setString(8, formatter.format(meanHeteroplasmyMajor));
-				contaminationWriter.setString(9, centry.getMinorHg());
-				contaminationWriter.setString(10, formatter.format(hgQualityMinor));
-				contaminationWriter.setInteger(11, homoplasmiesMinor);
-				contaminationWriter.setInteger(12, heteroplasmiesMinor);
-				contaminationWriter.setString(13, formatter.format(meanHeteroplasmyMinor));
-				contaminationWriter.setDouble(14, meanCoverageSample);
-				contaminationWriter.setInteger(15, distanceHG);
+				contaminationWriter.setString(4, formatter.format(meanHetLevelSample));
+				contaminationWriter.setDouble(5, meanCoverageSample);
+				contaminationWriter.setString(6, centry.getMajorHg());
+				contaminationWriter.setString(7, formatter.format(hgQualityMajor));
+				contaminationWriter.setInteger(8, homoplasmiesMajor);
+				contaminationWriter.setInteger(9, heteroplasmiesMajor);
+				contaminationWriter.setString(10, formatter.format(meanHeteroplasmyMajor));
+				contaminationWriter.setString(11, centry.getMinorHg());
+				contaminationWriter.setString(12, formatter.format(hgQualityMinor));
+				contaminationWriter.setInteger(13, homoplasmiesMinor);
+				contaminationWriter.setInteger(14, heteroplasmiesMinor);
+				contaminationWriter.setString(15, formatter.format(meanHeteroplasmyMinor));
+				contaminationWriter.setInteger(16, distanceHG);
 				contaminationWriter.next();
 			}
 

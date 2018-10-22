@@ -262,10 +262,10 @@ public class ContaminationTests {
 		while (readerContamination.next()) {
 			String id = readerContamination.getString("SampleID");
 			id = id.split("\\.",2)[0];
-			String level = readerContamination.getString("MinorHetLevel");
+			String level = readerContamination.getString("MinorMeanHetLevel");
 			String status = readerContamination.getString("Contamination");
 			
-			if(status.contains("HG_Conflict_High")) {
+			if(status.contains("HIGH")) {
 			samples.put(id, level + "\t" + status);
 			}
 		}
@@ -342,7 +342,7 @@ public class ContaminationTests {
 		while (readerContamination.next()) {
 			String id = readerContamination.getString("SampleID");
 			id = id.split("\\.",2)[0];
-			String level = readerContamination.getString("MinorHetLevel");
+			String level = readerContamination.getString("MinorMeanHetLevel");
 			String status = readerContamination.getString("Contamination");
 			samples.put(id, level + "\t" + status);
 		}

@@ -10,8 +10,7 @@ public class Sample {
 	private int amountVariants;
 	private int amountHeteroplasmies;
 	private float totalCoverage = 0;
-	private float meanHeteroplasmyLevel = 0;
-	private float meanCoverage = 0;
+	private float countHeteroplasmyLevel = 0;
 
 	public Sample() {
 		variants = new HashMap<String, Variant>();
@@ -37,7 +36,7 @@ public class Sample {
 		variants.put(var.getPos()+String.valueOf(var.getVariant()), var);
 	}
 
-	public void updateCount(int type) {
+	public void updateVariantCount(int type) {
 		
 		amountVariants +=1;
 
@@ -51,11 +50,13 @@ public class Sample {
 	}
 
 	public void updateCoverage(int coverage) {
-
 		totalCoverage += coverage;
 	}
-
-
+	
+	public void updateHetLevels(double level) {
+		countHeteroplasmyLevel+=level;
+	}
+	
 	public int getAmountHomoplasmies() {
 		return amountHomoplasmies;
 	}
@@ -88,19 +89,12 @@ public class Sample {
 		this.totalCoverage = totalCoverage;
 	}
 
-	public float getMeanHeteroplasmyLevel() {
-		return meanHeteroplasmyLevel;
+	public float getCountHeteroplasmyLevel() {
+		return countHeteroplasmyLevel;
 	}
 
-	public void setMeanHeteroplasmyLevel(float meanHeteroplasmyLevel) {
-		this.meanHeteroplasmyLevel = meanHeteroplasmyLevel;
+	public void setCountHeteroplasmyLevel(float countHeteroplasmyLevel) {
+		this.countHeteroplasmyLevel = countHeteroplasmyLevel;
 	}
 
-	public float getMeanCoverage() {
-		return meanCoverage;
-	}
-
-	public void setMeanCoverage(float meanCoverage) {
-		this.meanCoverage = meanCoverage;
-	}
 }
