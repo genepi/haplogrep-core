@@ -23,7 +23,6 @@ public class Contamination {
 		HIGH, LOW, NONE;
 	}
 
-	// TODO add threshold variable
 	public int calcContamination(HashMap<String, Sample> mutationSamples, ArrayList<TestSample> haplogrepSamples, String out) {
 
 		int countEntries = 0;
@@ -41,8 +40,8 @@ public class Contamination {
 		CsvTableWriter contaminationWriter = new CsvTableWriter(out, '\t');
 
 		String[] columnsWrite = { "SampleID", "Contamination", "SampleHomoplasmies", "SampleHeteroplasmies", "MajorHG", "MajorHGQuality", "MajorHomoplasmies",
-				"MajorHeteroplasmies", "MajorHetLevel", "MinorHG", "MinorHGQuality", "MinorHomoplasmies", "MinorHeteroplasmies", "MinorHetLevel", "MeanCoverage",
-				"HG_Distance" };
+				"MajorHeteroplasmies", "MajorHetLevel", "MinorHG", "MinorHGQuality", "MinorHomoplasmies", "MinorHeteroplasmies", "MinorHetLevel",
+				"MeanCoverage", "HG_Distance" };
 		contaminationWriter.setColumns(columnsWrite);
 
 		NumberFormat formatter = new DecimalFormat("#0.000");
@@ -79,10 +78,10 @@ public class Contamination {
 				double meanCoverageSample = currentSample.getTotalCoverage() / currentSample.getAmountVariants();
 
 				centry.setMajorHg(majorSample.getTopResult().getHaplogroup().toString());
-				centry.setMajorRemaining(notFoundMajor);
+				centry.setMajorNotFound(notFoundMajor);
 
 				centry.setMinorHg(minorSample.getTopResult().getHaplogroup().toString());
-				centry.setMinorRemaining(notFoundMinor);
+				centry.setMinorNotFound(notFoundMinor);
 
 				int homoplasmiesMajor = countHomoplasmies(currentSample, foundMajor);
 				int homoplasmiesMinor = countHomoplasmies(currentSample, foundMinor);
@@ -109,6 +108,7 @@ public class Contamination {
 						countPossibleContaminated++;
 						status = Status.LOW;
 					} else {
+						countNone++;
 						status = Status.NONE;
 					}
 				} else {
