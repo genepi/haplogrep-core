@@ -20,7 +20,7 @@ import phylotree.PhylotreeManager;
 public class Contamination {
 
 	enum Status {
-		HG_Conflict_High, HG_Conflict_Low, Low_Coverage, None;
+		HIGH, LOW, NONE;
 	}
 
 	// TODO add threshold variable
@@ -41,7 +41,7 @@ public class Contamination {
 		CsvTableWriter contaminationWriter = new CsvTableWriter(out, '\t');
 
 		String[] columnsWrite = { "SampleID", "Contamination", "SampleHomoplasmies", "SampleHeteroplasmies", "MajorHG", "MajorHGQuality", "MajorHomoplasmies",
-				"MajorHeteroplasmies", "MajorHetLevel", "MinorHG", "MinorHGQuality", "MinorHomoplasmies", "MinorHeteroplasmies", "MinorLevel", "MeanCoverage",
+				"MajorHeteroplasmies", "MajorHetLevel", "MinorHG", "MinorHGQuality", "MinorHomoplasmies", "MinorHeteroplasmies", "MinorHetLevel", "MeanCoverage",
 				"HG_Distance" };
 		contaminationWriter.setColumns(columnsWrite);
 
@@ -104,22 +104,17 @@ public class Contamination {
 
 					if ((heteroplasmiesMajor > 2 || heteroplasmiesMinor > 2) && (distanceHG > 1 || distanceHG == -1)) {
 						countContaminated++;
-						status = Status.HG_Conflict_High;
+						status = Status.HIGH;
 					} else if ((heteroplasmiesMinor > 1) || distanceHG > 1) {
 						countPossibleContaminated++;
-						status = Status.HG_Conflict_Low;
+						status = Status.LOW;
 					} else {
-						status = Status.None;
+						status = Status.NONE;
 					}
 				} else {
 					countNone++;
-					status = Status.None;
+					status = Status.NONE;
 				}
-
-				/*
-				 * if (meanCoverageSample < requiredCoverage) { countCovLow++; status =
-				 * Status.Low_Coverage; }
-				 */
 
 				contaminationWriter.setString(0, centry.getSampleId());
 				contaminationWriter.setString(1, status.toString());
