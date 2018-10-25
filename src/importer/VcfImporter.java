@@ -93,10 +93,12 @@ public class VcfImporter {
 							profiles.get(index).append("\t");
 							
 							//NEW in GATK 3.3 * for deletion
-							if (genotype.getGenotypeString().equals("*"))
+							if (genotype.getGenotypeString().equals("*")) {
 								profiles.get(index).append(vc.getStart() + "d");
-							else
+							}
+							else {
 							profiles.get(index).append(vc.getStart() + "" + genotypeString);
+							}
 
 						} else {
 

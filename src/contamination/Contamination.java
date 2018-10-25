@@ -121,7 +121,7 @@ public class Contamination {
 				contaminationWriter.setInteger(2, sampleHomoplasmies);
 				contaminationWriter.setInteger(3, sampleHeteroplasmies);
 				contaminationWriter.setString(4, formatter.format(meanHetLevelSample));
-				contaminationWriter.setDouble(5, meanCoverageSample);
+				contaminationWriter.setString(5, formatter.format(meanCoverageSample));
 				contaminationWriter.setString(6, centry.getMajorHg());
 				contaminationWriter.setString(7, formatter.format(hgQualityMajor));
 				contaminationWriter.setInteger(8, homoplasmiesMajor);
@@ -184,13 +184,14 @@ public class Contamination {
 		return count;
 	}
 
-	private double calcMeanHeteroplasmy(Sample currentSample, ArrayList<Polymorphism> found, boolean majorComponent) {
+	private double calcMeanHeteroplasmy(Sample currentSample, ArrayList<Polymorphism> foundHaplogrep, boolean majorComponent) {
 
 		double sum = 0.0;
 		double count = 0;
 
-		for (Polymorphism split : found) {
-			Variant variant = currentSample.getPositions().get(split.toString());
+		for (Polymorphism found : foundHaplogrep) {
+			
+			Variant variant = currentSample.getVariant(found.getPosition());
 
 			if (variant != null && variant.getType() == 2) {
 				if (majorComponent) {
@@ -208,14 +209,14 @@ public class Contamination {
 		}
 	}
 
-	private int countHomoplasmies(Sample currentSample, ArrayList<Polymorphism> found) {
+	private int countHomoplasmies(Sample currentSample, ArrayList<Polymorphism> foundHaplogrep) {
 
 		int count = 0;
 
-		for (Polymorphism split : found) {
-
-			Variant variant = currentSample.getPositions().get(split.toString());
-
+		for (Polymorphism found : foundHaplogrep) {
+			
+			Variant variant = currentSample.getVariant(found.getPosition());
+			
 			if (variant != null && variant.getType() == 1) {
 				count++;
 			}
@@ -224,13 +225,13 @@ public class Contamination {
 		return count;
 	}
 
-	private int countHeteroplasmies(Sample currentSample, ArrayList<Polymorphism> found) {
+	private int countHeteroplasmies(Sample currentSample, ArrayList<Polymorphism> foundHaplogrep) {
 
 		int count = 0;
 
-		for (Polymorphism split : found) {
+		for (Polymorphism found : foundHaplogrep) {
 
-			Variant variant = currentSample.getPositions().get(split.toString());
+			Variant variant = currentSample.getVariant(found.getPosition());
 
 			if (variant != null && variant.getType() == 2) {
 				count++;

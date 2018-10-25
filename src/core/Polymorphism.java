@@ -32,10 +32,10 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	private String numberOfIns = "";
 	private String insertedPolys = "";
 	boolean isHeteroplasmy = false;
-	int isReliable=0;
+	int isReliable = 0;
 
 	private int hashCode;
-	
+
 	/**
 	 * rCRS reference sequence
 	 */
@@ -54,7 +54,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		this.position = newPosition;
 		hashCode = toString().hashCode();
 	}
-	
+
 	Polymorphism(int newPosition, Mutations mutatedBase, int isReliable) {
 		this.mutation = mutatedBase;
 		this.position = newPosition;
@@ -75,18 +75,17 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		hashCode = toString().hashCode();
 		this.setHeteroplasmy(false);
 	}
-	
-	
+
 	public Polymorphism(String phyloString, int isReliable) throws InvalidPolymorphismException {
 		parse(phyloString);
 		hashCode = toString().hashCode();
 		this.setHeteroplasmy(false);
 		this.setReliable(isReliable);
 	}
-	
+
 	public Polymorphism(String phyloString, boolean Heteroplasmy) throws InvalidPolymorphismException {
 		parse(phyloString);
-		this.setHeteroplasmy(Heteroplasmy); //TODO CHECK HETEREOPLASMY
+		this.setHeteroplasmy(Heteroplasmy); // TODO CHECK HETEREOPLASMY
 		hashCode = toString().hashCode();
 	}
 
@@ -103,74 +102,78 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		this.numberOfIns = polyToCopy.numberOfIns;
 		this.insertedPolys = polyToCopy.insertedPolys;
 		this.isHeteroplasmy = polyToCopy.isHeteroplasmy;
-		
+
 		hashCode = toString().hashCode();
 	}
 
-	/* 
-	 * Remark: The polymorphism equals method don't check for back mutation of two instances
-	 * (non-Javadoc)
+	/*
+	 * Remark: The polymorphism equals method don't check for back mutation of two
+	 * instances (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
-//	@Override
-//	public boolean equals(Object p) {
-//		if (!(p instanceof Polymorphism))
-//			return false;
-//
-//		if (this.position == ((Polymorphism) p).position && this.mutation == ((Polymorphism) p).mutation) {
-//
-//			//insertions
-//			if(((Polymorphism)p).getMutation().equals(this.mutation.INS)){
-//				if(((Polymorphism)p).insertedPolys.contains(this.insertedPolys))
-//					return true;
-//				else if (((Polymorphism)p).insertedPolys.contains(".X"))
-//					return true;
-//				else return false;
-//			} 
-//			//end insertions
-//
-//			else if (((Polymorphism) p).isBackMutation != this.isBackMutation)
-//				return false;
-//
-//			else
-//				return true;
-//		}
-//
-//		else
-//			return false;
-//	}
+	// @Override
+	// public boolean equals(Object p) {
+	// if (!(p instanceof Polymorphism))
+	// return false;
+	//
+	// if (this.position == ((Polymorphism) p).position && this.mutation ==
+	// ((Polymorphism) p).mutation) {
+	//
+	// //insertions
+	// if(((Polymorphism)p).getMutation().equals(this.mutation.INS)){
+	// if(((Polymorphism)p).insertedPolys.contains(this.insertedPolys))
+	// return true;
+	// else if (((Polymorphism)p).insertedPolys.contains(".X"))
+	// return true;
+	// else return false;
+	// }
+	// //end insertions
+	//
+	// else if (((Polymorphism) p).isBackMutation != this.isBackMutation)
+	// return false;
+	//
+	// else
+	// return true;
+	// }
+	//
+	// else
+	// return false;
+	// }
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
 
-		if (position>16569)
+		if (position > 16569)
 			return "";
-		
-	try{
 
-	}catch(Exception e){;}
-	if (position!=0){
-		if (!isBackMutation && !this.mutation.equals("N")) {
-			if (this.mutation == Mutations.INS)
-				return position + numberOfIns + insertedPolys;
+		try {
 
-			else if (this.mutation == Mutations.DEL)
-				return position + "d";
+		} catch (Exception e) {
+			;
+		}
+		if (position != 0) {
+			if (!isBackMutation && !this.mutation.equals("N")) {
+				if (this.mutation == Mutations.INS)
+					return position + numberOfIns + insertedPolys;
+
+				else if (this.mutation == Mutations.DEL)
+					return position + "d";
+
+				else
+					return position + mutation.toString().trim();
+			}
 
 			else
-				return position + mutation.toString().trim();
-		}
-
-		else
-			return position + mutation.toString().trim() + "!";
+				return position + mutation.toString().trim() + "!";
+		} else
+			return "";
 	}
-	else 
-		return "";
-	}
-
 
 	@Override
 	public boolean equals(Object obj) {
@@ -181,8 +184,8 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Polymorphism other = (Polymorphism) obj;
-//		if (hashCode != other.hashCode)
-//			return false;
+		// if (hashCode != other.hashCode)
+		// return false;
 		if (isBackMutation != other.isBackMutation)
 			return false;
 		if (mutation != other.mutation)
@@ -192,43 +195,43 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		return true;
 	}
 
-	/** 
-	 * @return A shorter string version of this polymorphism instance. Removes obvious transitions and  
-	 * changes 'DEL' to 'd'
+	/**
+	 * @return A shorter string version of this polymorphism instance. Removes
+	 *         obvious transitions and changes 'DEL' to 'd'
 	 */
 	public String toStringShortVersion() {
 		String convertedString = "";
-//		if (!isBackMutation) {
-			if (this.mutation == Mutations.INS)
-				convertedString =  position + numberOfIns + insertedPolys;
+		// if (!isBackMutation) {
+		if (this.mutation == Mutations.INS)
+			convertedString = position + numberOfIns + insertedPolys;
 
-			else if (this.mutation == Mutations.DEL)
-				convertedString =  position + "d";
+		else if (this.mutation == Mutations.DEL)
+			convertedString = position + "d";
+
+		else {
+
+			if (isTransitionPoly())
+				convertedString = String.valueOf(position);
 
 			else {
-			
-				if (isTransitionPoly())
-					convertedString =  String.valueOf(position);
-
-				else{
-					if (position!=0)
-					convertedString =  position + mutation.toString().trim();
-				}
+				if (position != 0)
+					convertedString = position + mutation.toString().trim();
 			}
+		}
 
+		// }
 
-//		}
-
-//		else
+		// else
 		if (isBackMutation)
 			return convertedString + "!";
-		
+
 		return convertedString;
 	}
 
 	/**
-	 * Reformat a string representation of a polymorphism with back mutation 
-	 * from '!' to '@' e.g. 185! to '@185' 
+	 * Reformat a string representation of a polymorphism with back mutation from
+	 * '!' to '@' e.g. 185! to '@185'
+	 * 
 	 * @param poly
 	 * @return The reformatted string
 	 */
@@ -242,51 +245,60 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 
 	/**
 	 * Check if a polymorphism represents the reference of rCRS
-	 * 	@return True if reference, false otherwise
+	 * 
+	 * @return True if reference, false otherwise
 	 */
 	public boolean equalsReference() {
 		return this.equals(getReferenceBase(this.position));
 	}
-	
+
 	/**
-	 * Creates and returns a polymorphism representing the reference at the position of this instance
-	 * 	@return The polymorphism representing the reference
+	 * Creates and returns a polymorphism representing the reference at the position
+	 * of this instance
+	 * 
+	 * @return The polymorphism representing the reference
 	 */
 	public Polymorphism getReferenceBase() {
 		return getReferenceBase(this.position);
 	}
+
 	/**
-	 * Creates and returns a polymorphism representing the reference at a given position
-	 * @param  position The position in the reference sequence 
+	 * Creates and returns a polymorphism representing the reference at a given
+	 * position
+	 * 
+	 * @param position
+	 *            The position in the reference sequence
 	 * @return The polymorphism representing the reference
 	 */
 	private Polymorphism getReferenceBase(int position) {
-		if (position<16569 && position>0){
-		String base = String.valueOf(rCRS.charAt(position - 1));
-		base = base.toUpperCase();
-		try {
-			return new Polymorphism(position, Mutations.getBase(base));
-		} catch (InvalidBaseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}	
-		return null;
-	}else return null;
-		}
+		if (position < 16569 && position > 0) {
+			String base = String.valueOf(rCRS.charAt(position - 1));
+			base = base.toUpperCase();
+			try {
+				return new Polymorphism(position, Mutations.getBase(base));
+			} catch (InvalidBaseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+		} else
+			return null;
+	}
 
-	//TODO: Ask hansi if this can be replaced by getReferenceBase(int position)
+	// TODO: Ask hansi if this can be replaced by getReferenceBase(int position)
 	public static String getReferenceBaseSingle(int position) throws InvalidBaseException {
 		String base = String.valueOf(rCRS.charAt(position - 1));
 		base = base.toUpperCase();
 		return base;
 	}
 
-	
-
 	/**
 	 * Parses a string to create a new polymorphism instance
-	 * @param stringToParse The input string
-	 * @throws InvalidPolymorphismException If the string could not be parsed
+	 * 
+	 * @param stringToParse
+	 *            The input string
+	 * @throws InvalidPolymorphismException
+	 *             If the string could not be parsed
 	 */
 	private void parse(String stringToParse) throws InvalidPolymorphismException {
 		// Because of deletion and insertion more than one resulting
@@ -294,28 +306,27 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		StringTokenizer st1 = null;
 		stringToParse = stringToParse.trim();
 
-	   try {
-		if (stringToParse.contains("R")) {
-		   this.position = Integer.valueOf(stringToParse.substring(0,stringToParse.length()-1));
+		try {
+			if (stringToParse.contains("R")) {
+				this.position = Integer.valueOf(stringToParse.substring(0, stringToParse.length() - 1));
 
-			   if (getReferenceBase(position).equals("A"))
-				   this.mutation=Mutations.G;
-			   if (getReferenceBase(position).equals("G"))
-				   this.mutation=Mutations.A;
-		   }
-		   if (stringToParse.contains("Y")){
-			   this.position = Integer.valueOf(stringToParse.substring(0,stringToParse.length()-1));
-			   if (getReferenceBase(position).equals("C"))
-				   this.mutation=Mutations.T;
-			   if (getReferenceBase(position).equals("T"))
-				   this.mutation=Mutations.C;
-		   }
-	} catch (NumberFormatException e1) {
-		// TODO Auto-generated catch block
-		throw new InvalidPolymorphismException(stringToParse);
-	}
-		 
-		
+				if (getReferenceBase(position).equals("A"))
+					this.mutation = Mutations.G;
+				if (getReferenceBase(position).equals("G"))
+					this.mutation = Mutations.A;
+			}
+			if (stringToParse.contains("Y")) {
+				this.position = Integer.valueOf(stringToParse.substring(0, stringToParse.length() - 1));
+				if (getReferenceBase(position).equals("C"))
+					this.mutation = Mutations.T;
+				if (getReferenceBase(position).equals("T"))
+					this.mutation = Mutations.C;
+			}
+		} catch (NumberFormatException e1) {
+			// TODO Auto-generated catch block
+			throw new InvalidPolymorphismException(stringToParse);
+		}
+
 		// Only use part in parentheses
 		if (stringToParse.startsWith("("))
 			stringToParse = stringToParse.substring(1, stringToParse.length() - 1);
@@ -362,15 +373,15 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 					this.numberOfIns = "." + number;
 				}
 			}
-			if (token1.contains("X")){
-				 mutationString = token1.replace("X", "");
-				 this.numberOfIns=".X";
-				}
+			if (token1.contains("X")) {
+				mutationString = token1.replace("X", "");
+				this.numberOfIns = ".X";
+			}
 
 			// Check for valid acid
 			int i = 0;
 			try {
-					for (i = 0; i < mutationString.length(); i++) {
+				for (i = 0; i < mutationString.length(); i++) {
 					Mutations.getBase(String.valueOf(mutationString.charAt(i)));
 				}
 			} catch (InvalidBaseException e) {
@@ -390,12 +401,11 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 					this.position = Integer.valueOf(stringToParse.replaceFirst("[a-zA-Z]", ""));
 				} catch (InvalidBaseException e) {
 					throw new InvalidPolymorphismException(stringToParse, stringToParse.substring(m.start(), m.end()));
-				}
-				catch (NumberFormatException e) {
+				} catch (NumberFormatException e) {
 					throw new InvalidPolymorphismException(stringToParse);
 				}
-				
-				}
+
+			}
 
 			else {
 
@@ -404,21 +414,21 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 				m.find();
 
 				try {
-					if (stringToParse.trim().length()>0)
-					Integer.parseInt(stringToParse.substring(m.start(), m.end()), 10);
+					if (stringToParse.trim().length() > 0)
+						Integer.parseInt(stringToParse.substring(m.start(), m.end()), 10);
 				} catch (NumberFormatException e) {
 					throw new InvalidPolymorphismException(stringToParse);
 				}
-				int position=0;
-				if (stringToParse.trim().length()>0){
-				 position = Integer.valueOf(stringToParse);
-				try {
-					getTransitionPoly(position);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					position=0;
-					e.printStackTrace();
-				}
+				int position = 0;
+				if (stringToParse.trim().length() > 0) {
+					position = Integer.valueOf(stringToParse);
+					try {
+						getTransitionPoly(position);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						position = 0;
+						e.printStackTrace();
+					}
 				}
 			}
 		}
@@ -427,24 +437,23 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	private void getTransitionPoly(int position) throws InvalidBaseException {
 
 		this.position = position;
-	try{
+		try {
 
-
-		if (getReferenceBase(position).mutation == Mutations.C) {
-			this.mutation = Mutations.T;
-		}
-		if (getReferenceBase(position).mutation == Mutations.T) {
-			this.mutation = Mutations.C;
-		}
-		if (getReferenceBase(position).mutation == Mutations.G) {
-			this.mutation = Mutations.A;
-		}
-		if (getReferenceBase(position).mutation == Mutations.A) {
-			this.mutation = Mutations.G;
-		}
-		}catch (Exception e) {
+			if (getReferenceBase(position).mutation == Mutations.C) {
+				this.mutation = Mutations.T;
+			}
+			if (getReferenceBase(position).mutation == Mutations.T) {
+				this.mutation = Mutations.C;
+			}
+			if (getReferenceBase(position).mutation == Mutations.G) {
+				this.mutation = Mutations.A;
+			}
+			if (getReferenceBase(position).mutation == Mutations.A) {
+				this.mutation = Mutations.G;
+			}
+		} catch (Exception e) {
 			try {
-				throw new InvalidPolymorphismException(""+position, ""+position);
+				throw new InvalidPolymorphismException("" + position, "" + position);
 			} catch (InvalidPolymorphismException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -453,7 +462,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	}
 
 	public boolean isTransitionPoly() {
-	
+
 		if (this.mutation == Mutations.T && getReferenceBase().mutation == Mutations.C) {
 			return true;
 		}
@@ -478,50 +487,36 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		return insertedPolys;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Comparable#compareTo(java.lang.O
-	private void loadLookup() {
-		acidLookup= new HashMap<Polymorphism, AnnotationAAC>();
-		String annotationPath = "aminoacidchange.txt";
-		InputStream annotationStream = this.getClass().getClassLoader().getResourceAsStream(annotationPath);
-		BufferedReader annotationFileReader;
-		if (annotationStream == null) {
-			
-			try {
-				annotationStream = new FileInputStream(new File(annotationPath));
-				}
-				catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-		}
-		
-		
-		try{
-			annotationFileReader = new BufferedReader(new InputStreamReader(annotationStream));
-			String line = annotationFileReader.readLine();
-			line = annotationFileReader.readLine();
-				// Read-in each line
-				while (line != null) {
-					StringTokenizer mainTokenizer = new StringTokenizer(line, "\t");
-
-					String pos = mainTokenizer.nextToken();
-					String gen = mainTokenizer.nextToken();
-					short cod = Short.parseShort(mainTokenizer.nextToken());
-					String aachange = mainTokenizer.nextToken();
-					AnnotationAAC aac = new AnnotationAAC(pos, gen, cod, aachange);
-					acidLookup.put(new Polymorphism(pos), aac);
-					line = annotationFileReader.readLine();
-				}
-				
-			} catch (InvalidPolymorphismException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}bject)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Comparable#compareTo(java.lang.O private void loadLookup() {
+	 * acidLookup= new HashMap<Polymorphism, AnnotationAAC>(); String annotationPath
+	 * = "aminoacidchange.txt"; InputStream annotationStream =
+	 * this.getClass().getClassLoader().getResourceAsStream(annotationPath);
+	 * BufferedReader annotationFileReader; if (annotationStream == null) {
+	 * 
+	 * try { annotationStream = new FileInputStream(new File(annotationPath)); }
+	 * catch (FileNotFoundException e) { // TODO Auto-generated catch block
+	 * e.printStackTrace(); } }
+	 * 
+	 * 
+	 * try{ annotationFileReader = new BufferedReader(new
+	 * InputStreamReader(annotationStream)); String line =
+	 * annotationFileReader.readLine(); line = annotationFileReader.readLine(); //
+	 * Read-in each line while (line != null) { StringTokenizer mainTokenizer = new
+	 * StringTokenizer(line, "\t");
+	 * 
+	 * String pos = mainTokenizer.nextToken(); String gen =
+	 * mainTokenizer.nextToken(); short cod =
+	 * Short.parseShort(mainTokenizer.nextToken()); String aachange =
+	 * mainTokenizer.nextToken(); AnnotationAAC aac = new AnnotationAAC(pos, gen,
+	 * cod, aachange); acidLookup.put(new Polymorphism(pos), aac); line =
+	 * annotationFileReader.readLine(); }
+	 * 
+	 * } catch (InvalidPolymorphismException e) { // TODO Auto-generated catch block
+	 * e.printStackTrace(); } catch (IOException e) { // TODO Auto-generated catch
+	 * block e.printStackTrace(); } }bject)
 	 */
 	@Override
 	public int compareTo(Polymorphism o) {
@@ -546,7 +541,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		//result = prime * result + hashCode;
+		// result = prime * result + hashCode;
 		result = prime * result + (isBackMutation ? 1231 : 1237);
 		result = prime * result + ((mutation == null) ? 0 : mutation.hashCode());
 		result = prime * result + position;
@@ -616,16 +611,19 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	}
 
 	/**
-	 * Changes the polymorphism to a back mutation or vice versa 
-	 * @param isBackMutation The new back mutation state
+	 * Changes the polymorphism to a back mutation or vice versa
+	 * 
+	 * @param isBackMutation
+	 *            The new back mutation state
 	 */
 	public void setBackMutation(boolean isBackMutation) {
 		this.isBackMutation = isBackMutation;
 		hashCode = toString().hashCode();
 	}
-	
+
 	/**
-	 * @return True if the polymorphism is a heteroplasmy (R or Y), false if it is not
+	 * @return True if the polymorphism is a heteroplasmy (R or Y), false if it is
+	 *         not
 	 */
 	public boolean isHeteroplasmy() {
 		return isHeteroplasmy;
@@ -634,7 +632,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	public void setHeteroplasmy(boolean isHeteroplasmy) {
 		this.isHeteroplasmy = isHeteroplasmy;
 	}
-	
+
 	public int isReliable() {
 		return isReliable;
 	}
@@ -642,18 +640,18 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	public void setReliable(int isReliable) {
 		this.isReliable = isReliable;
 	}
-	
-	public AnnotationAAC getAnnotation(){
-		
+
+	public AnnotationAAC getAnnotation() {
+
 		HashMap<Polymorphism, AnnotationAAC> annotationLookup = Annotation.getInstance();
-		
+
 		AnnotationAAC annotation = null;
-		
-		if(annotationLookup.containsKey(this))
+
+		if (annotationLookup.containsKey(this))
 			annotation = annotationLookup.get(this);
-		
+
 		return annotation;
-		
+
 	}
 
 }

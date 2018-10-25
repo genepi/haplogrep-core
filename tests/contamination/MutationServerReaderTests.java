@@ -3,6 +3,7 @@ package contamination;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -20,10 +21,10 @@ public class MutationServerReaderTests {
 		HashMap<String, Sample> samples = reader.parse();
 		ArrayList<Integer> posArray = new ArrayList<>();
 		for (Sample sample : samples.values()) {
-			HashMap<String, Variant> variants = sample.getPositions();
+			Collection<Variant> variants = sample.getVariants();
 			int count = 0;
 
-			for (Variant pos : variants.values()) {
+			for (Variant pos : variants) {
 				posArray.add(pos.getPos());
 				count++;
 
@@ -61,24 +62,24 @@ public class MutationServerReaderTests {
 
 		for (Sample sample : samples.values()) {
 
-			HashMap<String, Variant> variants = sample.getPositions();
+			Collection<Variant> variants = sample.getVariants();
 
 			if (sample.getId().equals("s1")) {
-				for (Variant pos : variants.values()) {
+				for (Variant pos : variants) {
 					posArray.add(pos.getPos());
 					countS1++;
 				}
 			}
 
 			if (sample.getId().equals("s3")) {
-				for (Variant pos : variants.values()) {
+				for (Variant pos : variants) {
 					posArray.add(pos.getPos());
 					countS3++;
 				}
 			}
 
 			if (sample.getId().equals("s4")) {
-				for (Variant pos : variants.values()) {
+				for (Variant pos : variants) {
 					posArray.add(pos.getPos());
 					countS4++;
 				}

@@ -13,6 +13,7 @@ public class Calculations {
 		CsvTableReader readerVerifyBam = new CsvTableReader("test-data/contamination/1000G/verifybam/verifybamWith1000GStatus.txt", '\t');
 
 		String input = "test-data/contamination/1000G/final-samples/1000g-report.txt";
+		input = "test-data/contamination/1000G/high-chip-mix/chip-mix-report.txt";
 		String output = "test-data/contamination/1000G/final-samples/report-verifybam.txt";
 		CsvTableReader readerContamination = new CsvTableReader(input, '\t');
 

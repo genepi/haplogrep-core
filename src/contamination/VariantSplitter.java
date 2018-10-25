@@ -24,7 +24,7 @@ public class VariantSplitter {
 			majorProfile.setId(sample.getId() + "_maj");
 			minorProfile.setId(sample.getId() + "_min");
 
-			for (Variant variant : sample.getPositions().values()) {
+			for (Variant variant : sample.getVariants()) {
 				
 				if (variant.getType() == 1) {
 					majorProfile.appendToProfile(variant.getPos() + "" + variant.getMajor());

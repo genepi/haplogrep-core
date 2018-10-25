@@ -1,11 +1,12 @@
 package contamination.objects;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 public class Sample {
 
 	private String id;
-	private HashMap<String, Variant> variants;
+	private HashMap<Integer, Variant> variants;
 	private int amountHomoplasmies;
 	private int amountVariants;
 	private int amountHeteroplasmies;
@@ -13,13 +14,17 @@ public class Sample {
 	private float countHeteroplasmyLevel = 0;
 
 	public Sample() {
-		variants = new HashMap<String, Variant>();
+		variants = new HashMap<Integer, Variant>();
 	}
 
-	public HashMap<String, Variant> getPositions() {
-		return variants;
+	public Collection<Variant> getVariants() {
+		return variants.values();
 	}
 
+	public Variant getVariant(int pos) {
+		return variants.get(pos);
+	}
+	
 	public String getId() {
 		return id;
 	}
@@ -28,17 +33,13 @@ public class Sample {
 		this.id = id;
 	}
 
-	public void setPositions(HashMap<String, Variant> variants) {
-		this.variants = variants;
-	}
-
 	public void addVariant(Variant var) {
-		variants.put(var.getPos()+String.valueOf(var.getVariant()), var);
+		variants.put(var.getPos(), var);
 	}
 
 	public void updateVariantCount(int type) {
-		
-		amountVariants +=1;
+
+		amountVariants += 1;
 
 		if (type == 1) {
 			amountHomoplasmies += 1;
@@ -52,11 +53,11 @@ public class Sample {
 	public void updateCoverage(int coverage) {
 		totalCoverage += coverage;
 	}
-	
+
 	public void updateHetLevels(double level) {
-		countHeteroplasmyLevel+=level;
+		countHeteroplasmyLevel += level;
 	}
-	
+
 	public int getAmountHomoplasmies() {
 		return amountHomoplasmies;
 	}
