@@ -2,6 +2,7 @@ package contamination;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,6 +12,7 @@ import contamination.objects.Sample;
 import core.SampleFile;
 import genepi.io.FileUtil;
 import genepi.io.table.reader.CsvTableReader;
+import importer.VcfImporterImproved;
 import phylotree.Phylotree;
 import phylotree.PhylotreeManager;
 
@@ -21,12 +23,11 @@ public class HaplogroupClassifierTests {
 
 		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt");
 		
-		String variantFile = "test-data/contamination/lab-mixture/variants-mixture.txt";
-		
-		MutationServerReader reader = new MutationServerReader(variantFile);
-		HashMap<String, Sample> mutationServerSamples = reader.parse();
+		 VcfImporterImproved reader2 = new VcfImporterImproved();
+		 HashMap<String, Sample> mutationServerSamples = reader2.load(new File("test-data/contamination/lab-mixture/variants-mixture.vcf"), false);
 
 		VariantSplitter splitter = new VariantSplitter();
+		
 		ArrayList<String> profiles = splitter.split(mutationServerSamples);
 		
 		HashSet<String> set = new HashSet<String>();
@@ -40,13 +41,13 @@ public class HaplogroupClassifierTests {
 			set.add(splits[i]);
 		}
 
-		assertEquals(26, count);
+		assertEquals(25, count);
 
 		HaplogroupClassifier classifier = new HaplogroupClassifier();
 		
 		SampleFile haploGroupSamples = classifier.calculateHaplogrops(phylotree, profiles);
 
-		assertEquals("H1c6", haploGroupSamples.getTestSamples().get(0).getTopResult().getHaplogroup().toString());
+		assertEquals("H1", haploGroupSamples.getTestSamples().get(0).getTopResult().getHaplogroup().toString());
 
 		assertEquals("U5a2e", haploGroupSamples.getTestSamples().get(1).getTopResult().getHaplogroup().toString());
 
@@ -61,14 +62,14 @@ public class HaplogroupClassifierTests {
 		readerContamination.next();
 
 		assertEquals(Status.HIGH.name(), readerContamination.getString("Contamination"));
-		assertEquals("7", readerContamination.getString("MajorHomoplasmies"));
+		assertEquals("6", readerContamination.getString("MajorHomoplasmies"));
 		assertEquals("7", readerContamination.getString("SampleHomoplasmies"));
 		assertEquals("0.987", readerContamination.getString("MajorMeanHetLevel"));
 		assertEquals("6", readerContamination.getString("MinorHomoplasmies"));
 		assertEquals("0.011", readerContamination.getString("MinorMeanHetLevel"));
 		assertEquals("12", readerContamination.getString("MinorHeteroplasmies"));
 		assertEquals("18", readerContamination.getString("SampleHeteroplasmies"));
-		assertEquals("H1c6", readerContamination.getString("MajorHG"));
+		assertEquals("H1", readerContamination.getString("MajorHG"));
 		assertEquals("U5a2e", readerContamination.getString("MinorHG"));
 
 		//FileUtil.deleteFile(out);

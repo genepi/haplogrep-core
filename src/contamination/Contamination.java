@@ -39,8 +39,9 @@ public class Contamination {
 
 		CsvTableWriter contaminationWriter = new CsvTableWriter(out, '\t');
 
-		String[] columnsWrite = { "SampleID", "Contamination", "SampleHomoplasmies", "SampleHeteroplasmies","SampleMeanHeteroplasmyLevel", "SampleMeanCoverage", "MajorHG", "MajorHGQuality", "MajorHomoplasmies",
-				"MajorHeteroplasmies", "MajorMeanHetLevel", "MinorHG", "MinorHGQuality", "MinorHomoplasmies", "MinorHeteroplasmies", "MinorMeanHetLevel","HG_Distance" };
+		String[] columnsWrite = { "SampleID", "Contamination", "SampleHomoplasmies", "SampleHeteroplasmies", "SampleMeanHeteroplasmyLevel",
+				"SampleMeanCoverage", "MajorHG", "MajorHGQuality", "MajorHomoplasmies", "MajorHeteroplasmies", "MajorMeanHetLevel", "MinorHG", "MinorHGQuality",
+				"MinorHomoplasmies", "MinorHeteroplasmies", "MinorMeanHetLevel", "HG_Distance" };
 		contaminationWriter.setColumns(columnsWrite);
 
 		NumberFormat formatter = new DecimalFormat("#0.000");
@@ -74,8 +75,8 @@ public class Contamination {
 				int sampleHomoplasmies = currentSample.getAmountHomoplasmies();
 				int sampleHeteroplasmies = currentSample.getAmountHeteroplasmies();
 
-				double meanCoverageSample = currentSample.getTotalCoverage() / currentSample.getAmountVariants();
-				double meanHetLevelSample = currentSample.getCountHeteroplasmyLevel() / currentSample.getAmountHeteroplasmies();
+				double meanCoverageSample = currentSample.getSumCoverage() / currentSample.getAmountVariants();
+				double meanHetLevelSample = currentSample.getSumHeteroplasmyLevel() / currentSample.getAmountHeteroplasmies();
 
 				centry.setMajorHg(majorSample.getTopResult().getHaplogroup().toString());
 				centry.setMajorNotFound(notFoundMajor);
@@ -190,9 +191,8 @@ public class Contamination {
 		double count = 0;
 
 		for (Polymorphism found : foundHaplogrep) {
-			
-			Variant variant = currentSample.getVariant(found.getPosition());
 
+			Variant variant = currentSample.getVariant(found.getPosition());
 			if (variant != null && variant.getType() == 2) {
 				if (majorComponent) {
 					sum += variant.getMajorLevel();
@@ -214,9 +214,9 @@ public class Contamination {
 		int count = 0;
 
 		for (Polymorphism found : foundHaplogrep) {
-			
+
 			Variant variant = currentSample.getVariant(found.getPosition());
-			
+
 			if (variant != null && variant.getType() == 1) {
 				count++;
 			}
