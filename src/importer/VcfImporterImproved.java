@@ -94,6 +94,11 @@ public class VcfImporterImproved {
 							variant.setVariantBase(base);
 							variant.setMajor(base);
 							variant.setType(1);
+
+							if (genotype.hasAnyAttribute("DP")) {
+								int coverage = (int) vc.getGenotype(sample).getAnyAttribute("DP");
+								variant.setCoverage(coverage);
+							}
 							sam.addVariant(variant);
 
 						} else {
@@ -110,6 +115,11 @@ public class VcfImporterImproved {
 									variant.setVariantBase(base);
 									variant.setMajor(base);
 									variant.setType(1);
+									
+									if (genotype.hasAnyAttribute("DP")) {
+										int coverage = (int) vc.getGenotype(sample).getAnyAttribute("DP");
+										variant.setCoverage(coverage);
+									}
 									sam.addVariant(variant);
 								}
 
@@ -130,6 +140,11 @@ public class VcfImporterImproved {
 							variant.setVariantBase(base);
 							variant.setType(4);
 							sam.addVariant(variant);
+							
+							if (genotype.hasAnyAttribute("DP")) {
+								int coverage = (int) vc.getGenotype(sample).getAnyAttribute("DP");
+								variant.setCoverage(coverage);
+							}
 						}
 					}
 
@@ -141,14 +156,21 @@ public class VcfImporterImproved {
 						variant.setPos(pos);
 						variant.setInsertion(pos + "." + 1 + genotypeString.substring(reference.length(), genotypeString.length()));
 						variant.setType(5);
+						
+						if (genotype.hasAnyAttribute("DP")) {
+							int coverage = (int) vc.getGenotype(sample).getAnyAttribute("DP");
+							variant.setCoverage(coverage);
+						}
+						
 						sam.addVariant(variant);
+						
 					}
 
 				} else if (genotype.getType() == GenotypeType.HET && genotype.hasAnyAttribute("HP")) {
 
 					double hetFrequency = Double.valueOf((String) vc.getGenotype(sample).getAnyAttribute("HP"));
 					double hetFrequencySecond = 0.0;
-					
+
 					if (genotype.hasAnyAttribute("HP1")) {
 						hetFrequencySecond = Double.valueOf((String) vc.getGenotype(sample).getAnyAttribute("HP1"));
 					} else {
@@ -158,13 +180,16 @@ public class VcfImporterImproved {
 					char allele1 = genotype.getAlleles().get(0).getBaseString().charAt(0);
 					char allele2 = genotype.getAlleles().get(1).getBaseString().charAt(0);
 					char major;
+					char var;
 					double majorLevel;
 					double minorLevel;
 					char minor;
 
 					// if reference allele is available its always allele 1
-					//complicated logic sinde mutserve always reports non-reference het level! can be smaller then 0.5!
+					// complicated logic since mutserve always reports non-reference het level! can
+					// be smaller then 0.5!
 					if (allele1 == reference.charAt(0)) {
+						var = allele2;
 						// non-reference frequency greater than 0.5
 						if (hetFrequency >= 0.5) {
 							majorLevel = hetFrequency;
@@ -173,12 +198,15 @@ public class VcfImporterImproved {
 							minor = allele1;
 						} else {
 							// non-reference frequency smaller than 0.5
+							System.out.println(vc.getStart());
+							System.out.println(hetFrequencySecond);
 							majorLevel = hetFrequencySecond;
 							minorLevel = hetFrequency;
 							major = allele1;
 							minor = allele2;
 						}
 					} else {
+						var = allele1;
 						// GT 1/2: no ref included
 						majorLevel = hetFrequency;
 						minorLevel = hetFrequencySecond;
@@ -189,13 +217,20 @@ public class VcfImporterImproved {
 					Variant variant = new Variant();
 					int pos = vc.getStart();
 					variant.setPos(pos);
-					variant.setVariantBase(major);
+					variant.setRef(reference.charAt(0));
+					variant.setVariantBase(var);
 					variant.setMajor(major);
 					variant.setMajorLevel(majorLevel);
 					variant.setMinor(minor);
 					variant.setMinorLevel(minorLevel);
 					variant.setLevel(hetFrequency);
 					variant.setType(2);
+					
+					if (genotype.hasAnyAttribute("DP")) {
+						int coverage = (int) vc.getGenotype(sample).getAnyAttribute("DP");
+						variant.setCoverage(coverage);
+					}
+					
 					sam.addVariant(variant);
 				}
 

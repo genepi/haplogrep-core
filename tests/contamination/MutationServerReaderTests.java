@@ -2,6 +2,7 @@ package contamination;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,6 +10,7 @@ import java.util.HashMap;
 import org.junit.Test;
 
 import contamination.objects.Variant;
+import importer.VcfImporterImproved;
 import contamination.objects.Sample;
 
 public class MutationServerReaderTests {
@@ -16,9 +18,11 @@ public class MutationServerReaderTests {
 	@Test
 	public void testReadVariantFile() throws Exception {
 
-		MutationServerReader reader = new MutationServerReader("test-data/contamination/lab-mixture/variants-mixture.txt");
-		HashMap<String, Sample> samples = reader.parse();
+		VcfImporterImproved reader = new VcfImporterImproved();
+
+		HashMap<String, Sample> samples = reader.load(new File("test-data/contamination/lab-mixture/variants-mixture.vcf"), false);
 		ArrayList<Integer> posArray = new ArrayList<>();
+		
 		for (Sample sample : samples.values()) {
 			Collection<Variant> variants = sample.getVariants();
 			int count = 0;
@@ -28,9 +32,9 @@ public class MutationServerReaderTests {
 				count++;
 
 				if (pos.getPos() == 16270) {
-					assertEquals(pos.getMinor(), 'T');
-					assertEquals(pos.getMajor(), 'C');
-					assertEquals(pos.getCoverage(), 3848);
+					assertEquals('T',pos.getMinor());
+					assertEquals('C',pos.getMajor());
+					assertEquals(3848, pos.getCoverage());
 					assertEquals(pos.getType(), 2);
 					assertEquals(pos.getVariant(), 'T');
 					assertEquals(pos.getRef(), 'C');

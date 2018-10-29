@@ -23,8 +23,9 @@ public class HaplogroupClassifierTests {
 
 		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt");
 		
-		 VcfImporterImproved reader2 = new VcfImporterImproved();
-		 HashMap<String, Sample> mutationServerSamples = reader2.load(new File("test-data/contamination/lab-mixture/variants-mixture.vcf"), false);
+		VcfImporterImproved reader2 = new VcfImporterImproved();
+		
+		HashMap<String, Sample> mutationServerSamples = reader2.load(new File("test-data/contamination/lab-mixture/variants-mixture.vcf"), false);
 
 		VariantSplitter splitter = new VariantSplitter();
 		

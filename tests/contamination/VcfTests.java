@@ -13,7 +13,7 @@ import importer.VcfImporterImproved;
 
 public class VcfTests {
 
-	@Test
+	/*@Test
 	public void test() throws Exception {
 
 		String input = "/home/seb/Desktop/variants.vcf";
@@ -28,7 +28,7 @@ public class VcfTests {
 		writeHsd(samples2);
 	
 
-	}
+	}*/
 
 	private void writeHsd(HashMap<String, Sample> samples2) {
 		ArrayList<String> samplesArray = new ArrayList<>();
