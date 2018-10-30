@@ -88,11 +88,12 @@ public class VcfImporterImproved {
 
 						if (genotypeString.length() == 1) {
 
+							char base = genotypeString.charAt(0);
+							
 							Variant variant = new Variant();
 							variant.setPos(vc.getStart());
-							char base = genotypeString.charAt(0);
+							variant.setRef(reference.charAt(0));
 							variant.setVariantBase(base);
-							variant.setMajor(base);
 							variant.setType(1);
 
 							if (genotype.hasAnyAttribute("DP")) {
@@ -107,13 +108,13 @@ public class VcfImporterImproved {
 							for (int i = 0; i < genotypeString.length(); i++) {
 
 								if (reference.charAt(i) != genotypeString.charAt(i)) {
-
-									Variant variant = new Variant();
+									
 									int pos = vc.getStart() + i;
-									variant.setPos(pos);
 									char base = genotypeString.charAt(i);
+									Variant variant = new Variant();
+									variant.setPos(pos);
+									variant.setRef(reference.charAt(0));
 									variant.setVariantBase(base);
-									variant.setMajor(base);
 									variant.setType(1);
 									
 									if (genotype.hasAnyAttribute("DP")) {
@@ -134,9 +135,10 @@ public class VcfImporterImproved {
 						int diff = reference.length() - genotypeString.length();
 						for (int i = 0; i < diff; i++) {
 							int pos = vc.getStart() + genotypeString.length() + i;
+							char base = 'd';
 							Variant variant = new Variant();
 							variant.setPos(pos);
-							char base = 'd';
+							variant.setRef(reference.charAt(0));
 							variant.setVariantBase(base);
 							variant.setType(4);
 							sam.addVariant(variant);
@@ -154,6 +156,7 @@ public class VcfImporterImproved {
 						int pos = vc.getStart() + reference.length() - 1;
 						variant.setVariantBase('I');
 						variant.setPos(pos);
+						variant.setRef(reference.charAt(0));
 						variant.setInsertion(pos + "." + 1 + genotypeString.substring(reference.length(), genotypeString.length()));
 						variant.setType(5);
 						
@@ -198,8 +201,6 @@ public class VcfImporterImproved {
 							minor = allele1;
 						} else {
 							// non-reference frequency smaller than 0.5
-							System.out.println(vc.getStart());
-							System.out.println(hetFrequencySecond);
 							majorLevel = hetFrequencySecond;
 							minorLevel = hetFrequency;
 							major = allele1;
@@ -219,11 +220,11 @@ public class VcfImporterImproved {
 					variant.setPos(pos);
 					variant.setRef(reference.charAt(0));
 					variant.setVariantBase(var);
+					variant.setLevel(hetFrequency);
 					variant.setMajor(major);
 					variant.setMajorLevel(majorLevel);
 					variant.setMinor(minor);
 					variant.setMinorLevel(minorLevel);
-					variant.setLevel(hetFrequency);
 					variant.setType(2);
 					
 					if (genotype.hasAnyAttribute("DP")) {

@@ -44,53 +44,12 @@ public class MutationServerReaderTests {
 				}
 			}
 
-			assertEquals(26, count);
+			assertEquals(25, count);
 			assertEquals(7, sample.getAmountHomoplasmies());
 			assertEquals(18, sample.getAmountHeteroplasmies());
 			assertEquals(true, posArray.contains(11719));
 			assertEquals(true, posArray.contains(15236));
 		}
-	}
-
-	@Test
-	public void testReadVariantFile2() throws Exception {
-
-		MutationServerReader reader = new MutationServerReader("test-data/contamination/test-mixture/variants-mixture-4samples.txt");
-		HashMap<String, Sample> samples = reader.parse();
-		ArrayList<Integer> posArray = new ArrayList<>();
-
-		int countS1 = 0;
-		int countS3 = 0;
-		int countS4 = 0;
-
-		for (Sample sample : samples.values()) {
-
-			Collection<Variant> variants = sample.getVariants();
-
-			if (sample.getId().equals("s1")) {
-				for (Variant pos : variants) {
-					posArray.add(pos.getPos());
-					countS1++;
-				}
-			}
-
-			if (sample.getId().equals("s3")) {
-				for (Variant pos : variants) {
-					posArray.add(pos.getPos());
-					countS3++;
-				}
-			}
-
-			if (sample.getId().equals("s4")) {
-				for (Variant pos : variants) {
-					posArray.add(pos.getPos());
-					countS4++;
-				}
-			}
-		}
-		assertEquals(3, countS1);
-		assertEquals(2, countS3);
-		assertEquals(1, countS4);
 	}
 
 }

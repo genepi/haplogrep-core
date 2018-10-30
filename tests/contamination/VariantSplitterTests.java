@@ -104,19 +104,4 @@ public class VariantSplitterTests {
 		assertEquals(true, set.contains("73G"));
 		assertEquals(true, set.contains("9145A"));
 	}
-
-	@Test
-	public void testContamination4Samples() throws Exception {
-
-		VariantSplitter contChecker = new VariantSplitter();
-		
-		MutationServerReader reader = new MutationServerReader("test-data/contamination/test-mixture/variants-mixture-4samples.txt");
-
-		HashMap<String, Sample> mutationServerSamples = reader.parse();
-
-		ArrayList<String> profiles = contChecker.split(mutationServerSamples);
-
-		assertEquals(8, profiles.size());
-	}
-
 }
