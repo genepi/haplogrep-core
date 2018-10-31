@@ -29,7 +29,7 @@ public class ContaminationTests {
 		VariantSplitter splitter = new VariantSplitter();
 
 		VcfImporterImproved reader = new VcfImporterImproved();
-		
+
 		HashMap<String, Sample> mutationServerSamples = reader.load(new File(variantFile), false);
 
 		ArrayList<String> profiles = splitter.split(mutationServerSamples);
@@ -72,9 +72,9 @@ public class ContaminationTests {
 		String folder = "test-data/contamination/1000G/high-free-mix/";
 		String variantFile = folder + "high-free-mix-1000G.vcf";
 		String output = folder + "chip-mix-report.txt";
-		
+
 		VcfImporterImproved reader = new VcfImporterImproved();
-		
+
 		HashMap<String, Sample> mutationServerSamples = reader.load(new File(variantFile), false);
 
 		VariantSplitter splitter = new VariantSplitter();
@@ -116,9 +116,9 @@ public class ContaminationTests {
 		String folder = "test-data/contamination/1000G/no-contamination/";
 		String variantFile = folder + "no-contamination-1000G.vcf";
 		String output = folder + "no-contamination-report.txt";
-		
+
 		VcfImporterImproved reader = new VcfImporterImproved();
-		
+
 		HashMap<String, Sample> mutationserverSamples = reader.load(new File(variantFile), false);
 
 		Contamination contamination = new Contamination();
@@ -164,7 +164,7 @@ public class ContaminationTests {
 
 		VcfImporterImproved reader = new VcfImporterImproved();
 		HashMap<String, Sample> mutationserverSamples = reader.load(new File(variantFile), false);
-		
+
 		VariantSplitter splitter = new VariantSplitter();
 		ArrayList<String> profiles = splitter.split(mutationserverSamples);
 
@@ -203,13 +203,14 @@ public class ContaminationTests {
 
 		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt");
 		String folder = "test-data/contamination/1000G/final-samples/";
-		String variantFile = folder + "1000G_BAQ.txt";
+		String variantFile = folder + "1000G_BAQ.vcf";
 		String out = folder + "1000g-report.txt";
 
-		MutationServerReader reader = new MutationServerReader(variantFile);
-		HashMap<String, Sample> mutationServerSamples = reader.parse();
+		VcfImporterImproved reader2 = new VcfImporterImproved();
+		HashMap<String, Sample> mutationServerSamples = reader2.load(new File(variantFile), false);
 
 		VariantSplitter splitter = new VariantSplitter();
+
 		ArrayList<String> profiles = splitter.split(mutationServerSamples);
 
 		HashSet<String> set = new HashSet<String>();
@@ -241,7 +242,7 @@ public class ContaminationTests {
 			}
 		}
 
-		// FileUtil.deleteFile(out);
+		FileUtil.deleteFile(out);
 
 		assertEquals(121, countHigh);
 		assertEquals(29, countLow);
@@ -253,11 +254,11 @@ public class ContaminationTests {
 
 		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt");
 		String folder = "test-data/contamination/1000G/final-samples/";
-		String variantFile = folder + "1000G_NOBAQ.txt";
+		String variantFile = folder + "1000G_NOBAQ.vcf";
 		String out = folder + "1000G_NOBAQ_report.txt";
-
-		MutationServerReader reader = new MutationServerReader(variantFile);
-		HashMap<String, Sample> mutationServerSamples = reader.parse(0.00);
+		
+		VcfImporterImproved reader2 = new VcfImporterImproved();
+		HashMap<String, Sample> mutationServerSamples = reader2.load(new File(variantFile), false);
 
 		VariantSplitter splitter = new VariantSplitter();
 		ArrayList<String> profiles = splitter.split(mutationServerSamples);

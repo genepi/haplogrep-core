@@ -10,7 +10,6 @@ import org.junit.Test;
 import contamination.Contamination.Status;
 import contamination.objects.Sample;
 import core.SampleFile;
-import genepi.io.FileUtil;
 import genepi.io.table.reader.CsvTableReader;
 import importer.VcfImporterImproved;
 import phylotree.Phylotree;

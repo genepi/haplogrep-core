@@ -26,15 +26,14 @@ public class VariantSplitter {
 
 			for (Variant variant : sample.getVariants()) {
 				if (variant.getType() == 1) {
-					majorProfile.appendToProfile(variant.getPos() + "" + variant.getMajor());
-					minorProfile.appendToProfile(variant.getPos() + "" + variant.getMajor());
+					majorProfile.appendToProfile(variant.getPos() + "" + variant.getVariant());
+					minorProfile.appendToProfile(variant.getPos() + "" + variant.getVariant());
 				} else if (variant.getType() == 2) {
 					majorProfile.appendToProfile(variant.getPos() + "" + variant.getMajor());
 					minorProfile.appendToProfile(variant.getPos() + "" + variant.getMinor());
 				}
-			
-			}
 
+			}
 			lines.add(majorProfile.toString());
 			lines.add(minorProfile.toString());
 		}

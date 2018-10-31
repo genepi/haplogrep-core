@@ -207,8 +207,8 @@ public class VcfImporterImproved {
 							minor = allele2;
 						}
 					} else {
-						var = allele1;
 						// GT 1/2: no ref included
+						var = allele1;
 						majorLevel = hetFrequency;
 						minorLevel = hetFrequencySecond;
 						major = allele1;

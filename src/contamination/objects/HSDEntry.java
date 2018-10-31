@@ -4,11 +4,11 @@ public class HSDEntry {
 
 	String id;
 	String range;
-	StringBuffer profile;
+	StringBuilder profile;
 
 	public HSDEntry() {
 		range = "1-16569";
-		profile = new StringBuffer();
+		profile = new StringBuilder();
 	}
 
 	public String getId() {
@@ -27,7 +27,7 @@ public class HSDEntry {
 		this.range = range;
 	}
 
-	public StringBuffer getProfile() {
+	public StringBuilder getProfile() {
 		return profile;
 	}
 
@@ -37,6 +37,6 @@ public class HSDEntry {
 	
 	@Override
 	public String toString() {
-		return (id + "\t" + range + "\t" +"?" + profile);
+		return (id + "\t" + range + "\t" +"?" + profile.toString());
 	}
 }
