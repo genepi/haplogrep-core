@@ -2,11 +2,12 @@ package contamination.objects;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.TreeMap;
 
 public class Sample {
 
 	private String id;
-	private HashMap<Integer, Variant> variants;
+	private TreeMap<Integer, Variant> variants;
 	private int amountHomoplasmies;
 	private int amountVariants;
 	private int amountHeteroplasmies;
@@ -15,7 +16,7 @@ public class Sample {
 	private float sumHeteroplasmyLevel = 0;
 
 	public Sample() {
-		variants = new HashMap<Integer, Variant>();
+		variants = new TreeMap<Integer, Variant>();
 	}
 
 	public Collection<Variant> getVariants() {
