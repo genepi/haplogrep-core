@@ -12,7 +12,7 @@ import contamination.objects.Sample;
 import core.SampleFile;
 import genepi.io.FileUtil;
 import genepi.io.table.reader.CsvTableReader;
-import importer.VcfImporterImproved;
+import importer.VcfImporter;
 import phylotree.Phylotree;
 import phylotree.PhylotreeManager;
 
@@ -28,7 +28,7 @@ public class ContaminationTests {
 
 		VariantSplitter splitter = new VariantSplitter();
 
-		VcfImporterImproved reader = new VcfImporterImproved();
+		VcfImporter reader = new VcfImporter();
 
 		HashMap<String, Sample> mutationServerSamples = reader.load(new File(variantFile), false);
 
@@ -73,7 +73,7 @@ public class ContaminationTests {
 		String variantFile = folder + "high-free-mix-1000G.vcf";
 		String output = folder + "chip-mix-report.txt";
 
-		VcfImporterImproved reader = new VcfImporterImproved();
+		VcfImporter reader = new VcfImporter();
 
 		HashMap<String, Sample> mutationServerSamples = reader.load(new File(variantFile), false);
 
@@ -117,7 +117,7 @@ public class ContaminationTests {
 		String variantFile = folder + "no-contamination-1000G.vcf";
 		String output = folder + "no-contamination-report.txt";
 
-		VcfImporterImproved reader = new VcfImporterImproved();
+		VcfImporter reader = new VcfImporter();
 
 		HashMap<String, Sample> mutationserverSamples = reader.load(new File(variantFile), false);
 
@@ -162,7 +162,7 @@ public class ContaminationTests {
 		String variantFile = folder + "possible-swap-1000G.vcf";
 		String output = folder + "possible-swap-report.txt";
 
-		VcfImporterImproved reader = new VcfImporterImproved();
+		VcfImporter reader = new VcfImporter();
 		HashMap<String, Sample> mutationserverSamples = reader.load(new File(variantFile), false);
 
 		VariantSplitter splitter = new VariantSplitter();
@@ -206,7 +206,7 @@ public class ContaminationTests {
 		String variantFile = folder + "1000G_BAQ.vcf";
 		String out = folder + "1000g-report.txt";
 
-		VcfImporterImproved reader2 = new VcfImporterImproved();
+		VcfImporter reader2 = new VcfImporter();
 		HashMap<String, Sample> mutationServerSamples = reader2.load(new File(variantFile), false);
 
 		VariantSplitter splitter = new VariantSplitter();
@@ -257,7 +257,7 @@ public class ContaminationTests {
 		String variantFile = folder + "1000G_NOBAQ.vcf";
 		String out = folder + "1000G_NOBAQ_report.txt";
 		
-		VcfImporterImproved reader2 = new VcfImporterImproved();
+		VcfImporter reader2 = new VcfImporter();
 		HashMap<String, Sample> mutationServerSamples = reader2.load(new File(variantFile), false);
 
 		VariantSplitter splitter = new VariantSplitter();

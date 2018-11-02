@@ -12,6 +12,8 @@ public class Sample {
 	private int amountVariants;
 	private int amountHeteroplasmies;
 	boolean chip;
+	private String range;
+
 	private float sumCoverage = 0;
 	private float sumHeteroplasmyLevel = 0;
 
@@ -38,7 +40,7 @@ public class Sample {
 	public void addVariant(Variant var) {
 
 		variants.put(var.getPos(), var);
-		
+
 		this.updateCount(var.getType());
 
 		if (var.getType() == 2) {
@@ -115,5 +117,13 @@ public class Sample {
 
 	public void setChip(boolean chip) {
 		this.chip = chip;
+	}
+
+	public String getRange() {
+		return range;
+	}
+
+	public void setRange(String range) {
+		this.range = range;
 	}
 }

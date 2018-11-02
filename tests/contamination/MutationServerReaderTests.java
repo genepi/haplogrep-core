@@ -10,7 +10,7 @@ import java.util.HashMap;
 import org.junit.Test;
 
 import contamination.objects.Variant;
-import importer.VcfImporterImproved;
+import importer.VcfImporter;
 import contamination.objects.Sample;
 
 public class MutationServerReaderTests {
@@ -18,7 +18,7 @@ public class MutationServerReaderTests {
 	@Test
 	public void testReadVariantFile() throws Exception {
 
-		VcfImporterImproved reader = new VcfImporterImproved();
+		VcfImporter reader = new VcfImporter();
 
 		HashMap<String, Sample> samples = reader.load(new File("test-data/contamination/lab-mixture/variants-mixture.vcf"), false);
 		ArrayList<Integer> posArray = new ArrayList<>();

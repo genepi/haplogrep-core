@@ -10,7 +10,7 @@ import java.util.HashSet;
 import org.junit.Test;
 
 import contamination.objects.Sample;
-import importer.VcfImporterImproved;
+import importer.VcfImporter;
 
 public class VariantSplitterTests {
 
@@ -19,7 +19,7 @@ public class VariantSplitterTests {
 
 		VariantSplitter splitter = new VariantSplitter();
 		
-		 VcfImporterImproved reader2 = new VcfImporterImproved();
+		 VcfImporter reader2 = new VcfImporter();
 		 HashMap<String, Sample> mutationServerSamples = reader2.load(new File("test-data/contamination/lab-mixture/variants-mixture.vcf"), false);
 		 
 		ArrayList<String> profiles = splitter.split(mutationServerSamples);
@@ -66,7 +66,7 @@ public class VariantSplitterTests {
 	@Test
 	public void testContaminationMinor() throws Exception {
 
-		 VcfImporterImproved reader2 = new VcfImporterImproved();
+		 VcfImporter reader2 = new VcfImporter();
 		 HashMap<String, Sample> mutationServerSamples = reader2.load(new File("test-data/contamination/lab-mixture/variants-mixture.vcf"), false);
 	
 		VariantSplitter splitter = new VariantSplitter();

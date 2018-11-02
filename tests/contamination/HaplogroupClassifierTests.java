@@ -11,7 +11,7 @@ import contamination.Contamination.Status;
 import contamination.objects.Sample;
 import core.SampleFile;
 import genepi.io.table.reader.CsvTableReader;
-import importer.VcfImporterImproved;
+import importer.VcfImporter;
 import phylotree.Phylotree;
 import phylotree.PhylotreeManager;
 
@@ -22,7 +22,7 @@ public class HaplogroupClassifierTests {
 
 		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt");
 		
-		VcfImporterImproved reader2 = new VcfImporterImproved();
+		VcfImporter reader2 = new VcfImporter();
 		
 		HashMap<String, Sample> mutationServerSamples = reader2.load(new File("test-data/contamination/lab-mixture/variants-mixture.vcf"), false);
 
