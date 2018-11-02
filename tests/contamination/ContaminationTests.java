@@ -256,7 +256,7 @@ public class ContaminationTests {
 		String folder = "test-data/contamination/1000G/final-samples/";
 		String variantFile = folder + "1000G_NOBAQ.vcf";
 		String out = folder + "1000G_NOBAQ_report.txt";
-		
+
 		VcfImporter reader2 = new VcfImporter();
 		HashMap<String, Sample> mutationServerSamples = reader2.load(new File(variantFile), false);
 
