@@ -245,7 +245,7 @@ public class ContaminationTests {
 		FileUtil.deleteFile(out);
 
 		assertEquals(121, countHigh);
-		assertEquals(29, countLow);
+		assertEquals(28, countLow);
 
 	}
 
