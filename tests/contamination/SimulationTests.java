@@ -51,15 +51,21 @@ public class SimulationTests {
 
 		CsvTableReader readerOut = new CsvTableReader(output, '\t');
 
-		int count = 0;
+		int countHigh = 0;
+		int countLow = 0;
 		while (readerOut.next()) {
 			if (readerOut.getString("Contamination").equals(Status.HIGH.name())) {
-				count++;
+				countHigh++;
+
+			}
+			else if (readerOut.getString("Contamination").equals(Status.LOW.name())) {
+				countLow++;
 
 			}
 		}
 
-		assertEquals(26, count);
+		assertEquals(998, countHigh);
+		assertEquals(2, countLow);
 
 		FileUtil.deleteFile(output);
 
