@@ -39,9 +39,9 @@ public class Contamination {
 
 		CsvTableWriter contaminationWriter = new CsvTableWriter(out, '\t');
 
-		String[] columnsWrite = { "SampleID", "Contamination", "SampleHomoplasmies", "SampleHeteroplasmies", "SampleMeanHeteroplasmyLevel",
-				"SampleMeanCoverage", "MajorHG", "MajorHGQuality", "MajorHomoplasmies", "MajorHeteroplasmies", "MajorMeanHetLevel", "MinorHG", "MinorHGQuality",
-				"MinorHomoplasmies", "MinorHeteroplasmies", "MinorMeanHetLevel", "HG_Distance" };
+		String[] columnsWrite = { "SampleID", "Contamination", "SampleHomoplasmies", "SampleHeteroplasmies", "SampleMeanCoverage", "MajorHG", "MajorHGQuality",
+				"MajorHomoplasmies", "MajorHeteroplasmies", "MajorMeanHetLevel", "MinorHG", "MinorHGQuality", "MinorHomoplasmies", "MinorHeteroplasmies",
+				"MinorMeanHetLevel", "HG_Distance" };
 		contaminationWriter.setColumns(columnsWrite);
 
 		NumberFormat formatter = new DecimalFormat("#0.000");
@@ -105,7 +105,7 @@ public class Contamination {
 					if ((heteroplasmiesMajor > 2 || heteroplasmiesMinor > 2) && (distanceHG > 1 || distanceHG == -1)) {
 						countContaminated++;
 						status = Status.HIGH;
-					} else if ((heteroplasmiesMinor > 1) || distanceHG > 1) {
+					} else if (heteroplasmiesMinor > 1 || distanceHG > 1) {
 						countPossibleContaminated++;
 						status = Status.LOW;
 					} else {
@@ -121,19 +121,19 @@ public class Contamination {
 				contaminationWriter.setString(1, status.toString());
 				contaminationWriter.setInteger(2, sampleHomoplasmies);
 				contaminationWriter.setInteger(3, sampleHeteroplasmies);
-				contaminationWriter.setString(4, formatter.format(meanHetLevelSample));
-				contaminationWriter.setString(5, formatter.format(meanCoverageSample));
-				contaminationWriter.setString(6, centry.getMajorHg());
-				contaminationWriter.setString(7, formatter.format(hgQualityMajor));
-				contaminationWriter.setInteger(8, homoplasmiesMajor);
-				contaminationWriter.setInteger(9, heteroplasmiesMajor);
-				contaminationWriter.setString(10, formatter.format(meanHeteroplasmyMajor));
-				contaminationWriter.setString(11, centry.getMinorHg());
-				contaminationWriter.setString(12, formatter.format(hgQualityMinor));
-				contaminationWriter.setInteger(13, homoplasmiesMinor);
-				contaminationWriter.setInteger(14, heteroplasmiesMinor);
-				contaminationWriter.setString(15, formatter.format(meanHeteroplasmyMinor));
-				contaminationWriter.setInteger(16, distanceHG);
+				// contaminationWriter.setString(4, formatter.format(meanHetLevelSample));
+				contaminationWriter.setString(4, formatter.format(meanCoverageSample));
+				contaminationWriter.setString(5, centry.getMajorHg());
+				contaminationWriter.setString(6, formatter.format(hgQualityMajor));
+				contaminationWriter.setInteger(7, homoplasmiesMajor);
+				contaminationWriter.setInteger(8, heteroplasmiesMajor);
+				contaminationWriter.setString(9, formatter.format(meanHeteroplasmyMajor));
+				contaminationWriter.setString(10, centry.getMinorHg());
+				contaminationWriter.setString(11, formatter.format(hgQualityMinor));
+				contaminationWriter.setInteger(12, homoplasmiesMinor);
+				contaminationWriter.setInteger(13, heteroplasmiesMinor);
+				contaminationWriter.setString(14, formatter.format(meanHeteroplasmyMinor));
+				contaminationWriter.setInteger(15, distanceHG);
 				contaminationWriter.next();
 			}
 
@@ -217,7 +217,7 @@ public class Contamination {
 
 			Variant variant = currentSample.getVariant(found.getPosition());
 
-			if (variant != null && variant.getType() == 1) {
+			if (variant != null && (variant.getType() == 1 || variant.getType() == 4)) {
 				count++;
 			}
 

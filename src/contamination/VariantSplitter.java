@@ -25,10 +25,14 @@ public class VariantSplitter {
 			minorProfile.setId(sample.getId() + "_min");
 
 			for (Variant variant : sample.getVariants()) {
-				if (variant.getType() == 1) {
+				//SNP or Deletion
+				if (variant.getType() == 1 || variant.getType() == 4) {
 					majorProfile.appendToProfile(variant.getPos() + "" + variant.getVariant());
 					minorProfile.appendToProfile(variant.getPos() + "" + variant.getVariant());
-				} else if (variant.getType() == 2) {
+				} else if (variant.getType() == 5) {
+					majorProfile.appendToProfile(variant.getInsertion());
+					minorProfile.appendToProfile(variant.getInsertion());
+				}else if (variant.getType() == 2) {
 					majorProfile.appendToProfile(variant.getPos() + "" + variant.getMajor());
 					minorProfile.appendToProfile(variant.getPos() + "" + variant.getMinor());
 				}

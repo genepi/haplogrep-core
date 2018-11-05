@@ -23,7 +23,7 @@ public class SimulationTests {
 
 		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt");
 		String folder = "test-data/contamination/simulation/";
-		String variantFile = folder + "vcf.vcf";
+		String variantFile = folder + "simulation.vcf";
 		String output = folder + "chip-mix-report.txt";
 
 		VariantSplitter splitter = new VariantSplitter();
