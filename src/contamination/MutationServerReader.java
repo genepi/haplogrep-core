@@ -3,8 +3,8 @@ package contamination;
 import java.io.File;
 import java.util.HashMap;
 
-import contamination.objects.Variant;
 import contamination.objects.Sample;
+import contamination.objects.Variant;
 import genepi.io.table.reader.CsvTableReader;
 
 public class MutationServerReader {
@@ -18,7 +18,7 @@ public class MutationServerReader {
 	public HashMap<String, Sample> parse() {
 		return parse(0.00);
 	}
-	
+
 	public HashMap<String, Sample> parse(double requiredHetLevel) {
 
 		CsvTableReader reader = new CsvTableReader(new File(file).getAbsolutePath(), '\t');
@@ -29,30 +29,43 @@ public class MutationServerReader {
 
 		while (reader.next()) {
 
-			String id = reader.getString("SampleID");
+			String id = reader.getString("ID");
 
 			if (tmp != null && !id.equals(tmp)) {
 				samples.put(sample.getId(), sample);
 				sample = new Sample();
 			}
 
+			double majorLevel = 0;
+			double minorLevel = 0;
+			int coverage = -1;
 			int pos = reader.getInteger("Pos");
 			char ref = reader.getString("Ref").charAt(0);
 			char var = reader.getString("Variant").charAt(0);
-			double level = reader.getDouble("Variant-Level");
-			char major = reader.getString("Major/Minor").split("/")[0].charAt(0);
-			char minor = reader.getString("Major/Minor").split("/")[1].charAt(0);
-			double majorLevel = Double.valueOf(reader.getString("Major-Percentage/Minor-Percentage").split("/")[0]);
-			double minorLevel = Double.valueOf(reader.getString("Major-Percentage/Minor-Percentage").split("/")[1]);
-			int coverage = reader.getInteger("Coverage-Total");
-			int type = reader.getInteger("Variant-Type");
+			double level = reader.getDouble("VariantLevel");
+			char major = reader.getString("MajorBase").charAt(0);
+			char minor = reader.getString("MinorBase").charAt(0);
 
-			sample.setId(id);
+			if (reader.hasColumn("MajorLevel")) {
+				majorLevel = Double.valueOf(reader.getString("MajorLevel"));
+			}
+
+			if (reader.hasColumn("MinorLevel")) {
+				minorLevel = Double.valueOf(reader.getString("MinorLevel"));
+			}
+
+			if (reader.hasColumn("Coverage")) {
+				coverage = reader.getInteger("Coverage");
+			}
+
+			int type = reader.getInteger("Type");
 			
-			if(type == 2 && minorLevel < requiredHetLevel) {
+			sample.setId(id);
+
+			if (type == 2 && minorLevel < requiredHetLevel) {
 				continue;
 			}
-			
+
 			Variant variant = new Variant();
 			variant.setPos(pos);
 			variant.setRef(ref);
@@ -64,6 +77,7 @@ public class MutationServerReader {
 			variant.setMinorLevel(minorLevel);
 			variant.setCoverage(coverage);
 			variant.setType(type);
+
 			sample.addVariant(variant);
 			tmp = id;
 		}

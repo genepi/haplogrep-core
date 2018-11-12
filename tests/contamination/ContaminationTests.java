@@ -47,7 +47,7 @@ public class ContaminationTests {
 		HaplogroupClassifier classifier = new HaplogroupClassifier();
 		SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
 
-		contamination.calcContamination(mutationServerSamples, haplogrepSamples.getTestSamples(), output);
+		contamination.detect(mutationServerSamples, haplogrepSamples.getTestSamples(), output);
 
 		CsvTableReader readerOut = new CsvTableReader(output, '\t');
 
@@ -92,7 +92,7 @@ public class ContaminationTests {
 		SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
 
 		Contamination contamination = new Contamination();
-		contamination.calcContamination(mutationServerSamples, haplogrepSamples.getTestSamples(), output);
+		contamination.detect(mutationServerSamples, haplogrepSamples.getTestSamples(), output);
 
 		CsvTableReader readerOut = new CsvTableReader(output, '\t');
 		int count = 0;
@@ -137,19 +137,24 @@ public class ContaminationTests {
 		HaplogroupClassifier classifier = new HaplogroupClassifier();
 		SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
 
-		contamination.calcContamination(mutationserverSamples, haplogrepSamples.getTestSamples(), output);
+		contamination.detect(mutationserverSamples, haplogrepSamples.getTestSamples(), output);
 
 		CsvTableReader readerOut = new CsvTableReader(output, '\t');
-		int count = 0;
+		int countHigh = 0;
+		int countLow = 0;
 		while (readerOut.next()) {
 			if (readerOut.getString("Contamination").equals(Status.HIGH.name())) {
-				count++;
+				countHigh++;
+
+			}
+			if (readerOut.getString("Contamination").equals(Status.LOW.name())) {
+				countLow++;
 
 			}
 		}
 
-		assertEquals(0, count);
-
+		assertEquals(0, countHigh);
+		assertEquals(1, countLow);
 		FileUtil.deleteFile(output);
 
 	}
@@ -181,7 +186,7 @@ public class ContaminationTests {
 		HaplogroupClassifier classifier = new HaplogroupClassifier();
 		SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
 
-		contamination.calcContamination(mutationserverSamples, haplogrepSamples.getTestSamples(), output);
+		contamination.detect(mutationserverSamples, haplogrepSamples.getTestSamples(), output);
 
 		CsvTableReader readerOut = new CsvTableReader(output, '\t');
 		int count = 0;
@@ -226,7 +231,7 @@ public class ContaminationTests {
 		HaplogroupClassifier classifier = new HaplogroupClassifier();
 		SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
 
-		contamination.calcContamination(mutationServerSamples, haplogrepSamples.getTestSamples(), out);
+		contamination.detect(mutationServerSamples, haplogrepSamples.getTestSamples(), out);
 
 		CsvTableReader readerOut = new CsvTableReader(out, '\t');
 		int countHigh = 0;
@@ -276,7 +281,7 @@ public class ContaminationTests {
 		HaplogroupClassifier classifier = new HaplogroupClassifier();
 		SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
 
-		contamination.calcContamination(mutationServerSamples, haplogrepSamples.getTestSamples(), out);
+		contamination.detect(mutationServerSamples, haplogrepSamples.getTestSamples(), out);
 
 		CsvTableReader readerOut = new CsvTableReader(out, '\t');
 		int countHigh = 0;
@@ -294,7 +299,7 @@ public class ContaminationTests {
 
 		FileUtil.deleteFile(out);
 
-		assertEquals(116, countHigh);
+		assertEquals(115, countHigh);
 		assertEquals(28, countLow);
 
 	}

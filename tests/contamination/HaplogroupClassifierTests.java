@@ -39,7 +39,7 @@ public class HaplogroupClassifierTests {
 		
 		Contamination contChecker = new Contamination();
 
-		contChecker.calcContamination(mutationServerSamples, haploGroupSamples.getTestSamples(), out);
+		contChecker.detect(mutationServerSamples, haploGroupSamples.getTestSamples(), out);
 		
 		assertEquals("T2f1a1", haploGroupSamples.getTestSamples().get(0).getTopResult().getHaplogroup().toString());
 		
@@ -96,7 +96,7 @@ public class HaplogroupClassifierTests {
 
 		Contamination contChecker = new Contamination();
 
-		contChecker.calcContamination(mutationServerSamples, haploGroupSamples.getTestSamples(), out);
+		contChecker.detect(mutationServerSamples, haploGroupSamples.getTestSamples(), out);
 
 		CsvTableReader readerContamination = new CsvTableReader(out, '\t');
 		// get first line

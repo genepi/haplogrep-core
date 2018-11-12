@@ -23,7 +23,7 @@ public class Contamination {
 		HIGH, LOW, NONE;
 	}
 
-	public int calcContamination(HashMap<String, Sample> mutationSamples, ArrayList<TestSample> haplogrepSamples, String out) {
+	public int detect(HashMap<String, Sample> mutationSamples, ArrayList<TestSample> haplogrepSamples, String out) {
 
 		int countEntries = 0;
 		int countPossibleContaminated = 0;
@@ -102,10 +102,10 @@ public class Contamination {
 
 					distanceHG = calcDistance(centry, phylotree);
 
-					if ((heteroplasmiesMajor > 2 || heteroplasmiesMinor > 2) && (distanceHG > 1 || distanceHG == -1)) {
+					if ((heteroplasmiesMajor >= 3 || heteroplasmiesMinor >= 3) && distanceHG >= 3) {
 						countContaminated++;
 						status = Status.HIGH;
-					} else if (heteroplasmiesMinor > 1 || distanceHG > 1) {
+					} else if (heteroplasmiesMinor >= 2 || distanceHG >= 2) {
 						countPossibleContaminated++;
 						status = Status.LOW;
 					} else {
@@ -153,6 +153,15 @@ public class Contamination {
 	}
 
 	private int calcDistance(ContaminationEntry centry, Phylotree phylotree) {
+
+		Haplogroup hgMajor = new Haplogroup(centry.getMajorHg());
+
+		Haplogroup hgMinor = new Haplogroup(centry.getMinorHg());
+
+		return phylotree.getDistanceBetweenHaplogroups(hgMajor, hgMinor);
+	}
+
+	private int calcDistanceOld(ContaminationEntry centry, Phylotree phylotree) {
 
 		int distanceHG;
 
