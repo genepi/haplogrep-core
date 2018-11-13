@@ -102,10 +102,11 @@ public class Contamination {
 
 					distanceHG = calcDistance(centry, phylotree);
 
-					if ((heteroplasmiesMajor >= 3 || heteroplasmiesMinor >= 3) && distanceHG >= 3) {
+					if ((heteroplasmiesMajor >= 3 || heteroplasmiesMinor >= 3) && distanceHG >= 3 && hgQualityMajor > 0.6 && hgQualityMinor > 0.6) {
 						countContaminated++;
 						status = Status.HIGH;
-					} else if (heteroplasmiesMinor >= 2 || distanceHG >= 2) {
+						// TODO check mutation rate if heteroplasmies > 5
+					} else if ((heteroplasmiesMinor >= 2 || distanceHG >= 1)) {
 						countPossibleContaminated++;
 						status = Status.LOW;
 					} else {

@@ -97,8 +97,8 @@ public final class Phylotree {
 		parentNode.addSubHaplogroup(newNode);
 		// Update index
 		haplogroupLookup.put(newNode.getHaplogroup(), newNode);
-//System.out.print(" " + newNode.getHaplogroup() + " ");
-		
+		// System.out.print(" " + newNode.getHaplogroup() + " ");
+
 		List<Element> polys = currentXMLElement.getChild("details").getChildren("poly");
 		for (Element currentPolyElement : polys) {
 			Polymorphism newExpectedPoly = new Polymorphism(currentPolyElement.getValue());
@@ -107,7 +107,7 @@ public final class Phylotree {
 		List<Element> children = currentXMLElement.getChildren("haplogroup");
 		for (Element currentChildElement : children) {
 			buildPhylotree(newNode, currentChildElement);
-			}
+		}
 	}
 
 	/**
@@ -126,9 +126,9 @@ public final class Phylotree {
 		// Start at root node
 		SearchResult rootResult = new SearchResult(root, testSample);
 		// First call to RECURSIVE search function
-		
+
 		searchPhylotree(root, results, testSample, rootResult);
-		
+
 		rankingMethodToUse.setResults(testSample, results);
 
 		// set results to null (>20) to save memory.
@@ -136,11 +136,9 @@ public final class Phylotree {
 		return rankingMethodToUse.getResults();
 	}
 
-
-
 	/**
-	 * Traverses the complete phylo tree beginning at the rCRS. For each child a
-	 * new SerachResult object is created.
+	 * Traverses the complete phylo tree beginning at the rCRS. For each child a new
+	 * SerachResult object is created.
 	 * 
 	 * @param parent
 	 *            The XML parent node
@@ -159,28 +157,28 @@ public final class Phylotree {
 			SearchResult newResult = new SearchResult(currentElement, parentResult);
 
 			List<Polymorphism> polys = currentElement.getExpectedPolys();
-		
+
 			// Check all expected polys of the current haplogroup
-		
+
 			for (Polymorphism currentPoly : polys) {
-		
+
 				// Check whether polymorphism is in range
-				
+
 				if (sample.getSample().getSampleRanges().contains(currentPoly)) {
 					// In case of a backmutation we have to correct the current
 					// result since a polymorphism is no longer expected
 					if (currentPoly.isBackMutation()) {
 						newResult.removeExpectedPolyWeight(currentPoly);
-						newResult.removeFoundPolyWeight(currentPoly, sample.getSample());	
+						newResult.removeFoundPolyWeight(currentPoly, sample.getSample());
 					}
 
 					// The sample contains the right polymorphism for this group
-					else if (newResult.getSample().contains(currentPoly)==1) {
+					else if (newResult.getSample().contains(currentPoly) == 1) {
 						newResult.addExpectedPolyWeight(currentPoly);
 						newResult.addFoundPolyWeight(currentPoly);
 					}
 					// The sample contains a heteroplasmy for this position for this group
-					else if (newResult.getSample().contains(currentPoly)==2) {
+					else if (newResult.getSample().contains(currentPoly) == 2) {
 						currentPoly.setHeteroplasmy(true);
 						newResult.addExpectedPolyWeight(currentPoly);
 						newResult.addFoundPolyWeight(currentPoly);
@@ -199,7 +197,7 @@ public final class Phylotree {
 				}
 
 				// Polymorphism is not in sample range
-				else{
+				else {
 					newResult.addMissingOutOfRangeWeight(currentPoly);
 				}
 
@@ -208,16 +206,15 @@ public final class Phylotree {
 			// Add new result to the list of all results
 			results.add(newResult);
 			// RECURSIVE call
-	
+
 			searchPhylotree(currentElement, results, sample, newResult);
-		
+
 		}
 	}
-	
-	
+
 	/**
-	 * Traverses the complete phylo tree beginning at the rCRS. For each child a
-	 * new SerachResult object is created.
+	 * Traverses the complete phylo tree beginning at the rCRS. For each child a new
+	 * SerachResult object is created.
 	 * 
 	 * @param parent
 	 *            The XML parent node
@@ -228,34 +225,31 @@ public final class Phylotree {
 	 * @param parentResult
 	 *            SearchResult of the parent
 	 */
-	private void getAllHaplogroups(PhyloTreeNode parent, ArrayList<SearchResult> results,  SearchResult parentResult, PrintWriter fileHSD) {
+	private void getAllHaplogroups(PhyloTreeNode parent, ArrayList<SearchResult> results, SearchResult parentResult, PrintWriter fileHSD) {
 		// Query all child haplogroup nodes
 		List<PhyloTreeNode> children = parent.getSubHaplogroups();
-	 
-	StringBuffer sb = new StringBuffer();
-			
+
+		StringBuffer sb = new StringBuffer();
+
 		for (PhyloTreeNode currentElement : children) {
 			SearchResult newResult = new SearchResult(currentElement, parentResult);
 
 			List<Polymorphism> polys = currentElement.getExpectedPolys();
 			// Check all expected polys of the current haplogroup
-			fileHSD.printf("" + currentElement.getHaplogroup() +  "\t 1-16569\t" + currentElement.getHaplogroup()+"\t"+ newResult.getDetailedResult().getExpectedPolys().toString().replace(",","\t").replace("[", "").replace("]", "").replace(" ", "")+"\n" );
+			fileHSD.printf("" + currentElement.getHaplogroup() + "\t 1-16569\t" + currentElement.getHaplogroup() + "\t"
+					+ newResult.getDetailedResult().getExpectedPolys().toString().replace(",", "\t").replace("[", "").replace("]", "").replace(" ", "") + "\n");
 			// Add new result to the list of all results
 			results.add(newResult);
 			// RECURSIVE call
-	
-			getAllHaplogroups(currentElement, results,  newResult, fileHSD);
-			fileHSD.printf("ENDE " +  currentElement.getHaplogroup());
+
+			getAllHaplogroups(currentElement, results, newResult, fileHSD);
+			fileHSD.printf("ENDE " + currentElement.getHaplogroup());
 		}
-		
 
 	}
-	
-	
 
 	/**
-	 * Parses the pyhlo weights given by a file. Sets weights for all
-	 * polymorphismn
+	 * Parses the pyhlo weights given by a file. Sets weights for all polymorphismn
 	 * 
 	 * @param inStreamPhyloWeightsFile
 	 *            The stream of the file with the phylo genetic weights
@@ -313,9 +307,13 @@ public final class Phylotree {
 
 	/**
 	 * Checks the phylotree if a haplogroup is super group of another
-	 * @param superGroup The super haplogroup
-	 * @param hgToCheck The haplogroup to check
-	 * @return True if superGroup is a super haplogroup of hgToCheck, false otherwise
+	 * 
+	 * @param superGroup
+	 *            The super haplogroup
+	 * @param hgToCheck
+	 *            The haplogroup to check
+	 * @return True if superGroup is a super haplogroup of hgToCheck, false
+	 *         otherwise
 	 */
 	public boolean isSuperHaplogroup(Haplogroup superGroup, Haplogroup hgToCheck) {
 		PhyloTreeNode currentNode = haplogroupLookup.get(superGroup);
@@ -347,36 +345,38 @@ public final class Phylotree {
 		return -1;
 	}
 
-	public int getDistanceBetweenHaplogroups( Haplogroup hgToCheck1, Haplogroup hgToCheck2) {
-	
+	public int getDistanceBetweenHaplogroups(Haplogroup hgToCheck1, Haplogroup hgToCheck2) {
+
 		int distance = -1;
 		HashSet<Haplogroup> markedHaplogroups = new HashSet<Haplogroup>();
-		
+
 		boolean complete = false;
 		PhyloTreeNode c1 = haplogroupLookup.get(hgToCheck1);
 		PhyloTreeNode c2 = haplogroupLookup.get(hgToCheck2);
-		
-		while(!complete){
-			if(c1 != null)
-					if(!markedHaplogroups.contains(c1.getHaplogroup())){
-					markedHaplogroups.add(c1.getHaplogroup());
-					c1 = c1.getParent();
-					distance++;
-				}
-				else{
-					complete = true;
-					break;
-				}
-			if(c2 != null)
-				if(!markedHaplogroups.contains(c2.getHaplogroup())){
-					markedHaplogroups.add(c2.getHaplogroup());
-					c2 = c2.getParent();
-					distance++;
-				}
-				else{
-					complete = true;
-					break;
-				}
+
+		if (c1.equals(c2.getParent()) || c2.equals(c1.getParent())) {
+			distance = 1;
+			complete = true;
+		}
+
+		while (!complete) {
+
+			if (c1 != null && !markedHaplogroups.contains(c1.getHaplogroup())) {
+				markedHaplogroups.add(c1.getHaplogroup());
+				c1 = c1.getParent();
+				distance++;
+			} else {
+				complete = true;
+				break;
+			}
+			if (c2 != null && !markedHaplogroups.contains(c2.getHaplogroup())) {
+				markedHaplogroups.add(c2.getHaplogroup());
+				c2 = c2.getParent();
+				distance++;
+			} else {
+				complete = true;
+				break;
+			}
 		}
 		return distance;
 	}
