@@ -1,5 +1,9 @@
 package contamination;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -26,16 +30,13 @@ public class Contamination {
 	private int settingAmountHigh = 3;
 	private int settingAmountLow = 2;
 	private double settingHgQuality = 0.8;
-	
+
 	public int detect(HashMap<String, Sample> mutationSamples, ArrayList<TestSample> haplogrepSamples, String out) {
 
 		int countEntries = 0;
 		int countPossibleContaminated = 0;
 		int countContaminated = 0;
-		int countCovLow = 0;
 		int countNone = 0;
-
-		int requiredCoverage = 200;
 
 		Collections.sort((List<TestSample>) haplogrepSamples);
 
@@ -45,7 +46,7 @@ public class Contamination {
 
 		String[] columnsWrite = { "SampleID", "Contamination", "SampleHomoplasmies", "SampleHeteroplasmies", "SampleMeanCoverage", "MajorHG", "MajorHGQuality",
 				"MajorHomoplasmies", "MajorHeteroplasmies", "MajorMeanHetLevel", "MinorHG", "MinorHGQuality", "MinorHomoplasmies", "MinorHeteroplasmies",
-				"MinorMeanHetLevel", "HG_Distance" };
+				"MinorMeanHetLevel", "HG_Distance", "DiffMajorMinor", "DiffMinorMajor"};
 		contaminationWriter.setColumns(columnsWrite);
 
 		NumberFormat formatter = new DecimalFormat("#0.000");
@@ -65,17 +66,17 @@ public class Contamination {
 				ArrayList<Polymorphism> expectedMajor = majorSample.getTopResult().getSearchResult().getDetailedResult().getExpectedPolys();
 				ArrayList<Polymorphism> foundMinor = minorSample.getTopResult().getSearchResult().getDetailedResult().getFoundPolys();
 				ArrayList<Polymorphism> expectedMinor = minorSample.getTopResult().getSearchResult().getDetailedResult().getExpectedPolys();
-
+				
 				int notFoundMajor = countNotFound(foundMajor, expectedMajor);
 				int notFoundMinor = countNotFound(foundMinor, expectedMinor);
-
+				
 				ContaminationEntry centry = new ContaminationEntry();
 				centry.setSampleId(majorSample.getSampleID().split("_maj")[0]);
 				double hgQualityMajor = majorSample.getTopResult().getDistance();
 				double hgQualityMinor = minorSample.getTopResult().getDistance();
 
 				Sample currentSample = mutationSamples.get(centry.getSampleId());
-
+				
 				int sampleHomoplasmies = currentSample.getAmountHomoplasmies();
 				int sampleHeteroplasmies = currentSample.getAmountHeteroplasmies();
 
@@ -93,20 +94,24 @@ public class Contamination {
 
 				// TODO talk to hansi: foundMinor from Haplogrep also include back mutations,
 				// gives a wrong result back!
-				// int heteroplasmiesMajor = foundMajor.size() - homoplasmiesMajor;
-				// int heteroplasmiesMinor = foundMinor.size() - homoplasmiesMinor;
+				//int heteroplasmiesMajor = foundMajor.size() - homoplasmiesMajor;
+				//int heteroplasmiesMinor = foundMinor.size() - homoplasmiesMinor;
 
-				int heteroplasmiesMajor = countHeteroplasmies(currentSample, foundMajor);
-				int heteroplasmiesMinor = countHeteroplasmies(currentSample, foundMinor);
-
+				int heteroplasmiesMajor = countHeteroplasmiesMajor(currentSample, foundMajor);
+				int heteroplasmiesMinor = countHeteroplasmiesMinor(currentSample, foundMinor);
+				
 				double meanHeteroplasmyMajor = calcMeanHeteroplasmy(currentSample, foundMajor, true);
 				double meanHeteroplasmyMinor = calcMeanHeteroplasmy(currentSample, foundMinor, false);
 
+				ArrayList<Polymorphism> diffMajorMinor = calculateHaplogroupDifference(expectedMajor, expectedMinor);
+				ArrayList<Polymorphism> diffMinorMajor = calculateHaplogroupDifference(expectedMinor, expectedMajor);
+				
 				if (!centry.getMajorHg().equals(centry.getMinorHg())) {
 
 					distanceHG = calcDistance(centry, phylotree);
 
-					if ((heteroplasmiesMajor >= settingAmountHigh || heteroplasmiesMinor >= settingAmountHigh) && distanceHG >= settingAmountHigh && hgQualityMajor > settingHgQuality && hgQualityMinor > settingHgQuality) {
+					if ((heteroplasmiesMajor >= settingAmountHigh || heteroplasmiesMinor >= settingAmountHigh) && distanceHG >= settingAmountHigh
+							&& hgQualityMajor > settingHgQuality && hgQualityMinor > settingHgQuality) {
 						countContaminated++;
 						status = Status.HIGH;
 						// TODO check mutation rate if heteroplasmies > 5
@@ -139,14 +144,13 @@ public class Contamination {
 				contaminationWriter.setInteger(13, heteroplasmiesMinor);
 				contaminationWriter.setString(14, formatter.format(meanHeteroplasmyMinor));
 				contaminationWriter.setInteger(15, distanceHG);
+				contaminationWriter.setInteger(16, diffMajorMinor.size());
+				contaminationWriter.setInteger(17, diffMinorMajor.size());
 				contaminationWriter.next();
 			}
 
-			System.out.println("Total amount of samples: " + countEntries);
-			System.out.println("HIGH: " + countContaminated);
-			System.out.println("LOW: " + countPossibleContaminated);
-			System.out.println("Coverage too low for contamination check (<" + requiredCoverage + "x): " + countCovLow);
-			System.out.println("NONEs: " + countNone);
+			System.out.println("Total amount of samples:" + "\t" + countEntries);
+			System.out.println(out + "\t" + countEntries + "\t" + countContaminated + "\t" + countPossibleContaminated + "\t" + countNone);
 			contaminationWriter.close();
 
 		} catch (Exception e) {
@@ -198,6 +202,15 @@ public class Contamination {
 		}
 		return count;
 	}
+	
+	private ArrayList<Polymorphism> calculateHaplogroupDifference(ArrayList<Polymorphism> list1, ArrayList<Polymorphism> list2) {
+		
+		ArrayList<Polymorphism> newList = new ArrayList<Polymorphism>(list1);
+		
+		newList.removeAll(list2);
+		
+		return newList;
+	}
 
 	private double calcMeanHeteroplasmy(Sample currentSample, ArrayList<Polymorphism> foundHaplogrep, boolean majorComponent) {
 
@@ -239,15 +252,29 @@ public class Contamination {
 		return count;
 	}
 
-	private int countHeteroplasmies(Sample currentSample, ArrayList<Polymorphism> foundHaplogrep) {
-
+	private int countHeteroplasmiesMajor(Sample currentSample, ArrayList<Polymorphism> foundHaplogrep) {
 		int count = 0;
 
 		for (Polymorphism found : foundHaplogrep) {
 
 			Variant variant = currentSample.getVariant(found.getPosition());
 
-			if (variant != null && variant.getType() == 2) {
+			if (variant != null && variant.getType() == 2 && (variant.getRef() != variant.getMajor())) {
+				count++;
+			}
+
+		}
+		return count;
+	}
+	
+	private int countHeteroplasmiesMinor(Sample currentSample, ArrayList<Polymorphism> foundHaplogrep) {
+		int count = 0;
+
+		for (Polymorphism found : foundHaplogrep) {
+
+			Variant variant = currentSample.getVariant(found.getPosition());
+
+			if (variant != null && variant.getType() == 2 && (variant.getRef() != variant.getMinor())) {
 				count++;
 			}
 
@@ -277,6 +304,33 @@ public class Contamination {
 
 	public void setSettingHgQuality(double settingHgQuality) {
 		this.settingHgQuality = settingHgQuality;
+	}
+	
+	public static String readInReference(String file) {
+		StringBuilder stringBuilder = null;
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(file));
+			String line = null;
+			stringBuilder = new StringBuilder();
+
+			while ((line = reader.readLine()) != null) {
+
+				if (!line.startsWith(">"))
+					stringBuilder.append(line);
+
+			}
+
+			reader.close();
+
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return stringBuilder.toString();
 	}
 
 }

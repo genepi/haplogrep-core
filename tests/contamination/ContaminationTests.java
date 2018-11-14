@@ -9,6 +9,7 @@ import java.util.HashSet;
 import org.junit.Test;
 import contamination.Contamination.Status;
 import contamination.objects.Sample;
+import contamination.util.Utils;
 import core.SampleFile;
 import genepi.io.FileUtil;
 import genepi.io.table.reader.CsvTableReader;
@@ -155,7 +156,7 @@ public class ContaminationTests {
 
 		assertEquals(0, countHigh);
 		assertEquals(1, countLow);
-		FileUtil.deleteFile(output);
+		// FileUtil.deleteFile(output);
 
 	}
 
@@ -231,6 +232,65 @@ public class ContaminationTests {
 		HaplogroupClassifier classifier = new HaplogroupClassifier();
 		SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
 
+		contamination.setSettingAmountHigh(2);
+		contamination.setSettingAmountLow(1);
+		contamination.setSettingHgQuality(0.5);
+		contamination.detect(mutationServerSamples, haplogrepSamples.getTestSamples(), out);
+
+		//Utils.createHsdInput(haplogrepSamples.getTestSamples(), "/home/seb/Desktop/contaminated.hsd");
+
+		CsvTableReader readerOut = new CsvTableReader(out, '\t');
+		int countHigh = 0;
+		int countLow = 0;
+		while (readerOut.next()) {
+
+			if (readerOut.getString("Contamination").equals(Status.HIGH.name())) {
+				countHigh++;
+			}
+
+			if (readerOut.getString("Contamination").equals(Status.LOW.name())) {
+				countLow++;
+			}
+		}
+
+		// FileUtil.deleteFile(out);
+
+		assertEquals(121, countHigh);
+		assertEquals(28, countLow);
+
+	}
+
+	@Test
+	public void testContaminated1000G() throws Exception {
+
+		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt");
+		String folder = "test-data/contamination/1000G/contaminated/";
+		String variantFile = folder + "contaminated.vcf.gz";
+		String out = folder + "contaminated-report.txt";
+
+		VcfImporter reader2 = new VcfImporter();
+		HashMap<String, Sample> mutationServerSamples = reader2.load(new File(variantFile), false);
+
+		VariantSplitter splitter = new VariantSplitter();
+
+		ArrayList<String> profiles = splitter.split(mutationServerSamples);
+
+		HashSet<String> set = new HashSet<String>();
+
+		String[] splits = profiles.get(0).split("\t");
+
+		for (int i = 3; i < splits.length; i++) {
+			set.add(splits[i]);
+		}
+
+		Contamination contamination = new Contamination();
+
+		HaplogroupClassifier classifier = new HaplogroupClassifier();
+		SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
+
+		contamination.setSettingAmountHigh(2);
+		contamination.setSettingAmountLow(1);
+		contamination.setSettingHgQuality(0.5);
 		contamination.detect(mutationServerSamples, haplogrepSamples.getTestSamples(), out);
 
 		CsvTableReader readerOut = new CsvTableReader(out, '\t');
@@ -249,8 +309,7 @@ public class ContaminationTests {
 
 		FileUtil.deleteFile(out);
 
-		assertEquals(121, countHigh);
-		assertEquals(28, countLow);
+
 
 	}
 
@@ -297,7 +356,7 @@ public class ContaminationTests {
 			}
 		}
 
-		FileUtil.deleteFile(out);
+		// FileUtil.deleteFile(out);
 
 		assertEquals(115, countHigh);
 		assertEquals(28, countLow);
