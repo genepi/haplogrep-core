@@ -17,8 +17,8 @@ public class SimulationTests {
 	int[] high = { 2, 3, 4 };
 	int[] low = { 1, 2, 3 };
 
-	@Test
-	public void testSimulationNoContamination() throws Exception {
+	//@Test
+	/*public void testSimulation() throws Exception {
 
 		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt");
 		String folder = "test-data/contamination/simulation/";
@@ -57,6 +57,6 @@ public class SimulationTests {
 				}
 			}
 		}
-	}
+	}*/
 
 }

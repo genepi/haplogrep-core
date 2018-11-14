@@ -29,7 +29,7 @@ public class Contamination {
 
 	private int settingAmountHigh = 3;
 	private int settingAmountLow = 2;
-	private double settingHgQuality = 0.8;
+	private double settingHgQuality = 0.5;
 
 	public int detect(HashMap<String, Sample> mutationSamples, ArrayList<TestSample> haplogrepSamples, String out) {
 

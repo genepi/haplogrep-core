@@ -9,7 +9,6 @@ import java.util.HashSet;
 import org.junit.Test;
 import contamination.Contamination.Status;
 import contamination.objects.Sample;
-import contamination.util.Utils;
 import core.SampleFile;
 import genepi.io.FileUtil;
 import genepi.io.table.reader.CsvTableReader;
@@ -155,8 +154,8 @@ public class ContaminationTests {
 		}
 
 		assertEquals(0, countHigh);
-		assertEquals(1, countLow);
-		// FileUtil.deleteFile(output);
+		assertEquals(0, countLow);
+		 FileUtil.deleteFile(output);
 
 	}
 
@@ -232,9 +231,6 @@ public class ContaminationTests {
 		HaplogroupClassifier classifier = new HaplogroupClassifier();
 		SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
 
-		contamination.setSettingAmountHigh(2);
-		contamination.setSettingAmountLow(1);
-		contamination.setSettingHgQuality(0.5);
 		contamination.detect(mutationServerSamples, haplogrepSamples.getTestSamples(), out);
 
 		//Utils.createHsdInput(haplogrepSamples.getTestSamples(), "/home/seb/Desktop/contaminated.hsd");
@@ -253,11 +249,10 @@ public class ContaminationTests {
 			}
 		}
 
-		// FileUtil.deleteFile(out);
+		assertEquals(120, countHigh);
+		assertEquals(36, countLow);
 
-		assertEquals(121, countHigh);
-		assertEquals(28, countLow);
-
+		FileUtil.deleteFile(out);
 	}
 
 	@Test
@@ -307,6 +302,9 @@ public class ContaminationTests {
 			}
 		}
 
+		assertEquals(127, countHigh);
+		assertEquals(83, countLow);
+		
 		FileUtil.deleteFile(out);
 
 
@@ -356,10 +354,11 @@ public class ContaminationTests {
 			}
 		}
 
-		// FileUtil.deleteFile(out);
-
 		assertEquals(115, countHigh);
-		assertEquals(28, countLow);
+		assertEquals(35, countLow);
+		
+		FileUtil.deleteFile(out);
+
 
 	}
 
