@@ -92,11 +92,6 @@ public class Contamination {
 				int homoplasmiesMajor = countHomoplasmies(currentSample, foundMajor);
 				int homoplasmiesMinor = countHomoplasmies(currentSample, foundMinor);
 
-				// TODO talk to hansi: foundMinor from Haplogrep also include back mutations,
-				// gives a wrong result back!
-				//int heteroplasmiesMajor = foundMajor.size() - homoplasmiesMajor;
-				//int heteroplasmiesMinor = foundMinor.size() - homoplasmiesMinor;
-
 				int heteroplasmiesMajor = countHeteroplasmiesMajor(currentSample, foundMajor);
 				int heteroplasmiesMinor = countHeteroplasmiesMinor(currentSample, foundMinor);
 				
@@ -131,7 +126,6 @@ public class Contamination {
 				contaminationWriter.setString(1, status.toString());
 				contaminationWriter.setInteger(2, sampleHomoplasmies);
 				contaminationWriter.setInteger(3, sampleHeteroplasmies);
-				// contaminationWriter.setString(4, formatter.format(meanHetLevelSample));
 				contaminationWriter.setString(4, formatter.format(meanCoverageSample));
 				contaminationWriter.setString(5, centry.getMajorHg());
 				contaminationWriter.setString(6, formatter.format(hgQualityMajor));
