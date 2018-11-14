@@ -23,6 +23,10 @@ public class Contamination {
 		HIGH, LOW, NONE;
 	}
 
+	private int settingAmountHigh = 3;
+	private int settingAmountLow = 2;
+	private double settingHgQuality = 0.8;
+	
 	public int detect(HashMap<String, Sample> mutationSamples, ArrayList<TestSample> haplogrepSamples, String out) {
 
 		int countEntries = 0;
@@ -102,11 +106,11 @@ public class Contamination {
 
 					distanceHG = calcDistance(centry, phylotree);
 
-					if ((heteroplasmiesMajor >= 3 || heteroplasmiesMinor >= 3) && distanceHG >= 3 && hgQualityMajor > 0.6 && hgQualityMinor > 0.6) {
+					if ((heteroplasmiesMajor >= settingAmountHigh || heteroplasmiesMinor >= settingAmountHigh) && distanceHG >= settingAmountHigh && hgQualityMajor > settingHgQuality && hgQualityMinor > settingHgQuality) {
 						countContaminated++;
 						status = Status.HIGH;
 						// TODO check mutation rate if heteroplasmies > 5
-					} else if ((heteroplasmiesMinor >= 2 || distanceHG >= 1)) {
+					} else if ((heteroplasmiesMinor >= settingAmountLow || distanceHG >= settingAmountLow)) {
 						countPossibleContaminated++;
 						status = Status.LOW;
 					} else {
@@ -139,10 +143,10 @@ public class Contamination {
 			}
 
 			System.out.println("Total amount of samples: " + countEntries);
-			System.out.println("Major haplogroup conflicts: " + countContaminated);
-			System.out.println("Minor haplogroup conflicts: " + countPossibleContaminated);
+			System.out.println("HIGH: " + countContaminated);
+			System.out.println("LOW: " + countPossibleContaminated);
 			System.out.println("Coverage too low for contamination check (<" + requiredCoverage + "x): " + countCovLow);
-			System.out.println("No conflicts: " + countNone);
+			System.out.println("NONEs: " + countNone);
 			contaminationWriter.close();
 
 		} catch (Exception e) {
@@ -249,6 +253,30 @@ public class Contamination {
 
 		}
 		return count;
+	}
+
+	public int getSettingAmountHigh() {
+		return settingAmountHigh;
+	}
+
+	public void setSettingAmountHigh(int settingAmountHigh) {
+		this.settingAmountHigh = settingAmountHigh;
+	}
+
+	public int getSettingAmountLow() {
+		return settingAmountLow;
+	}
+
+	public void setSettingAmountLow(int settingAmountLow) {
+		this.settingAmountLow = settingAmountLow;
+	}
+
+	public double getSettingHgQuality() {
+		return settingHgQuality;
+	}
+
+	public void setSettingHgQuality(double settingHgQuality) {
+		this.settingHgQuality = settingHgQuality;
 	}
 
 }

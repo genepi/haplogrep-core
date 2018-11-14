@@ -18,13 +18,16 @@ import phylotree.PhylotreeManager;
 
 public class SimulationTests {
 
+	double[] quality = {0.5,0.6,0.8};
+	int[] high = {2,3,4};
+	int[] low = {1,2,3};
+	
 	@Test
-	public void testSimulation() throws Exception {
+	public void testSimulationNoContamination1() throws Exception {
 
 		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt");
 		String folder = "test-data/contamination/simulation/";
-		String variantFile = folder + "simulation.vcf";
-		String output = folder + "chip-mix-report.txt";
+		String variantFile = folder + "nocont_noise0.vcf";
 
 		VariantSplitter splitter = new VariantSplitter();
 
@@ -34,34 +37,55 @@ public class SimulationTests {
 
 		ArrayList<String> profiles = splitter.split(mutationServerSamples);
 
-		HashSet<String> set = new HashSet<String>();
-
-		String[] splits = profiles.get(0).split("\t");
-
-		for (int i = 3; i < splits.length; i++) {
-			set.add(splits[i]);
-		}
-
-		Contamination contamination = new Contamination();
-
 		HaplogroupClassifier classifier = new HaplogroupClassifier();
 		SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
 
-		contamination.detect(mutationServerSamples, haplogrepSamples.getTestSamples(), output);
-
-		CsvTableReader readerOut = new CsvTableReader(output, '\t');
-
-		int countHigh = 0;
-		int countLow = 0;
-		while (readerOut.next()) {
-			if (readerOut.getString("Contamination").equals(Status.HIGH.name())) {
-				countHigh++;
-
-			} else if (readerOut.getString("Contamination").equals(Status.LOW.name())) {
-				countLow++;
-
+		for (double qual : quality) {
+			for (int h : high) {
+				for (int l : low) {
+					String output = folder + "nocont_noise0_" + qual + "_" + h + "_" + l+".txt";
+					Contamination contamination = new Contamination();
+					contamination.setSettingHgQuality(qual);
+					contamination.setSettingAmountHigh(h);
+					contamination.setSettingAmountLow(l);
+					contamination.detect(mutationServerSamples, haplogrepSamples.getTestSamples(), output);
+				}
 			}
 		}
 
 	}
+	
+	@Test
+	public void testSimulationNoContamination2() throws Exception {
+
+		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt");
+		String folder = "test-data/contamination/simulation/";
+		String variantFile = folder + "nocont_noise5.vcf";
+
+		VariantSplitter splitter = new VariantSplitter();
+
+		VcfImporter reader = new VcfImporter();
+
+		HashMap<String, Sample> mutationServerSamples = reader.load(new File(variantFile), false);
+
+		ArrayList<String> profiles = splitter.split(mutationServerSamples);
+
+		HaplogroupClassifier classifier = new HaplogroupClassifier();
+		SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
+
+		for (double qual : quality) {
+			for (int h : high) {
+				for (int l : low) {
+					String output = folder + "nocont_noise5_" + qual + "_" + h + "_" + l+".txt";
+					Contamination contamination = new Contamination();
+					contamination.setSettingHgQuality(qual);
+					contamination.setSettingAmountHigh(h);
+					contamination.setSettingAmountLow(l);
+					contamination.detect(mutationServerSamples, haplogrepSamples.getTestSamples(), output);
+				}
+			}
+		}
+
+	}
+	
 }
