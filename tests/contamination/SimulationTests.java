@@ -27,90 +27,105 @@ public class SimulationTests {
 
 		File[] files = new File(folder).listFiles(new FilenameFilter() {
 			public boolean accept(File dir, String name) {
-				return name.toLowerCase().endsWith("5.vcf.gz");
+				return name.toLowerCase().equals("5.vcf.gz");
 			}
 		});
 
-		CsvTableWriter writer = new CsvTableWriter("/home/seb/Desktop/out.txt");
-		String[] columns = {"Samples", "Noise", "Sensitivity", "Specificty", "Precision", "QualityFilter", "AmountHighFilter", "AmountLowFilter"};
-		writer.setColumns(columns);
-	
-		for (File file : files) {
+		if (files.length > 0) {
+			for (File file : files) {
 
-			System.out.println("file is " + file.getAbsolutePath());
+				CsvTableWriter writer = new CsvTableWriter("/home/seb/Desktop/" + file.getName() + ".txt");
 
-			VariantSplitter splitter = new VariantSplitter();
+				String[] columns = { "Setup", "Samples", "Noise", "AverageDistance", "Sensitivity", "Specificty", "Precision", "QualityFilter",
+						"AmountHighFilter", "AmountLowFilter" };
 
-			VcfImporter reader = new VcfImporter();
+				writer.setColumns(columns);
 
-			HashMap<String, Sample> mutationServerSamples = reader.load(new File(file.getPath()), false);
+				System.out.println("file is " + file.getAbsolutePath());
 
-			ArrayList<String> profiles = splitter.split(mutationServerSamples);
+				VariantSplitter splitter = new VariantSplitter();
 
-			HaplogroupClassifier classifier = new HaplogroupClassifier();
-			SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
+				VcfImporter reader = new VcfImporter();
 
-			for (double qual : quality) {
-				for (int h : high) {
-					for (int l : low) {
-						int noise = Integer.valueOf(file.getName().substring(0, file.getName().length() - 7));
-						String output = folder + noise + "_" + qual + "_" + h + "_" + l + ".txt";
-						Contamination contamination = new Contamination();
-						contamination.setSettingHgQuality(qual);
-						contamination.setSettingAmountHigh(h);
-						contamination.setSettingAmountLow(l);
-						contamination.detect(mutationServerSamples, haplogrepSamples.getTestSamples(), output);
+				HashMap<String, Sample> mutationServerSamples = reader.load(new File(file.getPath()), false);
 
-						CsvTableReader readerOut = new CsvTableReader(output, '\t');
+				ArrayList<String> profiles = splitter.split(mutationServerSamples);
 
-						int truePositives = 0;
-						int falsePositives = 0;
-						int trueNegatives = 0;
-						int falseNegative = 0;
-						int count = 0;
-						while (readerOut.next()) {
-							count++;
-							String id = readerOut.getString("SampleID");
-							String status = readerOut.getString("Contamination");
+				HaplogroupClassifier classifier = new HaplogroupClassifier();
+				SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
+				int setup = 0;
+				for (double qual = 0.5; qual <= 0.5; qual += 0.05) {
+					for (int h = 10; h < 40; h++) {
+						for (int w = 0; w <= 5; w++) {
+							setup++;
+							int noise = Integer.valueOf(file.getName().substring(0, file.getName().length() - 7));
+							String output = folder + noise + "_" + qual + "_" + h + "_" + w + ".txt";
+							Contamination contamination = new Contamination();
+							contamination.setSettingHgQuality(qual);
+							contamination.setSettingAmountHigh(h);
+							contamination.setSettingAmountLow((h - w) < 0 ? 0 : (h - w));
+							contamination.detect(mutationServerSamples, haplogrepSamples.getTestSamples(), output);
 
-							String[] idSplits = id.split("_");
-							boolean cont;
-							if (idSplits[0].equals(idSplits[1])) {
-								cont = false;
-							} else {
-								cont = true;
+							CsvTableReader readerOut = new CsvTableReader(output, '\t');
+
+							int truePositives = 0;
+							int falsePositives = 0;
+							int trueNegatives = 0;
+							int falseNegative = 0;
+							int count = 0;
+							int distance = 0;
+							int countCont = 0;
+							while (readerOut.next()) {
+								count++;
+								String id = readerOut.getString("SampleID");
+								String status = readerOut.getString("Contamination");
+								distance += readerOut.getInteger("HG_Distance");
+
+								String[] idSplits = id.split("_");
+								boolean cont;
+								if (idSplits[0].equals(idSplits[1])) {
+									cont = false;
+								} else {
+									countCont++;
+									cont = true;
+								}
+
+								if ((status.equals("HIGH") || status.equals("LOW")) && cont) {
+									truePositives++;
+								} else if (status.equals("NONE") && !cont) {
+									trueNegatives++;
+								} else if ((status.equals("HIGH") || status.equals("LOW")) && !cont) {
+									falsePositives++;
+								} else if (status.equals("NONE") && cont) {
+									falseNegative++;
+								}
+
 							}
+							System.out.println("cont " + countCont);
+							//new File(output).delete();
 
-							if ((status.equals("HIGH") || status.equals("LOW")) && cont) {
-								truePositives++;
-							} else if (status.equals("NONE") && !cont) {
-								trueNegatives++;
-							} else if ((status.equals("HIGH") || status.equals("LOW")) && !cont) {
-								falsePositives++;
-							} else if (status.equals("NONE") && cont) {
-								falseNegative++;
-							}
-
+							double sens = (double) truePositives / (truePositives + falseNegative);
+							double spec = (double) trueNegatives / (trueNegatives + falsePositives);
+							double prec = (double) truePositives / (truePositives + falsePositives);
+							double averageDistance = (double) distance / count;
+							writer.setDouble(0, setup);
+							writer.setDouble(1, count);
+							writer.setInteger(2, noise);
+							writer.setDouble(3, averageDistance);
+							writer.setDouble(4, sens);
+							writer.setDouble(5, spec);
+							writer.setDouble(6, prec);
+							writer.setDouble(7, qual);
+							writer.setInteger(8, h);
+							writer.setInteger(9, w);
+							writer.next();
 						}
-
-						double sens = (double) truePositives / (truePositives + falseNegative);
-						double spec = (double) trueNegatives / (trueNegatives + falsePositives);
-						double prec = (double) truePositives / (truePositives + falsePositives);
-						writer.setDouble(0, count);
-						writer.setInteger(1, noise);
-						writer.setDouble(2, sens);
-						writer.setDouble(3, spec);
-						writer.setDouble(4, prec);
-						writer.setDouble(5, qual);
-						writer.setInteger(6, h);
-						writer.setInteger(7, l);
-						writer.next();
 					}
 				}
+				writer.close();
 			}
+
 		}
-		writer.close();
 	}
 
 }
-

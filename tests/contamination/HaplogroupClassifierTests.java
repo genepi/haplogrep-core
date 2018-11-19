@@ -49,10 +49,10 @@ public class HaplogroupClassifierTests {
 		assertEquals(Status.NONE.name(), readerContamination.getString("Contamination"));
 		assertEquals("39", readerContamination.getString("SampleHomoplasmies"));
 		assertEquals("0", readerContamination.getString("SampleHeteroplasmies"));
-		assertEquals("36", readerContamination.getString("MajorHomoplasmies"));
-		assertEquals(0, readerContamination.getDouble("MajorMeanHetLevel"),0.01);
-		assertEquals("T2f1a1", readerContamination.getString("MajorHG"));
-		assertEquals(0.919, readerContamination.getDouble("MinorHGQuality"),0.01);
+		assertEquals("36", readerContamination.getString("HomoplasmiesMajor"));
+		assertEquals(0, readerContamination.getDouble("MeanHetLevelMajor"),0.01);
+		assertEquals("T2f1a1", readerContamination.getString("HgMajor"));
+		assertEquals(0.919, readerContamination.getDouble("HgQualityMinor"),0.01);
 		
 		FileUtil.deleteFile(out);
 
@@ -103,15 +103,15 @@ public class HaplogroupClassifierTests {
 		readerContamination.next();
 
 		assertEquals(Status.HIGH.name(), readerContamination.getString("Contamination"));
-		assertEquals("6", readerContamination.getString("MajorHomoplasmies"));
+		assertEquals("6", readerContamination.getString("HomoplasmiesMajor"));
 		assertEquals("7", readerContamination.getString("SampleHomoplasmies"));
-		assertEquals("0.987", readerContamination.getString("MajorMeanHetLevel"));
-		assertEquals("6", readerContamination.getString("MinorHomoplasmies"));
-		assertEquals("0.011", readerContamination.getString("MinorMeanHetLevel"));
-		assertEquals("12", readerContamination.getString("MinorHeteroplasmies"));
+		assertEquals("0.987", readerContamination.getString("MeanHetLevelMajor"));
+		assertEquals("6", readerContamination.getString("HomoplasmiesMinor"));
+		assertEquals("0.011", readerContamination.getString("MeanHetLevelMinor"));
+		assertEquals("12", readerContamination.getString("HeteroplasmiesMinor"));
 		assertEquals("18", readerContamination.getString("SampleHeteroplasmies"));
-		assertEquals("H1", readerContamination.getString("MajorHG"));
-		assertEquals("U5a2e", readerContamination.getString("MinorHG"));
+		assertEquals("H1", readerContamination.getString("HgMajor"));
+		assertEquals("U5a2e", readerContamination.getString("HgMinor"));
 
 		FileUtil.deleteFile(out);
 	}

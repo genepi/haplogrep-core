@@ -44,9 +44,9 @@ public class Contamination {
 
 		CsvTableWriter contaminationWriter = new CsvTableWriter(out, '\t');
 
-		String[] columnsWrite = { "SampleID", "Contamination", "SampleHomoplasmies", "SampleHeteroplasmies", "SampleMeanCoverage", "MajorHG", "MajorHGQuality",
-				"MajorHomoplasmies", "MajorHeteroplasmies", "MajorMeanHetLevel", "MinorHG", "MinorHGQuality", "MinorHomoplasmies", "MinorHeteroplasmies",
-				"MinorMeanHetLevel", "HG_Distance", "DiffMajorMinor", "DiffMinorMajor"};
+		String[] columnsWrite = { "SampleID", "Contamination", "SampleHomoplasmies", "SampleHeteroplasmies", "SampleMeanCoverage", "HgMajor", "HgQualityMajor",
+				"HgMinor", "HgQualityMinor", "HomoplasmiesMajor", "HomoplasmiesMinor", "HeteroplasmiesMajor", "HeteroplasmiesMinor", "MeanHetLevelMajor",
+				"MeanHetLevelMinor", "HG_Distance", "DiffSnpsMajorMinor", "DiffSnpsMinorMajor", "HeteroplasmyLevelTotal" };
 		contaminationWriter.setColumns(columnsWrite);
 
 		NumberFormat formatter = new DecimalFormat("#0.000");
@@ -66,21 +66,21 @@ public class Contamination {
 				ArrayList<Polymorphism> expectedMajor = majorSample.getTopResult().getSearchResult().getDetailedResult().getExpectedPolys();
 				ArrayList<Polymorphism> foundMinor = minorSample.getTopResult().getSearchResult().getDetailedResult().getFoundPolys();
 				ArrayList<Polymorphism> expectedMinor = minorSample.getTopResult().getSearchResult().getDetailedResult().getExpectedPolys();
-				
+
 				int notFoundMajor = countNotFound(foundMajor, expectedMajor);
 				int notFoundMinor = countNotFound(foundMinor, expectedMinor);
-				
+
 				ContaminationEntry centry = new ContaminationEntry();
 				centry.setSampleId(majorSample.getSampleID().split("_maj")[0]);
 				double hgQualityMajor = majorSample.getTopResult().getDistance();
 				double hgQualityMinor = minorSample.getTopResult().getDistance();
 
 				Sample currentSample = mutationSamples.get(centry.getSampleId());
-				
+
 				int sampleHomoplasmies = currentSample.getAmountHomoplasmies();
 				int sampleHeteroplasmies = currentSample.getAmountHeteroplasmies();
 
-				double meanCoverageSample = currentSample.getSumCoverage() / currentSample.getAmountVariants();
+				int meanCoverageSample = (int) currentSample.getSumCoverage() / currentSample.getAmountVariants();
 				double meanHetLevelSample = currentSample.getSumHeteroplasmyLevel() / currentSample.getAmountHeteroplasmies();
 
 				centry.setMajorHg(majorSample.getTopResult().getHaplogroup().toString());
@@ -94,13 +94,13 @@ public class Contamination {
 
 				int heteroplasmiesMajor = countHeteroplasmiesMajor(currentSample, foundMajor);
 				int heteroplasmiesMinor = countHeteroplasmiesMinor(currentSample, foundMinor);
-				
+
 				double meanHeteroplasmyMajor = calcMeanHeteroplasmy(currentSample, foundMajor, true);
 				double meanHeteroplasmyMinor = calcMeanHeteroplasmy(currentSample, foundMinor, false);
 
 				ArrayList<Polymorphism> diffMajorMinor = calculateHaplogroupDifference(expectedMajor, expectedMinor);
 				ArrayList<Polymorphism> diffMinorMajor = calculateHaplogroupDifference(expectedMinor, expectedMajor);
-				
+
 				if (!centry.getMajorHg().equals(centry.getMinorHg())) {
 
 					distanceHG = calcDistance(centry, phylotree);
@@ -110,7 +110,8 @@ public class Contamination {
 						countContaminated++;
 						status = Status.HIGH;
 						// TODO check mutation rate if heteroplasmies > 5
-					} else if ((heteroplasmiesMinor >= settingAmountLow || distanceHG >= settingAmountLow)) {
+					} else if ((heteroplasmiesMinor >= settingAmountLow || distanceHG >= settingAmountLow) && hgQualityMajor > settingHgQuality
+							&& hgQualityMinor > settingHgQuality) {
 						countPossibleContaminated++;
 						status = Status.LOW;
 					} else {
@@ -126,20 +127,21 @@ public class Contamination {
 				contaminationWriter.setString(1, status.toString());
 				contaminationWriter.setInteger(2, sampleHomoplasmies);
 				contaminationWriter.setInteger(3, sampleHeteroplasmies);
-				contaminationWriter.setString(4, formatter.format(meanCoverageSample));
+				contaminationWriter.setInteger(4, meanCoverageSample);
 				contaminationWriter.setString(5, centry.getMajorHg());
 				contaminationWriter.setString(6, formatter.format(hgQualityMajor));
-				contaminationWriter.setInteger(7, homoplasmiesMajor);
-				contaminationWriter.setInteger(8, heteroplasmiesMajor);
-				contaminationWriter.setString(9, formatter.format(meanHeteroplasmyMajor));
-				contaminationWriter.setString(10, centry.getMinorHg());
-				contaminationWriter.setString(11, formatter.format(hgQualityMinor));
-				contaminationWriter.setInteger(12, homoplasmiesMinor);
-				contaminationWriter.setInteger(13, heteroplasmiesMinor);
+				contaminationWriter.setString(7, centry.getMinorHg());
+				contaminationWriter.setString(8, formatter.format(hgQualityMinor));
+				contaminationWriter.setInteger(9, homoplasmiesMajor);
+				contaminationWriter.setInteger(10, homoplasmiesMinor);
+				contaminationWriter.setInteger(11, heteroplasmiesMajor);
+				contaminationWriter.setInteger(12, heteroplasmiesMinor);
+				contaminationWriter.setString(13, formatter.format(meanHeteroplasmyMajor));
 				contaminationWriter.setString(14, formatter.format(meanHeteroplasmyMinor));
 				contaminationWriter.setInteger(15, distanceHG);
 				contaminationWriter.setInteger(16, diffMajorMinor.size());
 				contaminationWriter.setInteger(17, diffMinorMajor.size());
+				contaminationWriter.setString(18, formatter.format(meanHeteroplasmyMajor + meanHeteroplasmyMinor));
 				contaminationWriter.next();
 			}
 
@@ -196,13 +198,13 @@ public class Contamination {
 		}
 		return count;
 	}
-	
+
 	private ArrayList<Polymorphism> calculateHaplogroupDifference(ArrayList<Polymorphism> list1, ArrayList<Polymorphism> list2) {
-		
+
 		ArrayList<Polymorphism> newList = new ArrayList<Polymorphism>(list1);
-		
+
 		newList.removeAll(list2);
-		
+
 		return newList;
 	}
 
@@ -260,7 +262,7 @@ public class Contamination {
 		}
 		return count;
 	}
-	
+
 	private int countHeteroplasmiesMinor(Sample currentSample, ArrayList<Polymorphism> foundHaplogrep) {
 		int count = 0;
 
@@ -299,7 +301,7 @@ public class Contamination {
 	public void setSettingHgQuality(double settingHgQuality) {
 		this.settingHgQuality = settingHgQuality;
 	}
-	
+
 	public static String readInReference(String file) {
 		StringBuilder stringBuilder = null;
 		try {
