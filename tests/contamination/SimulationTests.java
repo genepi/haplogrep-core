@@ -15,10 +15,6 @@ import phylotree.PhylotreeManager;
 
 public class SimulationTests {
 
-	double[] quality = { 0.5, 0.6, 0.7, 0.8 };
-	int[] high = { 2, 3, 4, 5 };
-	int[] low = { 1, 2, 3, 4 };
-
 	@Test
 	public void testSimulation() throws Exception {
 
@@ -54,12 +50,12 @@ public class SimulationTests {
 				HaplogroupClassifier classifier = new HaplogroupClassifier();
 				SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
 				int setup = 0;
-				// for (double qual = 0.5; qual <= 0.5; qual += 0.05) {
-				for (int h = 10; h < 15; h++) {
-					for (int w = 0; w <= 5; w++) {
+				for (double qual = 0.5; qual <= 1.0; qual += 0.05) {
+				for (int h = 3; h < 40; h++) {
+					for (int w = 0; w <= 10; w++) {
 						setup++;
 						int noise = Integer.valueOf(file.getName().substring(0, file.getName().length() - 7));
-						String output = folder + noise + "_0.5" + "_" + h + "_" + w + ".txt";
+						String output = folder + noise + "_" + qual + "_" + h + "_" + w + ".txt";
 						Contamination contamination = new Contamination();
 						contamination.setSettingHgQuality(0.5);
 						contamination.setSettingAmountHigh(h);
@@ -74,7 +70,6 @@ public class SimulationTests {
 						int falseNegative = 0;
 						int count = 0;
 						int distance = 0;
-						int countCont = 0;
 						while (readerOut.next()) {
 							count++;
 							String id = readerOut.getString("SampleID");
@@ -86,7 +81,6 @@ public class SimulationTests {
 							if (idSplits[0].equals(idSplits[1])) {
 								cont = false;
 							} else {
-								countCont++;
 								cont = true;
 							}
 
@@ -130,13 +124,13 @@ public class SimulationTests {
 						writer.setDouble(4, sens);
 						writer.setDouble(5, spec);
 						writer.setDouble(6, prec);
-						writer.setDouble(7, 0.5);
+						writer.setDouble(7, qual);
 						writer.setInteger(8, h);
 						writer.setInteger(9, w);
 						writer.next();
 					}
 				}
-				// }
+				}
 				writer.close();
 			}
 
