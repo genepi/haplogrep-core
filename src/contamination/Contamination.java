@@ -110,11 +110,11 @@ public class Contamination {
 						countContaminated++;
 						status = Status.HIGH;
 						// TODO check mutation rate if heteroplasmies > 5
-					} else if ((heteroplasmiesMinor >= settingAmountLow || distanceHG >= settingAmountLow) && hgQualityMajor > settingHgQuality
-							&& hgQualityMinor > settingHgQuality) {
-						countPossibleContaminated++;
-						status = Status.LOW;
-					} else {
+					} /*
+						 * else if ((heteroplasmiesMinor >= settingAmountLow || distanceHG >=
+						 * settingAmountLow) && hgQualityMajor > settingHgQuality && hgQualityMinor >
+						 * settingHgQuality) { countPossibleContaminated++; status = Status.LOW; }
+						 */ else {
 						countNone++;
 						status = Status.NONE;
 					}
