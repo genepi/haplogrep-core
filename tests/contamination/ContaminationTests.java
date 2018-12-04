@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import org.junit.Test;
-import contamination.Contamination.Status;
+import contamination.ContaminationDetection.Status;
+import contamination.objects.ContaminationObject;
 import contamination.objects.Sample;
 import contamination.util.Utils;
 import core.SampleFile;
@@ -43,12 +44,14 @@ public class ContaminationTests {
 			set.add(splits[i]);
 		}
 
-		Contamination contamination = new Contamination();
+		ContaminationDetection contamination = new ContaminationDetection();
 
 		HaplogroupClassifier classifier = new HaplogroupClassifier();
 		SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
 
-		contamination.detect(mutationServerSamples, haplogrepSamples.getTestSamples(), output);
+		ArrayList<ContaminationObject> list = contamination.detect(mutationServerSamples, haplogrepSamples.getTestSamples());
+		
+		contamination.writeFile(list, output);
 
 		CsvTableReader readerOut = new CsvTableReader(output, '\t');
 
@@ -92,8 +95,11 @@ public class ContaminationTests {
 		HaplogroupClassifier classifier = new HaplogroupClassifier();
 		SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
 
-		Contamination contamination = new Contamination();
-		contamination.detect(mutationServerSamples, haplogrepSamples.getTestSamples(), output);
+		ContaminationDetection contamination = new ContaminationDetection();
+		
+		ArrayList<ContaminationObject> list = contamination.detect(mutationServerSamples, haplogrepSamples.getTestSamples());
+		
+		contamination.writeFile(list, output);
 
 		CsvTableReader readerOut = new CsvTableReader(output, '\t');
 		int count = 0;
@@ -120,12 +126,12 @@ public class ContaminationTests {
 
 		VcfImporter reader = new VcfImporter();
 
-		HashMap<String, Sample> mutationserverSamples = reader.load(new File(variantFile), false);
+		HashMap<String, Sample> mutationServerSamples = reader.load(new File(variantFile), false);
 
-		Contamination contamination = new Contamination();
+		ContaminationDetection contamination = new ContaminationDetection();
 
 		VariantSplitter splitter = new VariantSplitter();
-		ArrayList<String> profiles = splitter.split(mutationserverSamples);
+		ArrayList<String> profiles = splitter.split(mutationServerSamples);
 
 		HashSet<String> set = new HashSet<String>();
 
@@ -138,8 +144,10 @@ public class ContaminationTests {
 		HaplogroupClassifier classifier = new HaplogroupClassifier();
 		SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
 
-		contamination.detect(mutationserverSamples, haplogrepSamples.getTestSamples(), output);
-
+		ArrayList<ContaminationObject> list = contamination.detect(mutationServerSamples, haplogrepSamples.getTestSamples());
+		
+		contamination.writeFile(list, output);
+		
 		CsvTableReader readerOut = new CsvTableReader(output, '\t');
 		int countHigh = 0;
 		int countLow = 0;
@@ -169,10 +177,10 @@ public class ContaminationTests {
 		String output = folder + "possible-swap-report.txt";
 
 		VcfImporter reader = new VcfImporter();
-		HashMap<String, Sample> mutationserverSamples = reader.load(new File(variantFile), false);
+		HashMap<String, Sample> mutationServerSamples = reader.load(new File(variantFile), false);
 
 		VariantSplitter splitter = new VariantSplitter();
-		ArrayList<String> profiles = splitter.split(mutationserverSamples);
+		ArrayList<String> profiles = splitter.split(mutationServerSamples);
 
 		HashSet<String> set = new HashSet<String>();
 
@@ -182,12 +190,14 @@ public class ContaminationTests {
 			set.add(splits[i]);
 		}
 
-		Contamination contamination = new Contamination();
+		ContaminationDetection contamination = new ContaminationDetection();
 
 		HaplogroupClassifier classifier = new HaplogroupClassifier();
 		SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
 
-		contamination.detect(mutationserverSamples, haplogrepSamples.getTestSamples(), output);
+		ArrayList<ContaminationObject> list = contamination.detect(mutationServerSamples, haplogrepSamples.getTestSamples());
+		
+		contamination.writeFile(list, output);
 
 		CsvTableReader readerOut = new CsvTableReader(output, '\t');
 		int count = 0;
@@ -210,7 +220,7 @@ public class ContaminationTests {
 		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt");
 		String folder = "test-data/contamination/1000G/final-samples/";
 		String variantFile = folder + "1000G_BAQ.vcf.gz";
-		String out = folder + "1000g-report.txt";
+		String output = folder + "1000g-report.txt";
 
 		VcfImporter reader2 = new VcfImporter();
 		HashMap<String, Sample> mutationServerSamples = reader2.load(new File(variantFile), false);
@@ -227,16 +237,18 @@ public class ContaminationTests {
 			set.add(splits[i]);
 		}
 
-		Contamination contamination = new Contamination();
+		ContaminationDetection contamination = new ContaminationDetection();
 
 		HaplogroupClassifier classifier = new HaplogroupClassifier();
 		SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
 
 		Utils.createHsdInput(haplogrepSamples.getTestSamples(), "/home/seb/Desktop/contaminated.hsd");
 
-		contamination.detect(mutationServerSamples, haplogrepSamples.getTestSamples(), out);
+		ArrayList<ContaminationObject> list = contamination.detect(mutationServerSamples, haplogrepSamples.getTestSamples());
+		
+		contamination.writeFile(list, output);
 
-		CsvTableReader readerOut = new CsvTableReader(out, '\t');
+		CsvTableReader readerOut = new CsvTableReader(output, '\t');
 		int countHigh = 0;
 		int countLow = 0;
 		while (readerOut.next()) {
@@ -262,7 +274,7 @@ public class ContaminationTests {
 		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt");
 		String folder = "test-data/contamination/1000G/final-samples/";
 		String variantFile = folder + "1000G_BAQ.vcf.gz";
-		String out = folder + "1000g-report.txt";
+		String output = folder + "1000g-report.txt";
 
 		VcfImporter reader2 = new VcfImporter();
 		HashMap<String, Sample> mutationServerSamples = reader2.load(new File(variantFile), false);
@@ -279,14 +291,16 @@ public class ContaminationTests {
 			set.add(splits[i]);
 		}
 
-		Contamination contamination = new Contamination();
+		ContaminationDetection contamination = new ContaminationDetection();
 
 		HaplogroupClassifier classifier = new HaplogroupClassifier();
 		SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
 
-		contamination.detect(mutationServerSamples, haplogrepSamples.getTestSamples(), out);
+		ArrayList<ContaminationObject> list = contamination.detect(mutationServerSamples, haplogrepSamples.getTestSamples());
+		
+		contamination.writeFile(list, output);
 
-		CsvTableReader readerResult = new CsvTableReader(out, '\t');
+		CsvTableReader readerResult = new CsvTableReader(output, '\t');
 
 		CsvTableReader readerYe = new CsvTableReader("test-data/contamination/1000G/final-samples/1000g_ye.txt", '\t');
 		HashSet<String> contSamples = new HashSet<String>();
@@ -336,7 +350,7 @@ public class ContaminationTests {
 			set.add(splits[i]);
 		}
 
-		Contamination contamination = new Contamination();
+		ContaminationDetection contamination = new ContaminationDetection();
 
 		HaplogroupClassifier classifier = new HaplogroupClassifier();
 		SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
@@ -344,7 +358,9 @@ public class ContaminationTests {
 		contamination.setSettingAmountHigh(2);
 		contamination.setSettingAmountLow(1);
 		contamination.setSettingHgQuality(0.5);
-		contamination.detect(mutationServerSamples, haplogrepSamples.getTestSamples(), out);
+		
+		ArrayList<ContaminationObject> list = contamination.detect(mutationServerSamples, haplogrepSamples.getTestSamples());
+		contamination.writeFile(list, out);
 
 		CsvTableReader readerOut = new CsvTableReader(out, '\t');
 		int countHigh = 0;
@@ -389,12 +405,14 @@ public class ContaminationTests {
 			set.add(splits[i]);
 		}
 
-		Contamination contamination = new Contamination();
+		ContaminationDetection contamination = new ContaminationDetection();
 
 		HaplogroupClassifier classifier = new HaplogroupClassifier();
 		SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
 
-		contamination.detect(mutationServerSamples, haplogrepSamples.getTestSamples(), out);
+		ArrayList<ContaminationObject> list = contamination.detect(mutationServerSamples, haplogrepSamples.getTestSamples());
+		contamination.writeFile(list, out);
+
 
 		CsvTableReader readerOut = new CsvTableReader(out, '\t');
 		int countHigh = 0;

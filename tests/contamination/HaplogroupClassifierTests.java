@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import org.junit.Test;
-import contamination.Contamination.Status;
+import contamination.ContaminationDetection.Status;
+import contamination.objects.ContaminationObject;
 import contamination.objects.Sample;
 import core.SampleFile;
 import genepi.io.FileUtil;
@@ -35,13 +36,16 @@ public class HaplogroupClassifierTests {
 		
 		HaplogroupClassifier classifier = new HaplogroupClassifier();
 
-		SampleFile haploGroupSamples = classifier.calculateHaplogrops(phylotree, profiles);
+		SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
 		
-		Contamination contChecker = new Contamination();
+		ContaminationDetection contamination = new ContaminationDetection();
 
-		contChecker.detect(mutationServerSamples, haploGroupSamples.getTestSamples(), out);
+		ArrayList<ContaminationObject> list = contamination.detect(mutationServerSamples, haplogrepSamples.getTestSamples());
+	
+		contamination.writeFile(list, out);
+
 		
-		assertEquals("T2f1a1", haploGroupSamples.getTestSamples().get(0).getTopResult().getHaplogroup().toString());
+		assertEquals("T2f1a1", haplogrepSamples.getTestSamples().get(0).getTopResult().getHaplogroup().toString());
 		
 		CsvTableReader readerContamination = new CsvTableReader(out, '\t');
 		readerContamination.next();
@@ -88,15 +92,18 @@ public class HaplogroupClassifierTests {
 
 		HaplogroupClassifier classifier = new HaplogroupClassifier();
 
-		SampleFile haploGroupSamples = classifier.calculateHaplogrops(phylotree, profiles);
+		SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
 
-		assertEquals("H1", haploGroupSamples.getTestSamples().get(0).getTopResult().getHaplogroup().toString());
+		assertEquals("H1", haplogrepSamples.getTestSamples().get(0).getTopResult().getHaplogroup().toString());
 
-		assertEquals("U5a2e", haploGroupSamples.getTestSamples().get(1).getTopResult().getHaplogroup().toString());
+		assertEquals("U5a2e", haplogrepSamples.getTestSamples().get(1).getTopResult().getHaplogroup().toString());
 
-		Contamination contChecker = new Contamination();
+		ContaminationDetection contamination = new ContaminationDetection();
 
-		contChecker.detect(mutationServerSamples, haploGroupSamples.getTestSamples(), out);
+		ArrayList<ContaminationObject> list = contamination.detect(mutationServerSamples, haplogrepSamples.getTestSamples());
+		
+		contamination.writeFile(list, out);
+
 
 		CsvTableReader readerContamination = new CsvTableReader(out, '\t');
 		// get first line

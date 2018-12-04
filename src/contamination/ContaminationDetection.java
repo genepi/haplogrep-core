@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import contamination.objects.ContaminationEntry;
+import contamination.objects.ContaminationObject;
 import contamination.objects.Variant;
 import contamination.objects.Sample;
 import core.Haplogroup;
@@ -21,7 +21,7 @@ import genepi.io.table.writer.CsvTableWriter;
 import phylotree.Phylotree;
 import phylotree.PhylotreeManager;
 
-public class Contamination {
+public class ContaminationDetection {
 
 	enum Status {
 		HIGH, LOW, NONE;
@@ -31,23 +31,18 @@ public class Contamination {
 	private int settingAmountLow = 2;
 	private double settingHgQuality = 0.5;
 
-	public int detect(HashMap<String, Sample> mutationSamples, ArrayList<TestSample> haplogrepSamples, String out) {
+	public ArrayList<ContaminationObject> detect(HashMap<String, Sample> mutationSamples, ArrayList<TestSample> haplogrepSamples) {
 
 		int countEntries = 0;
 		int countPossibleContaminated = 0;
 		int countContaminated = 0;
 		int countNone = 0;
-
+		
+		ArrayList<ContaminationObject> contaminationList = new ArrayList<ContaminationObject>();
+		
 		Collections.sort((List<TestSample>) haplogrepSamples);
 
 		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt");
-
-		CsvTableWriter contaminationWriter = new CsvTableWriter(out, '\t');
-
-		String[] columnsWrite = { "SampleID", "Contamination", "SampleHomoplasmies", "SampleHeteroplasmies", "SampleMeanCoverage", "HgMajor", "HgQualityMajor",
-				"HgMinor", "HgQualityMinor", "HomoplasmiesMajor", "HomoplasmiesMinor", "HeteroplasmiesMajor", "HeteroplasmiesMinor", "MeanHetLevelMajor",
-				"MeanHetLevelMinor", "HG_Distance", "DiffSnpsMajorMinor", "DiffSnpsMinorMajor", "HeteroplasmyLevelTotal" };
-		contaminationWriter.setColumns(columnsWrite);
 
 		NumberFormat formatter = new DecimalFormat("#0.000");
 
@@ -70,12 +65,12 @@ public class Contamination {
 				int notFoundMajor = countNotFound(foundMajor, expectedMajor);
 				int notFoundMinor = countNotFound(foundMinor, expectedMinor);
 
-				ContaminationEntry centry = new ContaminationEntry();
-				centry.setSampleId(majorSample.getSampleID().split("_maj")[0]);
+				ContaminationObject centry = new ContaminationObject();
+				centry.setId(majorSample.getSampleID().split("_maj")[0]);
 				double hgQualityMajor = majorSample.getTopResult().getDistance();
 				double hgQualityMinor = minorSample.getTopResult().getDistance();
 
-				Sample currentSample = mutationSamples.get(centry.getSampleId());
+				Sample currentSample = mutationSamples.get(centry.getId());
 
 				int sampleHomoplasmies = currentSample.getAmountHomoplasmies();
 				int sampleHeteroplasmies = currentSample.getAmountHeteroplasmies();
@@ -83,11 +78,8 @@ public class Contamination {
 				int meanCoverageSample = (int) currentSample.getSumCoverage() / currentSample.getAmountVariants();
 				double meanHetLevelSample = currentSample.getSumHeteroplasmyLevel() / currentSample.getAmountHeteroplasmies();
 
-				centry.setMajorHg(majorSample.getTopResult().getHaplogroup().toString());
-				centry.setMajorNotFound(notFoundMajor);
-
-				centry.setMinorHg(minorSample.getTopResult().getHaplogroup().toString());
-				centry.setMinorNotFound(notFoundMinor);
+				centry.setHgMajor(majorSample.getTopResult().getHaplogroup().toString());
+				centry.setHgMinor(minorSample.getTopResult().getHaplogroup().toString());
 
 				int homoplasmiesMajor = countHomoplasmies(currentSample, foundMajor);
 				int homoplasmiesMinor = countHomoplasmies(currentSample, foundMinor);
@@ -101,7 +93,7 @@ public class Contamination {
 				ArrayList<Polymorphism> diffMajorMinor = calculateHaplogroupDifference(expectedMajor, expectedMinor);
 				ArrayList<Polymorphism> diffMinorMajor = calculateHaplogroupDifference(expectedMinor, expectedMajor);
 
-				if (!centry.getMajorHg().equals(centry.getMinorHg())) {
+				if (!centry.getHgMajor().equals(centry.getHgMinor())) {
 
 					distanceHG = calcDistance(centry, phylotree);
 
@@ -122,57 +114,49 @@ public class Contamination {
 					countNone++;
 					status = Status.NONE;
 				}
-
-				contaminationWriter.setString(0, centry.getSampleId());
-				contaminationWriter.setString(1, status.toString());
-				contaminationWriter.setInteger(2, sampleHomoplasmies);
-				contaminationWriter.setInteger(3, sampleHeteroplasmies);
-				contaminationWriter.setInteger(4, meanCoverageSample);
-				contaminationWriter.setString(5, centry.getMajorHg());
-				contaminationWriter.setString(6, formatter.format(hgQualityMajor));
-				contaminationWriter.setString(7, centry.getMinorHg());
-				contaminationWriter.setString(8, formatter.format(hgQualityMinor));
-				contaminationWriter.setInteger(9, homoplasmiesMajor);
-				contaminationWriter.setInteger(10, homoplasmiesMinor);
-				contaminationWriter.setInteger(11, heteroplasmiesMajor);
-				contaminationWriter.setInteger(12, heteroplasmiesMinor);
-				contaminationWriter.setString(13, formatter.format(meanHeteroplasmyMajor));
-				contaminationWriter.setString(14, formatter.format(meanHeteroplasmyMinor));
-				contaminationWriter.setInteger(15, distanceHG);
-				contaminationWriter.setInteger(16, diffMajorMinor.size());
-				contaminationWriter.setInteger(17, diffMinorMajor.size());
-				contaminationWriter.setString(18, formatter.format(meanHeteroplasmyMajor + meanHeteroplasmyMinor));
-				contaminationWriter.next();
+				
+				centry.setStatus(status.toString());
+				centry.setSampleHomoplasmies(sampleHomoplasmies);
+				centry.setSampleHeteroplasmies(sampleHeteroplasmies);
+				centry.setSampleMeanCoverage(meanCoverageSample);
+				centry.setHgMajorQ(formatter.format(hgQualityMajor));
+				centry.setHgMinorQ(formatter.format(hgQualityMinor));
+				centry.setHomoplasmiesMajor(homoplasmiesMajor);
+				centry.setHomoplasmiesMinor(homoplasmiesMinor);
+				centry.setHeteroplasmiesMajor(heteroplasmiesMajor);
+				centry.setHeteroplasmiesMinor(heteroplasmiesMinor);
+				centry.setMeanHetlevelMajor(formatter.format(meanHeteroplasmyMajor));
+				centry.setMeanHetlevelMinor(formatter.format(meanHeteroplasmyMinor));
+				centry.setDistance(distanceHG);
+				
+				contaminationList.add(centry);
+				
 			}
-
-			System.out.println("Total amount of samples:" + "\t" + countEntries);
-			System.out.println(out + "\t" + countEntries + "\t" + countContaminated + "\t" + countPossibleContaminated + "\t" + countNone);
-			contaminationWriter.close();
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			return -1;
+			return null;
 		}
 
-		return 0;
+		return contaminationList;
 	}
 
-	private int calcDistance(ContaminationEntry centry, Phylotree phylotree) {
+	private int calcDistance(ContaminationObject centry, Phylotree phylotree) {
 
-		Haplogroup hgMajor = new Haplogroup(centry.getMajorHg());
+		Haplogroup hgMajor = new Haplogroup(centry.getHgMajor());
 
-		Haplogroup hgMinor = new Haplogroup(centry.getMinorHg());
+		Haplogroup hgMinor = new Haplogroup(centry.getHgMinor());
 
 		return phylotree.getDistanceBetweenHaplogroups(hgMajor, hgMinor);
 	}
 
-	private int calcDistanceOld(ContaminationEntry centry, Phylotree phylotree) {
+	private int calcDistanceOld(ContaminationObject centry, Phylotree phylotree) {
 
 		int distanceHG;
 
-		Haplogroup hgMajor = new Haplogroup(centry.getMajorHg());
+		Haplogroup hgMajor = new Haplogroup(centry.getHgMajor());
 
-		Haplogroup hgMinor = new Haplogroup(centry.getMinorHg());
+		Haplogroup hgMinor = new Haplogroup(centry.getHgMinor());
 
 		if (hgMajor.isSuperHaplogroup(phylotree, hgMinor)) {
 
@@ -327,6 +311,43 @@ public class Contamination {
 		}
 
 		return stringBuilder.toString();
+	}
+	
+	
+	public void writeFile(ArrayList<ContaminationObject> list, String output) {
+		
+		CsvTableWriter contaminationWriter = new CsvTableWriter(output, '\t');
+		
+		String[] columnsWrite = { "SampleID", "Contamination", "SampleHomoplasmies", "SampleHeteroplasmies", "SampleMeanCoverage", "HgMajor", "HgQualityMajor",
+				"HgMinor", "HgQualityMinor", "HomoplasmiesMajor", "HomoplasmiesMinor", "HeteroplasmiesMajor", "HeteroplasmiesMinor", "MeanHetLevelMajor",
+				"MeanHetLevelMinor", "HG_Distance"};
+		//, "DiffSnpsMajorMinor", "DiffSnpsMinorMajor", "HeteroplasmyLevelTotal" 
+		contaminationWriter.setColumns(columnsWrite);
+		
+		for(ContaminationObject entry : list) {
+			contaminationWriter.setString(0, entry.getId());
+			contaminationWriter.setString(1, entry.getStatus());
+			contaminationWriter.setInteger(2, entry.getSampleHomoplasmies());
+			contaminationWriter.setInteger(3, entry.getSampleHeteroplasmies());
+			contaminationWriter.setInteger(4, entry.getSampleMeanCoverage());
+			contaminationWriter.setString(5, entry.getHgMajor());
+			contaminationWriter.setString(6, entry.getHgMajorQ());
+			contaminationWriter.setString(7, entry.getHgMinor());
+			contaminationWriter.setString(8, entry.getHgMinorQ());
+			contaminationWriter.setInteger(9, entry.getHomoplasmiesMajor());
+			contaminationWriter.setInteger(10, entry.getHomoplasmiesMinor());
+			contaminationWriter.setInteger(11, entry.getHeteroplasmiesMajor());
+			contaminationWriter.setInteger(12, entry.getHeteroplasmiesMinor());
+			contaminationWriter.setString(13, entry.getMeanHetlevelMajor());
+			contaminationWriter.setString(14, entry.getMeanHetlevelMinor());
+			contaminationWriter.setInteger(15, entry.getDistance());
+			//contaminationWriter.setInteger(16, diffMajorMinor.size());
+			//contaminationWriter.setInteger(17, diffMinorMajor.size());
+			//contaminationWriter.setString(18, formatter.format(meanHeteroplasmyMajor + meanHeteroplasmyMinor));
+			contaminationWriter.next();
+		}
+		
+		contaminationWriter.close();
 	}
 
 }

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import org.junit.Test;
+
+import contamination.objects.ContaminationObject;
 import contamination.objects.Sample;
 import core.SampleFile;
 import genepi.io.table.reader.CsvTableReader;
@@ -73,12 +75,15 @@ public class SimulationTests {
 								setup++;
 								int noise = Integer.valueOf(file.getName().substring(0, file.getName().length() - 7));
 								String output = folder + noise + "_" + qual + "_" + h + ".txt";
-								Contamination contamination = new Contamination();
+								ContaminationDetection contamination = new ContaminationDetection();
 								contamination.setSettingHgQuality(qual);
 								contamination.setSettingAmountHigh(h);
 								// contamination.setSettingAmountLow((h - w) < 0 ? 0 : (h - w));
 								contamination.setSettingAmountLow(0);
-								contamination.detect(mutationServerSamples, haplogrepSamples.getTestSamples(), output);
+								
+								ArrayList<ContaminationObject> list = contamination.detect(mutationServerSamples, haplogrepSamples.getTestSamples());
+								
+								contamination.writeFile(list, output);
 
 								CsvTableReader readerOut = new CsvTableReader(output, '\t');
 
