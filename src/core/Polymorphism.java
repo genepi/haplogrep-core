@@ -1,12 +1,5 @@
 package core;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.StringTokenizer;
@@ -643,12 +636,13 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 
 	public AnnotationAAC getAnnotation() {
 
-		HashMap<Polymorphism, AnnotationAAC> annotationLookup = Annotation.getInstance();
+		HashMap<Polymorphism, AnnotationAAC> annotationLookup = Annotation.getInstance().getAnnotation();
 
 		AnnotationAAC annotation = null;
 
-		if (annotationLookup.containsKey(this))
+		if (annotationLookup.containsKey(this)) {
 			annotation = annotationLookup.get(this);
+		}
 
 		return annotation;
 

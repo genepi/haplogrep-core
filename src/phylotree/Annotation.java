@@ -16,62 +16,62 @@ import exceptions.parse.sample.InvalidPolymorphismException;
 
 public class Annotation {
 
-	private static HashMap<Polymorphism, AnnotationAAC> acidLookup;
-	
-	static String annotationPath = "aminoacidchange.txt";
+	private HashMap<Polymorphism, AnnotationAAC> acidLookup;
 
-	public static void setAnnotationPath(String annotationPath) {
-		Annotation.annotationPath = annotationPath;
+	private static Annotation instance = null;
+
+	String annotationPath = "aminoacidchange.txt";
+
+	public void setAnnotationPath(String annotationPath) {
+		this.annotationPath = annotationPath;
 	}
 
-	private static void loadLookup() {
-
-			acidLookup = new HashMap<Polymorphism, AnnotationAAC>();
-			
-			InputStream annotationStream = Annotation.class.getClassLoader().getResourceAsStream(annotationPath);
-			BufferedReader annotationFileReader;
-			if (annotationStream == null) {
-
-				try {
-					annotationStream = new FileInputStream(new File(annotationPath));
-				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-
-			try {
-				annotationFileReader = new BufferedReader(new InputStreamReader(annotationStream));
-				String line = annotationFileReader.readLine();
-				line = annotationFileReader.readLine();
-				// Read-in each line
-				while (line != null) {
-					StringTokenizer mainTokenizer = new StringTokenizer(line, "\t");
-
-					String pos = mainTokenizer.nextToken();
-					String gen = mainTokenizer.nextToken();
-					short cod = Short.parseShort(mainTokenizer.nextToken());
-					String aachange = mainTokenizer.nextToken();
-					AnnotationAAC aac = new AnnotationAAC(pos, gen, cod, aachange);
-					acidLookup.put(new Polymorphism(pos), aac);
-					line = annotationFileReader.readLine();
-				}
-
-			} catch (InvalidPolymorphismException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
+	public static Annotation getInstance() {
+		if (instance == null) {
+			instance = new Annotation();
+		}
+		return instance;
 	}
 
-	public static HashMap<Polymorphism, AnnotationAAC> getInstance() {
+	private void loadLookup() {
+
+		acidLookup = new HashMap<Polymorphism, AnnotationAAC>();
+		InputStream annotationStream = this.getClass().getClassLoader().getResourceAsStream(annotationPath);
 		
-		if(acidLookup == null) {
+		BufferedReader annotationFileReader;
+
+		try {
+			annotationFileReader = new BufferedReader(new InputStreamReader(annotationStream));
+			String line = annotationFileReader.readLine();
+			line = annotationFileReader.readLine();
+			// Read-in each line
+			while (line != null) {
+				StringTokenizer mainTokenizer = new StringTokenizer(line, "\t");
+
+				String pos = mainTokenizer.nextToken();
+				String gen = mainTokenizer.nextToken();
+				short cod = Short.parseShort(mainTokenizer.nextToken());
+				String aachange = mainTokenizer.nextToken();
+				AnnotationAAC aac = new AnnotationAAC(pos, gen, cod, aachange);
+				acidLookup.put(new Polymorphism(pos), aac);
+				line = annotationFileReader.readLine();
+			}
+
+		} catch (InvalidPolymorphismException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public HashMap<Polymorphism, AnnotationAAC> getAnnotation() {
+
+		if (acidLookup == null) {
 			loadLookup();
 		}
+		
 		return acidLookup;
 	}
 

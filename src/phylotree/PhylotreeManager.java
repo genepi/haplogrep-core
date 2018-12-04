@@ -32,16 +32,20 @@ public class PhylotreeManager {
 	}
 
 	/**
-	 * Returns the phylotree instance of the requested version. If the instance does not exist it is created.
-	 * @param phylotreePath Path to xml file with the requested phylotree version
-	 * @param phyloGeneticWeightsPath Path to the file containing the phylogentic weights.
+	 * Returns the phylotree instance of the requested version. If the instance does
+	 * not exist it is created.
+	 * 
+	 * @param phylotreePath
+	 *            Path to xml file with the requested phylotree version
+	 * @param phyloGeneticWeightsPath
+	 *            Path to the file containing the phylogentic weights.
 	 * @return The requested phylotree instance
 	 */
 	public Phylotree getPhylotree(String phylotreePath, String phyloGeneticWeightsPath) {
 		if (phylotreeMap.containsKey(phylotreePath))
 			return phylotreeMap.get(phylotreePath);
 		else {
-			//for CLAP protocol:
+			// for CLAP protocol:
 			InputStream phyloFile = this.getClass().getClassLoader().getResourceAsStream(phylotreePath);
 			InputStream flucRates = this.getClass().getClassLoader().getResourceAsStream(phyloGeneticWeightsPath);
 			try {
@@ -53,7 +57,7 @@ public class PhylotreeManager {
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
-			Phylotree searchMananger = new Phylotree(phyloFile,flucRates);
+			Phylotree searchMananger = new Phylotree(phyloFile, flucRates);
 			phylotreeMap.put(phylotreePath, searchMananger);
 			return searchMananger;
 		}
