@@ -22,7 +22,7 @@ public class VcfImporter {
 		final VCFFileReader vcfReader = new VCFFileReader(file, false);
 
 		VCFHeader vcfHeader = vcfReader.getFileHeader();
-		
+
 		HashMap<String, Sample> samples = new HashMap<String, Sample>();
 
 		StringBuilder range = new StringBuilder();
@@ -67,7 +67,7 @@ public class VcfImporter {
 
 				Genotype genotype = vc.getGenotype(sampleVcf);
 
-				// only HOM is expected! (special handling for multiallelics below)
+				// only HOM_VAR is expected! (special handling for multiallelics below)
 				if (genotype.getType() == GenotypeType.HOM_VAR) {
 
 					if (genotype.getPloidy() > 1) {
@@ -139,7 +139,7 @@ public class VcfImporter {
 					else if (reference.length() > genotypeString.length()) {
 
 						int diff = reference.length() - genotypeString.length();
-						
+
 						for (int i = 0; i < diff; i++) {
 							int pos = vc.getStart() + genotypeString.length() + i;
 							Variant variant = new Variant();
@@ -157,25 +157,35 @@ public class VcfImporter {
 					}
 
 					// INSERTIONS
+					//TODO CASE CC to CCC a thing? 
 					else if (reference.length() < genotypeString.length()) {
-						
+
 						// reference completely included in genotype string, only new bases at the end
-						if (genotypeString.startsWith(reference)) {
-							Variant variant = new Variant();
-							int pos = vc.getStart() + reference.length() - 1;
+						Variant variant = new Variant();
+
+						if (reference.length() == 1) {
+							int pos = vc.getStart();
 							variant.setPos(pos);
 							variant.setRef(reference.charAt(0));
 							variant.setType(5);
-							String insertion = pos + "." + 1 + genotypeString.substring(genotypeString.length() - reference.length(), genotypeString.length());
+							String insertion = pos + "." + 1 + genotypeString.substring(reference.length(), (genotypeString.length()));
 							variant.setInsertion(insertion);
-
-							if (genotype.hasAnyAttribute("DP")) {
-								int coverage = (int) vc.getGenotype(sampleVcf).getAnyAttribute("DP");
-								variant.setCoverage(coverage);
-							}
 							sample.addVariant(variant);
 						} else {
-							// TODO CT to CCT
+							// insertions are added "left": from CT to CCCT therefore start from 0 of
+							// geno-string and go until geno.length-ref.length
+							int pos = vc.getStart();
+							variant.setPos(pos);
+							variant.setRef(reference.charAt(0));
+							variant.setType(5);
+							String insertion = pos + "." + 1 + genotypeString.substring(0, (genotypeString.length() - reference.length()));
+							variant.setInsertion(insertion);
+							sample.addVariant(variant);
+						}
+
+						if (genotype.hasAnyAttribute("DP")) {
+							int coverage = (int) vc.getGenotype(sampleVcf).getAnyAttribute("DP");
+							variant.setCoverage(coverage);
 						}
 					}
 
@@ -200,8 +210,9 @@ public class VcfImporter {
 						double minorLevel;
 						char minor;
 
-						// if a reference allele is available its always allele1!! (that means it does not matter if 0/1 or 1/0)
-						
+						// if a reference allele is available its always allele1!! (that means it does
+						// not matter if 0/1 or 1/0)
+
 						// HP always includes non-reference heteroplasmy level!
 						// Can therefore be smaller OR larger then 0.5!
 						if (allele1 == reference.charAt(0)) {
