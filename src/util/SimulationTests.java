@@ -1,11 +1,13 @@
-package contamination;
+package util;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import org.junit.Test;
 
+import contamination.ContaminationDetection;
+import contamination.HaplogroupClassifier;
+import contamination.VariantSplitter;
 import contamination.objects.ContaminationObject;
 import contamination.objects.Sample;
 import core.SampleFile;
@@ -17,8 +19,7 @@ import phylotree.PhylotreeManager;
 
 public class SimulationTests {
 
-	@Test
-	public void testSimulation() throws Exception {
+	public static void testSimulation() throws Exception {
 
 		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt");
 		String folder = "/home/seb/Desktop/simulation/input";
@@ -156,6 +157,16 @@ public class SimulationTests {
 					writer.close();
 			}
 		}
+	}
+	
+	public static void main(String[] args) {
+		try {
+			testSimulation();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 }

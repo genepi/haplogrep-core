@@ -67,7 +67,7 @@ public class VcfImporter {
 
 				Genotype genotype = vc.getGenotype(sampleVcf);
 
-				// only HOM is expected! (special handling for multiallelic below)
+				// only HOM is expected! (special handling for multiallelics below)
 				if (genotype.getType() == GenotypeType.HOM_VAR) {
 
 					if (genotype.getPloidy() > 1) {
@@ -200,9 +200,10 @@ public class VcfImporter {
 						double minorLevel;
 						char minor;
 
-						// if reference allele is available its always allele 1
-						// complicated logic since mutserve always reports non-reference het level! can
-						// be smaller then 0.5!
+						// if a reference allele is available its always allele1!! (that means it does not matter if 0/1 or 1/0)
+						
+						// HP always includes non-reference heteroplasmy level!
+						// Can therefore be smaller OR larger then 0.5!
 						if (allele1 == reference.charAt(0)) {
 							var = allele2;
 							// non-reference frequency greater than 0.5
@@ -243,7 +244,6 @@ public class VcfImporter {
 							int coverage = (int) vc.getGenotype(sampleVcf).getAnyAttribute("DP");
 							variant.setCoverage(coverage);
 						}
-
 						sample.addVariant(variant);
 					}
 				}
