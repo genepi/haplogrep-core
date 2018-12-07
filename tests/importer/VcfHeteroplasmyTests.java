@@ -1,11 +1,9 @@
-package contamination;
+package importer;
 
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 
 import org.junit.Test;
 
@@ -22,8 +20,8 @@ public class VcfHeteroplasmyTests {
 		 HashMap<String, Sample> mutationServerSamples = reader2.load(new File("test-data/vcf/NA20877.vcf"), false);
 		 
 		 for (Sample sam : mutationServerSamples.values()){
-			 System.out.println(sam.getId());
-			for(Variant var : sam.getVariants()) {
+
+			 for(Variant var : sam.getVariants()) {
 				
 				if(var.getPos() == 1438) {
 					assertEquals(var.getVariant(), 'G');
