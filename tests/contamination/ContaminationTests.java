@@ -10,13 +10,13 @@ import org.junit.Test;
 import contamination.ContaminationDetection.Status;
 import contamination.objects.ContaminationObject;
 import contamination.objects.Sample;
-import contamination.util.Utils;
 import core.SampleFile;
 import genepi.io.FileUtil;
 import genepi.io.table.reader.CsvTableReader;
 import importer.VcfImporter;
 import phylotree.Phylotree;
 import phylotree.PhylotreeManager;
+import util.ExportUtils;
 
 public class ContaminationTests {
 
@@ -242,7 +242,7 @@ public class ContaminationTests {
 		HaplogroupClassifier classifier = new HaplogroupClassifier();
 		SampleFile haplogrepSamples = classifier.calculateHaplogrops(phylotree, profiles);
 
-		Utils.createHsdInput(haplogrepSamples.getTestSamples(), "/home/seb/Desktop/contaminated.hsd");
+		ExportUtils.createHsdInput(haplogrepSamples.getTestSamples(), "/home/seb/Desktop/contaminated.hsd");
 
 		ArrayList<ContaminationObject> list = contamination.detect(mutationServerSamples, haplogrepSamples.getTestSamples());
 
