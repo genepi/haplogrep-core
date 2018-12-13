@@ -15,6 +15,11 @@ public class VariantSplitter {
 
 	public ArrayList<String> split(HashMap<String, Sample> samples) {
 
+		return split(samples, 0.0);
+	}
+
+	public ArrayList<String> split(HashMap<String, Sample> samples, double requiredHetLevel) {
+
 		ArrayList<String> lines = new ArrayList<String>();
 
 		for (Sample sample : samples.values()) {
@@ -25,14 +30,19 @@ public class VariantSplitter {
 			minorProfile.setId(sample.getId() + "_min");
 
 			for (Variant variant : sample.getVariants()) {
-				//SNP or Deletion
+
+				if (variant.getType() == 2 && variant.getLevel() < requiredHetLevel) {
+					continue;
+				}
+
+				// SNP or Deletion
 				if (variant.getType() == 1 || variant.getType() == 4) {
 					majorProfile.appendToProfile(variant.getPos() + "" + variant.getVariant());
 					minorProfile.appendToProfile(variant.getPos() + "" + variant.getVariant());
 				} else if (variant.getType() == 5) {
 					majorProfile.appendToProfile(variant.getInsertion());
 					minorProfile.appendToProfile(variant.getInsertion());
-				}else if (variant.getType() == 2) {
+				} else if (variant.getType() == 2) {
 					majorProfile.appendToProfile(variant.getPos() + "" + variant.getMajor());
 					minorProfile.appendToProfile(variant.getPos() + "" + variant.getMinor());
 				}
