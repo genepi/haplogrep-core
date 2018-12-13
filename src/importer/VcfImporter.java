@@ -157,7 +157,7 @@ public class VcfImporter {
 					}
 
 					// INSERTIONS
-					//TODO CASE CC to CCC a thing? 
+					// TODO CASE CC to CCC a thing?
 					else if (reference.length() < genotypeString.length()) {
 
 						// reference completely included in genotype string, only new bases at the end
@@ -191,17 +191,22 @@ public class VcfImporter {
 
 				} else if (genotype.getType() == GenotypeType.HET) {
 
-					if (genotype.hasAnyAttribute("HP")) {
+					if (genotype.hasAnyAttribute("AF")) {
 
-						double hetFrequency = Double.valueOf((String) vc.getGenotype(sampleVcf).getAnyAttribute("HP"));
-						double hetFrequencySecond = 0.0;
+						String afTag = (String) vc.getGenotype(sampleVcf).getAnyAttribute("AF");
+						double hetFrequency;
+						double hetFrequencySecond;
+						
+						String[] splits = afTag.split(",");
+						
+						hetFrequency = Double.valueOf(splits[0]);
 
-						if (genotype.hasAnyAttribute("HP1")) {
-							hetFrequencySecond = Double.valueOf((String) vc.getGenotype(sampleVcf).getAnyAttribute("HP1"));
+						if (splits.length > 1) {
+							hetFrequencySecond = Double.valueOf(splits[1]);
 						} else {
 							hetFrequencySecond = 1 - hetFrequency;
 						}
-
+						
 						char allele1 = genotype.getAlleles().get(0).getBaseString().charAt(0);
 						char allele2 = genotype.getAlleles().get(1).getBaseString().charAt(0);
 						char major;
