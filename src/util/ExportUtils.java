@@ -30,7 +30,7 @@ public class ExportUtils {
 			build.append(sam.getId() + "\t" + sam.getRange() + "\t" + "?");
 
 			for (Variant var : sam.getVariants()) {
-				if (var.getType() == 1 || var.getType() == 4 || (var.getType() == 2 && var.getLevel() >= 0.8)) {
+				if (var.getType() == 1 || var.getType() == 4 || (var.getType() == 2 && var.getLevel() >= 0.9)) {
 					build.append("\t" + var.getPos() + "" + var.getVariant());
 				} else if (var.getType() == 5) {
 					build.append("\t" + var.getInsertion());
