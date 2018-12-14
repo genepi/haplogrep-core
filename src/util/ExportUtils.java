@@ -19,9 +19,8 @@ import genepi.io.table.writer.CsvTableWriter;
 import search.SearchResultTreeNode;
 import search.ranking.results.RankedResult;
 
-
 public class ExportUtils {
-	
+
 	public static ArrayList<String> samplesMapToHsd(HashMap<String, Sample> samples) {
 		ArrayList<String> lines = new ArrayList<String>();
 		for (Sample sam : samples.values()) {
@@ -42,258 +41,259 @@ public class ExportUtils {
 		}
 		return lines;
 	}
-	
 
-		public static void createReport(Collection<TestSample> sampleCollection, String outFilename, boolean extended) throws IOException {
+	public static void createReport(Collection<TestSample> sampleCollection, String outFilename, boolean extended) throws IOException {
 
-			CsvTableWriter writer = new CsvTableWriter(outFilename,'\t');
+		CsvTableWriter writer = new CsvTableWriter(outFilename, '\t');
 
-			Collections.sort((List<TestSample>) sampleCollection);
+		Collections.sort((List<TestSample>) sampleCollection);
 
-			if (!extended) {
+		if (!extended) {
 
-				writer.setColumns(new String[] { "SampleID", "Range", "Haplogroup", "Overall_Rank" });
+			writer.setColumns(new String[] { "SampleID", "Range", "Haplogroup", "Rank", "Quality"});
 
-			} else {
+		} else {
 
-				writer.setColumns(new String[] { "SampleID", "Range", "Haplogroup", "Overall_Rank", "Not_Found_Polys",
-						"Found_Polys", "Remaining_Polys", "AAC_In_Remainings", "Input_Sample" });
+			writer.setColumns(new String[] { "SampleID", "Range", "Haplogroup", "Rank", "Quality", "Not_Found_Polys", "Found_Polys", "Remaining_Polys",
+					"AAC_In_Remainings", "Input_Sample" });
 
-			}
+		}
 
-			if (sampleCollection != null) {
+		if (sampleCollection != null) {
 
-				for (TestSample sample : sampleCollection) {
+			for (TestSample sample : sampleCollection) {
+				
+				int rank = 0;
+				
+				for (RankedResult currentResult : sample.getResults()) {
+					
+					rank++;
+
+					SampleRanges range = sample.getSample().getSampleRanges();
+
+					ArrayList<Integer> startRange = range.getStarts();
+
+					ArrayList<Integer> endRange = range.getEnds();
+
+					String resultRange = "";
+
+					for (int i = 0; i < startRange.size(); i++) {
+
+						if (i != 0) {
+							resultRange += " ";
+						}
+						if (startRange.get(i).equals(endRange.get(i))) {
+							resultRange += startRange.get(i);
+						} else {
+							resultRange += startRange.get(i) + "-" + endRange.get(i);
+						}
+					}
 
 					writer.setString("SampleID", sample.getSampleID());
 
-					for (RankedResult currentResult : sample.getResults()) {
+					writer.setString("Range", resultRange);
 
-						SampleRanges range = sample.getSample().getSampleRanges();
+					writer.setString("Haplogroup", currentResult.getHaplogroup().toString());
+					
+					writer.setString("Rank", rank+"");
 
-						ArrayList<Integer> startRange = range.getStarts();
+					writer.setString("Quality", String.format(Locale.ROOT, "%.4f", currentResult.getDistance()));
 
-						ArrayList<Integer> endRange = range.getEnds();
+					if (extended) {
 
-						String resultRange = "";
+						ArrayList<Polymorphism> foundPolys = currentResult.getSearchResult().getDetailedResult().getFoundPolys();
 
-						for (int i = 0; i < startRange.size(); i++) {
-							if (startRange.get(i).equals(endRange.get(i))) {
-								resultRange += startRange.get(i) + ";";
-							} else {
-								resultRange += startRange.get(i) + "-" + endRange.get(i) + ";";
+						ArrayList<Polymorphism> expectedPolys = currentResult.getSearchResult().getDetailedResult().getExpectedPolys();
+
+						Collections.sort(foundPolys);
+
+						Collections.sort(expectedPolys);
+
+						StringBuffer result = new StringBuffer();
+						for (Polymorphism expected : expectedPolys) {
+							if (!foundPolys.contains(expected)) {
+								result.append(" " + expected.toString());
 							}
 						}
-						writer.setString("Range", resultRange);
-						
-						writer.setString("Haplogroup", currentResult.getHaplogroup().toString());
-						
-						writer.setString("Overall_Rank", String.format(Locale.ROOT, "%.4f", currentResult.getDistance()));
 
-						if (extended) {
+						writer.setString("Not_Found_Polys", result.toString().trim());
 
-							ArrayList<Polymorphism> foundPolys = currentResult.getSearchResult().getDetailedResult()
-									.getFoundPolys();
-
-							ArrayList<Polymorphism> expectedPolys = currentResult.getSearchResult().getDetailedResult()
-									.getExpectedPolys();
-
-							Collections.sort(foundPolys);
-
-							Collections.sort(expectedPolys);
-
-							StringBuffer result = new StringBuffer();
-							for (Polymorphism expected : expectedPolys) {
-								if (!foundPolys.contains(expected)) {
-									result.append(" " + expected.toString());
-								}
-							}
-
-							writer.setString("Not_Found_Polys", result.toString().trim());
-
-							result = new StringBuffer();
-							for (Polymorphism currentPoly : foundPolys) {
-								result.append(" " + currentPoly);
-							}
-
-							writer.setString("Found_Polys", result.toString().trim());
-
-							ArrayList<Polymorphism> allChecked = currentResult.getSearchResult().getDetailedResult()
-									.getRemainingPolysInSample();
-							Collections.sort(allChecked);
-
-							result = new StringBuffer();
-							for (Polymorphism currentPoly : allChecked) {
-								result.append(" " + currentPoly);
-							}
-
-							writer.setString("Remaining_Polys", result.toString().trim());
-
-							ArrayList<Polymorphism> aac = currentResult.getSearchResult().getDetailedResult()
-									.getRemainingPolysInSample();
-							Collections.sort(aac);
-
-							result = new StringBuffer();
-							for (Polymorphism currentPoly : aac) {
-								if (currentPoly.getAnnotation() != null)
-									result.append(
-											" " + currentPoly + " [" + currentPoly.getAnnotation().getAminoAcidChange()
-													+ "| Codon " + currentPoly.getAnnotation().getCodon() + " | "
-													+ currentPoly.getAnnotation().getGene() + " ]");
-							}
-
-							writer.setString("AAC_In_Remainings", result.toString().trim());
-
-							ArrayList<Polymorphism> inputPolys = sample.getSample().getPolymorphisms();
-
-							Collections.sort(inputPolys);
-
-							result = new StringBuffer();
-							for (Polymorphism input : inputPolys) {
-								result.append(" " + input);
-							}
-
-							writer.setString("Input_Sample", result.toString().trim());
-
-						}
-						
-						writer.next();
-
-					}
-				}
-			}
-
-			writer.close();
-
-		}
-		
-		
-		public static void createHsdInput(List<TestSample> sampleCollection, String out) throws IOException {
-
-			StringBuffer result = new StringBuffer();
-
-			Collections.sort((List<TestSample>) sampleCollection);
-
-			result.append("SampleID\tRange\tHaplogroup\tInput_Sample\n");
-
-			if (sampleCollection != null) {
-
-				for (TestSample sample : sampleCollection) {
-
-					result.append(sample.getSampleID() + "\t");
-
-					for (RankedResult currentResult : sample.getResults()) {
-
-						SampleRanges range = sample.getSample().getSampleRanges();
-
-						ArrayList<Integer> startRange = range.getStarts();
-
-						ArrayList<Integer> endRange = range.getEnds();
-
-						String resultRange = "";
-
-						for (int i = 0; i < startRange.size(); i++) {
-							if (startRange.get(i).equals(endRange.get(i))) {
-								resultRange += startRange.get(i) + ";";
-							} else {
-								resultRange += startRange.get(i) + "-" + endRange.get(i) + ";";
-							}
-						}
-						result.append(resultRange);
-
-						result.append("\t" + currentResult.getHaplogroup());
-
-						result.append("\t");
-
-						ArrayList<Polymorphism> input = sample.getSample().getPolymorphisms();
-
-						Collections.sort(input);
-
-						for (Polymorphism currentPoly : input) {
+						result = new StringBuffer();
+						for (Polymorphism currentPoly : foundPolys) {
 							result.append(" " + currentPoly);
 						}
-						result.append("\n");
+
+						writer.setString("Found_Polys", result.toString().trim());
+
+						ArrayList<Polymorphism> allChecked = currentResult.getSearchResult().getDetailedResult().getRemainingPolysInSample();
+						Collections.sort(allChecked);
+
+						result = new StringBuffer();
+						for (Polymorphism currentPoly : allChecked) {
+							result.append(" " + currentPoly);
+						}
+
+						writer.setString("Remaining_Polys", result.toString().trim());
+
+						ArrayList<Polymorphism> aac = currentResult.getSearchResult().getDetailedResult().getRemainingPolysInSample();
+						Collections.sort(aac);
+
+						result = new StringBuffer();
+						for (Polymorphism currentPoly : aac) {
+							if (currentPoly.getAnnotation() != null)
+								result.append(" " + currentPoly + " [" + currentPoly.getAnnotation().getAminoAcidChange() + "| Codon "
+										+ currentPoly.getAnnotation().getCodon() + " | " + currentPoly.getAnnotation().getGene() + " ]");
+						}
+
+						writer.setString("AAC_In_Remainings", result.toString().trim());
+
+						ArrayList<Polymorphism> inputPolys = sample.getSample().getPolymorphisms();
+
+						Collections.sort(inputPolys);
+
+						result = new StringBuffer();
+						for (Polymorphism input : inputPolys) {
+							result.append(" " + input);
+						}
+
+						writer.setString("Input_Sample", result.toString().trim());
 
 					}
+
+					writer.next();
+
 				}
 			}
-
-			FileWriter fileWriter = new FileWriter(out);
-
-			fileWriter.write(result.toString().replace("\t ", "\t"));
-
-			fileWriter.close();
-
 		}
-		
 
-		public static void calcLineage(Collection<TestSample> sampleCollection, String out) throws IOException {
+		writer.close();
 
-			if (out.endsWith(".txt")) {
-				out = out.substring(0, out.lastIndexOf("."));
-			}
+	}
 
-			HashSet<String> set = new HashSet<String>();
-			String tmpNode = "";
+	public static void createHsdInput(List<TestSample> sampleCollection, String out) throws IOException {
 
-			String graphViz = out + ".dot";
+		StringBuffer result = new StringBuffer();
 
-			FileWriter graphVizWriter = new FileWriter(graphViz);
+		Collections.sort((List<TestSample>) sampleCollection);
 
-			graphVizWriter.write("digraph {  label=\"Sample File: " + out + "\"\n");
+		result.append("SampleID\tRange\tHaplogroup\tInput_Sample\n");
+
+		if (sampleCollection != null) {
 
 			for (TestSample sample : sampleCollection) {
 
+				result.append(sample.getSampleID() + "\t");
+
 				for (RankedResult currentResult : sample.getResults()) {
 
-					ArrayList<SearchResultTreeNode> currentPath = currentResult.getSearchResult().getDetailedResult()
-							.getPhyloTreePath();
+					SampleRanges range = sample.getSample().getSampleRanges();
 
-					for (int i = 0; i < currentPath.size(); i++) {
+					ArrayList<Integer> startRange = range.getStarts();
 
-						Haplogroup currentHg = currentPath.get(i).getHaplogroup();
+					ArrayList<Integer> endRange = range.getEnds();
 
-						if (i == 0) {
-							tmpNode = "\"" + currentHg + "\" -> ";
+					String resultRange = "";
+
+					for (int i = 0; i < startRange.size(); i++) {
+						if (startRange.get(i).equals(endRange.get(i))) {
+							resultRange += startRange.get(i) + ";";
+						} else {
+							resultRange += startRange.get(i) + "-" + endRange.get(i) + ";";
 						}
+					}
+					result.append(resultRange);
 
-						else {
+					result.append("\t" + currentResult.getHaplogroup());
 
-							StringBuilder polys = new StringBuilder();
+					result.append("\t");
 
-							if (currentPath.get(i).getExpectedPolys().size() == 0) {
-								polys.append("-");
-							} else {
-								for (Polymorphism currentPoly : currentPath.get(i).getExpectedPolys()) {
-									if (currentPath.get(i).getFoundPolys().contains(currentPoly)) {
-										polys.append(currentPoly + " ");
-									}
+					ArrayList<Polymorphism> input = sample.getSample().getPolymorphisms();
+
+					Collections.sort(input);
+
+					for (Polymorphism currentPoly : input) {
+						result.append(" " + currentPoly);
+					}
+					result.append("\n");
+
+				}
+			}
+		}
+
+		FileWriter fileWriter = new FileWriter(out);
+
+		fileWriter.write(result.toString().replace("\t ", "\t"));
+
+		fileWriter.close();
+
+	}
+
+	public static void calcLineage(Collection<TestSample> sampleCollection, String out) throws IOException {
+
+		if (out.endsWith(".txt")) {
+			out = out.substring(0, out.lastIndexOf("."));
+		}
+
+		HashSet<String> set = new HashSet<String>();
+		String tmpNode = "";
+
+		String graphViz = out + ".dot";
+
+		FileWriter graphVizWriter = new FileWriter(graphViz);
+
+		graphVizWriter.write("digraph {  label=\"Sample File: " + out + "\"\n");
+
+		for (TestSample sample : sampleCollection) {
+
+			for (RankedResult currentResult : sample.getResults()) {
+
+				ArrayList<SearchResultTreeNode> currentPath = currentResult.getSearchResult().getDetailedResult().getPhyloTreePath();
+
+				for (int i = 0; i < currentPath.size(); i++) {
+
+					Haplogroup currentHg = currentPath.get(i).getHaplogroup();
+
+					if (i == 0) {
+						tmpNode = "\"" + currentHg + "\" -> ";
+					}
+
+					else {
+
+						StringBuilder polys = new StringBuilder();
+
+						if (currentPath.get(i).getExpectedPolys().size() == 0) {
+							polys.append("-");
+						} else {
+							for (Polymorphism currentPoly : currentPath.get(i).getExpectedPolys()) {
+								if (currentPath.get(i).getFoundPolys().contains(currentPoly)) {
+									polys.append(currentPoly + " ");
 								}
 							}
-
-							String node = "\"" + currentHg + "\"[label=\"" + polys.toString().trim() + "\"];\n";
-
-							if (!set.contains(tmpNode + node)) {
-								graphVizWriter.write(tmpNode + node);
-								set.add(tmpNode + node);
-								tmpNode = "";
-							}
-
-							// Write currentHG also in new line for next iteration, but don't do this for
-							// last element
-							if (i != (currentPath.size() - 1)) {
-								tmpNode = "\"" + currentHg + "\" -> ";
-							}
 						}
 
-					}
-				}
+						String node = "\"" + currentHg + "\"[label=\"" + polys.toString().trim() + "\"];\n";
 
+						if (!set.contains(tmpNode + node)) {
+							graphVizWriter.write(tmpNode + node);
+							set.add(tmpNode + node);
+							tmpNode = "";
+						}
+
+						// Write currentHG also in new line for next iteration, but don't do this for
+						// last element
+						if (i != (currentPath.size() - 1)) {
+							tmpNode = "\"" + currentHg + "\" -> ";
+						}
+					}
+
+				}
 			}
 
-			graphVizWriter.write("}");
-			graphVizWriter.close();
-
 		}
+
+		graphVizWriter.write("}");
+		graphVizWriter.close();
+
+	}
 
 }
