@@ -66,7 +66,7 @@ public class TestSample implements Comparable<TestSample>{
 			String[] columns = inputString.split("\t");
 
 			//Check of number of columns are correct
-			if (columns.length < 4)
+			if (columns.length < 3)
 				throw new InvalidColumnCountException(columns.length);
 
 			//Parse the test sample id
