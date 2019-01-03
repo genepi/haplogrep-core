@@ -54,8 +54,6 @@ public class VcfImporterOld {
 
 				System.out.println("Error! Position " + vc.getStart()
 						+ " outside the range. Please double check if VCF includes variants mapped to rCRS only.");
-				System.exit(-1);
-
 			}
 
 			String reference = vc.getReference().getBaseString();
