@@ -50,7 +50,7 @@ public class HaplogroupClassifierTests {
 		CsvTableReader readerContamination = new CsvTableReader(out, '\t');
 		readerContamination.next();
 		
-		assertEquals(Status.NONE.name(), readerContamination.getString("Contamination"));
+		assertEquals(Status.NO.name(), readerContamination.getString("Contamination"));
 		assertEquals("39", readerContamination.getString("SampleHomoplasmies"));
 		assertEquals("0", readerContamination.getString("SampleHeteroplasmies"));
 		assertEquals("36", readerContamination.getString("HomoplasmiesMajor"));
@@ -109,12 +109,12 @@ public class HaplogroupClassifierTests {
 		// get first line
 		readerContamination.next();
 
-		assertEquals(Status.HIGH.name(), readerContamination.getString("Contamination"));
+		assertEquals(Status.YES.name(), readerContamination.getString("Contamination"));
 		assertEquals("6", readerContamination.getString("HomoplasmiesMajor"));
 		assertEquals("7", readerContamination.getString("SampleHomoplasmies"));
 		assertEquals("0.987", readerContamination.getString("MeanHetLevelMajor"));
 		assertEquals("6", readerContamination.getString("HomoplasmiesMinor"));
-		assertEquals("0.011", readerContamination.getString("MeanHetLevelMinor"));
+		assertEquals(0.011, readerContamination.getDouble("MeanHetLevelMinor"),0.001);
 		assertEquals("12", readerContamination.getString("HeteroplasmiesMinor"));
 		assertEquals("18", readerContamination.getString("SampleHeteroplasmies"));
 		assertEquals("H1", readerContamination.getString("HgMajor"));

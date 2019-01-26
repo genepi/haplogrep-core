@@ -15,8 +15,8 @@ public class ContaminationObject {
 	private int homoplasmiesMinor;
 	private int heteroplasmiesMajor;
 	private int heteroplasmiesMinor;
-	private String meanHetlevelMajor;
-	private String meanHetlevelMinor;
+	private double meanHetlevelMajor;
+	private double meanHetlevelMinor;
 	private int distance;
 	private String heteroplasmyLevel;
 	
@@ -98,16 +98,16 @@ public class ContaminationObject {
 	public void setHeteroplasmiesMinor(int heteroplasmiesMinor) {
 		this.heteroplasmiesMinor = heteroplasmiesMinor;
 	}
-	public String getMeanHetlevelMajor() {
+	public double getMeanHetlevelMajor() {
 		return meanHetlevelMajor;
 	}
-	public void setMeanHetlevelMajor(String meanHetlevelMajor) {
+	public void setMeanHetlevelMajor(double meanHetlevelMajor) {
 		this.meanHetlevelMajor = meanHetlevelMajor;
 	}
-	public String getMeanHetlevelMinor() {
+	public double getMeanHetlevelMinor() {
 		return meanHetlevelMinor;
 	}
-	public void setMeanHetlevelMinor(String meanHetlevelMinor) {
+	public void setMeanHetlevelMinor(double meanHetlevelMinor) {
 		this.meanHetlevelMinor = meanHetlevelMinor;
 	}
 	public int getDistance() {

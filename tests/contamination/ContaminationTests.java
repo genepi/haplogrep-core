@@ -57,7 +57,7 @@ public class ContaminationTests {
 
 		int count = 0;
 		while (readerOut.next()) {
-			if (readerOut.getString("Contamination").equals(Status.HIGH.name())) {
+			if (readerOut.getString("Contamination").equals(Status.YES.name())) {
 				count++;
 
 			}
@@ -104,7 +104,7 @@ public class ContaminationTests {
 		CsvTableReader readerOut = new CsvTableReader(output, '\t');
 		int count = 0;
 		while (readerOut.next()) {
-			if (readerOut.getString("Contamination").equals(Status.HIGH.name())) {
+			if (readerOut.getString("Contamination").equals(Status.YES.name())) {
 				count++;
 
 			}
@@ -152,11 +152,11 @@ public class ContaminationTests {
 		int countHigh = 0;
 		int countLow = 0;
 		while (readerOut.next()) {
-			if (readerOut.getString("Contamination").equals(Status.HIGH.name())) {
+			if (readerOut.getString("Contamination").equals(Status.YES.name())) {
 				countHigh++;
 
 			}
-			if (readerOut.getString("Contamination").equals(Status.LOW.name())) {
+			if (readerOut.getString("Contamination").equals(Status.YES.name())) {
 				countLow++;
 
 			}
@@ -202,7 +202,7 @@ public class ContaminationTests {
 		CsvTableReader readerOut = new CsvTableReader(output, '\t');
 		int count = 0;
 		while (readerOut.next()) {
-			if (readerOut.getString("Contamination").equals(Status.HIGH.name())) {
+			if (readerOut.getString("Contamination").equals(Status.YES.name())) {
 				count++;
 
 			}
@@ -253,11 +253,11 @@ public class ContaminationTests {
 		int countLow = 0;
 		while (readerOut.next()) {
 
-			if (readerOut.getString("Contamination").equals(Status.HIGH.name())) {
+			if (readerOut.getString("Contamination").equals(Status.YES.name())) {
 				countHigh++;
 			}
 
-			if (readerOut.getString("Contamination").equals(Status.LOW.name())) {
+			if (readerOut.getString("Contamination").equals(Status.YES.name())) {
 				countLow++;
 			}
 		}
@@ -313,7 +313,7 @@ public class ContaminationTests {
 			String sample = readerResult.getString("SampleID").split("\\.")[0];
 			String status = readerResult.getString("Contamination");
 
-			if (status.equals(Status.HIGH.name()) || status.equals(Status.LOW.name())) {
+			if (status.equals(Status.YES.name()) || status.equals(Status.YES.name())) {
 				if (contSamples.contains(sample)) {
 					found++;
 				}

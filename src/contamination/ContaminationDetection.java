@@ -24,7 +24,7 @@ import phylotree.PhylotreeManager;
 public class ContaminationDetection {
 
 	enum Status {
-		HIGH, LOW, NONE;
+		YES, NO;
 	}
 
 	private int settingAmountHigh = 3;
@@ -100,7 +100,7 @@ public class ContaminationDetection {
 					if ((heteroplasmiesMajor >= settingAmountHigh || heteroplasmiesMinor >= settingAmountHigh) && distanceHG >= settingAmountHigh
 							&& hgQualityMajor > settingHgQuality && hgQualityMinor > settingHgQuality) {
 						countContaminated++;
-						status = Status.HIGH;
+						status = Status.YES;
 						// TODO check mutation rate if heteroplasmies > 5
 					} /*
 						 * else if ((heteroplasmiesMinor >= settingAmountLow || distanceHG >=
@@ -108,11 +108,11 @@ public class ContaminationDetection {
 						 * settingHgQuality) { countPossibleContaminated++; status = Status.LOW; }
 						 */ else {
 						countNone++;
-						status = Status.NONE;
+						status = Status.NO;
 					}
 				} else {
 					countNone++;
-					status = Status.NONE;
+					status = Status.NO;
 				}
 				
 				centry.setStatus(status.toString());
@@ -125,8 +125,8 @@ public class ContaminationDetection {
 				centry.setHomoplasmiesMinor(homoplasmiesMinor);
 				centry.setHeteroplasmiesMajor(heteroplasmiesMajor);
 				centry.setHeteroplasmiesMinor(heteroplasmiesMinor);
-				centry.setMeanHetlevelMajor(formatter.format(meanHeteroplasmyMajor));
-				centry.setMeanHetlevelMinor(formatter.format(meanHeteroplasmyMinor));
+				centry.setMeanHetlevelMajor(meanHeteroplasmyMajor);
+				centry.setMeanHetlevelMinor(meanHeteroplasmyMinor);
 				centry.setDistance(distanceHG);
 				
 				contaminationList.add(centry);
@@ -338,8 +338,8 @@ public class ContaminationDetection {
 			contaminationWriter.setInteger(10, entry.getHomoplasmiesMinor());
 			contaminationWriter.setInteger(11, entry.getHeteroplasmiesMajor());
 			contaminationWriter.setInteger(12, entry.getHeteroplasmiesMinor());
-			contaminationWriter.setString(13, entry.getMeanHetlevelMajor());
-			contaminationWriter.setString(14, entry.getMeanHetlevelMinor());
+			contaminationWriter.setDouble(13, entry.getMeanHetlevelMajor());
+			contaminationWriter.setDouble(14, entry.getMeanHetlevelMinor());
 			contaminationWriter.setInteger(15, entry.getDistance());
 			//contaminationWriter.setInteger(16, diffMajorMinor.size());
 			//contaminationWriter.setInteger(17, diffMinorMajor.size());
