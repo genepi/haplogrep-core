@@ -250,21 +250,14 @@ public class ContaminationTests {
 
 		CsvTableReader readerOut = new CsvTableReader(output, '\t');
 		int countHigh = 0;
-		int countLow = 0;
 		while (readerOut.next()) {
 
 			if (readerOut.getString("Contamination").equals(Status.YES.name())) {
 				countHigh++;
 			}
-
-			if (readerOut.getString("Contamination").equals(Status.YES.name())) {
-				countLow++;
-			}
 		}
 
-		assertEquals(128, countHigh);
-		// assertEquals(37, countLow);
-
+		assertEquals(91, countHigh);
 		// FileUtil.deleteFile(out);
 	}
 
