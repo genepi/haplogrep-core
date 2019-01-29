@@ -23,7 +23,7 @@ import phylotree.PhylotreeManager;
 
 public class ContaminationDetection {
 
-	enum Status {
+	public enum Status {
 		YES, NO;
 	}
 
