@@ -1,7 +1,5 @@
 package util;
 
-import contamination.objects.Sample;
-import contamination.objects.Variant;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,6 +16,8 @@ import core.TestSample;
 import genepi.io.table.writer.CsvTableWriter;
 import search.SearchResultTreeNode;
 import search.ranking.results.RankedResult;
+import vcf.Sample;
+import vcf.Variant;
 
 public class ExportUtils {
 

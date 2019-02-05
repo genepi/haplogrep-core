@@ -1,4 +1,5 @@
-package contamination.tools;
+package util;
+/*package contamination.tools;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -163,4 +164,4 @@ public class HaplogroupSimulator {
 		generateMixtures("H", 10, random);
 	}
 
-}
+}*/

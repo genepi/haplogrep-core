@@ -8,10 +8,10 @@ import java.util.HashMap;
 
 import org.junit.Test;
 
-import contamination.objects.Sample;
-import contamination.objects.Variant;
 import importer.VcfImporter;
 import util.ExportUtils;
+import vcf.Sample;
+import vcf.Variant;
 
 public class VcfLoaderTest {
 
@@ -43,7 +43,7 @@ public class VcfLoaderTest {
 
 	}
 	
-	@Test
+	/*@Test
 	public void VcfMultiAllelicTest() throws Exception {
 		String file = "test-data/vcf/NA20877.vcf.gz";
 		VcfImporter impvcf = new VcfImporter();
@@ -55,7 +55,7 @@ public class VcfLoaderTest {
 				"HG00097	1-16569	?	73G	195C	263G	309.1CC	315.1C	709A	750G	1438G	1888A	2706G	4216C	4769G	4917G	5277C	5426C	6489A	7028T	8697A	8860G	10463C	11251G	11719A	11812G	13368A	14233G	14766T	14905A	15028A	15043A	15326G	15452A	15607G	15928A	16126C	16182C	16183C	16189C	16294T	16296T	16298C	16519C",
 				lines.get(0).toString().trim());
 
-	}
+	}*/
 
 	@Test
 	public void VcfPolyDiploidTest() throws Exception {

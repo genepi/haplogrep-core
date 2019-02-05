@@ -1,4 +1,4 @@
-package contamination.objects;
+package vcf;
 
 public class Variant {
 
