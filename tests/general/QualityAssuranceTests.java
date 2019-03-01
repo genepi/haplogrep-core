@@ -1,4 +1,4 @@
-package general;
+/*package general;
 import static org.junit.Assert.*;
 
 import java.io.BufferedReader;
@@ -566,3 +566,4 @@ public class QualityAssuranceTests<K> {
 		  
 		  
 }
+*/

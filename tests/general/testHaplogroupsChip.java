@@ -1,4 +1,4 @@
-package general;
+/*package general;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
@@ -45,3 +45,4 @@ public class testHaplogroupsChip {
 	}
 
 }
+*/
