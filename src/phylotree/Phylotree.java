@@ -345,7 +345,7 @@ public final class Phylotree {
 		return -1;
 	}
 
-	public int getDistanceBetweenHaplogroups(Haplogroup hgToCheck1, Haplogroup hgToCheck2) {
+	public int getDistanceBetweenHaplogroupsOld(Haplogroup hgToCheck1, Haplogroup hgToCheck2) {
 
 		int distance = -1;
 		HashSet<Haplogroup> markedHaplogroups = new HashSet<Haplogroup>();
@@ -378,6 +378,84 @@ public final class Phylotree {
 				break;
 			}
 		}
+		return distance;
+	}
+
+	public int getDistanceBetweenHaplogroups(Haplogroup hgToCheck1, Haplogroup hgToCheck2) {
+
+		int distance = -1;
+		HashSet<Haplogroup> markedHaplogroups = new HashSet<Haplogroup>();
+
+		boolean complete = false;
+		PhyloTreeNode c1 = haplogroupLookup.get(hgToCheck1);
+		PhyloTreeNode c2 = haplogroupLookup.get(hgToCheck2);
+
+		if (c1.equals(c2.getParent()) || c2.equals(c1.getParent())) {
+			distance = 1;
+			return distance;
+		}
+
+		// iterate to root for first haplogroup
+		while (!complete) {
+
+			if (c1 != null) {
+				markedHaplogroups.add(c1.getHaplogroup());
+				c1 = c1.getParent();
+				distance++;
+			} else {
+				complete = true;
+				break;
+			}
+		}
+
+		// iterate for second haplogroup until common ancestor has been identified
+		complete = false;
+		Haplogroup result = null;
+		while (!complete) {
+
+			if (c2 != null && !markedHaplogroups.contains(c2.getHaplogroup())) {
+				c2 = c2.getParent();
+				distance++;
+			} else {
+				if (c2 != null) {
+					result = c2.getHaplogroup();
+				}
+				complete = true;
+				break;
+			}
+		}
+
+		// get distance from common ancestor to root
+		int distanceShared = 0;
+
+		if (result != null) {
+			distanceShared = getDistanceToRoot(result);
+		}
+
+		// actual difference between HG1 and HG2
+		return distance - distanceShared;
+	}
+
+	public int getDistanceToRoot(Haplogroup hgToCheck1) {
+
+		int distance = -1;
+		HashSet<Haplogroup> markedHaplogroups = new HashSet<Haplogroup>();
+
+		boolean complete = false;
+		PhyloTreeNode c1 = haplogroupLookup.get(hgToCheck1);
+
+		while (!complete) {
+
+			if (c1 != null) {
+				markedHaplogroups.add(c1.getHaplogroup());
+				c1 = c1.getParent();
+				distance++;
+			} else {
+				complete = true;
+				break;
+			}
+		}
+
 		return distance;
 	}
 
