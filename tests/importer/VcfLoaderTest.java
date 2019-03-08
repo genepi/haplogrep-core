@@ -21,7 +21,7 @@ public class VcfLoaderTest {
 		VcfImporter impvcf = new VcfImporter();
 		HashMap<String, Sample> samples = impvcf.load(new File(file), false);
 
-		ArrayList<String> lines = ExportUtils.samplesMapToHsd(samples);
+		ArrayList<String> lines = ExportUtils.vcfTohsd(samples);
 
 		assertEquals(
 				"TL064	1-16569	?	8281d	8282d	8283d	8284d	8285d	8286d	8287d	8288d	8289d	8307d	8860G	15940C	15941d",
@@ -35,7 +35,7 @@ public class VcfLoaderTest {
 		VcfImporter impvcf = new VcfImporter();
 		HashMap<String, Sample> samples = impvcf.load(new File(file), false);
 		
-		ArrayList<String> lines = ExportUtils.samplesMapToHsd(samples);
+		ArrayList<String> lines = ExportUtils.vcfTohsd(samples);
 
 		assertEquals(
 				"HG00097	1-16569	?	73G	195C	263G	309.1CC	315.1C	709A	750G	1438G	1888A	2706G	4216C	4769G	4917G	5277C	5426C	6489A	7028T	8697A	8860G	10463C	11251G	11719A	11812G	13368A	14233G	14766T	14905A	15028A	15043A	15326G	15452A	15607G	15928A	16126C	16182C	16183C	16189C	16294T	16296T	16298C	16519C",
@@ -49,7 +49,7 @@ public class VcfLoaderTest {
 		VcfImporter impvcf = new VcfImporter();
 		HashMap<String, Sample> samples = impvcf.load(new File(file), false);
 		
-		ArrayList<String> lines = ExportUtils.samplesMapToHsd(samples);
+		ArrayList<String> lines = ExportUtils.vcfTohsd(samples);
 		
 		for(String l : lines) {
 			System.out.println(l);

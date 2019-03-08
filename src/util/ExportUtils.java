@@ -21,7 +21,7 @@ import vcf.Variant;
 
 public class ExportUtils {
 
-	public static ArrayList<String> samplesMapToHsd(HashMap<String, Sample> samples) {
+	public static ArrayList<String> vcfTohsd(HashMap<String, Sample> samples) {
 		ArrayList<String> lines = new ArrayList<String>();
 		for (Sample sam : samples.values()) {
 
