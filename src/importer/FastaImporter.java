@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.apache.commons.lang.SystemUtils;
+
 import com.github.lindenb.jbwa.jni.AlnRgn;
 import com.github.lindenb.jbwa.jni.BwaIndex;
 import com.github.lindenb.jbwa.jni.BwaMem;
@@ -55,6 +57,10 @@ public class FastaImporter {
 		String referenceAsString = readInReference(FileUtil.path(jbwaDir, ref));
 
 		String jbwaLib = FileUtil.path(new File(jbwaDir + "/libbwajni.so").getAbsolutePath());
+
+		if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_MAC_OSX) {
+			jbwaLib = FileUtil.path(new File(jbwaDir + "/libbwajni.jnilib").getAbsolutePath());
+		}
 
 		System.load(jbwaLib);
 		BwaIndex index = new BwaIndex(new File(FileUtil.path(jbwaDir, ref)));
