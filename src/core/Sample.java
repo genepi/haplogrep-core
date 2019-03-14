@@ -39,6 +39,10 @@ public class Sample {
 	public ArrayList<Polymorphism> getPolymorphisms() {
 		return sample;
 	}
+	
+	public void setPolymorphisms(ArrayList<Polymorphism> sample) {
+		this.sample = sample;
+	}
 
 	/**
 	 * Checks if a polymorphism appears in this sample
