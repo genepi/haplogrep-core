@@ -12,7 +12,6 @@ import qualityAssurance.issues.QualityFatal;
 import qualityAssurance.issues.QualityIssue;
 import qualityAssurance.rules.HaplogrepRule;
 import core.Polymorphism;
-import core.Sample;
 import core.TestSample;
 
 public class QualityAssistent {

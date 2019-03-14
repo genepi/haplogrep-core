@@ -4,16 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import core.TestSample;
-import qualityAssurance.issues.QualityIssue;
+import qualityAssurance.rules.CheckAlignment;
 import qualityAssurance.rules.CheckExpectedHGMatchesDetectedHG;
 import qualityAssurance.rules.CheckForAlignmentWarnings;
 import qualityAssurance.rules.CheckForAmbiguosResult;
 import qualityAssurance.rules.CheckForHeteroplasmy;
 import qualityAssurance.rules.CheckForQuality;
-import qualityAssurance.rules.CheckForReferencePolymorhisms;
-import qualityAssurance.rules.CheckForSampleRCRSAligned;
-import qualityAssurance.rules.CheckForSampleRSRSAligned;
-import qualityAssurance.rules.CheckForSampleRange;
 import qualityAssurance.rules.CheckForTooManyGlobalPrivateMutations;
 import qualityAssurance.rules.CheckForTooManyLocalPrivateMutations;
 import qualityAssurance.rules.CheckForTooManyLocalPrivateMutationsHaploGroup;
@@ -41,6 +37,10 @@ public class RuleSet {
 		addRule(new CheckForTooManyN(1));
 		addRule(new CheckForTooManyRCRSpos(1));
 		addRule(new CheckForQuality(1));
+	}
+	
+	public void addMappingRules() {
+		addRule(new CheckAlignment(1));
 	}
 	
 	public void addRule(HaplogrepRule newRule){
