@@ -321,6 +321,17 @@ public class SampleFile {
 		}
 		qualityAssistent.reevaluateRules();
 	}
+	
+
+	public void applyMappingRules(Phylotree phylotree) {
+		
+		if (qualityAssistent == null) {
+			RuleSet rules = new RuleSet();
+			rules.addMappingRules();
+			qualityAssistent = new QualityAssistent(testSamples.values(), rules, phylotree);
+		}
+		qualityAssistent.reevaluateRules();
+	}
 
 	public void reevaluateSample(TestSample sampleToReevaluate) {
 		qualityAssistent.reevaluateRulesForSample(sampleToReevaluate);
