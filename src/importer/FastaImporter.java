@@ -133,7 +133,7 @@ public class FastaImporter {
 				String variants = readCigar(samRecord, referenceAsString);
 
 				profile.append(variants);
-
+				
 			}
 
 			lines.add(profile.toString());
@@ -180,6 +180,8 @@ public class FastaImporter {
 		for (CigarElement cigarElement : samRecord.getCigar().getCigarElements()) {
 
 			Integer cigarElementLength = cigarElement.getLength();
+			
+			StringBuilder buildDeletion = new StringBuilder();
 
 			if (cigarElement.getOperator() == CigarOperator.D) {
 
@@ -187,13 +189,16 @@ public class FastaImporter {
 				Integer cigarElementStart = currentReferencePos;
 
 				Integer cigarElementEnd = currentReferencePos + cigarElementLength;
+				
+				buildDeletion.append(cigarElementStart+"-"+(cigarElementEnd-1)+"d");
 
 				while (cigarElementStart < cigarElementEnd) {
 
-					pos.append("\t" + cigarElementStart + "d");
-
+					//pos.append("\t" + cigarElementStart + "d");
 					cigarElementStart++;
 				}
+				
+				pos.append("\t" + buildDeletion.toString());
 
 			}
 
@@ -205,15 +210,19 @@ public class FastaImporter {
 				int i = 1;
 
 				int length = cigarElement.getLength();
+				
+				StringBuilder buildInsertion = new StringBuilder();
 
 				while (i <= length) {
 
 					char insBase = samRecord.getReadString().charAt(sequencePos + i - 1);
-
-					pos.append("\t" + currentReferencePosIns + "." + i + "" + insBase);
-
+					
+					buildInsertion.append(insBase);
+					// pos.append("\t" + currentReferencePosIns + "." + i + "" + insBase);
 					i++;
 				}
+				
+				pos.append("\t" + currentReferencePosIns + ".1" + buildInsertion.toString());
 
 			}
 

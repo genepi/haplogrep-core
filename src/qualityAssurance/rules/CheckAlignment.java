@@ -45,9 +45,9 @@ public class CheckAlignment extends HaplogrepRule {
 
 			if (current.getMutation() == Mutations.DEL || current.getMutation() == Mutations.INS) {
 				try {
-					String s = rules.get(current.toString());
-					if(s!=null) {
-					outPolys.add(new Polymorphism(s));
+					String substitute = rules.get(current.toString());
+					if(substitute!=null) {
+					outPolys.add(new Polymorphism(substitute));
 					}
 				} catch (InvalidPolymorphismException e) {
 					// TODO Auto-generated catch block
