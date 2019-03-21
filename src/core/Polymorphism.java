@@ -300,7 +300,8 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		stringToParse = stringToParse.trim();
 
 		try {
-			if (stringToParse.contains("R")) {
+			//ignore R on insertions
+			if (stringToParse.contains("R") && !stringToParse.contains(".")) {
 				this.position = Integer.valueOf(stringToParse.substring(0, stringToParse.length() - 1));
 
 				if (getReferenceBase(position).equals("A"))
@@ -308,7 +309,8 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 				if (getReferenceBase(position).equals("G"))
 					this.mutation = Mutations.A;
 			}
-			if (stringToParse.contains("Y")) {
+			//ignore Y on insertions
+			if (stringToParse.contains("Y") && !stringToParse.contains(".")) {
 				this.position = Integer.valueOf(stringToParse.substring(0, stringToParse.length() - 1));
 				if (getReferenceBase(position).equals("C"))
 					this.mutation = Mutations.T;
