@@ -51,10 +51,6 @@ public class VcfLoaderTest {
 		
 		ArrayList<String> lines = ExportUtils.vcfTohsd(samples);
 		
-		for(String l : lines) {
-			System.out.println(l);
-		}
-
 		assertEquals(
 				"NA20877.MT.bam	1-16569	?	73G	152C	263G	750G	1438G	2706G	4216C	7028T	7142C	7657C	8473C	8860G	9932A	10685A	11719A	12654G	13145A	13500C	14305A	14590T	14766T	15326G	16071T	16519C",
 				lines.get(0).toString().trim());

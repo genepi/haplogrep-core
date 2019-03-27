@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 
 import org.junit.Test;
@@ -72,9 +73,8 @@ public class FastaImporterTests {
 		String[] splits = samples.get(0).split("\t");
 
 		boolean deletion = false;
-
 		for (int i = 3; i < splits.length; i++) {
-			if (splits[i].equals("523d")) {
+			if (splits[i].equals("523-524d")) {
 				deletion = true;
 			}
 			actual.append(splits[i] + ",");
@@ -98,19 +98,9 @@ public class FastaImporterTests {
 		}
 
 		assertEquals(true, set.contains("16182.1C"));
-		assertEquals(true, set.contains("309.1C"));
-		assertEquals(true, set.contains("309.2C"));
-		assertEquals(true, set.contains("309.3T"));
-		assertEquals(true, set.contains("3106d"));
-		assertEquals(true, set.contains("8270d"));
-		assertEquals(true, set.contains("8271d"));
-		assertEquals(true, set.contains("8272d"));
-		assertEquals(true, set.contains("8273d"));
-		assertEquals(true, set.contains("8274d"));
-		assertEquals(true, set.contains("8275d"));
-		assertEquals(true, set.contains("8276d"));
-		assertEquals(true, set.contains("8277d"));
-
+		assertEquals(true, set.contains("309.1CCT"));
+		assertEquals(true, set.contains("3106-3106d"));
+		assertEquals(true, set.contains("8270-8277d"));
 	}
 	
 	// copied first two lines of fasta (including 309.1C etc to end of line)
@@ -128,18 +118,9 @@ public class FastaImporterTests {
 		}
 
 		assertEquals(true, set.contains("16182.1C"));
-		assertEquals(true, set.contains("309.1C"));
-		assertEquals(true, set.contains("309.2C"));
-		assertEquals(true, set.contains("309.3T"));
-		assertEquals(true, set.contains("3106d"));
-		assertEquals(true, set.contains("8270d"));
-		assertEquals(true, set.contains("8271d"));
-		assertEquals(true, set.contains("8272d"));
-		assertEquals(true, set.contains("8273d"));
-		assertEquals(true, set.contains("8274d"));
-		assertEquals(true, set.contains("8275d"));
-		assertEquals(true, set.contains("8276d"));
-		assertEquals(true, set.contains("8277d"));
+		assertEquals(true, set.contains("309.1CCT"));
+		assertEquals(true, set.contains("3106-3106d"));
+		assertEquals(true, set.contains("8270-8277d"));
 
 	}
 	
@@ -158,18 +139,9 @@ public class FastaImporterTests {
 		}
 
 		assertEquals(true, set.contains("16182.1C"));
-		assertEquals(true, set.contains("309.1C"));
-		assertEquals(true, set.contains("309.2C"));
-		assertEquals(true, set.contains("309.3T"));
-		assertEquals(true, set.contains("3106d"));
-		assertEquals(true, set.contains("8270d"));
-		assertEquals(true, set.contains("8271d"));
-		assertEquals(true, set.contains("8272d"));
-		assertEquals(true, set.contains("8273d"));
-		assertEquals(true, set.contains("8274d"));
-		assertEquals(true, set.contains("8275d"));
-		assertEquals(true, set.contains("8276d"));
-		assertEquals(true, set.contains("8277d"));
+		assertEquals(true, set.contains("309.1CCT"));
+		assertEquals(true, set.contains("3106-3106d"));
+		assertEquals(true, set.contains("8270-8277d"));
 
 	}
 	
@@ -184,7 +156,6 @@ public class FastaImporterTests {
 		HashSet<String> set = new HashSet<String>();
 		
 		for (int i = 3; i < splits.length; i++) {
-			System.out.println(splits[i]);
 			set.add(splits[i]);
 		}
 
