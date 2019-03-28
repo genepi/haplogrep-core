@@ -6,6 +6,7 @@ import java.io.DataInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import core.Mutations;
 import core.Polymorphism;
@@ -26,11 +27,13 @@ public class CheckAlignment extends HaplogrepRule {
 	public void evaluate(QualityAssistent qualityAssistent, TestSample currentSample) {
 
 		if (rules == null) {
+
 			InputStream stream = this.getClass().getClassLoader().getResourceAsStream("alignment-rules.csv");
+
 			CsvTableReader reader;
 
 			reader = new CsvTableReader(new DataInputStream(stream), ',');
-			
+
 			rules = new HashMap<String, String>();
 
 			while (reader.next()) {
@@ -41,25 +44,54 @@ public class CheckAlignment extends HaplogrepRule {
 		ArrayList<Polymorphism> inPolys = currentSample.getSample().getPolymorphisms();
 
 		ArrayList<Polymorphism> outPolys = new ArrayList<Polymorphism>();
-		for (Polymorphism current : inPolys) {
 
-			if (current.getMutation() == Mutations.DEL || current.getMutation() == Mutations.INS) {
+		HashSet<String> inputProfile = new HashSet<String>();
+
+		for (Polymorphism current : inPolys) {
+			inputProfile.add(current.toString());
+		}
+
+		for (String errorPoly : rules.keySet()) {
+
+			boolean applyRule = true;
+
+			String[] splits = errorPoly.split(" ");
+
+			for (String split : splits) {
+				if (!inputProfile.contains(split)) {
+					applyRule = false;
+				}
+
+			}
+
+			if (applyRule) {
+				String correctPoly = rules.get(errorPoly);
 				try {
-					String substitute = rules.get(current.toString());
-					if(substitute!=null) {
-					outPolys.add(new Polymorphism(substitute));
+					for (String a : correctPoly.split(" ")) {
+						outPolys.add(new Polymorphism(a));
+					}
+					for (String a : errorPoly.split(" ")) {
+						inputProfile.remove(a);
 					}
 				} catch (InvalidPolymorphismException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-
-			} else {
-				outPolys.add(new Polymorphism(current));
+			}
+		}
+		
+		for(String yo : inputProfile) {
+			try {
+				outPolys.add(new Polymorphism(yo));
+			} catch (InvalidPolymorphismException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 
 		currentSample.getSample().setPolymorphisms(outPolys);
+		
+		System.out.println(outPolys);
 
 	}
 
