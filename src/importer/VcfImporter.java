@@ -194,9 +194,9 @@ public class VcfImporter {
 						String afTag = (String) vc.getGenotype(sampleVcf).getAnyAttribute("AF");
 						double hetFrequency;
 						double hetFrequencySecond;
-						
+
 						String[] splits = afTag.split(",");
-						
+
 						hetFrequency = Double.valueOf(splits[0]);
 
 						if (splits.length > 1) {
@@ -204,9 +204,17 @@ public class VcfImporter {
 						} else {
 							hetFrequencySecond = 1 - hetFrequency;
 						}
-						
+
 						char allele1 = genotype.getAlleles().get(0).getBaseString().charAt(0);
 						char allele2 = genotype.getAlleles().get(1).getBaseString().charAt(0);
+
+						if (allele1 == '*') {
+							allele1 = 'd';
+						}
+						if (allele2 == '*') {
+							allele2 = 'd';
+						}
+
 						char major;
 						char var;
 						double majorLevel;
