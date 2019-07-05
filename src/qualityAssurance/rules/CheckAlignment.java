@@ -5,10 +5,9 @@ import qualityAssurance.QualityAssistent;
 import java.io.DataInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-
-import core.Mutations;
 import core.Polymorphism;
 import core.TestSample;
 import exceptions.parse.sample.InvalidPolymorphismException;
@@ -18,7 +17,6 @@ public class CheckAlignment extends HaplogrepRule {
 
 	public CheckAlignment(int priority) {
 		super(priority);
-		// TODO Auto-generated constructor stub
 	}
 
 	private HashMap<String, String> rules = null;
@@ -51,11 +49,11 @@ public class CheckAlignment extends HaplogrepRule {
 			inputProfile.add(current.toString());
 		}
 
-		for (String errorPoly : rules.keySet()) {
+		for (String error : rules.keySet()) {
 
 			boolean applyRule = true;
 
-			String[] splits = errorPoly.split(" ");
+			String[] splits = error.split(" ");
 
 			for (String split : splits) {
 				if (!inputProfile.contains(split)) {
@@ -65,13 +63,13 @@ public class CheckAlignment extends HaplogrepRule {
 			}
 
 			if (applyRule) {
-				String correctPoly = rules.get(errorPoly);
+				String expected = rules.get(error);
 				try {
-					for (String a : correctPoly.split(" ")) {
-						outPolys.add(new Polymorphism(a));
+					for (String exp : expected.split(" ")) {
+						outPolys.add(new Polymorphism(exp));
 					}
-					for (String a : errorPoly.split(" ")) {
-						inputProfile.remove(a);
+					for (String err : error.split(" ")) {
+						inputProfile.remove(err);
 					}
 				} catch (InvalidPolymorphismException e) {
 					// TODO Auto-generated catch block
@@ -79,19 +77,17 @@ public class CheckAlignment extends HaplogrepRule {
 				}
 			}
 		}
-		
-		for(String yo : inputProfile) {
+
+		// add remaining
+		for (String in : inputProfile) {
 			try {
-				outPolys.add(new Polymorphism(yo));
+				outPolys.add(new Polymorphism(in));
 			} catch (InvalidPolymorphismException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-
+		Collections.sort(outPolys);
 		currentSample.getSample().setPolymorphisms(outPolys);
-		
-		System.out.println(outPolys);
 
 	}
 
