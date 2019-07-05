@@ -77,7 +77,12 @@ public class FastaImporter {
 			jbwaLib = FileUtil.path(new File(jbwaDir + "/libbwajni.jnilib").getAbsolutePath());
 		}
 
-		System.load(jbwaLib);
+		try {
+			System.load(jbwaLib);
+		} catch (UnsatisfiedLinkError e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		BwaIndex index = new BwaIndex(new File(FileUtil.path(jbwaDir, ref)));
 		BwaMem mem = new BwaMem(index);
 
