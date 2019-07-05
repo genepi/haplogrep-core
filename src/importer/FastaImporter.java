@@ -93,7 +93,7 @@ public class FastaImporter {
 
 			StringBuilder profile = new StringBuilder();
 
-			profile.append(sequence.getName() + "\t" + "1-"+length + "\t" + "?");
+			profile.append(sequence.getName() + "\t" + "1-16569" + "\t" + "?");
 
 			// also include supplemental alignments ("chimeric reads")
 			for (AlnRgn alignedRead : mem.align(read)) {
