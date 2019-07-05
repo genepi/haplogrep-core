@@ -31,10 +31,16 @@ import htsjdk.samtools.reference.ReferenceSequence;
 public class FastaImporter {
 
 	public enum References {
-		RCRS, RSRS;
+		RCRS, RSRS, HORSE, CATTLE;
+	}
+	
+	public ArrayList<String> load(File file, References referenceType) throws FileNotFoundException, IOException {
+	
+		return load(file, referenceType, 16569);
+		
 	}
 
-	public ArrayList<String> load(File file, References referenceType) throws FileNotFoundException, IOException {
+	public ArrayList<String> load(File file, References referenceType, int length) throws FileNotFoundException, IOException {
 
 		final String BWA_VERSION = "0.7.17";
 
@@ -49,6 +55,15 @@ public class FastaImporter {
 		else if (referenceType == References.RSRS) {
 			ref = "rsrs.fasta";
 		}
+		
+		else if (referenceType == References.HORSE) {
+			ref = "horse.fasta";
+		}
+		
+		else if (referenceType == References.CATTLE) {
+			ref = "cattle.fasta";
+		}
+
 
 		ArrayList<String> lines = new ArrayList<String>();
 
@@ -78,7 +93,7 @@ public class FastaImporter {
 
 			StringBuilder profile = new StringBuilder();
 
-			profile.append(sequence.getName() + "\t" + "1-16569" + "\t" + "?");
+			profile.append(sequence.getName() + "\t" + "1-"+length + "\t" + "?");
 
 			// also include supplemental alignments ("chimeric reads")
 			for (AlnRgn alignedRead : mem.align(read)) {
@@ -90,7 +105,7 @@ public class FastaImporter {
 
 				if (header.getSequence(alignedRead.getChrom()) == null) {
 					// add contig with mtSequence length
-					header.addSequence(new SAMSequenceRecord(alignedRead.getChrom(), 16569));
+					header.addSequence(new SAMSequenceRecord(alignedRead.getChrom(), length));
 				}
 
 				StringBuilder samRecordBulder = new StringBuilder();
