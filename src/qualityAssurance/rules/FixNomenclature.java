@@ -13,9 +13,9 @@ import core.TestSample;
 import exceptions.parse.sample.InvalidPolymorphismException;
 import genepi.io.table.reader.CsvTableReader;
 
-public class CheckAlignment extends HaplogrepRule {
+public class FixNomenclature extends HaplogrepRule {
 
-	public CheckAlignment(int priority) {
+	public FixNomenclature(int priority) {
 		super(priority);
 	}
 
@@ -26,7 +26,7 @@ public class CheckAlignment extends HaplogrepRule {
 
 		if (rules == null) {
 
-			InputStream stream = this.getClass().getClassLoader().getResourceAsStream("alignment-rules.csv");
+			InputStream stream = this.getClass().getClassLoader().getResourceAsStream("nomenclature-rules.csv");
 
 			CsvTableReader reader;
 

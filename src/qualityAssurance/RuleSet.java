@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import core.TestSample;
-import qualityAssurance.rules.CheckAlignment;
+import qualityAssurance.rules.FixNomenclature;
 import qualityAssurance.rules.CheckExpectedHGMatchesDetectedHG;
 import qualityAssurance.rules.CheckForAlignmentWarnings;
 import qualityAssurance.rules.CheckForAmbiguosResult;
@@ -39,8 +39,8 @@ public class RuleSet {
 		addRule(new CheckForQuality(1));
 	}
 	
-	public void addMappingRules() {
-		addRule(new CheckAlignment(1));
+	public void addNomenclatureRules() {
+		addRule(new FixNomenclature(1));
 	}
 	
 	public void addRule(HaplogrepRule newRule){

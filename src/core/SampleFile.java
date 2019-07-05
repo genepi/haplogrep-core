@@ -323,11 +323,11 @@ public class SampleFile {
 	}
 	
 
-	public void applyMappingRules(Phylotree phylotree) {
+	public void applyNomenclatureRules(Phylotree phylotree) {
 		
 		if (qualityAssistent == null) {
 			RuleSet rules = new RuleSet();
-			rules.addMappingRules();
+			rules.addNomenclatureRules();
 			qualityAssistent = new QualityAssistent(testSamples.values(), rules, phylotree);
 		}
 		qualityAssistent.reevaluateRules();
