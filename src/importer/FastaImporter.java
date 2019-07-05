@@ -44,7 +44,7 @@ public class FastaImporter {
 
 		final String BWA_VERSION = "0.7.17";
 
-		String jbwaDir = FileUtil.path("jbwa-" + BWA_VERSION);
+		String jbwaDir = FileUtil.path("jbwa-" + BWA_VERSION,System.currentTimeMillis()+"");
 
 		String ref = "";
 
@@ -156,6 +156,8 @@ public class FastaImporter {
 		}
 
 		refFasta.close();
+		
+		FileUtil.deleteDirectory(jbwaLib);
 
 		return lines;
 	}
