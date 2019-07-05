@@ -7,6 +7,8 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -42,9 +44,7 @@ public class FastaImporter {
 
 	public ArrayList<String> load(File file, References referenceType, int length) throws FileNotFoundException, IOException {
 
-		final String BWA_VERSION = "0.7.17";
-
-		String jbwaDir = FileUtil.path("jbwa-" + BWA_VERSION,System.currentTimeMillis()+"");
+		String jbwaDir = Files.createTempDirectory("jbwa-").toFile().getAbsolutePath();
 
 		String ref = "";
 
@@ -70,9 +70,9 @@ public class FastaImporter {
 		extractZip(jbwaDir);
 
 		String referenceAsString = readInReference(FileUtil.path(jbwaDir, ref));
-
+		
 		String jbwaLib = FileUtil.path(new File(jbwaDir + "/libbwajni.so").getAbsolutePath());
-
+		
 		if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_MAC_OSX) {
 			jbwaLib = FileUtil.path(new File(jbwaDir + "/libbwajni.jnilib").getAbsolutePath());
 		}
@@ -157,8 +157,6 @@ public class FastaImporter {
 
 		refFasta.close();
 		
-		FileUtil.deleteDirectory(jbwaLib);
-
 		return lines;
 	}
 
