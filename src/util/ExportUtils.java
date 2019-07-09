@@ -242,15 +242,17 @@ public class ExportUtils {
 		FileWriter graphVizWriter = new FileWriter(graphViz);
 
 		graphVizWriter.write("digraph {  label=\"Sample File: " + out + "\"\n");
+		graphVizWriter.write("graph [layout = dot, rankdir = LR]\n");
+		graphVizWriter.write("node [shape = oval,style = filled,color = lightblue]\n");
 
+		//iterate through result samples 
 		for (TestSample sample : sampleCollection) {
-
+			String notfound="";
+			String remaining="";
 			for (RankedResult currentResult : sample.getResults()) {
-
-				ArrayList<SearchResultTreeNode> currentPath = currentResult.getSearchResult().getDetailedResult().getPhyloTreePath();
-
+			ArrayList<SearchResultTreeNode> currentPath = currentResult.getSearchResult().getDetailedResult().getPhyloTreePath();
+					
 				for (int i = 0; i < currentPath.size(); i++) {
-
 					Haplogroup currentHg = currentPath.get(i).getHaplogroup();
 
 					if (i == 0) {
@@ -262,16 +264,17 @@ public class ExportUtils {
 						StringBuilder polys = new StringBuilder();
 
 						if (currentPath.get(i).getExpectedPolys().size() == 0) {
-							polys.append("-");
+							polys.append("");
 						} else {
 							for (Polymorphism currentPoly : currentPath.get(i).getExpectedPolys()) {
-								if (currentPath.get(i).getFoundPolys().contains(currentPoly)) {
-									polys.append(currentPoly + " ");
+								polys.append(currentPoly + " ");
+								if (!currentPath.get(i).getFoundPolys().contains(currentPoly)) { 
+								 notfound+=currentPoly + "@ ";
 								}
 							}
 						}
 
-						String node = "\"" + currentHg + "\"[label=\"" + polys.toString().trim() + "\"];\n";
+						String node = "\"" + currentHg + "\"[label=\"" + polys.toString().trim()+ "\"" +"];\n";
 
 						if (!set.contains(tmpNode + node)) {
 							graphVizWriter.write(tmpNode + node);
@@ -285,12 +288,17 @@ public class ExportUtils {
 							tmpNode = "\"" + currentHg + "\" -> ";
 						}
 					}
-
+	
 				}
+				//append the remaining SNPS
+				for (int i =0; i < currentResult.getSearchResult().getDetailedResult().getRemainingPolysInSample().size(); i++)
+				remaining+= currentResult.getSearchResult().getDetailedResult().getRemainingPolysInSample().get(i)+ " ";
+		
 			}
-
+			graphVizWriter.write("\"" + sample.getDetectedHaplogroup()  + "\"[color=deepskyblue]\n");
+			graphVizWriter.write("\"" + sample.getDetectedHaplogroup() + "\" -> " + "\""+ sample.getSampleID()+" \""+"[color=steelblue, label=\""+notfound+" " + remaining +"\"]\n"); 
+			graphVizWriter.write("\""+ sample.getSampleID()+" \""+"[shape=rectangle, color=steelblue]\n");
 		}
-
 		graphVizWriter.write("}");
 		graphVizWriter.close();
 
