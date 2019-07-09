@@ -35,16 +35,16 @@ public class FastaImporter {
 	public enum References {
 		RCRS, RSRS, HORSE, CATTLE;
 	}
-	
+
 	public ArrayList<String> load(File file, References referenceType) throws FileNotFoundException, IOException {
-	
+
 		return load(file, referenceType, 16569);
-		
+
 	}
 
 	public ArrayList<String> load(File file, References referenceType, int length) throws FileNotFoundException, IOException {
 
-		String jbwaDir = Files.createTempDirectory("jbwa-").toFile().getAbsolutePath();
+		String jbwaDir = FileUtil.path("jbwa-" + System.currentTimeMillis() + "");
 
 		String ref = "";
 
@@ -55,24 +55,23 @@ public class FastaImporter {
 		else if (referenceType == References.RSRS) {
 			ref = "rsrs.fasta";
 		}
-		
+
 		else if (referenceType == References.HORSE) {
 			ref = "horse.fasta";
 		}
-		
+
 		else if (referenceType == References.CATTLE) {
 			ref = "cattle.fasta";
 		}
-
 
 		ArrayList<String> lines = new ArrayList<String>();
 
 		extractZip(jbwaDir);
 
 		String referenceAsString = readInReference(FileUtil.path(jbwaDir, ref));
-		
+
 		String jbwaLib = FileUtil.path(new File(jbwaDir + "/libbwajni.so").getAbsolutePath());
-		
+
 		if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_MAC_OSX) {
 			jbwaLib = FileUtil.path(new File(jbwaDir + "/libbwajni.jnilib").getAbsolutePath());
 		}
@@ -148,7 +147,7 @@ public class FastaImporter {
 				String variants = readCigar(samRecord, referenceAsString);
 
 				profile.append(variants);
-				
+
 			}
 
 			lines.add(profile.toString());
@@ -156,7 +155,9 @@ public class FastaImporter {
 		}
 
 		refFasta.close();
-		
+
+		FileUtil.deleteDirectory(jbwaDir);
+
 		return lines;
 	}
 
@@ -195,7 +196,7 @@ public class FastaImporter {
 		for (CigarElement cigarElement : samRecord.getCigar().getCigarElements()) {
 
 			Integer cigarElementLength = cigarElement.getLength();
-			
+
 			StringBuilder buildDeletion = new StringBuilder();
 
 			if (cigarElement.getOperator() == CigarOperator.D) {
@@ -204,15 +205,15 @@ public class FastaImporter {
 				Integer cigarElementStart = currentReferencePos;
 
 				Integer cigarElementEnd = currentReferencePos + cigarElementLength;
-				
-				buildDeletion.append(cigarElementStart+"-"+(cigarElementEnd-1)+"d");
+
+				buildDeletion.append(cigarElementStart + "-" + (cigarElementEnd - 1) + "d");
 
 				while (cigarElementStart < cigarElementEnd) {
 
-					//pos.append("\t" + cigarElementStart + "d");
+					// pos.append("\t" + cigarElementStart + "d");
 					cigarElementStart++;
 				}
-				
+
 				pos.append("\t" + buildDeletion.toString());
 
 			}
@@ -225,18 +226,18 @@ public class FastaImporter {
 				int i = 1;
 
 				int length = cigarElement.getLength();
-				
+
 				StringBuilder buildInsertion = new StringBuilder();
 
 				while (i <= length) {
 
 					char insBase = samRecord.getReadString().charAt(sequencePos + i - 1);
-					
+
 					buildInsertion.append(insBase);
 					// pos.append("\t" + currentReferencePosIns + "." + i + "" + insBase);
 					i++;
 				}
-				
+
 				pos.append("\t" + currentReferencePosIns + ".1" + buildInsertion.toString());
 
 			}
@@ -291,25 +292,21 @@ public class FastaImporter {
 
 		ZipEntry entry = zis.getNextEntry();
 
-		if (!new File(jbwaDir).exists()) {
+		FileUtil.createDirectory(jbwaDir);
 
-			FileUtil.createDirectory(jbwaDir);
-
-			while (entry != null) {
-				String fileName = entry.getName();
-				byte[] buffer = new byte[1024];
-				File newFile = new File(FileUtil.path(jbwaDir, fileName));
-				FileOutputStream fos = new FileOutputStream(newFile);
-				int len;
-				while ((len = zis.read(buffer)) > 0) {
-					fos.write(buffer, 0, len);
-				}
-				fos.close();
-				entry = zis.getNextEntry();
+		while (entry != null) {
+			String fileName = entry.getName();
+			byte[] buffer = new byte[1024];
+			File newFile = new File(FileUtil.path(jbwaDir, fileName));
+			FileOutputStream fos = new FileOutputStream(newFile);
+			int len;
+			while ((len = zis.read(buffer)) > 0) {
+				fos.write(buffer, 0, len);
 			}
-			zis.closeEntry();
-			zis.close();
+			fos.close();
+			entry = zis.getNextEntry();
 		}
+		zis.closeEntry();
+		zis.close();
 	}
-
 }
