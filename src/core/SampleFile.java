@@ -323,11 +323,11 @@ public class SampleFile {
 		qualityAssistent.reevaluateRules();
 	}
 
-	public void applyNomenclatureRules(Phylotree phylotree) {
+	public void applyNomenclatureRules(Phylotree phylotree, String file) {
 
 		if (qualityAssistent == null) {
 			RuleSet rules = new RuleSet();
-			rules.addNomenclatureRules("rules.csv");
+			rules.addNomenclatureRules(file);
 			qualityAssistent = new QualityAssistent(testSamples.values(), rules, phylotree);
 		}
 		qualityAssistent.reevaluateRules();
