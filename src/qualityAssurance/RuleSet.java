@@ -39,8 +39,8 @@ public class RuleSet {
 		addRule(new CheckForQuality(1));
 	}
 	
-	public void addNomenclatureRules() {
-		addRule(new FixNomenclature(1));
+	public void addNomenclatureRules(String file) {
+		addRule(new FixNomenclature(1, file));
 	}
 	
 	public void addRule(HaplogrepRule newRule){

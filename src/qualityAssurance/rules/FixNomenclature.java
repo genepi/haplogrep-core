@@ -15,8 +15,8 @@ import genepi.io.table.reader.CsvTableReader;
 
 public class FixNomenclature extends HaplogrepRule {
 
-	public FixNomenclature(int priority) {
-		super(priority);
+	public FixNomenclature(int priority, String file) {
+		super(priority, file);
 	}
 
 	private HashMap<String, String> rules = null;
@@ -25,8 +25,7 @@ public class FixNomenclature extends HaplogrepRule {
 	public void evaluate(QualityAssistent qualityAssistent, TestSample currentSample) {
 
 		if (rules == null) {
-
-			InputStream stream = this.getClass().getClassLoader().getResourceAsStream("nomenclature-rules.csv");
+			InputStream stream = this.getClass().getClassLoader().getResourceAsStream(getFile());
 
 			CsvTableReader reader;
 

@@ -42,7 +42,7 @@ import exceptions.parse.samplefile.UniqueSampleIDException;
  */
 public class SampleFile {
 
-	//final Log log = LogFactory.getLog(SampleFile.class);
+	// final Log log = LogFactory.getLog(SampleFile.class);
 
 	Hashtable<String, TestSample> testSamples = new Hashtable<String, TestSample>();
 	QualityAssistent qualityAssistent = null;
@@ -64,11 +64,11 @@ public class SampleFile {
 			TestSample newSample;
 			try {
 				String[] splits = currentLine.split("\t");
-				//if no polymorphisms have been found make a fake line (e.g. for VCF)
-				if(splits.length ==2){
+				// if no polymorphisms have been found make a fake line (e.g. for VCF)
+				if (splits.length == 2) {
 					StringBuilder build = new StringBuilder();
-					build.append(splits[0]+"\t");
-					build.append(splits[1]+"\t?\t.");
+					build.append(splits[0] + "\t");
+					build.append(splits[1] + "\t?\t.");
 					currentLine = build.toString();
 				}
 				newSample = TestSample.parse(currentLine);
@@ -175,8 +175,8 @@ public class SampleFile {
 	}
 
 	/**
-	 * Converts all data of test samples in a xml file. Used to display grid
-	 * data on the web gui.
+	 * Converts all data of test samples in a xml file. Used to display grid data on
+	 * the web gui.
 	 * 
 	 * @return The root element of the xml file.
 	 */
@@ -231,8 +231,8 @@ public class SampleFile {
 			sampleRowElement.addContent(newElement);
 
 			/*
-			 * //sample status (detected haplogroup equal, similar or different
-			 * to expected haplogroup? ) newElement = new Element("status");
+			 * //sample status (detected haplogroup equal, similar or different to expected
+			 * haplogroup? ) newElement = new Element("status");
 			 * newElement.setText(String.valueOf("Column not in use"));
 			 * sampleRowElement.addContent(newElement);
 			 */
@@ -293,11 +293,12 @@ public class SampleFile {
 		usedRankingMethodLastRun = rankingMethod;
 
 		long start = System.currentTimeMillis();
-		
-			for (TestSample currenTestSample : testSamples.values()) {
-				currenTestSample.updateSearchResults(phylotree, rankingMethod);
-			}
-		//log.debug("time executed: " + (System.currentTimeMillis() - start) + " with " + rankingMethod.toString());
+
+		for (TestSample currenTestSample : testSamples.values()) {
+			currenTestSample.updateSearchResults(phylotree, rankingMethod);
+		}
+		// log.debug("time executed: " + (System.currentTimeMillis() - start) + " with "
+		// + rankingMethod.toString());
 
 	}
 
@@ -321,13 +322,12 @@ public class SampleFile {
 		}
 		qualityAssistent.reevaluateRules();
 	}
-	
 
 	public void applyNomenclatureRules(Phylotree phylotree) {
-		
+
 		if (qualityAssistent == null) {
 			RuleSet rules = new RuleSet();
-			rules.addNomenclatureRules();
+			rules.addNomenclatureRules("rules.csv");
 			qualityAssistent = new QualityAssistent(testSamples.values(), rules, phylotree);
 		}
 		qualityAssistent.reevaluateRules();
@@ -364,8 +364,8 @@ public class SampleFile {
 	}
 
 	/**
-	 * Creates a new overview image of all test samples. Uses detected
-	 * haplogroups and polymorphisms to create this overview.
+	 * Creates a new overview image of all test samples. Uses detected haplogroups
+	 * and polymorphisms to create this overview.
 	 * 
 	 * @param sessionID
 	 *            The current session ID
@@ -374,8 +374,7 @@ public class SampleFile {
 	 * @param resolution
 	 *            The image resolution in DPI
 	 * @param includeHotspots
-	 *            True if mitochondrial hotspots should be included, false
-	 *            otherwise
+	 *            True if mitochondrial hotspots should be included, false otherwise
 	 * @param includeAAC
 	 *            True if polymorphisms in remaining have non-synonymous SNPS
 	 * @return The generated overview file handle
@@ -387,10 +386,10 @@ public class SampleFile {
 		// saveXMLToDisc(d);
 
 		File image = null;
-		PhylotreeRenderer renderer = new PhylotreeRenderer(testSamples.values().iterator().next().getResult(testSamples.values().iterator().next().getExpectedHaplogroup()).getSearchResult()
-				.getAttachedPhyloTreeNode().getTree(), resultTree);
-		
-			URL url = this.getClass().getClassLoader().getResource("haplogrepGray.png");
+		PhylotreeRenderer renderer = new PhylotreeRenderer(testSamples.values().iterator().next()
+				.getResult(testSamples.values().iterator().next().getExpectedHaplogroup()).getSearchResult().getAttachedPhyloTreeNode().getTree(), resultTree);
+
+		URL url = this.getClass().getClassLoader().getResource("haplogrepGray.png");
 
 		try {
 			renderer.setWatermark(url);
@@ -412,7 +411,8 @@ public class SampleFile {
 		for (TestSample currentSample : testSamples.values()) {
 			if (currentSample.searchResults.size() > 0)
 				if (currentSample.searchResults.size() > 0) // <-- neu
-					newOverviewTree.addNewPath(currentSample, currentSample.getResult(currentSample.getExpectedHaplogroup()).getSearchResult().getDetailedResult().getPhyloTreePath());
+					newOverviewTree.addNewPath(currentSample,
+							currentSample.getResult(currentSample.getExpectedHaplogroup()).getSearchResult().getDetailedResult().getPhyloTreePath());
 
 			// if(d==3)break;
 			//
@@ -623,7 +623,7 @@ public class SampleFile {
 			}
 		}
 
-		//log.debug("TO HSD FILE TIME: " + (System.currentTimeMillis() - start));
+		// log.debug("TO HSD FILE TIME: " + (System.currentTimeMillis() - start));
 		return result.toString();
 	}
 }
