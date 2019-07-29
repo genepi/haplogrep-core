@@ -38,11 +38,11 @@ public class FastaImporter {
 
 	public ArrayList<String> load(File file, References referenceType) throws FileNotFoundException, IOException {
 
-		return load(file, referenceType, 16569);
+		return load(file, referenceType, 16569, "1-16569");
 
 	}
 
-	public ArrayList<String> load(File file, References referenceType, int length) throws FileNotFoundException, IOException {
+	public ArrayList<String> load(File file, References referenceType, int length, String range) throws FileNotFoundException, IOException {
 
 		String jbwaDir = FileUtil.path("jbwa-" + System.currentTimeMillis() + "");
 
@@ -92,7 +92,7 @@ public class FastaImporter {
 
 			StringBuilder profile = new StringBuilder();
 
-			profile.append(sequence.getName() + "\t" + "1-16569" + "\t" + "?");
+			profile.append(sequence.getName() + "\t" + range + "\t" + "?");
 
 			// also include supplemental alignments ("chimeric reads")
 			for (AlnRgn alignedRead : mem.align(read)) {
