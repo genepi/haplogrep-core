@@ -54,12 +54,14 @@ public class VcfImporter {
 			String reference = vc.getReference().getBaseString();
 
 			for (String sampleVcf : vcfHeader.getSampleNamesInOrder()) {
-
-				Sample sample = samples.get(sampleVcf);
+				
+				String sampleVcfFixed = sampleVcf.trim().replace("|", "_").replace(" ","_");
+				
+				Sample sample = samples.get(sampleVcfFixed);
 
 				if (sample == null) {
 					sample = new Sample();
-					sample.setId(sampleVcf);
+					sample.setId(sampleVcfFixed);
 					sample.setRange(range.toString());
 				}
 
@@ -270,7 +272,7 @@ public class VcfImporter {
 					}
 				}
 
-				samples.put(sampleVcf, sample);
+				samples.put(sampleVcfFixed, sample);
 			} // end samples
 
 		} // end variants
