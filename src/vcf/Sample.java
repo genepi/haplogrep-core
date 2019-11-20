@@ -7,9 +7,9 @@ public class Sample {
 
 	private String id;
 	private TreeMap<Integer, Variant> variants;
-	private int amountHomoplasmies;
-	private int amountVariants;
-	private int amountHeteroplasmies;
+	private int amountHomoplasmies = 0;
+	private int amountVariants = 0;
+	private int amountHeteroplasmies = 0;
 	boolean chip;
 	private String range;
 
