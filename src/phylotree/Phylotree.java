@@ -381,7 +381,7 @@ public final class Phylotree {
 		return distance;
 	}
 
-	public int getDistanceBetweenHaplogroups(Haplogroup hgToCheck1, Haplogroup hgToCheck2) {
+	public int getDistanceBetweenHaplogroups(Haplogroup hgToCheck1, Haplogroup hgToCheck2) throws Exception{
 
 		int distance = -1;
 		HashSet<Haplogroup> markedHaplogroups = new HashSet<Haplogroup>();
