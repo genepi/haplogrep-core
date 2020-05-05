@@ -22,6 +22,10 @@ import vcf.Variant;
 public class ExportUtils {
 
 	public static ArrayList<String> vcfTohsd(HashMap<String, Sample> samples) {
+		return ExportUtils.vcfTohsd(samples, 0.9);
+	}
+	
+	public static ArrayList<String> vcfTohsd(HashMap<String, Sample> samples, double hetLevel) {
 		ArrayList<String> lines = new ArrayList<String>();
 		for (Sample sam : samples.values()) {
 
@@ -29,7 +33,7 @@ public class ExportUtils {
 			build.append(sam.getId() + "\t" + sam.getRange() + "\t" + "?");
 
 			for (Variant var : sam.getVariants()) {
-				if (var.getType() == 1 || var.getType() == 4 || (var.getType() == 2 && var.getLevel() >= 0.9)) {
+				if (var.getType() == 1 || var.getType() == 4 || (var.getType() == 2 && var.getLevel() >= hetLevel)) {
 					build.append("\t" + var.getPos() + "" + var.getVariant());
 				} else if (var.getType() == 5) {
 					build.append("\t" + var.getInsertion());
