@@ -7,8 +7,6 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -36,13 +34,15 @@ public class FastaImporter {
 		RCRS, RSRS, HORSE, CATTLE;
 	}
 
+	private String range;
+
 	public ArrayList<String> load(File file, References referenceType) throws FileNotFoundException, IOException {
 
-		return load(file, referenceType, 16569, "1-16569");
+		return load(file, referenceType, 16569);
 
 	}
 
-	public ArrayList<String> load(File file, References referenceType, int length, String range) throws FileNotFoundException, IOException {
+	public ArrayList<String> load(File file, References referenceType, int length) throws FileNotFoundException, IOException {
 
 		String jbwaDir = FileUtil.path("jbwa-" + System.currentTimeMillis() + "");
 
@@ -92,9 +92,9 @@ public class FastaImporter {
 
 			StringBuilder profile = new StringBuilder();
 
-			profile.append(sequence.getName() + "\t" + range + "\t" + "?");
-
 			// also include supplemental alignments ("chimeric reads")
+
+			boolean first = true;
 			for (AlnRgn alignedRead : mem.align(read)) {
 
 				// as defined by BWA
@@ -133,10 +133,12 @@ public class FastaImporter {
 
 				samRecordBulder.append("\t");
 
-				samRecordBulder.append("*\t0\t0\t"); // RNEXT (REF NAME OF THE MATE)
+				samRecordBulder.append("*\t0\t0\t"); // RNEXT (REF NAME OF THE
+														// MATE)
 														// PNEXT
 
-				samRecordBulder.append(sequence.getBaseString() + "\t"); // SEQ FORWARD
+				samRecordBulder.append(sequence.getBaseString() + "\t"); // SEQ
+																			// FORWARD
 
 				samRecordBulder.append("*\t");
 
@@ -145,6 +147,11 @@ public class FastaImporter {
 				SAMRecord samRecord = parser.parseLine(samRecordBulder.toString());
 
 				String variants = readCigar(samRecord, referenceAsString);
+
+				if (first) {
+					profile.append(sequence.getName() + "\t" + range + "\t" + "?");
+					first = false;
+				}
 
 				profile.append(variants);
 
@@ -166,6 +173,10 @@ public class FastaImporter {
 		String readString = samRecord.getReadString();
 
 		StringBuilder pos = new StringBuilder();
+		StringBuilder _range = new StringBuilder();
+
+		boolean startRange = true;
+		int lastPos = 0;
 
 		for (int i = 0; i < readString.length(); i++) {
 
@@ -173,8 +184,22 @@ public class FastaImporter {
 
 			char inputBase = readString.charAt(i);
 
-			// e.g. INS having currentPos 0
+			// e.g. INS and DEL having currentPos 0
 			if (currentPos > 0) {
+
+				if (startRange && inputBase != 'N') {
+					_range.append(currentPos);
+					startRange = false;
+				}
+
+				else if (inputBase == 'N') {
+					_range.append("-" + (currentPos - 1) + "; ");
+					startRange = true;
+				}
+
+				if (inputBase != 'A' && inputBase != 'C' && inputBase != 'G' && inputBase != 'T') {
+					continue;
+				}
 
 				char referenceBase = reference.charAt(currentPos - 1);
 
@@ -184,10 +209,13 @@ public class FastaImporter {
 
 				}
 
-			} else {
+				lastPos = currentPos;
 
 			}
 		}
+
+		// write range to last available position
+		_range.append("-" + (lastPos));
 
 		Integer currentReferencePos = samRecord.getAlignmentStart();
 
@@ -213,14 +241,14 @@ public class FastaImporter {
 					// pos.append("\t" + cigarElementStart + "d");
 					cigarElementStart++;
 				}
-
 				pos.append("\t" + buildDeletion.toString());
 
 			}
 
 			if (cigarElement.getOperator() == CigarOperator.I) {
 
-				// returns e.g. 310 but Insertion need to be added to last pos (so 309)
+				// returns e.g. 310 but Insertion need to be added to last pos
+				// (so 309)
 				int currentReferencePosIns = currentReferencePos - 1;
 
 				int i = 1;
@@ -234,7 +262,8 @@ public class FastaImporter {
 					char insBase = samRecord.getReadString().charAt(sequencePos + i - 1);
 
 					buildInsertion.append(insBase);
-					// pos.append("\t" + currentReferencePosIns + "." + i + "" + insBase);
+					// pos.append("\t" + currentReferencePosIns + "." + i + "" +
+					// insBase);
 					i++;
 				}
 
@@ -247,13 +276,15 @@ public class FastaImporter {
 				currentReferencePos = currentReferencePos + cigarElement.getLength();
 			}
 
-			// give back current readPos, only increase if read bases are consumed!
+			// give back current readPos, only increase if read bases are
+			// consumed!
 			if (cigarElement.getOperator().consumesReadBases()) {
 				sequencePos = sequencePos + cigarElement.getLength();
 			}
 
 		}
 
+		this.range = _range.toString();
 		return pos.toString();
 	}
 
