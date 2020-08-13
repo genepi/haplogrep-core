@@ -175,9 +175,6 @@ public class FastaImporter {
 		StringBuilder pos = new StringBuilder();
 		StringBuilder _range = new StringBuilder();
 
-		boolean startRange = true;
-		int lastPos = 0;
-
 		for (int i = 0; i < readString.length(); i++) {
 
 			int currentPos = samRecord.getReferencePositionAtReadPosition(i + 1);
@@ -187,14 +184,16 @@ public class FastaImporter {
 			// e.g. INS and DEL having currentPos 0
 			if (currentPos > 0) {
 
-				if (startRange && inputBase != 'N') {
-					_range.append(currentPos);
-					startRange = false;
-				}
+				/*
+				 * if (startRange && inputBase != 'N') {
+				 * _range.append(currentPos); startRange = false; }
+				 * 
+				 * else if (inputBase == 'N') { _range.append("-" + (currentPos
+				 * - 1) + "; "); startRange = true; }
+				 */
 
-				else if (inputBase == 'N') {
-					_range.append("-" + (currentPos - 1) + "; ");
-					startRange = true;
+				if (inputBase != 'N') {
+					_range.append(currentPos + ";");
 				}
 
 				if (inputBase != 'A' && inputBase != 'C' && inputBase != 'G' && inputBase != 'T') {
@@ -209,13 +208,8 @@ public class FastaImporter {
 
 				}
 
-				lastPos = currentPos;
-
 			}
 		}
-
-		// write range to last available position
-		_range.append("-" + (lastPos));
 
 		Integer currentReferencePos = samRecord.getAlignmentStart();
 
@@ -283,7 +277,6 @@ public class FastaImporter {
 			}
 
 		}
-
 		this.range = _range.toString();
 		return pos.toString();
 	}
