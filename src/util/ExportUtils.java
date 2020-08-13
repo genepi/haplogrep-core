@@ -58,11 +58,11 @@ public class ExportUtils {
 
 		} else {
 
-			writer.setColumns(new String[] { "SampleID", "Haplogroup", "Rank", "Quality", "Range", "Haplogroup", "Not_Found_Polys", "Found_Polys", "Remaining_Polys",
+			writer.setColumns(new String[] { "SampleID", "Haplogroup", "Rank", "Quality", "Range", "Not_Found_Polys", "Found_Polys", "Remaining_Polys",
 					"AAC_In_Remainings", "Input_Sample" });
 
 		}
-
+ 
 		if (sampleCollection != null) {
 
 			for (TestSample sample : sampleCollection) {
