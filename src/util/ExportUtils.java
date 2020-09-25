@@ -7,14 +7,31 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.MultiMap;
+import org.apache.commons.collections.map.MultiValueMap;
+import org.w3c.dom.svg.GetSVGDocument;
+
 import core.Haplogroup;
 import core.Polymorphism;
 import core.SampleRanges;
 import core.TestSample;
 import genepi.io.table.writer.CsvTableWriter;
 import search.SearchResultTreeNode;
+import search.ranking.HammingRanking;
+import search.ranking.JaccardRanking;
+import search.ranking.KulczynskiRanking;
+import search.ranking.RankingMethod;
 import search.ranking.results.RankedResult;
 import vcf.Sample;
 import vcf.Variant;
@@ -232,8 +249,15 @@ public class ExportUtils {
 
 	}
 
-	public static void calcLineage(Collection<TestSample> sampleCollection, String out) throws IOException {
+	public static void calcLineage(Collection<TestSample> sampleCollection, int tree, String out) throws IOException {
 
+		if (tree ==0)
+			return;
+		
+		Collections.sort((List<TestSample>) sampleCollection);
+
+		MultiValueMap remainingSet = new MultiValueMap();
+		
 		if (out.endsWith(".txt")) {
 			out = out.substring(0, out.lastIndexOf("."));
 		}
@@ -246,13 +270,22 @@ public class ExportUtils {
 		FileWriter graphVizWriter = new FileWriter(graphViz);
 
 		graphVizWriter.write("digraph {  label=\"Sample File: " + out + "\"\n");
-		graphVizWriter.write("graph [layout = dot, rankdir = LR]\n");
+		if (tree==1) {
+		graphVizWriter.write("graph [layout = dot, rankdir = TB]\n");
+		}
+		else if (tree==2) {
+			graphVizWriter.write("graph [layout = dot, rankdir = LR]\n");
+		}
 		graphVizWriter.write("node [shape = oval,style = filled,color = lightblue]\n");
 
+		
+		
+		
 		//iterate through result samples 
 		for (TestSample sample : sampleCollection) {
 			String notfound="";
 			String remaining="";
+			notfound ="";
 			for (RankedResult currentResult : sample.getResults()) {
 			ArrayList<SearchResultTreeNode> currentPath = currentResult.getSearchResult().getDetailedResult().getPhyloTreePath();
 					
@@ -270,15 +303,26 @@ public class ExportUtils {
 						if (currentPath.get(i).getExpectedPolys().size() == 0) {
 							polys.append("");
 						} else {
+
 							for (Polymorphism currentPoly : currentPath.get(i).getExpectedPolys()) {
+
 								polys.append(currentPoly + " ");
+								
 								if (!currentPath.get(i).getFoundPolys().contains(currentPoly)) { 
 								 notfound+=currentPoly + "@ ";
+									 notfound+=("\n");
 								}
+									polys.append("\n");
 							}
 						}
-
-						String node = "\"" + currentHg + "\"[label=\"" + polys.toString().trim()+ "\"" +"];\n";
+						String node ="";
+						if (tree==1) {
+						 node = "\"" + currentHg + "\"[label=\"" + polys.toString().trim()+ "\"" +"];\n";
+						}
+						//write empty edge labels
+						else if (tree ==2) {
+							 node = "\"" + currentHg + "\"[label=\"" + "\"" +"];\n";
+						}
 
 						if (!set.contains(tmpNode + node)) {
 							graphVizWriter.write(tmpNode + node);
@@ -295,17 +339,72 @@ public class ExportUtils {
 	
 				}
 				//append the remaining SNPS
-				for (int i =0; i < currentResult.getSearchResult().getDetailedResult().getRemainingPolysInSample().size(); i++)
-				remaining+= currentResult.getSearchResult().getDetailedResult().getRemainingPolysInSample().get(i)+ " ";
-		
+
+				for (int i =0; i < currentResult.getSearchResult().getDetailedResult().getRemainingPolysInSample().size(); i++) {
+				Polymorphism poly = currentResult.getSearchResult().getDetailedResult().getRemainingPolysInSample().get(i);
+					if (!polyToExclude(poly)) {
+						remaining+= poly+ " ";
+						remaining+="\n";
+					}
+				}
+				
+
+				
 			}
-			graphVizWriter.write("\"" + sample.getDetectedHaplogroup()  + "\"[color=deepskyblue]\n");
-			graphVizWriter.write("\"" + sample.getDetectedHaplogroup() + "\" -> " + "\""+ sample.getSampleID()+" \""+"[color=steelblue, label=\""+notfound+" " + remaining +"\"]\n"); 
-			graphVizWriter.write("\""+ sample.getSampleID()+" \""+"[shape=rectangle, color=steelblue]\n");
-		}
+
+			remainingSet.put(notfound+ " "+ remaining, sample);
+				
+			}
+		
+        Iterator<Entry<String, List<TestSample>>> it = remainingSet.entrySet().iterator();
+        
+        SortedSet<String> keys = new TreeSet<>(remainingSet.keySet());
+        for (String key : keys) { 
+			String sampleLabels =""; 
+        	List<TestSample> nodes = (List<TestSample>) remainingSet.get(key);
+			for (int j=0; j<nodes.size(); j++) {
+			TestSample s1 =nodes.get(j);
+			if (j>0) {
+				if (tree==1)
+				sampleLabels+="\n";
+				else if (tree==2)
+					sampleLabels+=" ";		
+			}
+				sampleLabels+=s1.getSampleID() ;
+			}
+			
+			graphVizWriter.write("\"" + nodes.get(0).getDetectedHaplogroup()  + "\"[color=deepskyblue]\n");
+			if (tree==1)
+			graphVizWriter.write("\"" + nodes.get(0).getDetectedHaplogroup() + "\" -> " + "\""+ sampleLabels+" \""+"[color=steelblue, label=\""+key +"\"]\n");
+			else if (tree==2) {
+				graphVizWriter.write("\"" + nodes.get(0).getDetectedHaplogroup() + "\" -> " + "\""+ sampleLabels+" \""+"[color=steelblue, label=\""+"\"]\n");
+			}
+			graphVizWriter.write("\""+ sampleLabels+" \""+"[shape=rectangle, color=steelblue]\n");
+
+        }
+		
 		graphVizWriter.write("}");
 		graphVizWriter.close();
 
+	}
+	 
+	//see Phylotree.org: The mutations 309.1C(C), 315.1C, AC indels at 515-522, A16182c, A16183c, 16193.1C(C) and C16519T/T16519C 
+	//were not considered for phylogenetic reconstruction and are therefore excluded from the tree.	
+	private static boolean polyToExclude(Polymorphism polymorphism) {
+		int pos = polymorphism.getPosition();
+		switch (pos) {
+		case 309: return true;
+		case 315: return true;
+		case 523: return true;
+		case 524: return true;
+		case 525: return true;
+		case 3107: return true;
+		case 16182:return true;
+		case 16183:return true;
+		case 16193:return true;
+		case 16519: return true;
+		default: return false;
+		}
 	}
 
 }
