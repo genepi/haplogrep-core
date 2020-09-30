@@ -41,7 +41,7 @@ public class ExportUtils {
 	public static ArrayList<String> vcfTohsd(HashMap<String, Sample> samples) {
 		return ExportUtils.vcfTohsd(samples, 0.9);
 	}
-	
+
 	public static ArrayList<String> vcfTohsd(HashMap<String, Sample> samples, double hetLevel) {
 		ArrayList<String> lines = new ArrayList<String>();
 		for (Sample sam : samples.values()) {
@@ -71,7 +71,7 @@ public class ExportUtils {
 
 		if (!extended) {
 
-			writer.setColumns(new String[] { "SampleID", "Haplogroup", "Rank", "Quality", "Range"});
+			writer.setColumns(new String[] { "SampleID", "Haplogroup", "Rank", "Quality", "Range" });
 
 		} else {
 
@@ -79,15 +79,15 @@ public class ExportUtils {
 					"AAC_In_Remainings", "Input_Sample" });
 
 		}
- 
+
 		if (sampleCollection != null) {
 
 			for (TestSample sample : sampleCollection) {
-				
+
 				int rank = 0;
-				
+
 				for (RankedResult currentResult : sample.getResults()) {
-					
+
 					rank++;
 
 					SampleRanges range = sample.getSample().getSampleRanges();
@@ -115,8 +115,8 @@ public class ExportUtils {
 					writer.setString("Range", resultRange);
 
 					writer.setString("Haplogroup", currentResult.getHaplogroup().toString());
-					
-					writer.setString("Rank", rank+"");
+
+					writer.setString("Rank", rank + "");
 
 					writer.setString("Quality", String.format(Locale.ROOT, "%.4f", currentResult.getDistance()));
 
@@ -251,13 +251,13 @@ public class ExportUtils {
 
 	public static void calcLineage(Collection<TestSample> sampleCollection, int tree, String out) throws IOException {
 
-		if (tree ==0)
+		if (tree == 0)
 			return;
-		
+
 		Collections.sort((List<TestSample>) sampleCollection);
 
 		MultiValueMap remainingSet = new MultiValueMap();
-		
+
 		if (out.endsWith(".txt")) {
 			out = out.substring(0, out.lastIndexOf("."));
 		}
@@ -270,25 +270,21 @@ public class ExportUtils {
 		FileWriter graphVizWriter = new FileWriter(graphViz);
 
 		graphVizWriter.write("digraph {  label=\"Sample File: " + out + "\"\n");
-		if (tree==1) {
-		graphVizWriter.write("graph [layout = dot, rankdir = TB]\n");
-		}
-		else if (tree==2) {
+		if (tree == 1 || tree == 3 ) {
+			graphVizWriter.write("graph [layout = dot, rankdir = TB]\n");
+		} else if (tree == 2) {
 			graphVizWriter.write("graph [layout = dot, rankdir = LR]\n");
 		}
 		graphVizWriter.write("node [shape = oval,style = filled,color = lightblue]\n");
 
-		
-		
-		
-		//iterate through result samples 
+		// iterate through result samples
 		for (TestSample sample : sampleCollection) {
-			String notfound="";
-			String remaining="";
-			notfound ="";
+			String notfound = "";
+			String remaining = "";
+			notfound = "";
 			for (RankedResult currentResult : sample.getResults()) {
-			ArrayList<SearchResultTreeNode> currentPath = currentResult.getSearchResult().getDetailedResult().getPhyloTreePath();
-					
+				ArrayList<SearchResultTreeNode> currentPath = currentResult.getSearchResult().getDetailedResult().getPhyloTreePath();
+
 				for (int i = 0; i < currentPath.size(); i++) {
 					Haplogroup currentHg = currentPath.get(i).getHaplogroup();
 
@@ -307,21 +303,21 @@ public class ExportUtils {
 							for (Polymorphism currentPoly : currentPath.get(i).getExpectedPolys()) {
 
 								polys.append(currentPoly + " ");
-								
-								if (!currentPath.get(i).getFoundPolys().contains(currentPoly)) { 
-								 notfound+=currentPoly + "@ ";
-									 notfound+=("\n");
+
+								if (!currentPath.get(i).getFoundPolys().contains(currentPoly)) {
+									notfound += currentPoly + "@ ";
+									notfound += ("\n");
 								}
-									polys.append("\n");
+								polys.append("\n");
 							}
 						}
-						String node ="";
-						if (tree==1) {
-						 node = "\"" + currentHg + "\"[label=\"" + polys.toString().trim()+ "\"" +"];\n";
+						String node = "";
+						if (tree == 1) {
+							node = "\"" + currentHg + "\"[label=\"" + polys.toString().trim() + "\"" + "];\n";
 						}
-						//write empty edge labels
-						else if (tree ==2) {
-							 node = "\"" + currentHg + "\"[label=\"" + "\"" +"];\n";
+						// write empty edge labels
+						else if (tree >= 2) {
+							node = "\"" + currentHg + "\"[label=\"" + "\"" + "];\n";
 						}
 
 						if (!set.contains(tmpNode + node)) {
@@ -336,74 +332,112 @@ public class ExportUtils {
 							tmpNode = "\"" + currentHg + "\" -> ";
 						}
 					}
-	
-				}
-				//append the remaining SNPS
 
-				for (int i =0; i < currentResult.getSearchResult().getDetailedResult().getRemainingPolysInSample().size(); i++) {
-				Polymorphism poly = currentResult.getSearchResult().getDetailedResult().getRemainingPolysInSample().get(i);
+				}
+				// append the remaining SNPS
+
+				for (int i = 0; i < currentResult.getSearchResult().getDetailedResult().getRemainingPolysInSample().size(); i++) {
+					Polymorphism poly = currentResult.getSearchResult().getDetailedResult().getRemainingPolysInSample().get(i);
 					if (!polyToExclude(poly)) {
-						remaining+= poly+ " ";
-						remaining+="\n";
+						remaining += poly + " ";
+						remaining += "\n";
 					}
 				}
-				
 
-				
 			}
 
-			remainingSet.put(notfound+ " "+ remaining, sample);
-				
-			}
-		
-        Iterator<Entry<String, List<TestSample>>> it = remainingSet.entrySet().iterator();
-        
-        SortedSet<String> keys = new TreeSet<>(remainingSet.keySet());
-        for (String key : keys) { 
-			String sampleLabels =""; 
-        	List<TestSample> nodes = (List<TestSample>) remainingSet.get(key);
-			for (int j=0; j<nodes.size(); j++) {
-			TestSample s1 =nodes.get(j);
-			if (j>0) {
-				if (tree==1)
-				sampleLabels+="\n";
-				else if (tree==2)
-					sampleLabels+=" ";		
-			}
-				sampleLabels+=s1.getSampleID() ;
-			}
-			
-			graphVizWriter.write("\"" + nodes.get(0).getDetectedHaplogroup()  + "\"[color=deepskyblue]\n");
-			if (tree==1)
-			graphVizWriter.write("\"" + nodes.get(0).getDetectedHaplogroup() + "\" -> " + "\""+ sampleLabels+" \""+"[color=steelblue, label=\""+key +"\"]\n");
-			else if (tree==2) {
-				graphVizWriter.write("\"" + nodes.get(0).getDetectedHaplogroup() + "\" -> " + "\""+ sampleLabels+" \""+"[color=steelblue, label=\""+"\"]\n");
-			}
-			graphVizWriter.write("\""+ sampleLabels+" \""+"[shape=rectangle, color=steelblue]\n");
+			remainingSet.put(notfound + " " + remaining, sample);
 
-        }
-		
+		}
+		HashMap<String, Integer> groupedMap = new HashMap<>();
+
+		SortedSet<String> keys = new TreeSet<>(remainingSet.keySet());
+
+		for (String key : keys) {
+			String sampleLabels = "";
+			List<TestSample> nodes = (List<TestSample>) remainingSet.get(key);
+			for (int j = 0; j < nodes.size(); j++) {
+				TestSample s1 = nodes.get(j);
+				if (j > 0) {
+					if (tree == 1)
+						sampleLabels += "\n";
+					else if (tree == 2)
+						sampleLabels += " ";
+				}
+
+				sampleLabels += s1.getSampleID();
+				String HG = s1.getDetectedHaplogroup().toString();
+
+				if (groupedMap.containsKey(HG))
+					groupedMap.put(HG, Integer.valueOf(groupedMap.get(HG)) + 1);
+				else
+					groupedMap.put(HG, 1);
+			}
+
+			graphVizWriter.write("\"" + nodes.get(0).getDetectedHaplogroup() + "\"[color=deepskyblue]\n");
+			if (tree == 1) {
+				graphVizWriter.write(
+						"\"" + nodes.get(0).getDetectedHaplogroup() + "\" -> " + "\"" + sampleLabels + " \"" + "[color=steelblue, label=\"" + key + "\"]\n");
+				graphVizWriter.write("\"" + sampleLabels + " \"" + "[shape=rectangle, color=steelblue]\n");
+			} else if (tree == 2) {
+				graphVizWriter
+						.write("\"" + nodes.get(0).getDetectedHaplogroup() + "\" -> " + "\"" + sampleLabels + " \"" + "[color=steelblue, label=\"" + "\"]\n");
+				graphVizWriter.write("\"" + sampleLabels + " \"" + "[shape=rectangle, color=steelblue]\n");
+			}
+		}
+
+		if (tree == 3) {
+			Iterator it = groupedMap.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry pair = (Map.Entry) it.next();
+				
+				int value =  (Integer) pair.getValue(); 
+				graphVizWriter.write("\"" + pair.getKey() + "\" -> " + "\"" + pair.getKey()+" = "+value + " \"" + "[color=steelblue, label=\"" + "\"]\n");
+				if (value <2 )
+					graphVizWriter.write("\"" + pair.getKey()+" = "+value  + " \"" + "[shape=rectangle, color=steelblue]\n");
+				else
+					graphVizWriter.write("\"" + pair.getKey()+" = "+value  + " \"" + "[shape=rectangle, color=darkorange]\n");
+					
+
+				it.remove(); // avoids a ConcurrentModificationException
+			}
+
+		}
+
 		graphVizWriter.write("}");
 		graphVizWriter.close();
 
 	}
-	 
-	//see Phylotree.org: The mutations 309.1C(C), 315.1C, AC indels at 515-522, A16182c, A16183c, 16193.1C(C) and C16519T/T16519C 
-	//were not considered for phylogenetic reconstruction and are therefore excluded from the tree.	
+
+	// see Phylotree.org: The mutations 309.1C(C), 315.1C, AC indels at 515-522,
+	// A16182c, A16183c, 16193.1C(C) and C16519T/T16519C
+	// were not considered for phylogenetic reconstruction and are therefore
+	// excluded from the tree.
 	private static boolean polyToExclude(Polymorphism polymorphism) {
 		int pos = polymorphism.getPosition();
 		switch (pos) {
-		case 309: return true;
-		case 315: return true;
-		case 523: return true;
-		case 524: return true;
-		case 525: return true;
-		case 3107: return true;
-		case 16182:return true;
-		case 16183:return true;
-		case 16193:return true;
-		case 16519: return true;
-		default: return false;
+		case 309:
+			return true;
+		case 315:
+			return true;
+		case 523:
+			return true;
+		case 524:
+			return true;
+		case 525:
+			return true;
+		case 3107:
+			return true;
+		case 16182:
+			return true;
+		case 16183:
+			return true;
+		case 16193:
+			return true;
+		case 16519:
+			return true;
+		default:
+			return false;
 		}
 	}
 
