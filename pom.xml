@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>genepi</groupId>
 	<artifactId>haplogrep-core</artifactId>
-	<version>2.2.2</version> 
+	<version>2.2.3</version>
 
 	<properties>
 		<skipTests>true</skipTests>
@@ -171,6 +171,13 @@
 			<artifactId>htsjdk</artifactId>
 			<version>2.21.3</version>
 		</dependency>
+
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>3.2.2</version>
+		</dependency>
+
 
 
 	</dependencies>
