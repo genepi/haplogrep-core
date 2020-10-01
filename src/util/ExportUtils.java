@@ -395,13 +395,23 @@ public class ExportUtils {
 				graphVizWriter.write("\"" + pair.getKey() + "\" -> " + "\"" + pair.getKey()+" = "+value + " \"" + "[color=steelblue, label=\"" + "\"]\n");
 				if (value <2 )
 					graphVizWriter.write("\"" + pair.getKey()+" = "+value  + " \"" + "[shape=rectangle, color=steelblue]\n");
-				else
+				else if (value >=2 && value <10)
 					graphVizWriter.write("\"" + pair.getKey()+" = "+value  + " \"" + "[shape=rectangle, color=darkorange]\n");
-					
+				else 
+					graphVizWriter.write("\"" + pair.getKey()+" = "+value  + " \"" + "[shape=rectangle, color=firebrick1]\n");
 
 				it.remove(); // avoids a ConcurrentModificationException
 			}
-
+			graphVizWriter.write("subgraph cluster_legend {\n"); 
+			graphVizWriter.write("label = \"Legend\"\n");
+			graphVizWriter.write("shape=rectangle\n") ;
+			graphVizWriter.write("color = black\n");
+			graphVizWriter.write("\"Intermediate haplogroup\" [color=lightblue]\n");
+			graphVizWriter.write("\"Terminal haplogroup\"  [color=deepskyblue]\n");
+			graphVizWriter.write("\"1 sample \\n in Haplogroup\"  [shape=rectangle, color=steelblue]\n");
+			graphVizWriter.write("\">= 2 Samples \\n in Haplogroup\"  [shape=rectangle, color=darkorange]\n");
+			graphVizWriter.write("\">=10 Samples \\n in Haplogroup\"  [shape=rectangle, color=firebrick1]\n");
+			graphVizWriter.write("}\n");	
 		}
 
 		graphVizWriter.write("}");
