@@ -22,12 +22,9 @@
 
 	<repositories>
 		<repository>
-			<id>genepi</id>
-			<url>https://raw.github.com/genepi/maven-repository/mvn-repo/</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-			</snapshots>
+			<id>bintray-genepi-maven</id>
+			<name>bintray</name>
+			<url>https://dl.bintray.com/genepi/maven</url>
 		</repository>
 
 	</repositories>
@@ -163,7 +160,7 @@
 		<dependency>
 			<groupId>genepi</groupId>
 			<artifactId>genepi-io</artifactId>
-			<version>1.0.10</version>
+			<version>1.0.12</version>
 		</dependency>
 
 		<dependency>
