@@ -54,9 +54,9 @@ public class VcfImporter {
 			String reference = vc.getReference().getBaseString();
 
 			for (String sampleVcf : vcfHeader.getSampleNamesInOrder()) {
-
+				
 				String sampleVcfFixed = sampleVcf.trim().replace("|", "_").replaceAll("\\s+","");
-
+				
 				Sample sample = samples.get(sampleVcfFixed);
 
 				if (sample == null) {
@@ -67,8 +67,7 @@ public class VcfImporter {
 
 				Genotype genotype = vc.getGenotype(sampleVcf);
 
-				// only HOM_VAR is expected! (special handling for multiallelics
-				// below)
+				// only HOM_VAR is expected! (special handling for multiallelics below)
 				if (genotype.getType() == GenotypeType.HOM_VAR) {
 
 					if (genotype.getPloidy() > 1) {
@@ -111,8 +110,7 @@ public class VcfImporter {
 
 						} else {
 
-							// check for SNPS with complex genotypes (REF: ACA;
-							// GENOTYPE-> ACT --> SNP is T)
+							// check for SNPS with complex genotypes (REF: ACA; GENOTYPE-> ACT --> SNP is T)
 							for (int i = 0; i < genotypeString.length(); i++) {
 
 								if (reference.charAt(i) != genotypeString.charAt(i)) {
@@ -162,8 +160,7 @@ public class VcfImporter {
 					// TODO CASE CC to CCC a thing?
 					else if (reference.length() < genotypeString.length()) {
 
-						// reference completely included in genotype string,
-						// only new bases at the end
+						// reference completely included in genotype string, only new bases at the end
 						Variant variant = new Variant();
 
 						if (reference.length() == 1) {
@@ -175,8 +172,7 @@ public class VcfImporter {
 							variant.setInsertion(insertion);
 							sample.addVariant(variant);
 						} else {
-							// insertions are added "left": from CT to CCCT
-							// therefore start from 0 of
+							// insertions are added "left": from CT to CCCT therefore start from 0 of
 							// geno-string and go until geno.length-ref.length
 							int pos = vc.getStart();
 							variant.setPos(pos);
@@ -227,8 +223,7 @@ public class VcfImporter {
 						double minorLevel;
 						char minor;
 
-						// if a reference allele is available its always
-						// allele1!! (that means it does
+						// if a reference allele is available its always allele1!! (that means it does
 						// not matter if 0/1 or 1/0)
 
 						// HP always includes non-reference heteroplasmy level!
@@ -262,17 +257,12 @@ public class VcfImporter {
 						variant.setPos(pos);
 						variant.setRef(reference.charAt(0));
 						variant.setVariantBase(var);
-
-						if (hetFrequency >= 0.95) {
-							variant.setType(1);
-						} else {
-							variant.setLevel(hetFrequency);
-							variant.setMajor(major);
-							variant.setMajorLevel(majorLevel);
-							variant.setMinor(minor);
-							variant.setMinorLevel(minorLevel);
-							variant.setType(2);
-						}
+						variant.setLevel(hetFrequency);
+						variant.setMajor(major);
+						variant.setMajorLevel(majorLevel);
+						variant.setMinor(minor);
+						variant.setMinorLevel(minorLevel);
+						variant.setType(2);
 
 						if (genotype.hasAnyAttribute("DP")) {
 							int coverage = (int) vc.getGenotype(sampleVcf).getAnyAttribute("DP");
