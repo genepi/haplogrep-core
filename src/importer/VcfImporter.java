@@ -55,7 +55,7 @@ public class VcfImporter {
 
 			for (String sampleVcf : vcfHeader.getSampleNamesInOrder()) {
 				
-				String sampleVcfFixed = sampleVcf.trim().replace("|", "_").replace(" ","_");
+				String sampleVcfFixed = sampleVcf.trim().replace("|", "_").replaceAll("\\s+","");
 				
 				Sample sample = samples.get(sampleVcfFixed);
 
