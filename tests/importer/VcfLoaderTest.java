@@ -29,7 +29,6 @@ public class VcfLoaderTest {
 
 	}
 
-	
 	@Test
 	public void VcfPolyHaploidTest() throws Exception {
 		String file = "test-data/vcf/HG00097.vcf";
@@ -53,7 +52,7 @@ public class VcfLoaderTest {
 		ArrayList<String> lines = ExportUtils.vcfTohsd(samples);
 		
 		assertEquals(
-				"NA20877.MT.bam	1-16569	?	73G	152C	263G	750G	1438G	2706G	4216C	7028T	7142C	7657C	8473C	8860G	9932A	10685A	11719A	12654G	13500C	14305A	14590T	14766T	15326G	16071T	16519C",
+				"NA20877.MT.bam	1-16569	?	73G	152C	263G	750G	1438G	2706G	4216C	7028T	7142C	7657C	8473C	8860G	9932A	10685A	11719A	12654G	13145A	13500C	14305A	14590T	14766T	15326G	16071T	16519C",
 				lines.get(0).toString().trim());
 
 	}
