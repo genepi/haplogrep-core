@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Vector;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.MultiMap;
@@ -26,7 +27,10 @@ import core.Haplogroup;
 import core.Polymorphism;
 import core.SampleRanges;
 import core.TestSample;
+import exceptions.parse.sample.InvalidBaseException;
+import exceptions.parse.sample.InvalidPolymorphismException;
 import genepi.io.table.writer.CsvTableWriter;
+import importer.FastaImporter.References;
 import search.SearchResultTreeNode;
 import search.ranking.HammingRanking;
 import search.ranking.JaccardRanking;
@@ -449,6 +453,233 @@ public class ExportUtils {
 		default:
 			return false;
 		}
+	}
+	
+	public static void generateFasta( Collection<TestSample> sampleCollection, String out) throws IOException {
+		String fastafile = out + "_haplogrep2.fasta";
+		FileWriter fasta = new FileWriter(fastafile);
+		
+		
+		for (TestSample sample : sampleCollection) {
+			
+			Collections.sort((List<Polymorphism>) sample.getSample().getPolymorphisms());
+			String fastaResult = Polymorphism.rCRS;
+			int insertions=0;
+			int deletions=0;
+			System.out.println("sample " + sample.getSampleID());
+			for (Polymorphism poly : sample.getSample().getPolymorphisms()) {
+			
+						poly.getPosition();
+						if (poly.getMutation().toString().equals("INS"))
+						{
+							for (int i=0; i<poly.getInsertedPolys().length(); i++){
+								insertions++;
+								fastaResult=insertChar(fastaResult, poly.getInsertedPolys().toString().charAt(i), poly.getPosition()-1+insertions-deletions);
+								//log.debug
+								System.out.println("!ins " + poly.getPosition()+" "  + poly.getMutation() +  " "+ poly.getInsertedPolys().toString());
+							}
+							}
+						else if (poly.getMutation().toString().equals("DEL"))
+						{
+							System.out.println(poly + " poly " + poly.getMutation());
+							fastaResult=deleteChar(fastaResult, poly.getPosition()-1+insertions-deletions);
+							deletions++;
+						}
+						else
+						{
+						fastaResult=replaceChar(fastaResult, poly.getMutation().toString().charAt(0), poly.getPosition()-1+insertions-deletions);
+						}
+					}
+			
+			fasta.write(">"+sample.getSampleID()+"\n"+fastaResult+"\n");
+			
+			}
+		fasta.close();
+	}
+	
+	
+	public static void generateFastaMSA(Collection<TestSample> sampleCollection, String out) throws IOException {
+		String fasta = out + "_haplogrep2_MSA.fasta";
+		FileWriter fastaMSA = new FileWriter(fasta);
+		
+		String result = "";
+
+		long start = new java.util.Date().getTime();
+
+		StringBuffer sbresult = new StringBuffer();
+
+		Vector<Polymorphism> vectorPolys = new Vector<Polymorphism>();
+		Vector vectorhelp = new Vector();
+		Vector samplepoly = new Vector();
+
+		Collections.sort((List<TestSample>) sampleCollection);
+
+		// GET DISTINCT POLYMORPHISMS
+		if (sampleCollection != null) {
+			for (TestSample sample : sampleCollection) {
+				Vector<Polymorphism> v1 = new Vector<Polymorphism>();
+				for (Polymorphism poly : sample.getSample().getPolymorphisms()) {
+
+					if (poly.getMutation().toString().length() == 1) {
+						v1.add(poly);
+					} else {
+
+						if (poly.getMutation().toString().contains("DEL")) {
+							v1.add(poly);
+						}
+
+						else {
+
+							for (int i = 0; i < poly.getInsertedPolys()
+									.length(); i++) {
+
+								try {
+
+									Polymorphism p1 = new Polymorphism(
+											poly.getPosition()
+													+ ".1"
+													+ poly.getInsertedPolys()
+															.substring(1, i + 1)
+													+ poly.getInsertedPolys()
+															.charAt(i));
+									v1.add(p1);
+								} catch (NumberFormatException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (InvalidPolymorphismException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}
+					}
+
+					if (!vectorhelp.contains(poly.toString())) {
+
+						if (poly.getMutation().toString().contains("INS")) {
+
+							String h = poly.getInsertedPolys().toString();
+							for (int i = 0; i < h.length(); i++) {
+								Polymorphism p1 = null;
+								try {
+
+									p1 = new Polymorphism(poly.getPosition()
+											+ ".1" + h.substring(0, i + 1));
+
+									if (!vectorhelp.contains(p1.toString())) {
+										vectorhelp.add(p1.toString());
+										vectorPolys.add(p1);
+									}
+
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+
+							}
+						} else {
+							vectorhelp.add(poly.toString());
+							vectorPolys.add(poly);
+						}
+					}
+				}
+				Collections.sort(v1);
+
+				samplepoly.add(v1);
+			}
+
+			Collections.sort(vectorPolys);
+
+			int count = 0;
+
+			Vector<Polymorphism> vsamplep = new Vector<Polymorphism>();
+			for (TestSample sample : sampleCollection) {
+			
+				fastaMSA.write(">"+sample.getSampleID()+"_"+sample.getDetectedHaplogroup() + "\n");
+
+				vsamplep.clear();
+				vsamplep = (Vector<Polymorphism>) samplepoly.get(count);
+
+				count++;
+
+				int j = 0;
+				String fastaResult = Polymorphism.rCRS;
+		
+				int insertion=0;
+				for (int i = 0; i < vectorPolys.size(); i++) {
+					
+					if (j < vsamplep.size()) {
+						if (vsamplep.get(j).getPosition() == (vectorPolys.get(i).getPosition()) && (vsamplep.get(j).getMutation() == vectorPolys.get(i).getMutation()))
+						 {
+							String help = vectorPolys.get(i).getMutation().toString();
+								if (help.contains("DEL")) {
+				
+									if (vsamplep.get(j).getMutation().toString().charAt(0)==('D')){
+							    		fastaResult=replaceChar(fastaResult, '-', vectorPolys.get(i).getPosition()-1+insertion);
+									}
+								}
+								else if (help.equals("INS")) {
+									fastaResult=insertChar(fastaResult, vectorPolys.get(i).getInsertedPolys().charAt(vectorPolys.get(i).getInsertedPolys().length()-1), vectorPolys.get(i).getPosition()+insertion);
+									insertion++;
+								}
+						
+								else {
+									if (vsamplep.get(j).getMutation().toString().charAt(0)!=('I')){
+										fastaResult=replaceChar(fastaResult, vsamplep.get(j).getMutation().toString().charAt(0), vectorPolys.get(i).getPosition()-1+insertion);
+									}
+								}
+								j++;	
+						}
+				
+						else if (vectorPolys.get(i).getMutation().toString().equals("INS")){
+
+							fastaResult=insertChar(fastaResult, '-', vectorPolys.get(i).getPosition()+insertion);
+							insertion++;
+						}
+					}
+					else if (vectorPolys.get(i).getMutation().toString().equals("INS")){
+						fastaResult=insertChar(fastaResult, '-', vectorPolys.get(i).getPosition()+insertion);
+						insertion++;
+					}
+				}
+				fastaMSA.write(fastaResult+"\n");	
+				}
+		}
+		fastaMSA.close();
+	}
+	
+	/**
+	 * 
+	 * @param data
+	 * @param ch
+	 * @param myIndex
+	 * @return
+	 */
+	public static String replaceChar( String data, char ch, int myIndex)
+	{
+	StringBuilder builderString = new StringBuilder(data);
+	builderString.setCharAt(myIndex, ch);
+	return builderString.toString();
+	}
+	
+	/**
+	 * 
+	 * @param data
+	 * @param ch
+	 * @param myIndex
+	 * @return
+	 */
+	public static String insertChar(String data, char ch, int myIndex ){
+		return 	 new StringBuffer(data).insert(myIndex, ch).toString();
+	}
+	
+	/**
+	 * 
+	 * @param data
+	 * @param myIndex
+	 * @return
+	 */
+	public static String deleteChar(String data, int myIndex ){
+	    return  data.substring(0,myIndex) + data.substring(myIndex+1);
 	}
 
 }
