@@ -13,5 +13,5 @@ This repository includes the haplogrep core functionality used in the command li
 		<dependency>
 			<groupId>genepi</groupId>
 			<artifactId>haplogrep-core</artifactId>
-			<version>2.3.0</version>
+			<version>2.5.0</version>
 		</dependency>
