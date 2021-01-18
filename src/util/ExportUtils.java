@@ -31,6 +31,7 @@ import exceptions.parse.sample.InvalidBaseException;
 import exceptions.parse.sample.InvalidPolymorphismException;
 import genepi.io.table.writer.CsvTableWriter;
 import importer.FastaImporter.References;
+import search.SearchResult;
 import search.SearchResultTreeNode;
 import search.ranking.HammingRanking;
 import search.ranking.JaccardRanking;
@@ -155,7 +156,8 @@ public class ExportUtils {
 
 						result = new StringBuffer();
 						for (Polymorphism currentPoly : allChecked) {
-							result.append(" " + currentPoly);
+							String type = getTypeRemaining(currentPoly, currentResult.getSearchResult());
+							result.append(" " + currentPoly + " (" + type + ")");
 						}
 
 						writer.setString("Remaining_Polys", result.toString().trim());
@@ -193,6 +195,19 @@ public class ExportUtils {
 
 		writer.close();
 
+	}
+	
+	private static String getTypeRemaining(Polymorphism p, SearchResult result) {
+
+		if (result.getPhyloTree().getMutationRate(p) == 0) {
+			if (p.isMTHotspot()) {
+				return "hotspot";
+			} else {
+				return "globalPrivateMutation";
+			}
+		} else {
+			return "localPrivateMutation";
+		}
 	}
 
 	public static void createHsdInput(List<TestSample> sampleCollection, String out) throws IOException {
