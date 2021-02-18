@@ -158,8 +158,20 @@ public class FastaImporterTests {
 		for (int i = 3; i < splits.length; i++) {
 			set.add(splits[i]);
 		}
+	}
+	
+	@Test
+	public void testB5a1() throws Exception {
+		String file = "test-data/fasta/B5a1.fasta";
+		StringBuilder actual = new StringBuilder();
+		FastaImporter impFasta = new FastaImporter();
+		ArrayList<String> samples = impFasta.load(new File(file), References.RCRS);
 
-
+		String[] splits = samples.get(0).split("\t");
+		
+		for (int i = 3; i < splits.length; i++) {
+			actual.append(splits[i] + ",");
+		}
 
 	}
 	

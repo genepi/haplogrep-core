@@ -7,17 +7,22 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Ref;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.lang.SystemUtils;
+import org.apache.log4j.Logger;
+import org.apache.log4j.BasicConfigurator;  
 
 import com.github.lindenb.jbwa.jni.AlnRgn;
 import com.github.lindenb.jbwa.jni.BwaIndex;
 import com.github.lindenb.jbwa.jni.BwaMem;
 import com.github.lindenb.jbwa.jni.ShortRead;
 
+import core.TestSample;
 import htsjdk.samtools.reference.FastaSequenceFile;
 import genepi.io.FileUtil;
 import htsjdk.samtools.CigarElement;
@@ -30,20 +35,21 @@ import htsjdk.samtools.reference.ReferenceSequence;
 
 public class FastaImporter {
 
+	/* Get actual class name to be printed on */
+	
+	   final Logger log = Logger.getLogger(FastaImporter.class);
+	
 	public enum References {
 		RCRS, RSRS, HORSE, CATTLE;
 	}
 
 	private String range;
+	private String reference;
+
 
 	public ArrayList<String> load(File file, References referenceType) throws FileNotFoundException, IOException {
 
-		return load(file, referenceType, 16569);
-
-	}
-
-	public ArrayList<String> load(File file, References referenceType, int length) throws FileNotFoundException, IOException {
-
+		long startTime = System.currentTimeMillis();
 		String jbwaDir = FileUtil.path("jbwa-" + System.currentTimeMillis() + "");
 
 		String ref = "";
@@ -69,7 +75,8 @@ public class FastaImporter {
 		extractZip(jbwaDir);
 
 		String referenceAsString = readInReference(FileUtil.path(jbwaDir, ref));
-
+		reference=referenceAsString;
+		
 		String jbwaLib = FileUtil.path(new File(jbwaDir + "/libbwajni.so").getAbsolutePath());
 
 		if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_MAC_OSX) {
@@ -80,10 +87,13 @@ public class FastaImporter {
 		BwaIndex index = new BwaIndex(new File(FileUtil.path(jbwaDir, ref)));
 		BwaMem mem = new BwaMem(index);
 
+		log.info("run time for BWA index: " + (System.currentTimeMillis()-startTime));
+		
 		FastaSequenceFile refFasta = new FastaSequenceFile(file, true);
 
 		ReferenceSequence sequence;
-
+		int countFastas =0;
+		long startTimeReadFasta = System.currentTimeMillis();
 		while ((sequence = refFasta.nextSequence()) != null) {
 
 			ShortRead read = new ShortRead(sequence.getName(), sequence.getBaseString().getBytes(), null);
@@ -104,7 +114,7 @@ public class FastaImporter {
 
 				if (header.getSequence(alignedRead.getChrom()) == null) {
 					// add contig with mtSequence length
-					header.addSequence(new SAMSequenceRecord(alignedRead.getChrom(), length));
+					header.addSequence(new SAMSequenceRecord(alignedRead.getChrom(), reference.length()));
 				}
 
 				StringBuilder samRecordBulder = new StringBuilder();
@@ -156,10 +166,11 @@ public class FastaImporter {
 				profile.append(variants);
 
 			}
-
+			countFastas++;
 			lines.add(profile.toString());
-
 		}
+		
+		log.info("run time for alignment of "+countFastas + " sequence(s): " + (System.currentTimeMillis()-startTimeReadFasta));
 
 		refFasta.close();
 
@@ -192,7 +203,7 @@ public class FastaImporter {
 				 * - 1) + "; "); startRange = true; }
 				 */
 
-				if (inputBase != 'N') {
+				if (inputBase == 'N') {
 					_range.append(currentPos + ";");
 				}
 
@@ -277,8 +288,27 @@ public class FastaImporter {
 			}
 
 		}
-		this.range = _range.toString();
+		this.range = cleanRange(_range.toString());
 		return pos.toString();
+	}
+
+	private String cleanRange(String emptyPos) {
+		String range = "";
+		int lastpos=1;
+		if (emptyPos.length() == 0)
+			return ("1-" + reference.length() + ";");
+		StringTokenizer st = new StringTokenizer(emptyPos, ";");
+		while (st.hasMoreTokens()) {
+			int posN = Integer.valueOf(st.nextToken());
+			if (posN>lastpos) {
+				range+=lastpos+ "-"+(posN-1)+";";
+				lastpos=posN+1;
+			}else if ( posN==lastpos) {
+				lastpos++;
+			}
+		}
+		range+=lastpos+ "-"+reference.length()+";";
+		 return range;
 	}
 
 	public static String readInReference(String file) {
