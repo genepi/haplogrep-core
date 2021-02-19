@@ -40,7 +40,7 @@ public class FastaImporter {
 	   final Logger log = Logger.getLogger(FastaImporter.class);
 	
 	public enum References {
-		RCRS, RSRS, HORSE, CATTLE;
+		RCRS, RSRS, HORSE, CATTLE, SARSCOV2;
 	}
 
 	private String range;
@@ -68,6 +68,10 @@ public class FastaImporter {
 
 		else if (referenceType == References.CATTLE) {
 			ref = "cattle.fasta";
+		}
+		
+		else if (referenceType == References.SARSCOV2) {
+			ref = "sarscov2.fasta";
 		}
 
 		ArrayList<String> lines = new ArrayList<String>();
@@ -155,14 +159,14 @@ public class FastaImporter {
 				samRecordBulder.append("AS:i:" + alignedRead.getAs());
 
 				SAMRecord samRecord = parser.parseLine(samRecordBulder.toString());
-
+				
 				String variants = readCigar(samRecord, referenceAsString);
 
 				if (first) {
 					profile.append(sequence.getName() + "\t" + range + "\t" + "?");
 					first = false;
 				}
-
+				System.out.println(range + " " + samRecord +" " + variants );
 				profile.append(variants);
 
 			}
@@ -295,6 +299,7 @@ public class FastaImporter {
 	private String cleanRange(String emptyPos) {
 		String range = "";
 		int lastpos=1;
+		System.out.println(emptyPos);
 		if (emptyPos.length() == 0)
 			return ("1-" + reference.length() + ";");
 		StringTokenizer st = new StringTokenizer(emptyPos, ";");

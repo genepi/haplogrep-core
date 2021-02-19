@@ -157,6 +157,7 @@ public class FastaImporterTests {
 		
 		for (int i = 3; i < splits.length; i++) {
 			set.add(splits[i]);
+			System.out.println(splits[i]);
 		}
 	}
 	
@@ -174,5 +175,42 @@ public class FastaImporterTests {
 		}
 
 	}
+	
+	@Test
+	public void testParseSampleWithNs() throws Exception {
+		String file = "test-data/fasta/B5a1_withN.fasta";
+		StringBuilder actual = new StringBuilder();
+		FastaImporter impFasta = new FastaImporter();
+		ArrayList<String> samples = impFasta.load(new File(file), References.RCRS);
+		
+		String countNs = "";
+		
+		for (int s=0; s<samples.size(); s++) {
+		String[] splits = samples.get(s).split("\t");
+
+		System.out.println("ID:" + splits[0]+ " Range: " + splits[1]);
+	
+		}
+		assertEquals("310N;", countNs);
+
+	}
+	
+	
+	@Test
+	public void testSARSCOV2() throws Exception {
+		String file = "test-data/fasta/sarscov2_example_sequences_nextstrain.fasta";
+		StringBuilder actual = new StringBuilder();
+		FastaImporter impFasta = new FastaImporter();
+		ArrayList<String> samples = impFasta.load(new File(file), References.SARSCOV2);
+
+		String[] splits = samples.get(0).split("\t");
+		for (int i = 3; i < splits.length; i++) {
+			actual.append(splits[i] + ",");
+		}
+
+		assertEquals(0, actual.length());
+
+	}
+	
 	
 }
