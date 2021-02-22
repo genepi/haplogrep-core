@@ -532,24 +532,25 @@ public class ExportUtils {
 		// GET DISTINCT POLYMORPHISMS
 		if (sampleCollection != null) {
 			for (TestSample sample : sampleCollection) {
-				Vector<Polymorphism> v1 = new Vector<Polymorphism>();
+				Vector<Polymorphism> vDistinct = new Vector<Polymorphism>();
 				for (Polymorphism poly : sample.getSample().getPolymorphisms()) {
 
 					if (poly.getMutation().toString().length() == 1) {
-						v1.add(poly);
+						vDistinct.add(poly);
 					} else {
 
 						if (poly.getMutation().toString().contains("DEL")) {
-							v1.add(poly);
+							vDistinct.add(poly);
 						}
 
-						else {
+						else 					
+						{
 
 							for (int i = 0; i < poly.getInsertedPolys()
 									.length(); i++) {
 
 								try {
-
+									System.out.println("--" + poly);
 									Polymorphism p1 = new Polymorphism(
 											poly.getPosition()
 													+ ".1"
@@ -557,7 +558,7 @@ public class ExportUtils {
 															.substring(1, i + 1)
 													+ poly.getInsertedPolys()
 															.charAt(i));
-									v1.add(p1);
+									vDistinct.add(p1);
 								} catch (NumberFormatException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
@@ -574,6 +575,7 @@ public class ExportUtils {
 						if (poly.getMutation().toString().contains("INS")) {
 
 							String h = poly.getInsertedPolys().toString();
+							System.out.println("inserted polys " +h);
 							for (int i = 0; i < h.length(); i++) {
 								Polymorphism p1 = null;
 								try {
@@ -597,9 +599,10 @@ public class ExportUtils {
 						}
 					}
 				}
-				Collections.sort(v1);
-
-				samplepoly.add(v1);
+				
+				Collections.sort(vDistinct);
+				System.out.println( sample.getSampleID()+ " "  + vDistinct);
+				samplepoly.add(vDistinct);
 			}
 
 			Collections.sort(vectorPolys);
