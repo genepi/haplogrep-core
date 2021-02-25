@@ -22,6 +22,7 @@ import com.github.lindenb.jbwa.jni.BwaIndex;
 import com.github.lindenb.jbwa.jni.BwaMem;
 import com.github.lindenb.jbwa.jni.ShortRead;
 
+import core.Reference;
 import core.TestSample;
 import htsjdk.samtools.reference.FastaSequenceFile;
 import genepi.io.FileUtil;
@@ -47,40 +48,51 @@ public class FastaImporter {
 	private String reference;
 
 
-	public ArrayList<String> load(File file, References referenceType) throws FileNotFoundException, IOException {
+	public Reference loadrCRS() throws FileNotFoundException, IOException {
+		String refFile = "rCRS.fasta";
+		String reference=extract(refFile);
+		Reference RefObj = new Reference("RCRS", reference, reference.length(), refFile);
+		return RefObj;
+	}
+	
+	public Reference loadRSRS() throws FileNotFoundException, IOException {
+		String refFile = "rsrs.fasta";
+		String reference=extract(refFile);
+		Reference RefObj = new Reference("RSRS",reference, reference.length(), refFile );
+		return RefObj;
+	}
+	
+	public Reference loadSARSCOV2() throws FileNotFoundException, IOException {
+		String refFile = "sarscov2.fasta";
+		String reference=extract(refFile);
+		Reference RefObj = new Reference("SARSCOV2",reference, reference.length(), refFile );
+		return RefObj;
+	}
+
+	private String extract( String ref) throws IOException, FileNotFoundException {
+		String jbwaDir = FileUtil.path("jbwa-" + System.currentTimeMillis() + "");
+		extractZip(jbwaDir);
+		String referenceAsString = readInReference(FileUtil.path(jbwaDir, ref));
+		reference=referenceAsString;
+		FileUtil.deleteDirectory(jbwaDir);
+		return reference;
+	}
+
+	
+		
+	
+	public ArrayList<String> load(File infile, Reference ref) throws FileNotFoundException, IOException {
 
 		long startTime = System.currentTimeMillis();
 		String jbwaDir = FileUtil.path("jbwa-" + System.currentTimeMillis() + "");
-
-		String ref = "";
-
-		if (referenceType == References.RCRS) {
-			ref = "rCRS.fasta";
-		}
-
-		else if (referenceType == References.RSRS) {
-			ref = "rsrs.fasta";
-		}
-
-		else if (referenceType == References.HORSE) {
-			ref = "horse.fasta";
-		}
-
-		else if (referenceType == References.CATTLE) {
-			ref = "cattle.fasta";
-		}
-		
-		else if (referenceType == References.SARSCOV2) {
-			ref = "sarscov2.fasta";
-		}
-
-		ArrayList<String> lines = new ArrayList<String>();
-
 		extractZip(jbwaDir);
-
-		String referenceAsString = readInReference(FileUtil.path(jbwaDir, ref));
-		reference=referenceAsString;
 		
+		ArrayList<String> lines = new ArrayList<String>();
+		
+		String referenceAsString = ref.getSequence();
+		reference=referenceAsString;
+
+				
 		String jbwaLib = FileUtil.path(new File(jbwaDir + "/libbwajni.so").getAbsolutePath());
 
 		if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_MAC_OSX) {
@@ -88,17 +100,17 @@ public class FastaImporter {
 		}
 
 		System.load(jbwaLib);
-		BwaIndex index = new BwaIndex(new File(FileUtil.path(jbwaDir, ref)));
+		BwaIndex index = new BwaIndex(new File(FileUtil.path(jbwaDir, ref.getFilename())));
 		BwaMem mem = new BwaMem(index);
 
 		log.info("run time for BWA index: " + (System.currentTimeMillis()-startTime));
 		
-		FastaSequenceFile refFasta = new FastaSequenceFile(file, true);
+		FastaSequenceFile inputFasta = new FastaSequenceFile(infile, true);
 
 		ReferenceSequence sequence;
 		int countFastas =0;
 		long startTimeReadFasta = System.currentTimeMillis();
-		while ((sequence = refFasta.nextSequence()) != null) {
+		while ((sequence = inputFasta.nextSequence()) != null) {
 
 			ShortRead read = new ShortRead(sequence.getName(), sequence.getBaseString().getBytes(), null);
 			SAMFileHeader header = new SAMFileHeader();
@@ -176,7 +188,7 @@ public class FastaImporter {
 		
 		log.info("run time for alignment of "+countFastas + " sequence(s): " + (System.currentTimeMillis()-startTimeReadFasta));
 
-		refFasta.close();
+		inputFasta.close();
 
 		FileUtil.deleteDirectory(jbwaDir);
 

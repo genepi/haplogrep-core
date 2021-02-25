@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import core.Polymorphism;
+import core.Reference;
 import core.TestSample;
 import exceptions.parse.sample.InvalidPolymorphismException;
 import genepi.io.table.reader.CsvTableReader;
@@ -18,12 +19,13 @@ public class FixNomenclature extends HaplogrepRule {
 	public FixNomenclature(int priority, String file) {
 		super(priority, file);
 	}
+	Reference reference;
 
 	private HashMap<String, String> rules = null;
 
 	@Override
 	public void evaluate(QualityAssistent qualityAssistent, TestSample currentSample) {
-
+	reference = currentSample.getReference();
 		if (rules == null) {
 			InputStream stream = this.getClass().getClassLoader().getResourceAsStream(getFile());
 
@@ -65,7 +67,7 @@ public class FixNomenclature extends HaplogrepRule {
 				String expected = rules.get(error);
 				try {
 					for (String exp : expected.split(" ")) {
-						outPolys.add(new Polymorphism(exp));
+						outPolys.add(new Polymorphism(exp, reference));
 					}
 					for (String err : error.split(" ")) {
 						inputProfile.remove(err);
@@ -80,7 +82,7 @@ public class FixNomenclature extends HaplogrepRule {
 		// add remaining
 		for (String in : inputProfile) {
 			try {
-				outPolys.add(new Polymorphism(in));
+				outPolys.add(new Polymorphism(in, reference));
 			} catch (InvalidPolymorphismException e) {
 				e.printStackTrace();
 			}

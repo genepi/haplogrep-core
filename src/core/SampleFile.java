@@ -58,10 +58,10 @@ public class SampleFile {
 	 * @throws HsdFileException
 	 *             thrown if the hsd file cannot be parsed correctly
 	 */
-	public SampleFile(ArrayList<String> sampleLines) throws HsdFileException {
+	public SampleFile(ArrayList<String> sampleLines, Reference ref) throws HsdFileException {
 		int lineIndex = 1;
 		for (String currentLine : sampleLines) {
-			TestSample newSample;
+			TestSample newSample ;
 			try {
 				String[] splits = currentLine.split("\t");
 				// if no polymorphisms have been found make a fake line (e.g. for VCF)
@@ -71,7 +71,9 @@ public class SampleFile {
 					build.append(splits[1] + "\t?\t.");
 					currentLine = build.toString();
 				}
-				newSample = TestSample.parse(currentLine);
+				
+				newSample = TestSample.parse(currentLine, ref);
+
 				// log.info("new sample " + newSample);
 			} catch (HsdFileException e) {
 				e.setLineExceptionOccured(lineIndex);
@@ -102,7 +104,7 @@ public class SampleFile {
 	 * @throws IOException
 	 */
 	// TODO:Try to get rid of the ugly boolean testCase parameter
-	public SampleFile(String pathToSampleFile, boolean testCase) throws HsdFileException, IOException {
+	public SampleFile(String pathToSampleFile, boolean testCase, Reference ref) throws HsdFileException, IOException {
 		BufferedReader sampleFileStream;
 		if (testCase) { // for test cases
 			String userDir = new java.io.File("").getAbsolutePath();
@@ -116,12 +118,12 @@ public class SampleFile {
 		String currentLine = sampleFileStream.readLine();
 
 		if (!currentLine.startsWith("SampleId\tRange")) {
-			TestSample newSample = TestSample.parse(currentLine);
+			TestSample newSample = TestSample.parse(currentLine, ref);
 			testSamples.put(newSample.getSampleID(), newSample);
 		}
 
 		while ((currentLine = sampleFileStream.readLine()) != null) {
-			TestSample newSample = TestSample.parse(currentLine);
+			TestSample newSample = TestSample.parse(currentLine, ref);
 			testSamples.put(newSample.getSampleID(), newSample);
 
 		}

@@ -24,6 +24,7 @@ import search.ranking.results.RankedResult;
 
 import core.Haplogroup;
 import core.Polymorphism;
+import core.Reference;
 import core.TestSample;
 import exceptions.parse.sample.InvalidBaseException;
 import exceptions.parse.sample.InvalidPolymorphismException;
@@ -50,7 +51,7 @@ public final class Phylotree {
 	 * @param phylogeneticWeightsFile
 	 *            Inputstream to the phylogentic weights file
 	 */
-	public Phylotree(InputStream phylotreeFile, InputStream phylogeneticWeightsFile) {
+	public Phylotree(InputStream phylotreeFile, InputStream phylogeneticWeightsFile, Reference ref) {
 
 		root = new PhyloTreeNode(this);
 		// Create a JDOM document out of the phylotree XML
@@ -58,7 +59,7 @@ public final class Phylotree {
 		try {
 
 			Document phyloTree = builder.build(phylotreeFile);
-			buildPhylotree(root, phyloTree.getRootElement().getChild("haplogroup"));
+			buildPhylotree(root, phyloTree.getRootElement().getChild("haplogroup"), ref);
 			// parses and sets the polygenetic weights
 			setPolygeneticWeights(phylogeneticWeightsFile);
 
@@ -92,7 +93,7 @@ public final class Phylotree {
 	 *             Thrown if the phylotree contains invalid (unreadable)
 	 *             polymorphisms
 	 */
-	private void buildPhylotree(PhyloTreeNode parentNode, Element currentXMLElement) throws InvalidPolymorphismException {
+	private void buildPhylotree(PhyloTreeNode parentNode, Element currentXMLElement, Reference ref) throws InvalidPolymorphismException {
 		PhyloTreeNode newNode = new PhyloTreeNode(this, parentNode, new Haplogroup(currentXMLElement.getAttribute("name").getValue()));
 		parentNode.addSubHaplogroup(newNode);
 		// Update index
@@ -101,12 +102,12 @@ public final class Phylotree {
 
 		List<Element> polys = currentXMLElement.getChild("details").getChildren("poly");
 		for (Element currentPolyElement : polys) {
-			Polymorphism newExpectedPoly = new Polymorphism(currentPolyElement.getValue());
+			Polymorphism newExpectedPoly = new Polymorphism(currentPolyElement.getValue(), ref);
 			newNode.addExpectedPoly(newExpectedPoly);
 		}
 		List<Element> children = currentXMLElement.getChildren("haplogroup");
 		for (Element currentChildElement : children) {
-			buildPhylotree(newNode, currentChildElement);
+			buildPhylotree(newNode, currentChildElement, ref);
 		}
 	}
 

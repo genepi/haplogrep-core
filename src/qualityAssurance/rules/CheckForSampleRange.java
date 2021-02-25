@@ -83,8 +83,8 @@ public class CheckForSampleRange extends HaplogrepRule {
 		else if(isControlRange && !currentSample.getSample().getSampleRanges().isControlRange()){
 			qualityAssistent.addNewIssue(new ControlRangeDetected(qualityAssistent, currentSample));	
 		}
-		else if(isCompleteRange && !currentSample.getSample().getSampleRanges().isCompleteRange()
-				&& !currentSample.getSample().getSampleRanges().isCustomRange()){
+		else if(isCompleteRange && !currentSample.getSample().getSampleRanges().isCompleteRange(currentSample.getReference())
+				&& !currentSample.getSample().getSampleRanges().isCustomRange(currentSample.getReference())){
 			qualityAssistent.addNewIssue(new CustomOrCompleteRangeDetected(qualityAssistent, currentSample));		
 		}
 		else

@@ -18,19 +18,23 @@ import exceptions.parse.sample.InvalidPolymorphismException;
 public class Sample {
 	ArrayList<Polymorphism> sample = new ArrayList<Polymorphism>();
 	private SampleRanges sampleRange = null;
+	private Reference reference =null;
 
 	// callMethod defines the call. callMethod=1 call from PhyloTree
-	public Sample(String sampleToParse, SampleRanges sampleRange, int callMethod) throws InvalidPolymorphismException {
+	public Sample(String sampleToParse, SampleRanges sampleRange, int callMethod, Reference ref) throws InvalidPolymorphismException {
 
 		String[] polyTokens = sampleToParse.trim().split("\\s+");
 		ArrayList<String> listOfSampleTokens = new ArrayList<String>(Arrays.asList(polyTokens));
-		this.sample = parseSample(listOfSampleTokens, callMethod);
 		this.sampleRange = sampleRange;
+		this.reference=ref;
+		this.sample = parseSample(listOfSampleTokens, callMethod);
 	}
 
-	public Sample(ArrayList<Polymorphism> polymorphisms, SampleRanges sampleRange) {
+	public Sample(ArrayList<Polymorphism> polymorphisms, SampleRanges sampleRange, Reference ref) {
 		this.sample = polymorphisms;
+		this.reference=ref;
 		this.sampleRange = sampleRange;
+
 	}
 
 	/**
@@ -130,7 +134,6 @@ public class Sample {
 	 *             Thrown if the format of the polymorphisms is not correct
 	 */
 	private ArrayList<Polymorphism> parseSample(ArrayList<String> sample, int callMethod) throws InvalidPolymorphismException {
-
 		ArrayList<Polymorphism> filteredSample = new ArrayList<Polymorphism>();
 		for (String currentPoly : sample) {
 			// TODO check this 2 special cases
@@ -142,7 +145,6 @@ public class Sample {
 				currentPoly=currentPoly.substring(0, currentPoly.length()-2);
 			}
 		
-			
 			if (!currentPoly.contains("5899.1d!") && !currentPoly.contains("65.1T(T)")) {
 				// poly in brackets (receiving from phylotree) are selected and
 				// handled as standard polys.
@@ -194,16 +196,16 @@ public class Sample {
 								}
 							}
 							if (isReliable==0)
-								filteredSample.add(new Polymorphism(newInsert + buffer.toString()));
+								filteredSample.add(new Polymorphism(newInsert + buffer.toString(), reference));
 							else
-								filteredSample.add(new Polymorphism(newInsert + buffer.toString(),1));
+								filteredSample.add(new Polymorphism(newInsert + buffer.toString(),1,reference));
 
 						}
 
 						// format is already correct: 523.1ACCCCCC, use it as it
 						// is
 						else if (currentPoly.matches("\\d+\\.1[a-zA-Z]{2,}")) {
-							Polymorphism newPoly = new Polymorphism(currentPoly);
+							Polymorphism newPoly = new Polymorphism(currentPoly, reference);
 							filteredSample.add(newPoly);
 						}
 					}
@@ -212,18 +214,18 @@ public class Sample {
 					// delivers 523.2C we accept it but only from PHYLOTREE
 					// call method 1 means PHYLOTREE
 					else {
-						Polymorphism newPoly = new Polymorphism(currentPoly);
+						Polymorphism newPoly = new Polymorphism(currentPoly, reference);
 						filteredSample.add(newPoly);
 					}
 
 				}
 				//HETEROPLASMY - split in Bases
 				else if (currentPoly.contains("R")){
-					Polymorphism newPoly = new Polymorphism(currentPoly, true);
+					Polymorphism newPoly = new Polymorphism(currentPoly, true, reference);
 					filteredSample.add(newPoly);
 				}
 				else if (currentPoly.contains("Y")){
-					Polymorphism newPoly = new Polymorphism(currentPoly, true);
+					Polymorphism newPoly = new Polymorphism(currentPoly, true, reference);
 					filteredSample.add(newPoly);
 				}
 				// Resolve deletation ranges e.g. 1800-1804d
@@ -236,17 +238,18 @@ public class Sample {
 					for (int i = startPosition; i <= endPosition; i++) {
 						// phyloString = firstInt + "del";
 						if (isReliable==0)
-							filteredSample.add(new Polymorphism(i, Mutations.DEL));
+							filteredSample.add(new Polymorphism(i, Mutations.DEL, reference));
 						else
-							filteredSample.add(new Polymorphism(i, Mutations.DEL, 1));
+							filteredSample.add(new Polymorphism(i, Mutations.DEL, 1, reference));
 						startPosition++;
 					}
 				}
 				else {Polymorphism newPoly;
-					if (isReliable==0)
-					 newPoly = new Polymorphism(currentPoly);
+					if (isReliable==0) {
+						newPoly = new Polymorphism(currentPoly, reference);
+					}
 					else
-						newPoly = new Polymorphism(currentPoly, 1);
+						newPoly = new Polymorphism(currentPoly, 1, reference);
 					filteredSample.add(newPoly);
 				}
 			}

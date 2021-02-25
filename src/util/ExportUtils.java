@@ -25,6 +25,7 @@ import org.w3c.dom.svg.GetSVGDocument;
 
 import core.Haplogroup;
 import core.Polymorphism;
+import core.Reference;
 import core.SampleRanges;
 import core.TestSample;
 import exceptions.parse.sample.InvalidBaseException;
@@ -470,7 +471,7 @@ public class ExportUtils {
 		}
 	}
 	
-	public static void generateFasta( Collection<TestSample> sampleCollection, String out) throws IOException {
+	public static void generateFasta( Collection<TestSample> sampleCollection, String out, Reference reference) throws IOException {
 		String fastafile = out + "_haplogrep2.fasta";
 		FileWriter fasta = new FileWriter(fastafile);
 		
@@ -478,7 +479,9 @@ public class ExportUtils {
 		for (TestSample sample : sampleCollection) {
 			
 			Collections.sort((List<Polymorphism>) sample.getSample().getPolymorphisms());
-			String fastaResult = Polymorphism.rCRS;
+			
+			String fastaResult = reference.getSequence();
+			
 			int insertions=0;
 			int deletions=0;
 			System.out.println("sample " + sample.getSampleID());
@@ -513,7 +516,7 @@ public class ExportUtils {
 	}
 	
 	
-	public static void generateFastaMSA(Collection<TestSample> sampleCollection, String out) throws IOException {
+	public static void generateFastaMSA(Collection<TestSample> sampleCollection, String out, Reference reference) throws IOException {
 		String fasta = out + "_haplogrep2_MSA.fasta";
 		FileWriter fastaMSA = new FileWriter(fasta);
 		
@@ -557,7 +560,7 @@ public class ExportUtils {
 													+ poly.getInsertedPolys()
 															.substring(1, i + 1)
 													+ poly.getInsertedPolys()
-															.charAt(i));
+															.charAt(i), reference);
 									vDistinct.add(p1);
 								} catch (NumberFormatException e) {
 									// TODO Auto-generated catch block
@@ -581,7 +584,7 @@ public class ExportUtils {
 								try {
 
 									p1 = new Polymorphism(poly.getPosition()
-											+ ".1" + h.substring(0, i + 1));
+											+ ".1" + h.substring(0, i + 1), reference);
 
 									if (!vectorhelp.contains(p1.toString())) {
 										vectorhelp.add(p1.toString());
@@ -620,7 +623,8 @@ public class ExportUtils {
 				count++;
 
 				int j = 0;
-				String fastaResult = Polymorphism.rCRS;
+
+				String fastaResult = reference.getSequence();
 		
 				int insertion=0;
 				for (int i = 0; i < vectorPolys.size(); i++) {

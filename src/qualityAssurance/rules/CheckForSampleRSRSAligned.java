@@ -20,12 +20,14 @@ import qualityAssurance.QualityAssistent;
 import qualityAssurance.issues.IssueType;
 import qualityAssurance.issues.QualityFatal;
 import core.Polymorphism;
+import core.Reference;
 import core.TestSample;
 import exceptions.parse.sample.InvalidPolymorphismException;
 
 public class CheckForSampleRSRSAligned extends HaplogrepRule {
 	static final Log log = LogFactory.getLog(CheckForSampleRSRSAligned.class);
 	static ArrayList<Polymorphism> uniqueRSRSPolys = null;
+	static Reference reference;
 	
 	public CheckForSampleRSRSAligned(int priority){
 		super(priority);
@@ -48,7 +50,7 @@ public class CheckForSampleRSRSAligned extends HaplogrepRule {
 			String currentLine = reader.readLine();
 
 			while(currentLine != null){
-			Polymorphism newUniquePoly = new Polymorphism(currentLine.trim());
+			Polymorphism newUniquePoly = new Polymorphism(currentLine.trim(), reference);
 			uniqueRSRSPolys.add(newUniquePoly);
 			currentLine = reader.readLine();
 			}
@@ -68,7 +70,7 @@ public class CheckForSampleRSRSAligned extends HaplogrepRule {
 	}
 	@Override
 	public void evaluate(QualityAssistent qualityAssistent, TestSample currentSample) {
-
+		reference = currentSample.getReference();
 		int numRSRSPolysFound = 0;
 	
 			

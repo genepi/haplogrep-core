@@ -75,8 +75,7 @@ public class SampleRanges {
 	 *             Thrown if the format is incorrect or the ranges are invalid
 	 *             (e.g. < 0)
 	 */
-	public SampleRanges(String rangesToParse, boolean splitRange16569) throws InvalidRangeException {
-		
+	public SampleRanges(String rangesToParse, boolean splitRange16569, Reference reference) throws InvalidRangeException {
 		/*if(metaboChipPositions == null){
 			metaboChipPositions = new HashSet<Integer>();
 			
@@ -106,7 +105,9 @@ public class SampleRanges {
 				} catch (NumberFormatException e) {
 					throw new InvalidRangeException(rangeParts[0] + " " + rangeParts[1]);
 				}
-				if (to > 16570 || from > 16570)
+
+				if (reference.getName().equals("RCRS"))
+				if (to > reference.getLength()+1 || from > reference.getLength()+1 )
 					throw new InvalidRangeException(to + " > " + from);
 
 				try {
@@ -114,7 +115,7 @@ public class SampleRanges {
 					if (from > to) {
 						if (splitRange16569)
 						{
-						this.addCustomRange(from, 16569);
+						this.addCustomRange(from, reference.getLength() );
 						this.addCustomRange(1, to);
 						} else
 							this.addCustomRange(Integer.parseInt(rangeParts[0].trim()), Integer.parseInt(rangeParts[1].trim()));
@@ -141,9 +142,9 @@ public class SampleRanges {
 	/**
 	 * Adds the complete range(1-16569) to this SampleRanges instance,
 	 */
-	public void addCompleteRange() {
+	public void addCompleteRange(Reference ref) {
 		starts.add(1);
-		ends.add(16569);
+		ends.add(ref.length);
 	}
 	
 	/**
@@ -296,9 +297,9 @@ public class SampleRanges {
 		return controlRange.equals(this);
 	}
 
-	public boolean isCompleteRange() {
+	public boolean isCompleteRange(Reference ref) {
 		SampleRanges completeRange = new SampleRanges();
-		completeRange.addCompleteRange();
+		completeRange.addCompleteRange(ref);
 		
 		return completeRange.equals(this);
 	}
@@ -308,9 +309,9 @@ public class SampleRanges {
 		ends.clear();
 	}
 
-	public boolean isCustomRange() {
+	public boolean isCustomRange(Reference ref) {
 		
-		return !isCompleteRange() && !isControlRange() && !isMataboChipRange();
+		return !isCompleteRange(ref) && !isControlRange() && !isMataboChipRange();
 	}
 
 	public int getSubrangeID(Polymorphism currentPoly) {	

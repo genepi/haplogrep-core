@@ -13,6 +13,7 @@ import java.util.StringTokenizer;
 
 import org.junit.Test;
 
+import core.Reference;
 import importer.FastaImporter;
 import importer.FastaImporter.References;
 
@@ -23,7 +24,8 @@ public class FastaImporterTests {
 		String file = "test-data/fasta/rCRS.fasta";
 		StringBuilder actual = new StringBuilder();
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), References.RCRS);
+		Reference ref = impFasta.loadrCRS();
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
 
 		String[] splits = samples.get(0).split("\t");
 		for (int i = 3; i < splits.length; i++) {
@@ -38,7 +40,8 @@ public class FastaImporterTests {
 		String file = "test-data/fasta/rsrs.fasta";
 		StringBuilder actual = new StringBuilder();
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), References.RSRS);
+		Reference ref = impFasta.loadRSRS();
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
 
 		String[] splits = samples.get(0).split("\t");
 		for (int i = 3; i < splits.length; i++) {
@@ -54,12 +57,14 @@ public class FastaImporterTests {
 		String file = "test-data/fasta/rCRS.fasta";
 		StringBuilder actual = new StringBuilder();
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), References.RSRS);
+		Reference ref = impFasta.loadRSRS();
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
 
 		String[] splits = samples.get(0).split("\t");
 
 		for (int i = 3; i < splits.length; i++) {
 			actual.append(splits[i] + ",");
+			System.out.println(actual);
 		}
 
 		// exactly 52 differences between rsrs and rCRS
@@ -72,12 +77,14 @@ public class FastaImporterTests {
 		String file = "test-data/fasta/AY195749.fasta";
 		StringBuilder actual = new StringBuilder();
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), References.RSRS);
+		Reference ref = impFasta.loadrCRS();
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
 
 		String[] splits = samples.get(0).split("\t");
 
 		boolean deletion = false;
 		for (int i = 3; i < splits.length; i++) {
+			System.out.println(splits[i]);
 			if (splits[i].equals("523-524d")) {
 				deletion = true;
 			}
@@ -92,7 +99,8 @@ public class FastaImporterTests {
 	public void testParseSampleWithInsertionsDeletions() throws Exception {
 		String file = "test-data/fasta/InsertionTest.fasta";
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), References.RCRS);
+		Reference ref = impFasta.loadrCRS();
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
 
 		String[] splits = samples.get(0).split("\t");
 		HashSet<String> set = new HashSet<String>();
@@ -112,7 +120,8 @@ public class FastaImporterTests {
 	public void testParseSampleWithInsertionsDeletionsShuffle() throws Exception {
 		String file = "test-data/fasta/InsertionTest2.fasta";
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), References.RCRS);
+		Reference ref = impFasta.loadrCRS();
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
 
 		String[] splits = samples.get(0).split("\t");
 		HashSet<String> set = new HashSet<String>();
@@ -133,7 +142,8 @@ public class FastaImporterTests {
 	public void testParseSampleWithInsertionsDeletionsShuffleRandom() throws Exception {
 		String file = "test-data/fasta/InsertionTest3.fasta";
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), References.RCRS);
+		Reference ref = impFasta.loadrCRS();
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
 
 		String[] splits = samples.get(0).split("\t");
 		HashSet<String> set = new HashSet<String>();
@@ -154,7 +164,8 @@ public class FastaImporterTests {
 	public void test() throws Exception {
 		String file = "test-data/fasta/ANI152.fasta";
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), References.RCRS);
+		Reference ref = impFasta.loadrCRS();
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
 
 		String[] splits = samples.get(0).split("\t");
 		HashSet<String> set = new HashSet<String>();
@@ -170,7 +181,8 @@ public class FastaImporterTests {
 		String file = "test-data/fasta/B5a1.fasta";
 		StringBuilder actual = new StringBuilder();
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), References.RCRS);
+		Reference ref = impFasta.loadrCRS();
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
 
 		String[] splits = samples.get(0).split("\t");
 		
@@ -185,17 +197,16 @@ public class FastaImporterTests {
 		String file = "test-data/fasta/B5a1_withN.fasta";
 		StringBuilder actual = new StringBuilder();
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), References.RCRS);
+		Reference ref = impFasta.loadrCRS();
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
 		
-		String countNs = "";
+		String allRanges = "";
 		
 		for (int s=0; s<samples.size(); s++) {
 		String[] splits = samples.get(s).split("\t");
-
-		System.out.println("ID:" + splits[0]+ " Range: " + splits[1]);
-	
+		allRanges+=splits[1];
 		}
-		assertEquals("310N;", countNs);
+		assertEquals("1-16569;1-18;24-16569;1-8277;8280-16569;1-309;311-16181;16183-16569;1-16569;1-309;311-16569;", allRanges);
 
 	}
 	
@@ -206,7 +217,8 @@ public class FastaImporterTests {
 		StringBuilder actual = new StringBuilder();
 		StringBuilder compare = new StringBuilder();
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), References.SARSCOV2);
+		Reference ref = impFasta.loadSARSCOV2(); 
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
 		
 		for (int s = 0; s < samples.size(); s++) {
 			String[] splits = samples.get(s).split("\t");
@@ -219,7 +231,7 @@ public class FastaImporterTests {
 			actual.append("\n");
 		}
 		
-		//COMPARE WITH NEXTSTRAIN
+		//COMPARE WITH NEXTSTRAIN - only SNPS - as indels in different rows - requires reordering in a later step //TODO indels in covid fasta check
 		try  
 		{  
 		File fileCompareNextclade=new File("test-data/sarscov2/nextclade_nextstrain_results_44.csv");    

@@ -41,14 +41,17 @@ public class TestSample implements Comparable<TestSample>{
 	private Sample sample;
 	private int qualityRulesLevelReached = 0;
 	private boolean reset = false;
+	private static Reference reference;
 	
-	private TestSample(){
+
+	public TestSample(){
 		
 	}
 	
-	public TestSample(String sampleID,ArrayList<Polymorphism> polymorphisms,SampleRanges sampleRange) {
+	public TestSample(String sampleID,ArrayList<Polymorphism> polymorphisms,SampleRanges sampleRange, Reference ref) {
 		this.testSampleID = sampleID.replace(" ", "_");
-		sample = new Sample(polymorphisms,sampleRange);
+		reference=ref;
+		sample = new Sample(polymorphisms,sampleRange, ref);
 	}
 
 	/**
@@ -57,8 +60,9 @@ public class TestSample implements Comparable<TestSample>{
 	 * @return The parsed string as new TestSample object
 	 * @throws HsdFileSampleParseException Thrown if the string could not parsed correctly
 	 */
-	public static TestSample parse(String inputString) throws HsdFileException {
+	public static TestSample parse(String inputString, Reference ref) throws HsdFileException {
 		TestSample parsedSample = new TestSample();
+		reference=ref;
 		SampleRanges sampleRange = null;
 		Pattern p = Pattern.compile( "(\\d*(-|;)?)*" );
 		try {
@@ -77,7 +81,10 @@ public class TestSample implements Comparable<TestSample>{
 			
 			/** Haplogrep 2.0 calculates complete range every time, decided not to use it */
 			
-			sampleRange = new SampleRanges(columns[1], true); //true for split Range
+			if (ref.name.equals("RCRS") || ref.name.equals("RSRS") )
+				sampleRange = new SampleRanges(columns[1], true, ref); //true for split Range
+			else
+				sampleRange = new SampleRanges(columns[1], false, ref); //no split at End (e.g. 16569)  Range
 
 			//Parse expected haplogroup
 			if (columns[2].equals("?") || columns[2].equals("SEQ"))
@@ -90,7 +97,8 @@ public class TestSample implements Comparable<TestSample>{
 			for (int i = 3; i < columns.length; i++) {
 				sampleString.append(columns[i] + " ");
 			}
-				parsedSample.sample = new Sample(sampleString.toString(),sampleRange, 0);
+	
+				parsedSample.sample = new Sample(sampleString.toString(),sampleRange, 0, ref);
 
 		} 
 		
@@ -378,8 +386,7 @@ public class TestSample implements Comparable<TestSample>{
 	public void updateSearchResults(Phylotree phyloTreeToUse,RankingMethod rankingMethod) {
 		//if(qualityRulesLevelReached > 0){
 		
-			List<RankedResult> results = phyloTreeToUse.search(this, rankingMethod.clone());
-		
+			List<RankedResult> results = phyloTreeToUse.search(this, rankingMethod.clone());		
 			searchResults = (ArrayList<RankedResult>) results;
 			clusteredResults = new ClusteredSearchResults(results);
 		//}
@@ -442,7 +449,7 @@ public class TestSample implements Comparable<TestSample>{
 		int i = 0;
 		
 		for(ArrayList<Polymorphism> currentFragment : fragmentsHashMap.values()){
-			resultFragments.add( new TestSample(testSampleID  + "_Frag_" + (fragmentRanges.getStarts().get(i)), currentFragment,fragmentRanges.getSubrange(i)));
+			resultFragments.add( new TestSample(testSampleID  + "_Frag_" + (fragmentRanges.getStarts().get(i)), currentFragment,fragmentRanges.getSubrange(i), reference));
 			i++;
 		}
 		
@@ -455,7 +462,7 @@ public class TestSample implements Comparable<TestSample>{
 
 	
 	for(int i = 0; i <  fragmentRanges.getStarts().size();i++){
-		resultFragments.add( new TestSample(testSampleID  + "_Frag_" + (fragmentRanges.getStarts().get(i)), sample.getPolymorphisms(),fragmentRanges.getSubrange(i)));
+		resultFragments.add( new TestSample(testSampleID  + "_Frag_" + (fragmentRanges.getStarts().get(i)), sample.getPolymorphisms(),fragmentRanges.getSubrange(i), reference));
 			
 	}
 	return resultFragments;
@@ -471,5 +478,13 @@ public class TestSample implements Comparable<TestSample>{
 
 	public void setReset(boolean reset) {
 		this.reset = reset;
+	}
+	
+	public Reference getReference() {
+		return reference;
+	}
+
+	public void setReference(Reference reference) {
+		this.reference = reference;
 	}
 }

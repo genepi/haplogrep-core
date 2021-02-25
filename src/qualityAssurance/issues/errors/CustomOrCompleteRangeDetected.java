@@ -10,6 +10,7 @@ import qualityAssurance.issues.QualityIssue;
 
 
 import core.Polymorphism;
+import core.Reference;
 import core.TestSample;
 
 public class CustomOrCompleteRangeDetected extends QualityFatal {
@@ -22,8 +23,9 @@ public class CustomOrCompleteRangeDetected extends QualityFatal {
 
 	public void execute(TestSample testSample)
       {
+		Reference reference=testSample.getReference();
 		testSample.getSample().getSampleRanges().clear();
-		testSample.getSample().getSampleRanges().addCompleteRange();
+		testSample.getSample().getSampleRanges().addCompleteRange(reference);
       }
     }
 	

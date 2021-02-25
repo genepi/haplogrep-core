@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import core.Reference;
+
 /**
  * Manages all phylotree instances (versions).
  * 
@@ -41,7 +43,7 @@ public class PhylotreeManager {
 	 *            Path to the file containing the phylogentic weights.
 	 * @return The requested phylotree instance
 	 */
-	public Phylotree getPhylotree(String phylotreePath, String phyloGeneticWeightsPath) {
+	public Phylotree getPhylotree(String phylotreePath, String phyloGeneticWeightsPath, Reference ref) {
 		if (phylotreeMap.containsKey(phylotreePath))
 			return phylotreeMap.get(phylotreePath);
 		else {
@@ -57,7 +59,7 @@ public class PhylotreeManager {
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
-			Phylotree searchMananger = new Phylotree(phyloFile, flucRates);
+			Phylotree searchMananger = new Phylotree(phyloFile, flucRates, ref);
 			phylotreeMap.put(phylotreePath, searchMananger);
 			return searchMananger;
 		}
