@@ -197,7 +197,6 @@ public class FastaImporter {
 	private String readCigar(SAMRecord samRecord, String reference) {
 
 		String readString = samRecord.getReadString();
-System.out.println(samRecord.getCigarString() + " "    );
 		StringBuilder pos = new StringBuilder();
 		StringBuilder _range = new StringBuilder();
 		int start=1;
@@ -313,7 +312,6 @@ System.out.println(samRecord.getCigarString() + " "    );
 	private String cleanRange(String emptyPos, int start, int stop) {
 		String range = "";
 		int lastpos=start;
-		System.out.println("emptyPos " + emptyPos +  " " + start  + " " + stop);
 		if (emptyPos.length() == 0)
 			return (start+"-" + stop + ";");
 		StringTokenizer st = new StringTokenizer(emptyPos, ";");

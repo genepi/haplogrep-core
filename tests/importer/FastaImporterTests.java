@@ -84,8 +84,7 @@ public class FastaImporterTests {
 
 		boolean deletion = false;
 		for (int i = 3; i < splits.length; i++) {
-			System.out.println(splits[i]);
-			if (splits[i].equals("523-524d")) {
+			if (splits[i].equals("514-515d")) {
 				deletion = true;
 			}
 			actual.append(splits[i] + ",");
