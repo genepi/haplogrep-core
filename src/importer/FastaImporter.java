@@ -178,7 +178,6 @@ public class FastaImporter {
 					profile.append(sequence.getName() + "\t" + range + "\t" + "?");
 					first = false;
 				}
-				System.out.println(range + " " + samRecord +" " + variants );
 				profile.append(variants);
 
 			}
@@ -198,14 +197,18 @@ public class FastaImporter {
 	private String readCigar(SAMRecord samRecord, String reference) {
 
 		String readString = samRecord.getReadString();
-
+System.out.println(samRecord.getCigarString() + " "    );
 		StringBuilder pos = new StringBuilder();
 		StringBuilder _range = new StringBuilder();
-
+		int start=1;
+		int lastpos=0;
 		for (int i = 0; i < readString.length(); i++) {
-
+			
 			int currentPos = samRecord.getReferencePositionAtReadPosition(i + 1);
-
+			if (i==0) {
+				start=currentPos;
+			}
+			lastpos=currentPos;
 			char inputBase = readString.charAt(i);
 
 			// e.g. INS and DEL having currentPos 0
@@ -237,7 +240,6 @@ public class FastaImporter {
 
 			}
 		}
-
 		Integer currentReferencePos = samRecord.getAlignmentStart();
 
 		int sequencePos = 0;
@@ -304,16 +306,16 @@ public class FastaImporter {
 			}
 
 		}
-		this.range = cleanRange(_range.toString());
+		this.range = cleanRange(_range.toString(), start, lastpos);
 		return pos.toString();
 	}
 
-	private String cleanRange(String emptyPos) {
+	private String cleanRange(String emptyPos, int start, int stop) {
 		String range = "";
-		int lastpos=1;
-		System.out.println(emptyPos);
+		int lastpos=start;
+		System.out.println("emptyPos " + emptyPos +  " " + start  + " " + stop);
 		if (emptyPos.length() == 0)
-			return ("1-" + reference.length() + ";");
+			return (start+"-" + stop + ";");
 		StringTokenizer st = new StringTokenizer(emptyPos, ";");
 		while (st.hasMoreTokens()) {
 			int posN = Integer.valueOf(st.nextToken());
