@@ -7,6 +7,7 @@ import java.util.List;
 
 import core.Haplogroup;
 import core.Polymorphism;
+import core.Reference;
 
 /**
  * Represents a node of the phylotree.
@@ -29,9 +30,9 @@ public class PhyloTreeNode implements Serializable {
 	 * 
 	 * @param tree The underlying phylotree
 	 */
-	PhyloTreeNode(Phylotree tree) {
+	PhyloTreeNode(Phylotree tree, Reference ref) {
 		this.tree = tree;
-		haplogroup = new Haplogroup("rCRS NC_012920");
+		haplogroup = new Haplogroup("Reference: " + ref.getName());
 	}
 
 	/**

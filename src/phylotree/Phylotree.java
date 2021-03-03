@@ -53,7 +53,7 @@ public final class Phylotree {
 	 */
 	public Phylotree(InputStream phylotreeFile, InputStream phylogeneticWeightsFile, Reference ref) {
 
-		root = new PhyloTreeNode(this);
+		root = new PhyloTreeNode(this, ref);
 		// Create a JDOM document out of the phylotree XML
 		SAXBuilder builder = new SAXBuilder();
 		try {
