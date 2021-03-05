@@ -24,6 +24,7 @@ import org.apache.commons.collections.map.MultiValueMap;
 import org.w3c.dom.svg.GetSVGDocument;
 
 import core.Haplogroup;
+import core.Mutations;
 import core.Polymorphism;
 import core.Reference;
 import core.SampleRanges;
@@ -43,6 +44,8 @@ import vcf.Sample;
 import vcf.Variant;
 
 public class ExportUtils {
+
+	Reference reference;
 
 	public static ArrayList<String> vcfTohsd(HashMap<String, Sample> samples) {
 		return ExportUtils.vcfTohsd(samples, 0.9);
@@ -197,7 +200,7 @@ public class ExportUtils {
 		writer.close();
 
 	}
-	
+
 	private static String getTypeRemaining(Polymorphism p, SearchResult result) {
 
 		if (result.getPhyloTree().getMutationRate(p) == 0) {
@@ -269,8 +272,8 @@ public class ExportUtils {
 
 	}
 
-	public static void calcLineage(Collection<TestSample> sampleCollection, int tree, String out) throws IOException {
-
+	public static void calcLineage(Collection<TestSample> sampleCollection, int tree, String out, Reference ref) throws IOException {
+		HashSet<Integer> phylogenyPoly = new HashSet<Integer>();
 		if (tree == 0)
 			return;
 
@@ -290,7 +293,7 @@ public class ExportUtils {
 		FileWriter graphVizWriter = new FileWriter(graphViz);
 
 		graphVizWriter.write("digraph {  label=\"Sample File: " + out + "\"\n");
-		if (tree == 1 || tree == 3 ) {
+		if (tree == 1 || tree == 3) {
 			graphVizWriter.write("graph [layout = dot, rankdir = TB]\n");
 		} else if (tree == 2) {
 			graphVizWriter.write("graph [layout = dot, rankdir = LR]\n");
@@ -298,6 +301,7 @@ public class ExportUtils {
 		graphVizWriter.write("node [shape = oval,style = filled,color = lightblue]\n");
 
 		// iterate through result samples
+
 		for (TestSample sample : sampleCollection) {
 			String notfound = "";
 			String remaining = "";
@@ -321,7 +325,7 @@ public class ExportUtils {
 						} else {
 
 							for (Polymorphism currentPoly : currentPath.get(i).getExpectedPolys()) {
-
+								phylogenyPoly.add(currentPoly.getPosition());
 								polys.append(currentPoly + " ");
 
 								if (!currentPath.get(i).getFoundPolys().contains(currentPoly)) {
@@ -346,21 +350,47 @@ public class ExportUtils {
 							tmpNode = "";
 						}
 
-						// Write currentHG also in new line for next iteration, but don't do this for
+						// Write currentHG also in new line for next iteration,
+						// but don't do this for
 						// last element
 						if (i != (currentPath.size() - 1)) {
 							tmpNode = "\"" + currentHg + "\" -> ";
 						}
 					}
-
 				}
 				// append the remaining SNPS
 
 				for (int i = 0; i < currentResult.getSearchResult().getDetailedResult().getRemainingPolysInSample().size(); i++) {
 					Polymorphism poly = currentResult.getSearchResult().getDetailedResult().getRemainingPolysInSample().get(i);
-					if (!polyToExclude(poly)) {
-						remaining += poly + " ";
-						remaining += "\n";
+					if (!polyToExclude(poly, ref)) {
+						if (poly.getMutation().equals(Mutations.N)) {
+							if (phylogenyPoly.contains(poly.getPosition()))
+								remaining += poly + "\n";
+						} else if (poly.getMutation().equals(Mutations.DEL)) {
+							int j = 1;
+							boolean noDel = false;
+							// getNextPoly
+							remaining += poly;
+
+							Polymorphism nextPoly = null;
+							while (!noDel && (i + j) < currentResult.getSearchResult().getDetailedResult().getRemainingPolysInSample().size()) {
+								nextPoly = currentResult.getSearchResult().getDetailedResult().getRemainingPolysInSample().get(i + j);
+								if (nextPoly.getMutation().equals(Mutations.DEL) && (poly.getPosition() + 1) == nextPoly.getPosition()) {
+									j++;
+									poly = nextPoly;
+								} else {
+									noDel = true;
+								}
+							}
+							if (j > 1) {
+								remaining += "-" + poly + " ";
+								i = i + j;
+							}
+							remaining += "\n";
+						} else {
+							remaining += poly + " ";
+							remaining += "\n";
+						}
 					}
 				}
 
@@ -410,28 +440,28 @@ public class ExportUtils {
 			Iterator it = groupedMap.entrySet().iterator();
 			while (it.hasNext()) {
 				Map.Entry pair = (Map.Entry) it.next();
-				
-				int value =  (Integer) pair.getValue(); 
-				graphVizWriter.write("\"" + pair.getKey() + "\" -> " + "\"" + pair.getKey()+" = "+value + " \"" + "[color=steelblue, label=\"" + "\"]\n");
-				if (value <2 )
-					graphVizWriter.write("\"" + pair.getKey()+" = "+value  + " \"" + "[shape=rectangle, color=steelblue]\n");
-				else if (value >=2 && value <10)
-					graphVizWriter.write("\"" + pair.getKey()+" = "+value  + " \"" + "[shape=rectangle, color=darkorange]\n");
-				else 
-					graphVizWriter.write("\"" + pair.getKey()+" = "+value  + " \"" + "[shape=rectangle, color=firebrick1]\n");
+
+				int value = (Integer) pair.getValue();
+				graphVizWriter.write("\"" + pair.getKey() + "\" -> " + "\"" + pair.getKey() + " = " + value + " \"" + "[color=steelblue, label=\"" + "\"]\n");
+				if (value < 2)
+					graphVizWriter.write("\"" + pair.getKey() + " = " + value + " \"" + "[shape=rectangle, color=steelblue]\n");
+				else if (value >= 2 && value < 10)
+					graphVizWriter.write("\"" + pair.getKey() + " = " + value + " \"" + "[shape=rectangle, color=darkorange]\n");
+				else
+					graphVizWriter.write("\"" + pair.getKey() + " = " + value + " \"" + "[shape=rectangle, color=firebrick1]\n");
 
 				it.remove(); // avoids a ConcurrentModificationException
 			}
-			graphVizWriter.write("subgraph cluster_legend {\n"); 
+			graphVizWriter.write("subgraph cluster_legend {\n");
 			graphVizWriter.write("label = \"Legend\"\n");
-			graphVizWriter.write("shape=rectangle\n") ;
+			graphVizWriter.write("shape=rectangle\n");
 			graphVizWriter.write("color = black\n");
 			graphVizWriter.write("\"Intermediate haplogroup\" [color=lightblue]\n");
 			graphVizWriter.write("\"Terminal haplogroup\"  [color=deepskyblue]\n");
 			graphVizWriter.write("\"1 sample \\n in Haplogroup\"  [shape=rectangle, color=steelblue]\n");
 			graphVizWriter.write("\">= 2 Samples \\n in Haplogroup\"  [shape=rectangle, color=darkorange]\n");
 			graphVizWriter.write("\">=10 Samples \\n in Haplogroup\"  [shape=rectangle, color=firebrick1]\n");
-			graphVizWriter.write("}\n");	
+			graphVizWriter.write("}\n");
 		}
 
 		graphVizWriter.write("}");
@@ -443,81 +473,77 @@ public class ExportUtils {
 	// A16182c, A16183c, 16193.1C(C) and C16519T/T16519C
 	// were not considered for phylogenetic reconstruction and are therefore
 	// excluded from the tree.
-	private static boolean polyToExclude(Polymorphism polymorphism) {
-		int pos = polymorphism.getPosition();
-		switch (pos) {
-		case 309:
-			return true;
-		case 315:
-			return true;
-		case 523:
-			return true;
-		case 524:
-			return true;
-		case 525:
-			return true;
-		case 3107:
-			return true;
-		case 16182:
-			return true;
-		case 16183:
-			return true;
-		case 16193:
-			return true;
-		case 16519:
-			return true;
-		default:
-			return false;
+	private static boolean polyToExclude(Polymorphism polymorphism, Reference ref) {
+		if (ref.getName().equals("rCRS")) {
+			int pos = polymorphism.getPosition();
+			switch (pos) {
+			case 309:
+				return true;
+			case 315:
+				return true;
+			case 523:
+				return true;
+			case 524:
+				return true;
+			case 525:
+				return true;
+			case 3107:
+				return true;
+			case 16182:
+				return true;
+			case 16183:
+				return true;
+			case 16193:
+				return true;
+			case 16519:
+				return true;
+			default:
+				return false;
+			}
 		}
+		return false;
 	}
-	
-	public static void generateFasta( Collection<TestSample> sampleCollection, String out, Reference reference) throws IOException {
+
+	public static void generateFasta(Collection<TestSample> sampleCollection, String out, Reference reference) throws IOException {
 		String fastafile = out + "_haplogrep2.fasta";
 		FileWriter fasta = new FileWriter(fastafile);
-		
-		
+
 		for (TestSample sample : sampleCollection) {
-			
+
 			Collections.sort((List<Polymorphism>) sample.getSample().getPolymorphisms());
-			
+
 			String fastaResult = reference.getSequence();
-			
-			int insertions=0;
-			int deletions=0;
-			
+
+			int insertions = 0;
+			int deletions = 0;
+
 			for (Polymorphism poly : sample.getSample().getPolymorphisms()) {
-			
-						poly.getPosition();
-						if (poly.getMutation().toString().equals("INS"))
-						{
-							for (int i=0; i<poly.getInsertedPolys().length(); i++){
-								insertions++;
-								fastaResult=insertChar(fastaResult, poly.getInsertedPolys().toString().charAt(i), poly.getPosition()-1+insertions-deletions);
-								//log.debug
-								}
-							}
-						else if (poly.getMutation().toString().equals("DEL"))
-						{
-							fastaResult=deleteChar(fastaResult, poly.getPosition()-1+insertions-deletions);
-							deletions++;
-						}
-						else
-						{
-						fastaResult=replaceChar(fastaResult, poly.getMutation().toString().charAt(0), poly.getPosition()-1+insertions-deletions);
-						}
+
+				poly.getPosition();
+				if (poly.getMutation().toString().equals("INS")) {
+					for (int i = 0; i < poly.getInsertedPolys().length(); i++) {
+						insertions++;
+						fastaResult = insertChar(fastaResult, poly.getInsertedPolys().toString().charAt(i), poly.getPosition() - 1 + insertions - deletions);
+						// log.debug
 					}
-			
-			fasta.write(">"+sample.getSampleID()+"\n"+fastaResult+"\n");
-			
+				} else if (poly.getMutation().toString().equals("DEL")) {
+					fastaResult = deleteChar(fastaResult, poly.getPosition() - 1 + insertions - deletions);
+					deletions++;
+				} else {
+					fastaResult = replaceChar(fastaResult, poly.getMutation().toString().charAt(0), poly.getPosition() - 1 + insertions - deletions);
+				}
 			}
+
+			fasta.write(">" + sample.getSampleID() + "\n" + fastaResult + "\n");
+
+		}
 		fasta.close();
 	}
-	
-	
+
 	public static void generateFastaMSA(Collection<TestSample> sampleCollection, String out, Reference reference) throws IOException {
 		String fasta = out + "_haplogrep2_MSA.fasta";
 		FileWriter fastaMSA = new FileWriter(fasta);
-		
+
 		String result = "";
 
 		long start = new java.util.Date().getTime();
@@ -544,21 +570,15 @@ public class ExportUtils {
 							vDistinct.add(poly);
 						}
 
-						else 					
-						{
+						else {
 
-							for (int i = 0; i < poly.getInsertedPolys()
-									.length(); i++) {
+							for (int i = 0; i < poly.getInsertedPolys().length(); i++) {
 
 								try {
 									System.out.println("--" + poly);
 									Polymorphism p1 = new Polymorphism(
-											poly.getPosition()
-													+ ".1"
-													+ poly.getInsertedPolys()
-															.substring(1, i + 1)
-													+ poly.getInsertedPolys()
-															.charAt(i), reference);
+											poly.getPosition() + ".1" + poly.getInsertedPolys().substring(1, i + 1) + poly.getInsertedPolys().charAt(i),
+											reference);
 									vDistinct.add(p1);
 								} catch (NumberFormatException e) {
 									// TODO Auto-generated catch block
@@ -576,13 +596,12 @@ public class ExportUtils {
 						if (poly.getMutation().toString().contains("INS")) {
 
 							String h = poly.getInsertedPolys().toString();
-							System.out.println("inserted polys " +h);
+							System.out.println("inserted polys " + h);
 							for (int i = 0; i < h.length(); i++) {
 								Polymorphism p1 = null;
 								try {
 
-									p1 = new Polymorphism(poly.getPosition()
-											+ ".1" + h.substring(0, i + 1), reference);
+									p1 = new Polymorphism(poly.getPosition() + ".1" + h.substring(0, i + 1), reference);
 
 									if (!vectorhelp.contains(p1.toString())) {
 										vectorhelp.add(p1.toString());
@@ -600,9 +619,9 @@ public class ExportUtils {
 						}
 					}
 				}
-				
+
 				Collections.sort(vDistinct);
-			//	System.out.println( sample.getSampleID()+ " "  + vDistinct);
+				// System.out.println( sample.getSampleID()+ " " + vDistinct);
 				samplepoly.add(vDistinct);
 			}
 
@@ -612,8 +631,8 @@ public class ExportUtils {
 
 			Vector<Polymorphism> vsamplep = new Vector<Polymorphism>();
 			for (TestSample sample : sampleCollection) {
-			
-				fastaMSA.write(">"+sample.getSampleID()+"_"+sample.getDetectedHaplogroup() + "\n");
+
+				fastaMSA.write(">" + sample.getSampleID() + "_" + sample.getDetectedHaplogroup() + "\n");
 
 				vsamplep.clear();
 				vsamplep = (Vector<Polymorphism>) samplepoly.get(count);
@@ -623,50 +642,51 @@ public class ExportUtils {
 				int j = 0;
 
 				String fastaResult = reference.getSequence();
-		
-				int insertion=0;
-				for (int i = 0; i < vectorPolys.size(); i++) {
-					
-					if (j < vsamplep.size()) {
-						if (vsamplep.get(j).getPosition() == (vectorPolys.get(i).getPosition()) && (vsamplep.get(j).getMutation() == vectorPolys.get(i).getMutation()))
-						 {
-							String help = vectorPolys.get(i).getMutation().toString();
-								if (help.contains("DEL")) {
-				
-									if (vsamplep.get(j).getMutation().toString().charAt(0)==('D')){
-							    		fastaResult=replaceChar(fastaResult, '-', vectorPolys.get(i).getPosition()-1+insertion);
-									}
-								}
-								else if (help.equals("INS")) {
-									fastaResult=insertChar(fastaResult, vectorPolys.get(i).getInsertedPolys().charAt(vectorPolys.get(i).getInsertedPolys().length()-1), vectorPolys.get(i).getPosition()+insertion);
-									insertion++;
-								}
-						
-								else {
-									if (vsamplep.get(j).getMutation().toString().charAt(0)!=('I')){
-										fastaResult=replaceChar(fastaResult, vsamplep.get(j).getMutation().toString().charAt(0), vectorPolys.get(i).getPosition()-1+insertion);
-									}
-								}
-								j++;	
-						}
-				
-						else if (vectorPolys.get(i).getMutation().toString().equals("INS")){
 
-							fastaResult=insertChar(fastaResult, '-', vectorPolys.get(i).getPosition()+insertion);
+				int insertion = 0;
+				for (int i = 0; i < vectorPolys.size(); i++) {
+
+					if (j < vsamplep.size()) {
+						if (vsamplep.get(j).getPosition() == (vectorPolys.get(i).getPosition())
+								&& (vsamplep.get(j).getMutation() == vectorPolys.get(i).getMutation())) {
+							String help = vectorPolys.get(i).getMutation().toString();
+							if (help.contains("DEL")) {
+
+								if (vsamplep.get(j).getMutation().toString().charAt(0) == ('D')) {
+									fastaResult = replaceChar(fastaResult, '-', vectorPolys.get(i).getPosition() - 1 + insertion);
+								}
+							} else if (help.equals("INS")) {
+								fastaResult = insertChar(fastaResult,
+										vectorPolys.get(i).getInsertedPolys().charAt(vectorPolys.get(i).getInsertedPolys().length() - 1),
+										vectorPolys.get(i).getPosition() + insertion);
+								insertion++;
+							}
+
+							else {
+								if (vsamplep.get(j).getMutation().toString().charAt(0) != ('I')) {
+									fastaResult = replaceChar(fastaResult, vsamplep.get(j).getMutation().toString().charAt(0),
+											vectorPolys.get(i).getPosition() - 1 + insertion);
+								}
+							}
+							j++;
+						}
+
+						else if (vectorPolys.get(i).getMutation().toString().equals("INS")) {
+
+							fastaResult = insertChar(fastaResult, '-', vectorPolys.get(i).getPosition() + insertion);
 							insertion++;
 						}
-					}
-					else if (vectorPolys.get(i).getMutation().toString().equals("INS")){
-						fastaResult=insertChar(fastaResult, '-', vectorPolys.get(i).getPosition()+insertion);
+					} else if (vectorPolys.get(i).getMutation().toString().equals("INS")) {
+						fastaResult = insertChar(fastaResult, '-', vectorPolys.get(i).getPosition() + insertion);
 						insertion++;
 					}
 				}
-				fastaMSA.write(fastaResult+"\n");	
-				}
+				fastaMSA.write(fastaResult + "\n");
+			}
 		}
 		fastaMSA.close();
 	}
-	
+
 	/**
 	 * 
 	 * @param data
@@ -674,13 +694,12 @@ public class ExportUtils {
 	 * @param myIndex
 	 * @return
 	 */
-	public static String replaceChar( String data, char ch, int myIndex)
-	{
-	StringBuilder builderString = new StringBuilder(data);
-	builderString.setCharAt(myIndex, ch);
-	return builderString.toString();
+	public static String replaceChar(String data, char ch, int myIndex) {
+		StringBuilder builderString = new StringBuilder(data);
+		builderString.setCharAt(myIndex, ch);
+		return builderString.toString();
 	}
-	
+
 	/**
 	 * 
 	 * @param data
@@ -688,18 +707,18 @@ public class ExportUtils {
 	 * @param myIndex
 	 * @return
 	 */
-	public static String insertChar(String data, char ch, int myIndex ){
-		return 	 new StringBuffer(data).insert(myIndex, ch).toString();
+	public static String insertChar(String data, char ch, int myIndex) {
+		return new StringBuffer(data).insert(myIndex, ch).toString();
 	}
-	
+
 	/**
 	 * 
 	 * @param data
 	 * @param myIndex
 	 * @return
 	 */
-	public static String deleteChar(String data, int myIndex ){
-	    return  data.substring(0,myIndex) + data.substring(myIndex+1);
+	public static String deleteChar(String data, int myIndex) {
+		return data.substring(0, myIndex) + data.substring(myIndex + 1);
 	}
 
 }

@@ -223,6 +223,7 @@ public class FastaImporter {
 
 				if (inputBase == 'N') {
 					_range.append(currentPos + ";");
+					pos.append("\t" + currentPos + "" + inputBase);
 				}
 
 				if (inputBase != 'A' && inputBase != 'C' && inputBase != 'G' && inputBase != 'T') {
