@@ -15,7 +15,6 @@ import org.junit.Test;
 
 import core.Reference;
 import importer.FastaImporter;
-import importer.FastaImporter.References;
 
 public class FastaImporterTests {
 
@@ -29,10 +28,10 @@ public class FastaImporterTests {
 
 		String[] splits = samples.get(0).split("\t");
 		for (int i = 3; i < splits.length; i++) {
-			actual.append(splits[i] + ",");
+			actual.append(splits[i]);
 		}
-
-		assertEquals(0, actual.length());
+		//1 = 3107N
+		assertEquals("3107N", actual.toString());
 	}
 
 	@Test
@@ -45,10 +44,11 @@ public class FastaImporterTests {
 
 		String[] splits = samples.get(0).split("\t");
 		for (int i = 3; i < splits.length; i++) {
-			actual.append(splits[i] + ",");
+			actual.append(splits[i]+ " ");
 		}
+		//includes 523-524N and 3107N		
 
-		assertEquals(0, actual.length());
+		assertEquals("523N 524N 3107N ", actual.toString());
 
 	}
 
@@ -59,16 +59,17 @@ public class FastaImporterTests {
 		FastaImporter impFasta = new FastaImporter();
 		Reference ref = impFasta.loadRSRS();
 		ArrayList<String> samples = impFasta.load(new File(file), ref);
-
+System.out.println(samples);
 		String[] splits = samples.get(0).split("\t");
 
 		for (int i = 3; i < splits.length; i++) {
 			actual.append(splits[i] + ",");
-			System.out.println(actual);
 		}
 
-		// exactly 52 differences between rsrs and rCRS
-		assertEquals(52, (splits.length) - 3);
+		System.out.println(actual.length() +  "actual " +actual );
+		System.out.println(splits.length);
+		// exactly 52 differences between rsrs and rCRS + one additional on 3107N!!
+		assertEquals(53, (splits.length) - 3);
 
 	}
 
@@ -260,5 +261,26 @@ public class FastaImporterTests {
 
 	}
 	
+	@Test //CHECK RANGES 
+	public void testSARSCOV2_helix_35_issues_S() throws Exception {
+		String file = "test-data/sarscov2/genbank_sarscov2_helix_issues35_subalignS.fasta";
+		StringBuilder actual = new StringBuilder();
+		StringBuilder compare = new StringBuilder();
+		FastaImporter impFasta = new FastaImporter();
+		Reference ref = impFasta.loadSARSCOV2(); 
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
+		
+		for (int s = 0; s < samples.size(); s++) {
+			String[] splits = samples.get(s).split("\t");
+			actual.append(splits[0]+"\t");
+			System.out.println(splits[0] +" " + splits[1]);
+			for (int i = 3; i < splits.length; i++) {
+				if (!splits[i].toUpperCase().contains("D") && !splits[i].contains(".")  ) {
+					actual.append(splits[i] + ",");
+				}
+			}
+			actual.append("\n");
+		}
 	
+	}
 }
