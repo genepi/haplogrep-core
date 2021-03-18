@@ -7,23 +7,21 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Ref;
+
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.apache.commons.lang.SystemUtils;
-import org.apache.log4j.Logger;
-import org.apache.log4j.BasicConfigurator;
 
-import com.github.lindenb.jbwa.jni.AlnRgn;
-import com.github.lindenb.jbwa.jni.BwaIndex;
-import com.github.lindenb.jbwa.jni.BwaMem;
-import com.github.lindenb.jbwa.jni.ShortRead;
+import org.apache.log4j.Logger;
+import org.broadinstitute.hellbender.utils.minimap2.MiniMap2Aligner;
+import org.broadinstitute.hellbender.utils.minimap2.MiniMap2Alignment;
+import org.broadinstitute.hellbender.utils.minimap2.MiniMap2Index;
 
 import core.Reference;
-import core.TestSample;
 import htsjdk.samtools.reference.FastaSequenceFile;
 import genepi.io.FileUtil;
 import htsjdk.samtools.CigarElement;
@@ -88,96 +86,85 @@ public class FastaImporter {
 		String referenceAsString = ref.getSequence();
 		reference = referenceAsString;
 
-		String jbwaLib = FileUtil.path(new File(jbwaDir + "/libbwajni.so").getAbsolutePath());
+		MiniMap2Index mm2index = new MiniMap2Index(jbwaDir + "/" + ref.getName() + ".mmi");
+		MiniMap2Aligner mmalign = new MiniMap2Aligner(mm2index);
 
-		if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_MAC_OSX) {
-			jbwaLib = FileUtil.path(new File(jbwaDir + "/libbwajni.jnilib").getAbsolutePath());
-		}
-
-		System.load(jbwaLib);
-		BwaIndex index = new BwaIndex(new File(FileUtil.path(jbwaDir, ref.getFilename())));
-		BwaMem mem = new BwaMem(index);
-
-		log.info("run time for BWA index: " + (System.currentTimeMillis() - startTime));
+		log.info("load time for MinMap2 index: " + (System.currentTimeMillis() - startTime));
 
 		FastaSequenceFile inputFasta = new FastaSequenceFile(infile, true);
-
 		ReferenceSequence sequence;
+
 		int countFastas = 0;
 		long startTimeReadFasta = System.currentTimeMillis();
+		SAMFileHeader header = new SAMFileHeader();
+		SAMLineParser parser = new SAMLineParser(header);
+        
 		while ((sequence = inputFasta.nextSequence()) != null) {
 
-			ShortRead read = new ShortRead(sequence.getName(), sequence.getBaseString().getBytes(), null);
-			SAMFileHeader header = new SAMFileHeader();
-			SAMLineParser parser = new SAMLineParser(header);
+		List<List<MiniMap2Alignment>> result = mmalign.alignSeqs(Arrays.asList( sequence.getBaseString().getBytes()));
+		StringBuilder profile = new StringBuilder();
 
-			StringBuilder profile = new StringBuilder();
+		//System.out.println("RESULTSIZUE " + result.size());
 
+		
 			// also include supplemental alignments ("chimeric reads")
 
-			boolean first = true;
-			for (AlnRgn alignedRead : mem.align(read)) {
-
-				// as defined by BWA
-				if (alignedRead.getAs() < 30) {
-					continue;
-				}
-
-				if (header.getSequence(alignedRead.getChrom()) == null) {
-					// add contig with mtSequence length
-					header.addSequence(new SAMSequenceRecord(alignedRead.getChrom(), reference.length()));
-				}
-
-				StringBuilder samRecordBulder = new StringBuilder();
-
-				samRecordBulder.append(sequence.getName()); // READNAME
-
-				samRecordBulder.append("\t");
-
-				samRecordBulder.append(0); // FLAGS FORWARD, PRIMARY ALIGNMENT
-
-				samRecordBulder.append("\t");
-
-				samRecordBulder.append(alignedRead.getChrom()); // REFERENCE
-
-				samRecordBulder.append("\t");
-
-				samRecordBulder.append(alignedRead.getPos()); // LEFT MOST POS
-
-				samRecordBulder.append("\t");
-
-				samRecordBulder.append(alignedRead.getMQual()); // QUAL
-
-				samRecordBulder.append("\t");
-
-				samRecordBulder.append(alignedRead.getCigar()); // CIGAR
-
-				samRecordBulder.append("\t");
-
-				samRecordBulder.append("*\t0\t0\t"); // RNEXT (REF NAME OF THE
-														// MATE)
-														// PNEXT
-
-				samRecordBulder.append(sequence.getBaseString() + "\t"); // SEQ
-																			// FORWARD
-
-				samRecordBulder.append("*\t");
-
-				samRecordBulder.append("AS:i:" + alignedRead.getAs());
-
-				SAMRecord samRecord = parser.parseLine(samRecordBulder.toString());
-
-				String variants = readCigar(samRecord, referenceAsString);
-
-				if (first) {
-					profile.append(sequence.getName() + "\t" + range + "\t" + "?");
-					first = false;
-				}
-				profile.append(variants);
-
+			if (header.getSequence(ref.getName()) == null) {
+				// add contig with mtSequence length
+				header.addSequence(new SAMSequenceRecord(ref.getName(), reference.length()));
 			}
+			
+			//filter samples with only Ns e.g. 
+			//https://www.ncbi.nlm.nih.gov/nuccore/LR963146 
+			
+			if (result.get(0).isEmpty()) {
+				lines.add(sequence.getName() + "\t" + 0 + "\t" + "?" + "\t" + "");
+				countFastas++;
+				continue;
+			}
+
+			StringBuilder samRecordBulder = new StringBuilder();
+
+			samRecordBulder.append(sequence.getName()); // READNAME
+
+			samRecordBulder.append("\t");
+
+			samRecordBulder.append(0); // FLAGS FORWARD, PRIMARY ALIGNMENT
+
+			samRecordBulder.append("\t");
+
+			samRecordBulder.append(ref.getName()); // REFERENCE
+
+			samRecordBulder.append("\t");
+
+			samRecordBulder.append(result.get(0).get(0).getRefStart() + 1); // LEFT
+																			// MOST
+																			// POS
+			samRecordBulder.append("\t");
+
+			samRecordBulder.append(result.get(0).get(0).getMapQ()); // QUAL
+
+			samRecordBulder.append("\t");
+
+			samRecordBulder.append(result.get(0).get(0).getCigar()); // CIGAR
+
+			samRecordBulder.append("\t");
+
+			samRecordBulder.append("*\t0\t0\t"); // RNEXT (REF NAME OF THE
+													// MATE)
+													// PNEXT
+
+			samRecordBulder.append(sequence.getBaseString() + "\t"); // SEQ
+			// FORWARD
+
+			samRecordBulder.append("*\t");
+
+			SAMRecord samRecord = parser.parseLine(samRecordBulder.toString());
+
+			String variants = readCigar(samRecord, referenceAsString);
+
+			lines.add(sequence.getName() + "\t" + range + "\t" + "?" + "\t" + variants);
 			countFastas++;
-			lines.add(profile.toString());
 		}
 
 		log.info("run time for alignment of " + countFastas + " sequence(s): " + (System.currentTimeMillis() - startTimeReadFasta));
@@ -185,7 +172,8 @@ public class FastaImporter {
 		inputFasta.close();
 
 		FileUtil.deleteDirectory(jbwaDir);
-
+		mmalign.close();
+		mm2index.close();
 		return lines;
 	}
 
@@ -222,7 +210,7 @@ public class FastaImporter {
 				/*
 				 * if (startRange && inputBase != 'N') {
 				 * _range.append(currentPos); startRange = false; }
-				 * 
+				 *
 				 * else if (inputBase == 'N') { _range.append("-" + (currentPos
 				 * - 1) + "; "); startRange = true; }
 				 */
@@ -321,7 +309,7 @@ public class FastaImporter {
 	private String cleanRange(String emptyPos, int start, int stop) {
 		String range = "";
 		int lastpos = start;
-		//System.out.println("start  " + start + "  + " + stop);
+		// System.out.println("start " + start + " + " + stop);
 		if (emptyPos.length() == 0)
 			return (start + "-" + stop + ";");
 		StringTokenizer st = new StringTokenizer(emptyPos, ";");
