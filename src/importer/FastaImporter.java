@@ -322,7 +322,7 @@ public class FastaImporter {
 				lastpos++;
 			}
 		}
-		range += lastpos + "-" + reference.length() + ";";
+		range += lastpos + "-" + stop + ";";
 		return range;
 	}
 
