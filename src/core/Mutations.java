@@ -9,7 +9,7 @@ import exceptions.parse.sample.InvalidBaseException;
  * 
  */
 public enum Mutations {
-	A, G, C, T, R, Y, K, M, H, N, X, S, V, W, INS, DEL;
+	A, G, C, T, R, Y, K, M, S, W, B, H, X, V, N, INS, DEL;
 
 	static Mutations getBase(String mutation) throws InvalidBaseException {
 		if (mutation.equals("A") || mutation.equals("a"))
@@ -40,6 +40,8 @@ public enum Mutations {
 			return X;
 		if (mutation.equals("V") || mutation.equals("v"))
 			return V;
+		if (mutation.equals("B") || mutation.equals("b"))
+			return B;
 
 		else
 			throw new InvalidBaseException(mutation);
