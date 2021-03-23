@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>genepi</groupId>
 	<artifactId>haplogrep-core</artifactId>
-	<version>2.5.0</version>
+	<version>3.0.0-beta1</version>
 
 	<properties>
 		<skipTests>true</skipTests>
