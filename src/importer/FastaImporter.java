@@ -174,6 +174,7 @@ public class FastaImporter {
 		FileUtil.deleteDirectory(jbwaDir);
 		mmalign.close();
 		mm2index.close();
+
 		return lines;
 	}
 
@@ -221,10 +222,11 @@ public class FastaImporter {
 						start = currentPos + 1;
 					pos.append("\t" + currentPos + "" + inputBase);
 				}
-
-				if (inputBase != 'A' && inputBase != 'C' && inputBase != 'G' && inputBase != 'T') {
+			
+			//2021-03-19 REMOVED as otherwise heteroplasmy or mixtures not detected	
+			/*	if (inputBase != 'A' && inputBase != 'C' && inputBase != 'G' && inputBase != 'T') {
 					continue;
-				}
+				}*/
 
 				char referenceBase = reference.charAt(currentPos - 1);
 
