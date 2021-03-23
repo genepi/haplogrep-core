@@ -163,7 +163,7 @@ public class FastaImporter {
 
 			String variants = readCigar(samRecord, referenceAsString);
 
-			lines.add(sequence.getName() + "\t" + range + "\t" + "?" + "\t" + variants);
+			lines.add(sequence.getName() + "\t" + range + "\t" + "?" + variants);
 			countFastas++;
 		}
 
