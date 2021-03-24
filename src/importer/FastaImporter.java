@@ -234,10 +234,11 @@ public class FastaImporter {
 					pos.append("\t" + currentPos + "" + inputBase);
 				}
 
-				if (inputBase != 'A' && inputBase != 'C' && inputBase != 'G' && inputBase != 'T') {
-					continue;
-				}
-
+				//2021-03-19 REMOVED as otherwise heteroplasmy or mixtures not detected	
+				/*	if (inputBase != 'A' && inputBase != 'C' && inputBase != 'G' && inputBase != 'T') {
+						continue;
+					}*/
+				
 				char referenceBase = reference.charAt(currentPos - 1);
 
 				if (inputBase != referenceBase) {
