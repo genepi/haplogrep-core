@@ -13,7 +13,7 @@
 	</properties>
 
 
-	<distributionManagement>
+		<distributionManagement>
 		<repository>
 			<id>bintray-genepi-maven</id>
 			<name>genepi-maven</name>
@@ -63,7 +63,7 @@
 					<target>${jdk.version}</target>
 				</configuration>
 			</plugin>
-
+	
 		</plugins>
 	</build>
 
@@ -83,13 +83,6 @@
 			<artifactId>batik-all</artifactId>
 			<version>1.10</version>
 			<type>pom</type>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/org.apache.avalon.framework/avalon-framework-api -->
-		<dependency>
-			<groupId>org.apache.avalon.framework</groupId>
-			<artifactId>avalon-framework-api</artifactId>
-			<version>4.3.1</version>
 		</dependency>
 
 		<dependency>
