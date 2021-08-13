@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>genepi</groupId>
 	<artifactId>haplogrep-core</artifactId>
-	<version>2.5.0</version>
+	<version>2.6.0</version>
 
 	<properties>
 		<skipTests>true</skipTests>
@@ -125,7 +125,7 @@
 		<dependency>
 			<groupId>com.github.samtools</groupId>
 			<artifactId>htsjdk</artifactId>
-			<version>2.23.0</version>
+			<version>2.24.1</version>
 		</dependency>
 
 		<dependency>
