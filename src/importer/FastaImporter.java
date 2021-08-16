@@ -173,14 +173,23 @@ public class FastaImporter {
 		StringBuilder pos = new StringBuilder();
 		StringBuilder nPosRange = new StringBuilder();
 
+		int firstPos = -1;
+		int lastPos = -1;
+
 		for (int i = 0; i < readString.length(); i++) {
 
 			int currentPos = samRecord.getReferencePositionAtReadPosition(i + 1);
+
+			if (i == 0) {
+			firstPos = currentPos;
+			}
 
 			char inputBase = readString.charAt(i);
 
 			// e.g. INS and DEL having currentPos 0
 			if (currentPos > 0) {
+				
+				lastPos = currentPos;
 
 				if (inputBase == 'N') {
 					nPosRange.append(currentPos + ";");
@@ -267,8 +276,8 @@ public class FastaImporter {
 			}
 
 		}
-		
-		this.range = invertRange(nPosRange.toString());
+
+		this.range = invertRange(nPosRange.toString(), firstPos, lastPos);
 		return pos.toString();
 	}
 
@@ -325,14 +334,14 @@ public class FastaImporter {
 		zis.close();
 	}
 
-	public String invertRange(String unavailablePositions) {
+	public String invertRange(String unavailablePositions, int start, int stop) {
 
 		StringBuilder range = new StringBuilder();
 
-		int lastPos = 1;
+		int lastPos = start;
 
 		if (unavailablePositions.length() == 0) {
-			return ("1-" + reference.length() + ";");
+			return (start+"-" + stop + ";");
 		}
 
 		String[] splits = unavailablePositions.split(";");
@@ -349,7 +358,7 @@ public class FastaImporter {
 			}
 		}
 		if (lastPos <= reference.length()) {
-			range.append(lastPos + "-" + reference.length() + ";");
+			range.append(lastPos + "-" + stop + ";");
 		}
 		return range.toString();
 	}
