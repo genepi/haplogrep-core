@@ -20,6 +20,15 @@
 			<url>https://genepi.jfrog.io/artifactory/maven/</url>
 		</repository>
 	</repositories>
+	
+		<distributionManagement>
+		<repository>
+			<id>jfrog-genepi-maven</id>
+			<name>jfrog-genepi-maven</name>
+			<url>https://genepi.jfrog.io/artifactory/maven/</url>
+		</repository>
+	</distributionManagement>
+	
 
 	<build>
 		<sourceDirectory>src</sourceDirectory>

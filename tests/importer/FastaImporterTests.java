@@ -145,22 +145,4 @@ public class FastaImporterTests {
 
 	}
 	
-	// random shuffle
-	@Test
-	public void test() throws Exception {
-		String file = "test-data/fasta/ANI152.fasta";
-		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), References.RCRS);
-
-		String[] splits = samples.get(0).split("\t");
-		HashSet<String> set = new HashSet<String>();
-		
-		for (int i = 3; i < splits.length; i++) {
-			set.add(splits[i]);
-		}
-
-
-
-	}
-	
 }

@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -35,14 +36,9 @@ public class FastaImporter {
 	}
 
 	private String range;
+	private String reference;
 
 	public ArrayList<String> load(File file, References referenceType) throws FileNotFoundException, IOException {
-
-		return load(file, referenceType, 16569);
-
-	}
-
-	public ArrayList<String> load(File file, References referenceType, int length) throws FileNotFoundException, IOException {
 
 		String jbwaDir = FileUtil.path("jbwa-" + System.currentTimeMillis() + "");
 
@@ -69,6 +65,8 @@ public class FastaImporter {
 		extractZip(jbwaDir);
 
 		String referenceAsString = readInReference(FileUtil.path(jbwaDir, ref));
+
+		reference = referenceAsString;
 
 		String jbwaLib = FileUtil.path(new File(jbwaDir + "/libbwajni.so").getAbsolutePath());
 
@@ -104,7 +102,7 @@ public class FastaImporter {
 
 				if (header.getSequence(alignedRead.getChrom()) == null) {
 					// add contig with mtSequence length
-					header.addSequence(new SAMSequenceRecord(alignedRead.getChrom(), length));
+					header.addSequence(new SAMSequenceRecord(alignedRead.getChrom(), reference.length()));
 				}
 
 				StringBuilder samRecordBulder = new StringBuilder();
@@ -173,7 +171,7 @@ public class FastaImporter {
 		String readString = samRecord.getReadString();
 
 		StringBuilder pos = new StringBuilder();
-		StringBuilder _range = new StringBuilder();
+		StringBuilder nPosRange = new StringBuilder();
 
 		for (int i = 0; i < readString.length(); i++) {
 
@@ -184,16 +182,8 @@ public class FastaImporter {
 			// e.g. INS and DEL having currentPos 0
 			if (currentPos > 0) {
 
-				/*
-				 * if (startRange && inputBase != 'N') {
-				 * _range.append(currentPos); startRange = false; }
-				 * 
-				 * else if (inputBase == 'N') { _range.append("-" + (currentPos
-				 * - 1) + "; "); startRange = true; }
-				 */
-
-				if (inputBase != 'N') {
-					_range.append(currentPos + ";");
+				if (inputBase == 'N') {
+					nPosRange.append(currentPos + ";");
 				}
 
 				if (inputBase != 'A' && inputBase != 'C' && inputBase != 'G' && inputBase != 'T') {
@@ -277,7 +267,8 @@ public class FastaImporter {
 			}
 
 		}
-		this.range = _range.toString();
+		
+		this.range = invertRange(nPosRange.toString());
 		return pos.toString();
 	}
 
@@ -333,4 +324,34 @@ public class FastaImporter {
 		zis.closeEntry();
 		zis.close();
 	}
+
+	public String invertRange(String unavailablePositions) {
+
+		StringBuilder range = new StringBuilder();
+
+		int lastPos = 1;
+
+		if (unavailablePositions.length() == 0) {
+			return ("1-" + reference.length() + ";");
+		}
+
+		String[] splits = unavailablePositions.split(";");
+
+		for (String split : splits) {
+
+			int currentN = Integer.valueOf(split);
+
+			if (currentN > lastPos) {
+				range.append(lastPos + "-" + (currentN - 1) + ";");
+				lastPos = currentN + 1;
+			} else if (currentN == lastPos) {
+				lastPos++;
+			}
+		}
+		if (lastPos <= reference.length()) {
+			range.append(lastPos + "-" + reference.length() + ";");
+		}
+		return range.toString();
+	}
+
 }

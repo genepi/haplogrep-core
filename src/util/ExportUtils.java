@@ -471,7 +471,7 @@ public class ExportUtils {
 	}
 	
 	public static void generateFasta( Collection<TestSample> sampleCollection, String out) throws IOException {
-		String fastafile = out + "_haplogrep2.fasta";
+		String fastafile = out + "_haplogrep.fasta";
 		FileWriter fasta = new FileWriter(fastafile);
 		
 		
