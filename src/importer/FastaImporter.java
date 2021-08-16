@@ -12,6 +12,7 @@ import java.util.StringTokenizer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.SystemUtils;
 
 import com.github.lindenb.jbwa.jni.AlnRgn;
@@ -161,7 +162,7 @@ public class FastaImporter {
 
 		refFasta.close();
 
-		FileUtil.deleteDirectory(jbwaDir);
+		FileUtils.deleteDirectory(new File(jbwaDir));
 
 		return lines;
 	}
