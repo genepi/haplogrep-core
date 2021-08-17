@@ -29,11 +29,11 @@ public class RuleSet {
 		addRule(new CheckExpectedHGMatchesDetectedHG(1));
 		addRule(new CheckForTooManyGlobalPrivateMutations(1));
 		addRule(new CheckForTooManyNotFound(1));
-		addRule(new CheckForAmbiguosResult(1));
-		addRule(new CheckForTooManyLocalPrivateMutations(1));
-		addRule(new CheckForTooManyLocalPrivateMutationsHaploGroup(1));
+		//addRule(new CheckForAmbiguosResult(1));
+		//addRule(new CheckForTooManyLocalPrivateMutations(1));
+		//addRule(new CheckForTooManyLocalPrivateMutationsHaploGroup(1));
 		addRule(new CheckForAlignmentWarnings(1));
-		addRule(new CheckForHeteroplasmy(1));
+		//addRule(new CheckForHeteroplasmy(1));
 		addRule(new CheckForTooManyN(1));
 		addRule(new CheckForTooManyRCRSpos(1));
 		addRule(new CheckForQuality(1));
