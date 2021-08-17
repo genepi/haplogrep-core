@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.MultiMap;
 import org.apache.commons.collections.map.MultiValueMap;
+import org.apache.commons.io.FilenameUtils;
 import org.w3c.dom.svg.GetSVGDocument;
 
 import core.Haplogroup;
@@ -472,7 +473,10 @@ public class ExportUtils {
 	}
 
 	public static void generateFasta(Collection<TestSample> sampleCollection, String out) throws IOException {
-		String fastafile = out + "_haplogrep.fasta";
+		
+		String fileName = FilenameUtils.removeExtension(out);
+		
+		String fastafile = fileName +".fasta";
 		FileWriter fasta = new FileWriter(fastafile);
 
 		for (TestSample sample : sampleCollection) {
@@ -509,10 +513,12 @@ public class ExportUtils {
 	}
 
 	public static void generateFastaMSA(Collection<TestSample> sampleCollection, String out) throws IOException {
-		String fasta = out + "_haplogrep_MSA.fasta";
+		
+		String fileName = FilenameUtils.removeExtension(out);
+		
+		String fasta = fileName + "_MSA.fasta";
+		
 		FileWriter fastaMSA = new FileWriter(fasta);
-
-		long start = new java.util.Date().getTime();
 
 		Vector<Polymorphism> vectorPolys = new Vector<Polymorphism>();
 		Vector vectorhelp = new Vector();
