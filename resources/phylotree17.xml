@@ -8,7 +8,7 @@
 <poly>15314A</poly>
 </details>
 </haplogroup>
-<haplogroup name="H2a2a1b">3
+<haplogroup name="H2a2a1b">
 <details accessionNr="JQ702287" reference="JQ704346">
 <poly>9299G</poly>
 </details>
@@ -32840,7 +32840,7 @@
                                 </haplogroup>
                               </haplogroup>
                             </haplogroup>
-                            <haplogroup name="L2'3'4'6+">
+                            <haplogroup name="L2'3'4'5'6">
                               <details accessionNr="" reference="">
                                 <poly>195C</poly>
                                 <poly>247A</poly>
@@ -33011,7 +33011,7 @@
                                   </haplogroup>
                                 </haplogroup>
                               </haplogroup>
-                              <haplogroup name="L2'3'4'5'6">
+                              <haplogroup name="L1'2'3'4'5'6">
                                 <details accessionNr="" reference="">
                                   <poly>152C</poly>
                                   <poly>2758A</poly>
@@ -33842,7 +33842,7 @@
                                     </haplogroup>
                                   </haplogroup>
                                 </haplogroup>
-                                <haplogroup name="L1'2'3'4'5'6">
+                                <haplogroup name="mt-MRCA">
                                   <details accessionNr="" reference="">
                                     <poly>146C</poly>
                                     <poly>182T!</poly>
