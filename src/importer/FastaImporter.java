@@ -192,6 +192,7 @@ public class FastaImporter {
 				
 				lastPos = currentPos;
 
+				// add all positions not in range and invert later
 				if (inputBase == 'N') {
 					nPosRange.append(currentPos + ";");
 				}
