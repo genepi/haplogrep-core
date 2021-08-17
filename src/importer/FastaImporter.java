@@ -94,7 +94,7 @@ public class FastaImporter {
 			// also include supplemental alignments ("chimeric reads")
 
 			boolean first = true;
-			for (AlnRgn alignedRead : mem.align(read)) {
+			for (AlnRgn alignedRead : mem.align(read)) { 
 
 				// as defined by BWA
 				if (alignedRead.getAs() < 30) {
