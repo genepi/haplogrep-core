@@ -1,3 +1,5 @@
+[![Java CI with Maven](https://github.com/seppinho/haplogrep-core/actions/workflows/run-tests.yml/badge.svg)](https://github.com/seppinho/haplogrep-core/actions/workflows/run-tests.yml)
+
 # haplogrep-core
 This repository includes the haplogrep core functionality used in the command line tool and the web server. 
 
