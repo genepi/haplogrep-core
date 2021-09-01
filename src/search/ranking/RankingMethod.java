@@ -13,9 +13,9 @@ import core.TestSample;
  * 
  */
 public abstract class RankingMethod {
-	ArrayList<RankedResult> results;
-	int maxTopResults = Integer.MAX_VALUE;
-	String name;
+	protected ArrayList<RankedResult> results;
+	protected int maxTopResults = Integer.MAX_VALUE;
+	protected 	String name;
 
 	/**
 	 * Sets a new set of results for this ranking method
@@ -40,12 +40,12 @@ public abstract class RankingMethod {
 	 * @param maxTopResults
 	 *            The number of top results to keep
 	 */
-	RankingMethod(int maxTopResults) {
+	protected RankingMethod(int maxTopResults) {
 		this.maxTopResults = maxTopResults;
 		results = new ArrayList<RankedResult>();
 	}
 	
-	RankingMethod(int maxTopResults, String name) {
+	protected RankingMethod(int maxTopResults, String name) {
 		this.maxTopResults = maxTopResults;
 		results = new ArrayList<RankedResult>();
 		this.name = name;
@@ -78,7 +78,7 @@ public abstract class RankingMethod {
 	 * results
 	 * @param sample 
 	 */
-	void cutResultSetToTopHits(TestSample sample) {
+	protected void cutResultSetToTopHits(TestSample sample) {
 		ArrayList<RankedResult> topResults = new ArrayList<RankedResult>();
 
 		int numResults = 0;
