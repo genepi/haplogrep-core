@@ -231,7 +231,6 @@ public class FastaImporter {
 					_range.append(currentPos + ";");
 					if (start == 0)
 						start = currentPos + 1;
-					pos.append("\t" + currentPos + "" + inputBase);
 				}
 
 				//2021-03-19 REMOVED as otherwise heteroplasmy or mixtures not detected	
