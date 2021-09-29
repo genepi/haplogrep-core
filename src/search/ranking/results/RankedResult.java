@@ -14,7 +14,7 @@ import core.Haplogroup;
  */
 
 public abstract class RankedResult implements Comparable<RankedResult> {
-	SearchResult searchResult;
+	protected SearchResult searchResult;
 	private Haplogroup expectedHaplogroup;
 
 	/**
@@ -25,7 +25,7 @@ public abstract class RankedResult implements Comparable<RankedResult> {
 	 * @param expectedHaplogroup
 	 *            The haplogroup expected for this result
 	 */
-	RankedResult(SearchResult searchResult, Haplogroup expectedHaplogroup) {
+	public RankedResult(SearchResult searchResult, Haplogroup expectedHaplogroup) {
 		this.searchResult = searchResult;
 		this.expectedHaplogroup = expectedHaplogroup;
 	}
