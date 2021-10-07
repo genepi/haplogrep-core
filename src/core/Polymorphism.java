@@ -271,7 +271,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	 * @return The polymorphism representing the reference
 	 */
 	private Polymorphism getReferenceBase(int position) {
-		if (position < reference.getLength() && position > 0) {
+		if (position <= reference.getLength() && position > 0) {
 			String base = String.valueOf(reference.getSequence().charAt(position - 1));
 			base = base.toUpperCase();
 			try {
