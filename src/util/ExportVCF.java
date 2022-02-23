@@ -93,7 +93,7 @@ public class ExportVCF {
 
 				for (Polymorphism poly : sample.getSample().getPolymorphisms()) {
 					Polymorphism pos = poly;
-					if (!vPosFound.contains(pos.getPosition())) {
+					if (!vPosFound.contains(pos.getPosition()) && pos.getPosition()!=0) { //check for 0 needed for H2a2a1 samples
 						vPosFound.add(pos.getPosition());
 					}
 				}
@@ -110,7 +110,7 @@ public class ExportVCF {
 			for (TestSample sample : sampleCollection) {
 				for (Polymorphism poly : sample.getResults().get(0).getSearchResult().getDetailedResult().getFoundNotFoundPolysArray()) {
 					Polymorphism pos = poly;
-					if (!vPosNotFound.contains(pos.getPosition())) {
+					if (!vPosNotFound.contains(pos.getPosition()) && pos.getPosition()!=0 ) { //check for 0 needed for H2a2a1 samples
 						vPosNotFound.add(pos.getPosition());
 					}
 				}
@@ -233,16 +233,18 @@ public class ExportVCF {
 						}
 					}
 
-					if (!found) {
+					if (!found) 
+					{
 						if (vPos.get(i) < 16569 && vPos.get(i) > 0)
 							g1 = GenotypeBuilder.create(id, Arrays.asList(Allele.create(fastaResult.charAt(vPos.get(i) - 1) + "", true),
 									Allele.create(fastaResult.charAt(vPos.get(i) - 1) + "", true)));
 							dosage = 0.0;
 					}
+					if (vPos.get(i)!=0) {
 					Genotype g = new GenotypeBuilder(g1).attribute(dosageField, outFormat.format(dosage)).make();
+					genotypes.add(new GenotypeBuilder(g).phased(true).make());
 					
-					genotypes.add(new GenotypeBuilder(g).phased(expected).make());
-
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
