@@ -650,6 +650,14 @@ public class ExportUtils {
 		fastaMSA.close();
 	}
 
+	
+public static void generateVCF(Collection<TestSample> sampleCollection, String out) throws Exception {
+	
+		ExportVCF export = new ExportVCF();
+		export.generateVCF(sampleCollection, out);
+		
+}
+	
 	/**
 	 * 
 	 * @param data
