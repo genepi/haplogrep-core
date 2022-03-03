@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,10 +42,23 @@ import exceptions.parse.sample.InvalidPolymorphismException;
 
 public class ExportVCF {
 
-	static final Log log = LogFactory.getLog(ExportVCF.class);
+	//static final Log log = LogFactory.getLog(ExportVCF.class);
 	NumberFormat outFormat = new DecimalFormat("0.###", DecimalFormatSymbols.getInstance(Locale.US));
 	String dosageField = "DS";
 
+	public static File stream2file (InputStream in) throws IOException {
+        final File tempFile = File.createTempFile("chrm","vcf");
+        tempFile.deleteOnExit();
+        try (FileOutputStream out = new FileOutputStream(tempFile)) {
+            IOUtils.copy(in, out);
+            out.close();
+        }
+        in.close();
+        
+        return tempFile;
+    }
+	
+	
 	/**
 	 * Save VCF file
 	 * 
@@ -59,10 +73,10 @@ public class ExportVCF {
 		/** we don't need some indexed VCFs */
 		boolean requireIndex = false;
 
-		URL resource = getClass().getClassLoader().getResource("chrm.vcf");
-		String phyloFile = resource.getPath();
-
-		final VCFFileReader reader = new VCFFileReader(new File(phyloFile), requireIndex);
+		InputStream phyloFile = this.getClass().getClassLoader().getResourceAsStream("chrm.vcf");
+		   
+		final VCFFileReader reader = new VCFFileReader(stream2file(phyloFile), requireIndex);
+			
 		final VCFHeader header = new VCFHeader(reader.getFileHeader());
 		header.addMetaDataLine(new VCFFormatHeaderLine(dosageField, 1, VCFHeaderLineType.Float, "Genotype dosage"));
 		reader.close();
@@ -71,7 +85,7 @@ public class ExportVCF {
 
 		final SAMSequenceDictionary sequenceDictionary = header.getSequenceDictionary();
 		File f = new File(outname + ".vcf");
-		log.info(f.getAbsolutePath());
+
 
 		final VariantContextWriterBuilder builder = new VariantContextWriterBuilder().setOutputFile(f).setReferenceDictionary(sequenceDictionary);
 
@@ -211,7 +225,7 @@ public class ExportVCF {
 											base.add(poly.getMutation().toString().charAt(0) + "");
 										}
 										found = true;
-										dosage = 1.5;
+										dosage = 2;
 									}
 
 									else if (poly.getMutation().toString().contains("I")) {
@@ -226,7 +240,7 @@ public class ExportVCF {
 											base.add(fastaResult.charAt(vPos.get(i) - 1) + (poly.getInsertedPolys()));
 										}
 										found = true;
-										dosage = 1.5;
+										dosage = 2;
 									}
 								}
 							}
@@ -242,8 +256,11 @@ public class ExportVCF {
 					}
 					if (vPos.get(i)!=0) {
 					Genotype g = new GenotypeBuilder(g1).attribute(dosageField, outFormat.format(dosage)).make();
+				//	if (!g1.getAllele(0).getBaseString().toUpperCase().equals(g1.getAllele(1).getBaseString().toUpperCase()))
 					genotypes.add(new GenotypeBuilder(g).phased(true).make());
-					
+				//	else
+				//		System.out.println("g1" + g1.getSampleName() +" "+ g1.getAllele(0).getBaseString() + " " +g1.getAllele(1).getBaseString());
+
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -254,8 +271,11 @@ public class ExportVCF {
 			// > 525)
 			{
 				if (base.size() != 0) {
+					if (!base.get(0).toUpperCase().equals(base.get(1).toUpperCase())) 
+					{
 					VariantContext vc = new VariantContextBuilder().start(vPos.get(i)).stop(vPos.get(i)).alleles(base).genotypes(genotypes).chr("MT").make();
 					writer.add(vc);
+					}
 				}
 			}
 		}
