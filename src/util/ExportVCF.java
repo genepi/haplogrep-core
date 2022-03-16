@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
@@ -70,6 +71,8 @@ public class ExportVCF {
 
 		String fastaResult = Polymorphism.rCRS;
 
+		Collections.sort((List<TestSample>) sampleCollection);
+		
 		/** we don't need some indexed VCFs */
 		boolean requireIndex = false;
 
@@ -115,6 +118,7 @@ public class ExportVCF {
 		}
 
 		Collections.sort(vPosFound);
+		
 
 		writePosition(sampleCollection, fastaResult, writer, vPosFound, true);
 
@@ -125,6 +129,7 @@ public class ExportVCF {
 				for (Polymorphism poly : sample.getResults().get(0).getSearchResult().getDetailedResult().getFoundNotFoundPolysArray()) {
 					Polymorphism pos = poly;
 					if (!vPosNotFound.contains(pos.getPosition()) && pos.getPosition()!=0 ) { //check for 0 needed for H2a2a1 samples
+					if (!vPosFound.contains(pos.getPosition()))
 						vPosNotFound.add(pos.getPosition());
 					}
 				}
@@ -147,7 +152,7 @@ public class ExportVCF {
 	 * @param vPos
 	 */
 	private void writePosition(Collection<TestSample> sampleCollection, String fastaResult, VariantContextWriter writer, Vector<Integer> vPos,
-			boolean expected) {
+			boolean expected ) {
 		double dosage = 0.0;
 		for (int i = 0; i < vPos.size(); i++) {
 			final List<Genotype> genotypes = new ArrayList<Genotype>();
@@ -255,6 +260,7 @@ public class ExportVCF {
 							dosage = 0.0;
 					}
 					if (vPos.get(i)!=0) {
+
 					Genotype g = new GenotypeBuilder(g1).attribute(dosageField, outFormat.format(dosage)).make();
 				//	if (!g1.getAllele(0).getBaseString().toUpperCase().equals(g1.getAllele(1).getBaseString().toUpperCase()))
 					genotypes.add(new GenotypeBuilder(g).phased(true).make());
