@@ -324,9 +324,13 @@ public class ExportUtils {
 
 								polys.append(currentPoly + " ");
 
-								if (!currentPath.get(i).getFoundPolys().contains(currentPoly)) {
+								if (currentPoly.isBackMutation()) {
+									String toReplace = currentPoly.getPosition() + currentPoly.getMutation().toString() + "@ \n";
+									notfound = notfound.replace(toReplace, "");
+								} else if (!currentPath.get(i).getFoundPolys().contains(currentPoly) && !currentPoly.isBackMutation()) {
 									notfound += currentPoly + "@ ";
 									notfound += ("\n");
+
 								}
 								polys.append("\n");
 							}
@@ -362,6 +366,7 @@ public class ExportUtils {
 					if (!polyToExclude(poly)) {
 						remaining += poly + " ";
 						remaining += "\n";
+						System.out.println(" Remaining  + " + remaining);
 					}
 				}
 
@@ -473,10 +478,10 @@ public class ExportUtils {
 	}
 
 	public static void generateFasta(Collection<TestSample> sampleCollection, String out) throws IOException {
-		
+
 		String fileName = FilenameUtils.removeExtension(out);
-		
-		String fastafile = fileName +".fasta";
+
+		String fastafile = fileName + ".fasta";
 		FileWriter fasta = new FileWriter(fastafile);
 
 		for (TestSample sample : sampleCollection) {
@@ -513,11 +518,11 @@ public class ExportUtils {
 	}
 
 	public static void generateFastaMSA(Collection<TestSample> sampleCollection, String out) throws IOException {
-		
+
 		String fileName = FilenameUtils.removeExtension(out);
-		
+
 		String fasta = fileName + "_MSA.fasta";
-		
+
 		FileWriter fastaMSA = new FileWriter(fasta);
 
 		Vector<Polymorphism> vectorPolys = new Vector<Polymorphism>();
