@@ -94,7 +94,7 @@ public class FastaImporter {
 			// also include supplemental alignments ("chimeric reads")
 
 			boolean first = true;
-			for (AlnRgn alignedRead : mem.align(read)) { 
+			for (AlnRgn alignedRead : mem.align(read)) {
 
 				// as defined by BWA
 				if (alignedRead.getAs() < 30) {
@@ -146,7 +146,7 @@ public class FastaImporter {
 				SAMRecord samRecord = parser.parseLine(samRecordBulder.toString());
 
 				String variants = readCigar(samRecord, referenceAsString);
-
+				
 				if (first) {
 					profile.append(sequence.getName() + "\t" + range + "\t" + "?");
 					first = false;
@@ -171,33 +171,49 @@ public class FastaImporter {
 
 		String readString = samRecord.getReadString();
 
+		//System.out.println(readString.length() + " " + samRecord.getCigarString());
+
 		StringBuilder pos = new StringBuilder();
-		StringBuilder nPosRange = new StringBuilder();
-
-		int firstPos = -1;
-		int lastPos = -1;
-
+		StringBuilder _range = new StringBuilder();
+		int start = 0;
+		int lastpos = 0;
+		int countZero = 0;
 		for (int i = 0; i < readString.length(); i++) {
 
 			int currentPos = samRecord.getReferencePositionAtReadPosition(i + 1);
 
-			if (i == 0) {
-			firstPos = currentPos;
+			// if Ns at beginning, samrecord gets 0
+			if (countZero == 0) {
+				if (currentPos != 0) {
+					countZero = currentPos;
+					start = currentPos;
+					//System.out.println("START " + start);
+				}
+			}
+
+			if (i == 0 && currentPos != 0) {
+
+				start = currentPos;
 			}
 
 			char inputBase = readString.charAt(i);
 
 			// e.g. INS and DEL having currentPos 0
 			if (currentPos > 0) {
-				
-				lastPos = currentPos;
+				lastpos = currentPos;
+				/*
+				 * if (startRange && inputBase != 'N') {
+				 * _range.append(currentPos); startRange = false; }
+				 *
+				 * else if (inputBase == 'N') { _range.append("-" + (currentPos
+				 * - 1) + "; "); startRange = true; }
+				 */
 
-				// add all positions not in range and invert later
 				if (inputBase == 'N') {
-					nPosRange.append(currentPos + ";");
-				}
-
-				if (inputBase != 'A' && inputBase != 'C' && inputBase != 'G' && inputBase != 'T') {
+					_range.append(currentPos + ";");
+					if (start == 0)
+						start = currentPos + 1;
+					// pos.append("\t" + currentPos + "" + inputBase);
 					continue;
 				}
 
@@ -211,15 +227,26 @@ public class FastaImporter {
 
 			}
 		}
-
 		Integer currentReferencePos = samRecord.getAlignmentStart();
+		
+		//System.out.println("CurrentREF POS " + currentReferencePos + " cigar " + samRecord.getCigarString());
 
 		int sequencePos = 0;
 
+		int first=0;
+		//System.out.println("CONTIG " + samRecord.getContig());
+		
 		for (CigarElement cigarElement : samRecord.getCigar().getCigarElements()) {
 
 			Integer cigarElementLength = cigarElement.getLength();
 
+			if (first==0) {
+				if (cigarElement.getOperator()==CigarOperator.S) {
+					currentReferencePos=1;
+					//System.out.println("HERE Cigar.S");
+				}
+				first++;
+			}
 			StringBuilder buildDeletion = new StringBuilder();
 
 			if (cigarElement.getOperator() == CigarOperator.D) {
@@ -266,8 +293,11 @@ public class FastaImporter {
 
 			}
 
-			// only M and D operators consume bases
+			// only M and D operators consume bases 
+			//System.out.println("Check Operator BEFORE " + cigarElement.getOperator() + " " + samRecord.getCigarString());
+
 			if (cigarElement.getOperator().consumesReferenceBases()) {
+				//System.out.println("Check Operator AFTER " + cigarElement.getOperator());
 				currentReferencePos = currentReferencePos + cigarElement.getLength();
 			}
 
@@ -276,11 +306,29 @@ public class FastaImporter {
 			if (cigarElement.getOperator().consumesReadBases()) {
 				sequencePos = sequencePos + cigarElement.getLength();
 			}
-
 		}
-
-		this.range = invertRange(nPosRange.toString(), firstPos, lastPos);
+		this.range = cleanRange(_range.toString(), start, lastpos);
 		return pos.toString();
+	}
+
+	private String cleanRange(String emptyPos, int start, int stop) {
+		String range = "";
+		int lastpos = start;
+		// System.out.println("start " + start + " + " + stop);
+		if (emptyPos.length() == 0)
+			return (start + "-" + stop + ";");
+		StringTokenizer st = new StringTokenizer(emptyPos, ";");
+		while (st.hasMoreTokens()) {
+			int posN = Integer.valueOf(st.nextToken());
+			if (posN > lastpos) {
+				range += lastpos + "-" + (posN - 1) + ";";
+				lastpos = posN + 1;
+			} else if (posN == lastpos) {
+				lastpos++;
+			}
+		}
+		range += lastpos + "-" + stop + ";";
+		return range;
 	}
 
 	public static String readInReference(String file) {
@@ -343,7 +391,7 @@ public class FastaImporter {
 		int lastPos = start;
 
 		if (unavailablePositions.length() == 0) {
-			return (start+"-" + stop + ";");
+			return (start + "-" + stop + ";");
 		}
 
 		String[] splits = unavailablePositions.split(";");

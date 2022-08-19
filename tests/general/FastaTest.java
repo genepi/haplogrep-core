@@ -3,11 +3,31 @@ package general;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
+
+import org.jdom.JDOMException;
+import org.junit.Assert;
 import org.junit.Test;
+
+import core.Polymorphism;
+import core.Sample;
+import core.SampleRanges;
+import core.TestSample;
+import exceptions.parse.HsdFileException;
+import exceptions.parse.sample.InvalidPolymorphismException;
+import exceptions.parse.samplefile.InvalidColumnCountException;
 import importer.FastaImporter;
 import importer.FastaImporter.References;
+import phylotree.Phylotree;
+import phylotree.PhylotreeManager;
+import search.ranking.HammingRanking;
+import search.ranking.KulczynskiRanking;
+import search.ranking.results.RankedResult;
+import util.ExportUtils;
 
 public class FastaTest {
 
@@ -137,11 +157,147 @@ public class FastaTest {
 			set.add(splits[i]);
 		}
 
+		System.out.println(set.toString());
 		assertEquals(true, set.contains("16182.1C"));
 		assertEquals(true, set.contains("309.1CCT"));
 		assertEquals(true, set.contains("3106-3106d"));
 		assertEquals(true, set.contains("8270-8277d"));
 	}
+	
+	
+	@Test
+	public void test_generateFasta() throws NumberFormatException, JDOMException, IOException, InvalidPolymorphismException, HsdFileException, InvalidColumnCountException
+	{
+		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml","weights17.txt");
+
+		ArrayList<TestSample>  testArray = new ArrayList<TestSample>();
+		
+		ArrayList<Polymorphism> polys = new ArrayList<Polymorphism>();
+
+		polys.add(new Polymorphism("263G"));
+		polys.add(new Polymorphism("8860G"));
+		polys.add(new Polymorphism("16311C"));
+		polys.add(new Polymorphism("73G"));
+		SampleRanges sampleRanges = new SampleRanges();
+		sampleRanges.addCompleteRange();
+		TestSample testSample = new TestSample("TestSample_full",polys,sampleRanges);
+		testArray.add(testSample);
+		
+		SampleRanges fragmentRanges = new SampleRanges();
+		fragmentRanges.addCustomRange(10, 100);
+		fragmentRanges.addCustomRange(102, 110);
+		fragmentRanges.addCustomRange(200, 2000);
+		fragmentRanges.addCustomRange(3000, 16000);
+		fragmentRanges.addCustomRange(16200, 16569);
+		testArray.add(new TestSample("TestSample_Ranges_N1", polys, fragmentRanges));
+		
+		fragmentRanges = new SampleRanges();
+		fragmentRanges.addCustomRange(11, 20);
+		fragmentRanges.addCustomRange(22, 55);
+		fragmentRanges.addCustomRange(58, 500);
+		testArray.add(new TestSample("TestSample_Ranges_N2", polys, fragmentRanges));
+		
+		fragmentRanges = new SampleRanges();
+		fragmentRanges.addCustomRange(12, 20);
+		fragmentRanges.addCustomRange(23, 55);
+		fragmentRanges.addCustomRange(59, 500);
+		fragmentRanges.addCustomRange(50, 5500);
+		fragmentRanges.addCustomRange(5555, 16555);
+		testArray.add(new TestSample("TestSample_Ranges_N3", polys, fragmentRanges));
+		
+		
+		ExportUtils.generateFasta(testArray, "test-data/fasta/testSamples_ranges.fasta");
+		
+		String file = "test-data/fasta/testSamples_ranges.fasta";
+		FastaImporter impFasta = new FastaImporter();
+		ArrayList<String> samples = impFasta.load(new File(file), References.RCRS);
+		TestSample ts1 = TestSample.parse(samples.get(0));
+		TestSample ts2 = TestSample.parse(samples.get(1));
+		TestSample ts3 = TestSample.parse(samples.get(2));
+		TestSample ts4 = TestSample.parse(samples.get(3));
+		
+		System.out.println(samples.get(0));
+		System.out.println(samples.get(1));
+		System.out.println(samples.get(2) + " \t " + ts3.getSample().getSampleRanges().toString());
+		System.out.println(samples.get(3) + " \t " + ts4.getSample().getSampleRanges().toString());
+		
+		//System.out.println(ts1.getSample().getSampleRanges());
+		
+		assertEquals(ts1.getSample().getSampleRanges().toString(), "1-3106 ; 3108-16569 ;");
+		//assertEquals(ts2.getSample().getSampleRanges().toString(), "1-100 ; 200-2000 ; 5000-16000 ; 16200-16569");
+		assertEquals(ts3.getSample().getSampleRanges().toString(), "11-20 ; 22-55 ; 58-500 ;");
+		assertEquals(ts3.getSample().getSampleRanges().toString(), "11-20 ; 22-55 ; 58-500 ;");
+	}
+	
+	
+	@Test
+	public void test_generateFastaMSA() throws NumberFormatException, JDOMException, IOException, InvalidPolymorphismException, HsdFileException, InvalidColumnCountException
+	{
+		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml","weights17.txt");
+
+		ArrayList<TestSample>  testArray = new ArrayList<TestSample>();
+		
+		ArrayList<Polymorphism> polys = new ArrayList<Polymorphism>();
+
+		polys.add(new Polymorphism("263G"));
+		polys.add(new Polymorphism("8860G"));
+		polys.add(new Polymorphism("16311C"));
+		polys.add(new Polymorphism("73G"));
+		//SampleRanges sampleRanges = new SampleRanges();
+		//sampleRanges.addCompleteRange();
+		//TestSample testSample = new TestSample("TestSample_full1",polys,sampleRanges);
+		//testArray.add(testSample);
+		
+		SampleRanges fragmentRanges = new SampleRanges();
+		fragmentRanges.addCustomRange(10, 100);
+		fragmentRanges.addCustomRange(102, 110);
+		fragmentRanges.addCustomRange(200, 2000);
+		fragmentRanges.addCustomRange(3000, 16000);
+		fragmentRanges.addCustomRange(16200, 16569);
+		testArray.add(new TestSample("TestSample_Ranges_N1", polys, fragmentRanges));
+		/*
+		fragmentRanges = new SampleRanges();
+		fragmentRanges.addCustomRange(11, 20);
+		fragmentRanges.addCustomRange(22, 55);
+		fragmentRanges.addCustomRange(58, 500);
+		testArray.add(new TestSample("TestSample_Ranges_N2", polys, fragmentRanges));
+		
+		fragmentRanges = new SampleRanges();
+		fragmentRanges.addCustomRange(12, 20);
+		fragmentRanges.addCustomRange(22, 55);
+		fragmentRanges.addCustomRange(58, 500);
+		fragmentRanges.addCustomRange(50, 5500);
+		fragmentRanges.addCustomRange(5555, 16555);
+		testArray.add(new TestSample("TestSample_Ranges_N3", polys, fragmentRanges));*/
+		
+		for (int j =0; j < testArray.size(); j++) {
+			testArray.get(j).updateSearchResults(phylotree, new KulczynskiRanking());
+			System.out.println(testArray.get(j).getSampleID() + " " + testArray.get(j).getDetectedHaplogroup());
+		}
+		
+		ExportUtils.generateFastaMSA(testArray, "test-data/fasta/testSamples_ranges.fasta");
+		
+		String file = "test-data/fasta/testSamples_ranges_MSA.fasta";
+		FastaImporter impFasta = new FastaImporter();
+		ArrayList<String> samples = impFasta.load(new File(file), References.RCRS);
+		TestSample ts1 = TestSample.parse(samples.get(0));
+		//TestSample ts2 = TestSample.parse(samples.get(1));
+		//TestSample ts3 = TestSample.parse(samples.get(2));
+		//TestSample ts4 = TestSample.parse(samples.get(3));
+		
+		System.out.println(samples.get(0));
+		//System.out.println(samples.get(1));
+		//System.out.println(samples.get(2));
+		//System.out.println(samples.get(3));
+		
+		//System.out.println(ts1.getSample().getSampleRanges());
+		
+		//assertEquals(ts1.getSample().getSampleRanges().toString(), "1-3106 ; 3108-16569 ;");
+		assertEquals(ts1.getSample().getSampleRanges().toString(), "1-100 ; 200-2000 ; 5000-16000 ; 16200-16569");
+		//assertEquals(ts3.getSample().getSampleRanges().toString(), "10-20 ; 22-55 ; 58-500 ;");
+		//assertEquals(ts3.getSample().getSampleRanges().toString(), "10-20 ; 22-55 ; 58-500 ;");
+	}
+	
 
 /*	@Test
 	public void parsePhylotree17() throws Exception {

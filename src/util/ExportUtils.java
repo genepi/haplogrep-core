@@ -25,6 +25,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.w3c.dom.svg.GetSVGDocument;
 
 import core.Haplogroup;
+import core.Mutations;
 import core.Polymorphism;
 import core.SampleRanges;
 import core.TestSample;
@@ -366,7 +367,7 @@ public class ExportUtils {
 					if (!polyToExclude(poly)) {
 						remaining += poly + " ";
 						remaining += "\n";
-						System.out.println(" Remaining  + " + remaining);
+						//System.out.println(" Remaining  + " + remaining);
 					}
 				}
 
@@ -478,7 +479,6 @@ public class ExportUtils {
 	}
 
 	public static void generateFasta(Collection<TestSample> sampleCollection, String out) throws IOException {
-
 		String fileName = FilenameUtils.removeExtension(out);
 
 		String fastafile = fileName + ".fasta";
@@ -511,6 +511,24 @@ public class ExportUtils {
 				}
 			}
 
+			// replace all entries not covered in Range 
+			SampleRanges srange = sample.getSample().getSampleRanges();
+
+			for (int i = 1; i < Polymorphism.rCRS.length()+1; i++) {
+				Polymorphism p;
+
+				try {
+					p = new Polymorphism(i + "N");
+
+					if (!srange.contains(p))
+						fastaResult = replaceChar(fastaResult, 'N', i-1);
+				} catch (InvalidPolymorphismException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+	
 			fasta.write(">" + sample.getSampleID() + "\n" + fastaResult + "\n");
 
 		}
@@ -522,6 +540,8 @@ public class ExportUtils {
 		String fileName = FilenameUtils.removeExtension(out);
 
 		String fasta = fileName + "_MSA.fasta";
+		
+		System.out.println(fasta);
 
 		FileWriter fastaMSA = new FileWriter(fasta);
 
@@ -596,17 +616,13 @@ public class ExportUtils {
 
 			Collections.sort(vectorPolys);
 
-			int count = 0;
-
 			Vector<Polymorphism> vsamplep = new Vector<Polymorphism>();
 			for (TestSample sample : sampleCollection) {
 
 				fastaMSA.write(">" + sample.getSampleID() + "_" + sample.getDetectedHaplogroup() + "\n");
 
 				vsamplep.clear();
-				vsamplep = (Vector<Polymorphism>) samplepoly.get(count);
-
-				count++;
+				vsamplep = new Vector<Polymorphism>(sample.getSample().getPolymorphisms());
 
 				int j = 0;
 				String fastaResult = Polymorphism.rCRS;
@@ -649,6 +665,26 @@ public class ExportUtils {
 						insertion++;
 					}
 				}
+				
+				// replace all entries not covered in Range 
+				SampleRanges srange = sample.getSample().getSampleRanges();
+
+				for (int i = 1; i < Polymorphism.rCRS.length()+1; i++) {
+					Polymorphism p;
+
+					try {
+						p = new Polymorphism(i + "N");
+
+						if (!srange.contains(p))
+							fastaResult = replaceChar(fastaResult, 'N', i-1);
+					} catch (InvalidPolymorphismException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+				}
+				
+				
 				fastaMSA.write(fastaResult + "\n");
 			}
 		}

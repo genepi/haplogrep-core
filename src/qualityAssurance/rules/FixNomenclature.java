@@ -39,13 +39,16 @@ public class FixNomenclature extends HaplogrepRule {
 		}
 
 		ArrayList<Polymorphism> inPolys = currentSample.getSample().getPolymorphisms();
+		//System.out.println("INPOLYS " + inPolys);
 
 		ArrayList<Polymorphism> outPolys = new ArrayList<Polymorphism>();
 
-		HashSet<String> inputProfile = new HashSet<String>();
+		HashSet<Polymorphism> inputProfile = new HashSet<Polymorphism>();
+		HashSet<String> inputProfileString = new HashSet<String>();
 
 		for (Polymorphism current : inPolys) {
-			inputProfile.add(current.toString());
+			inputProfile.add(current);
+			inputProfileString.add(current.toString());
 		}
 
 		for (String error : rules.keySet()) {
@@ -55,7 +58,7 @@ public class FixNomenclature extends HaplogrepRule {
 			String[] splits = error.split(" ");
 
 			for (String split : splits) {
-				if (!inputProfile.contains(split)) {
+				if (!inputProfileString.contains(split)) {
 					applyRule = false;
 				}
 
@@ -68,7 +71,7 @@ public class FixNomenclature extends HaplogrepRule {
 						outPolys.add(new Polymorphism(exp));
 					}
 					for (String err : error.split(" ")) {
-						inputProfile.remove(err);
+						inputProfileString.remove(err);
 					}
 				} catch (InvalidPolymorphismException e) {
 					// TODO Auto-generated catch block
@@ -78,14 +81,15 @@ public class FixNomenclature extends HaplogrepRule {
 		}
 
 		// add remaining
-		for (String in : inputProfile) {
-			try {
+		for (Polymorphism in : inputProfile) {
+			// only if also removed from string
+			if (inputProfileString.contains(in.toString()))
 				outPolys.add(new Polymorphism(in));
-			} catch (InvalidPolymorphismException e) {
-				e.printStackTrace();
-			}
 		}
+
 		Collections.sort(outPolys);
+
+		//System.out.println("OUTPOLYS " + outPolys);
 		currentSample.getSample().setPolymorphisms(outPolys);
 
 	}
