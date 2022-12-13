@@ -1,27 +1,18 @@
 package importer;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.SystemUtils;
 
 import com.github.lindenb.jbwa.jni.AlnRgn;
 import com.github.lindenb.jbwa.jni.BwaIndex;
 import com.github.lindenb.jbwa.jni.BwaMem;
 import com.github.lindenb.jbwa.jni.ShortRead;
 
+import core.Reference;
 import htsjdk.samtools.reference.FastaSequenceFile;
-import genepi.io.FileUtil;
 import htsjdk.samtools.CigarElement;
 import htsjdk.samtools.CigarOperator;
 import htsjdk.samtools.SAMFileHeader;
@@ -32,51 +23,16 @@ import htsjdk.samtools.reference.ReferenceSequence;
 
 public class FastaImporter {
 
-	public enum References {
-		RCRS, RSRS, HORSE, CATTLE;
-	}
-
 	private String range;
-	private String reference;
 
-	public ArrayList<String> load(File file, References referenceType) throws FileNotFoundException, IOException {
-
-		String jbwaDir = FileUtil.path("jbwa-" + System.currentTimeMillis() + "");
-
-		String ref = "";
-
-		if (referenceType == References.RCRS) {
-			ref = "rCRS.fasta";
-		}
-
-		else if (referenceType == References.RSRS) {
-			ref = "rsrs.fasta";
-		}
-
-		else if (referenceType == References.HORSE) {
-			ref = "horse.fasta";
-		}
-
-		else if (referenceType == References.CATTLE) {
-			ref = "cattle.fasta";
-		}
-
+	public ArrayList<String> load(File file, Reference reference) throws FileNotFoundException, IOException {
+		
+		// load required 
+	
 		ArrayList<String> lines = new ArrayList<String>();
-
-		extractZip(jbwaDir);
-
-		String referenceAsString = readInReference(FileUtil.path(jbwaDir, ref));
-
-		reference = referenceAsString;
-
-		String jbwaLib = FileUtil.path(new File(jbwaDir + "/libbwajni.so").getAbsolutePath());
-
-		if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_MAC_OSX) {
-			jbwaLib = FileUtil.path(new File(jbwaDir + "/libbwajni.jnilib").getAbsolutePath());
-		}
-
-		System.load(jbwaLib);
-		BwaIndex index = new BwaIndex(new File(FileUtil.path(jbwaDir, ref)));
+		
+		BwaIndex index = new BwaIndex(new File(reference.getRefFilename()));
+		
 		BwaMem mem = new BwaMem(index);
 
 		FastaSequenceFile refFasta = new FastaSequenceFile(file, true);
@@ -103,7 +59,7 @@ public class FastaImporter {
 
 				if (header.getSequence(alignedRead.getChrom()) == null) {
 					// add contig with mtSequence length
-					header.addSequence(new SAMSequenceRecord(alignedRead.getChrom(), reference.length()));
+					header.addSequence(new SAMSequenceRecord(alignedRead.getChrom(), reference.getLength()));
 				}
 
 				StringBuilder samRecordBulder = new StringBuilder();
@@ -145,7 +101,7 @@ public class FastaImporter {
 
 				SAMRecord samRecord = parser.parseLine(samRecordBulder.toString());
 
-				String variants = readCigar(samRecord, referenceAsString);
+				String variants = readCigar(samRecord, reference.getSequence());
 				
 				if (first) {
 					profile.append(sequence.getName() + "\t" + range + "\t" + "?");
@@ -161,9 +117,7 @@ public class FastaImporter {
 		}
 
 		refFasta.close();
-
-		FileUtils.deleteDirectory(new File(jbwaDir));
-
+		
 		return lines;
 	}
 
@@ -331,86 +285,28 @@ public class FastaImporter {
 		return range;
 	}
 
-	public static String readInReference(String file) {
-		StringBuilder stringBuilder = null;
-		try {
-			BufferedReader reader = new BufferedReader(new FileReader(file));
-			String line = null;
-			stringBuilder = new StringBuilder();
 
-			while ((line = reader.readLine()) != null) {
-
-				if (!line.startsWith(">"))
-					stringBuilder.append(line);
-
-			}
-
-			reader.close();
-
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return stringBuilder.toString();
-	}
-
-	private void extractZip(String jbwaDir) throws IOException, FileNotFoundException {
-
-		InputStream stream = this.getClass().getClassLoader().getResourceAsStream("jbwa.zip");
-
-		ZipInputStream zis = new ZipInputStream(stream);
-
-		ZipEntry entry = zis.getNextEntry();
-
-		FileUtil.createDirectory(jbwaDir);
-
-		while (entry != null) {
-			String fileName = entry.getName();
-			byte[] buffer = new byte[1024];
-			File newFile = new File(FileUtil.path(jbwaDir, fileName));
-			FileOutputStream fos = new FileOutputStream(newFile);
-			int len;
-			while ((len = zis.read(buffer)) > 0) {
-				fos.write(buffer, 0, len);
-			}
-			fos.close();
-			entry = zis.getNextEntry();
-		}
-		zis.closeEntry();
-		zis.close();
-	}
-
-	public String invertRange(String unavailablePositions, int start, int stop) {
-
-		StringBuilder range = new StringBuilder();
-
-		int lastPos = start;
-
-		if (unavailablePositions.length() == 0) {
-			return (start + "-" + stop + ";");
-		}
-
-		String[] splits = unavailablePositions.split(";");
-
-		for (String split : splits) {
-
-			int currentN = Integer.valueOf(split);
-
-			if (currentN > lastPos) {
-				range.append(lastPos + "-" + (currentN - 1) + ";");
-				lastPos = currentN + 1;
-			} else if (currentN == lastPos) {
-				lastPos++;
-			}
-		}
-		if (lastPos <= reference.length()) {
-			range.append(lastPos + "-" + stop + ";");
-		}
-		return range.toString();
-	}
+	/*
+	 * public String invertRange(String unavailablePositions, int start, int
+	 * stop, int length) {
+	 * 
+	 * StringBuilder range = new StringBuilder();
+	 * 
+	 * int lastPos = start;
+	 * 
+	 * if (unavailablePositions.length() == 0) { return (start + "-" + stop +
+	 * ";"); }
+	 * 
+	 * String[] splits = unavailablePositions.split(";");
+	 * 
+	 * for (String split : splits) {
+	 * 
+	 * int currentN = Integer.valueOf(split);
+	 * 
+	 * if (currentN > lastPos) { range.append(lastPos + "-" + (currentN - 1) +
+	 * ";"); lastPos = currentN + 1; } else if (currentN == lastPos) {
+	 * lastPos++; } } if (lastPos <= length) { range.append(lastPos + "-" + stop
+	 * + ";"); } return range.toString(); }
+	 */
 
 }

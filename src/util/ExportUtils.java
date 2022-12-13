@@ -32,7 +32,6 @@ import core.TestSample;
 import exceptions.parse.sample.InvalidBaseException;
 import exceptions.parse.sample.InvalidPolymorphismException;
 import genepi.io.table.writer.CsvTableWriter;
-import importer.FastaImporter.References;
 import search.SearchResult;
 import search.SearchResultTreeNode;
 import search.ranking.HammingRanking;

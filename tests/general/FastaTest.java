@@ -5,28 +5,22 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 
 import org.jdom.JDOMException;
-import org.junit.Assert;
 import org.junit.Test;
 
 import core.Polymorphism;
-import core.Sample;
+import core.Reference;
 import core.SampleRanges;
 import core.TestSample;
 import exceptions.parse.HsdFileException;
 import exceptions.parse.sample.InvalidPolymorphismException;
 import exceptions.parse.samplefile.InvalidColumnCountException;
 import importer.FastaImporter;
-import importer.FastaImporter.References;
 import phylotree.Phylotree;
 import phylotree.PhylotreeManager;
-import search.ranking.HammingRanking;
 import search.ranking.KulczynskiRanking;
-import search.ranking.results.RankedResult;
 import util.ExportUtils;
 
 public class FastaTest {
@@ -36,7 +30,8 @@ public class FastaTest {
 		String file = "test-data/fasta/rCRS.fasta";
 		StringBuilder actual = new StringBuilder();
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), References.RCRS);
+		Reference ref = new Reference("test-data/reference/rcrs/rCRS.fasta");
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
 
 		String[] splits = samples.get(0).split("\t");
 		for (int i = 3; i < splits.length; i++) {
@@ -51,7 +46,8 @@ public class FastaTest {
 		String file = "test-data/fasta/rsrs.fasta";
 		StringBuilder actual = new StringBuilder();
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), References.RSRS);
+		Reference ref = new Reference("test-data/reference/rsrs/rsrs.fasta");
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
 
 		String[] splits = samples.get(0).split("\t");
 		for (int i = 3; i < splits.length; i++) {
@@ -67,7 +63,8 @@ public class FastaTest {
 		String file = "test-data/fasta/rCRS.fasta";
 		StringBuilder actual = new StringBuilder();
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), References.RSRS);
+		Reference ref = new Reference("test-data/reference/rsrs/rsrs.fasta");
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
 
 		String[] splits = samples.get(0).split("\t");
 
@@ -85,7 +82,8 @@ public class FastaTest {
 		String file = "test-data/fasta/AY195749.fasta";
 		StringBuilder actual = new StringBuilder();
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), References.RSRS);
+		Reference ref = new Reference("test-data/reference/rsrs/rsrs.fasta");
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
 
 		String[] splits = samples.get(0).split("\t");
 
@@ -106,7 +104,8 @@ public class FastaTest {
 	public void parseSampleWithInsertionsDeletions() throws Exception {
 		String file = "test-data/fasta/InsertionTest.fasta";
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), References.RCRS);
+		Reference ref = new Reference("test-data/reference/rcrs/rCRS.fasta");
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
 
 		String[] splits = samples.get(0).split("\t");
 		HashSet<String> set = new HashSet<String>();
@@ -127,7 +126,8 @@ public class FastaTest {
 	public void parseSampleWithInsertionsDeletionsShuffle() throws Exception {
 		String file = "test-data/fasta/InsertionTest2.fasta";
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), References.RCRS);
+		Reference ref = new Reference("test-data/reference/rcrs/rCRS.fasta");
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
 
 		String[] splits = samples.get(0).split("\t");
 		HashSet<String> set = new HashSet<String>();
@@ -148,7 +148,8 @@ public class FastaTest {
 	public void parseSampleWithInsertionsDeletionsShuffle2() throws Exception {
 		String file = "test-data/fasta/InsertionTest3.fasta";
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), References.RCRS);
+		Reference ref = new Reference("test-data/reference/rcrs/rCRS.fasta");
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
 
 		String[] splits = samples.get(0).split("\t");
 		HashSet<String> set = new HashSet<String>();
@@ -210,7 +211,8 @@ public class FastaTest {
 		
 		String file = "test-data/fasta/testSamples_ranges.fasta";
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), References.RCRS);
+		Reference ref = new Reference("test-data/reference/rcrs/rCRS.fasta");
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
 		TestSample ts1 = TestSample.parse(samples.get(0));
 		TestSample ts2 = TestSample.parse(samples.get(1));
 		TestSample ts3 = TestSample.parse(samples.get(2));
@@ -279,7 +281,8 @@ public class FastaTest {
 		
 		String file = "test-data/fasta/testSamples_ranges_MSA.fasta";
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), References.RCRS);
+		Reference ref = new Reference("test-data/reference/rcrs/rCRS.fasta");
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
 		TestSample ts1 = TestSample.parse(samples.get(0));
 		//TestSample ts2 = TestSample.parse(samples.get(1));
 		//TestSample ts3 = TestSample.parse(samples.get(2));
