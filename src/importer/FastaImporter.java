@@ -2,9 +2,15 @@ package importer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+import org.apache.commons.lang.SystemUtils;
 
 import com.github.lindenb.jbwa.jni.AlnRgn;
 import com.github.lindenb.jbwa.jni.BwaIndex;
@@ -12,6 +18,7 @@ import com.github.lindenb.jbwa.jni.BwaMem;
 import com.github.lindenb.jbwa.jni.ShortRead;
 
 import core.Reference;
+import genepi.io.FileUtil;
 import htsjdk.samtools.reference.FastaSequenceFile;
 import htsjdk.samtools.CigarElement;
 import htsjdk.samtools.CigarOperator;
@@ -22,6 +29,48 @@ import htsjdk.samtools.SAMSequenceRecord;
 import htsjdk.samtools.reference.ReferenceSequence;
 
 public class FastaImporter {
+	
+	static 
+	{
+		String jbwaDir = FileUtil.path("jbwa-" + System.currentTimeMillis() + "");
+
+		try {
+			
+			InputStream stream = FastaImporter.class.getClassLoader().getResourceAsStream("jbwa.zip");
+
+			ZipInputStream zis = new ZipInputStream(stream);
+
+			ZipEntry entry = zis.getNextEntry();
+
+			FileUtil.createDirectory(jbwaDir);
+
+			while (entry != null) {
+				String fileName = entry.getName();
+				byte[] buffer = new byte[1024];
+				File newFile = new File(FileUtil.path(jbwaDir, fileName));
+				FileOutputStream fos = new FileOutputStream(newFile);
+				int len;
+				while ((len = zis.read(buffer)) > 0) {
+					fos.write(buffer, 0, len);
+				}
+				fos.close();
+				entry = zis.getNextEntry();
+			}
+			zis.closeEntry();
+			zis.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		String jbwaLib = FileUtil.path(new File(jbwaDir + "/libbwajni.so").getAbsolutePath());
+
+		if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_MAC_OSX) {
+			jbwaLib = FileUtil.path(new File(jbwaDir + "/libbwajni.jnilib").getAbsolutePath());
+		}
+
+		System.load(jbwaLib);
+	}
 
 	private String range;
 
