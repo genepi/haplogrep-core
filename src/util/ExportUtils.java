@@ -27,6 +27,7 @@ import org.w3c.dom.svg.GetSVGDocument;
 import core.Haplogroup;
 import core.Mutations;
 import core.Polymorphism;
+import core.Reference;
 import core.SampleRanges;
 import core.TestSample;
 import exceptions.parse.sample.InvalidBaseException;
@@ -477,7 +478,7 @@ public class ExportUtils {
 		}
 	}
 
-	public static void generateFasta(Collection<TestSample> sampleCollection, String out) throws IOException {
+	public static void generateFasta(Collection<TestSample> sampleCollection, Reference reference, String out) throws IOException {
 		String fileName = FilenameUtils.removeExtension(out);
 
 		String fastafile = fileName + ".fasta";
@@ -486,7 +487,7 @@ public class ExportUtils {
 		for (TestSample sample : sampleCollection) {
 
 			Collections.sort((List<Polymorphism>) sample.getSample().getPolymorphisms());
-			String fastaResult = Polymorphism.rCRS;
+			String fastaResult = reference.getSequence();
 			int insertions = 0;
 			int deletions = 0;
 			// System.out.println("sample " + sample.getSampleID());
@@ -513,7 +514,7 @@ public class ExportUtils {
 			// replace all entries not covered in Range 
 			SampleRanges srange = sample.getSample().getSampleRanges();
 
-			for (int i = 1; i < Polymorphism.rCRS.length()+1; i++) {
+			for (int i = 1; i < reference.getLength()+1; i++) {
 				Polymorphism p;
 
 				try {
@@ -534,7 +535,7 @@ public class ExportUtils {
 		fasta.close();
 	}
 
-	public static void generateFastaMSA(Collection<TestSample> sampleCollection, String out) throws IOException {
+	public static void generateFastaMSA(Collection<TestSample> sampleCollection, Reference reference, String out) throws IOException {
 
 		String fileName = FilenameUtils.removeExtension(out);
 
@@ -624,7 +625,7 @@ public class ExportUtils {
 				vsamplep = new Vector<Polymorphism>(sample.getSample().getPolymorphisms());
 
 				int j = 0;
-				String fastaResult = Polymorphism.rCRS;
+				String fastaResult = reference.getSequence();
 
 				int insertion = 0;
 				for (int i = 0; i < vectorPolys.size(); i++) {
@@ -668,7 +669,7 @@ public class ExportUtils {
 				// replace all entries not covered in Range 
 				SampleRanges srange = sample.getSample().getSampleRanges();
 
-				for (int i = 1; i < Polymorphism.rCRS.length()+1; i++) {
+				for (int i = 1; i < reference.getLength()+1; i++) {
 					Polymorphism p;
 
 					try {

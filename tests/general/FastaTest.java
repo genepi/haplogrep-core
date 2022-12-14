@@ -206,12 +206,11 @@ public class FastaTest {
 		fragmentRanges.addCustomRange(5555, 16555);
 		testArray.add(new TestSample("TestSample_Ranges_N3", polys, fragmentRanges));
 		
-		
-		ExportUtils.generateFasta(testArray, "test-data/fasta/testSamples_ranges.fasta");
+		Reference ref = new Reference("test-data/reference/rcrs/rCRS.fasta");
+		ExportUtils.generateFasta(testArray, ref, "test-data/fasta/testSamples_ranges.fasta");
 		
 		String file = "test-data/fasta/testSamples_ranges.fasta";
 		FastaImporter impFasta = new FastaImporter();
-		Reference ref = new Reference("test-data/reference/rcrs/rCRS.fasta");
 		ArrayList<String> samples = impFasta.load(new File(file), ref);
 		TestSample ts1 = TestSample.parse(samples.get(0));
 		TestSample ts2 = TestSample.parse(samples.get(1));
@@ -277,11 +276,12 @@ public class FastaTest {
 			System.out.println(testArray.get(j).getSampleID() + " " + testArray.get(j).getDetectedHaplogroup());
 		}
 		
-		ExportUtils.generateFastaMSA(testArray, "test-data/fasta/testSamples_ranges.fasta");
+		Reference ref = new Reference("test-data/reference/rcrs/rCRS.fasta");
+		
+		ExportUtils.generateFastaMSA(testArray, ref, "test-data/fasta/testSamples_ranges.fasta");
 		
 		String file = "test-data/fasta/testSamples_ranges_MSA.fasta";
 		FastaImporter impFasta = new FastaImporter();
-		Reference ref = new Reference("test-data/reference/rcrs/rCRS.fasta");
 		ArrayList<String> samples = impFasta.load(new File(file), ref);
 		TestSample ts1 = TestSample.parse(samples.get(0));
 		//TestSample ts2 = TestSample.parse(samples.get(1));
