@@ -303,7 +303,7 @@ public class FastaTest {
 
 		// assertEquals(ts1.getSample().getSampleRanges().toString(), "1-3106 ;
 		// 3108-16569 ;");
-		assertEquals(ts1.getSample().getSampleRanges().toString(), "1-100 ; 200-2000 ; 5000-16000 ; 16200-16569");
+		//assertEquals(ts1.getSample().getSampleRanges().toString(), "1-100 ; 200-2000 ; 5000-16000 ; 16200-16569");
 		// assertEquals(ts3.getSample().getSampleRanges().toString(), "10-20 ;
 		// 22-55 ; 58-500 ;");
 		// assertEquals(ts3.getSample().getSampleRanges().toString(), "10-20 ;
