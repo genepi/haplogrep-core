@@ -367,7 +367,7 @@ public class ExportUtils {
 					if (!polyToExclude(poly)) {
 						remaining += poly + " ";
 						remaining += "\n";
-						//System.out.println(" Remaining  + " + remaining);
+						// System.out.println(" Remaining + " + remaining);
 					}
 				}
 
@@ -511,24 +511,24 @@ public class ExportUtils {
 				}
 			}
 
-			// replace all entries not covered in Range 
+			// replace all entries not covered in Range
 			SampleRanges srange = sample.getSample().getSampleRanges();
 
-			for (int i = 1; i < reference.getLength()+1; i++) {
+			for (int i = 1; i < reference.getLength() + 1; i++) {
 				Polymorphism p;
 
 				try {
-					p = new Polymorphism(i + "N");
+					p = new Polymorphism(reference, i + "N");
 
 					if (!srange.contains(p))
-						fastaResult = replaceChar(fastaResult, 'N', i-1);
+						fastaResult = replaceChar(fastaResult, 'N', i - 1);
 				} catch (InvalidPolymorphismException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
 			}
-	
+
 			fasta.write(">" + sample.getSampleID() + "\n" + fastaResult + "\n");
 
 		}
@@ -540,7 +540,7 @@ public class ExportUtils {
 		String fileName = FilenameUtils.removeExtension(out);
 
 		String fasta = fileName + "_MSA.fasta";
-		
+
 		System.out.println(fasta);
 
 		FileWriter fastaMSA = new FileWriter(fasta);
@@ -571,7 +571,7 @@ public class ExportUtils {
 
 								try {
 
-									Polymorphism p1 = new Polymorphism(
+									Polymorphism p1 = new Polymorphism(reference,
 											poly.getPosition() + ".1" + poly.getInsertedPolys().substring(1, i + 1) + poly.getInsertedPolys().charAt(i));
 									v1.add(p1);
 								} catch (NumberFormatException e) {
@@ -594,7 +594,7 @@ public class ExportUtils {
 								Polymorphism p1 = null;
 								try {
 
-									p1 = new Polymorphism(poly.getPosition() + ".1" + h.substring(0, i + 1));
+									p1 = new Polymorphism(reference, poly.getPosition() + ".1" + h.substring(0, i + 1));
 
 									if (!vectorhelp.contains(p1.toString())) {
 										vectorPolys.add(p1);
@@ -665,26 +665,25 @@ public class ExportUtils {
 						insertion++;
 					}
 				}
-				
-				// replace all entries not covered in Range 
+
+				// replace all entries not covered in Range
 				SampleRanges srange = sample.getSample().getSampleRanges();
 
-				for (int i = 1; i < reference.getLength()+1; i++) {
+				for (int i = 1; i < reference.getLength() + 1; i++) {
 					Polymorphism p;
 
 					try {
-						p = new Polymorphism(i + "N");
+						p = new Polymorphism(reference, i + "N");
 
 						if (!srange.contains(p))
-							fastaResult = replaceChar(fastaResult, 'N', i-1);
+							fastaResult = replaceChar(fastaResult, 'N', i - 1);
 					} catch (InvalidPolymorphismException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 
 				}
-				
-				
+
 				fastaMSA.write(fastaResult + "\n");
 			}
 		}

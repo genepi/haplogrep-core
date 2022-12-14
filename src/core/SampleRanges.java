@@ -26,25 +26,25 @@ public class SampleRanges {
 	private ArrayList<Integer> ends = new ArrayList<Integer>();
 	static HashSet<Integer> metaboChipPositions = null;
 	private int length;
-	
+
 	/**
 	 * Creates empty range.
 	 */
 	public SampleRanges() {
-		if(metaboChipPositions == null){
+		if (metaboChipPositions == null) {
 			metaboChipPositions = new HashSet<Integer>();
-			
-			//loadMetaboChipPositions();
+
+			// loadMetaboChipPositions();
 		}
 	}
 
 	private void loadMetaboChipPositions() {
 		try {
 			InputStream phyloFile = this.getClass().getClassLoader().getResourceAsStream("metaboChipPositions");
-			
-			if(phyloFile == null)
-				phyloFile = new  FileInputStream(new File("testDataFiles/metaboChipPositions"));
-			
+
+			if (phyloFile == null)
+				phyloFile = new FileInputStream(new File("testDataFiles/metaboChipPositions"));
+
 			BufferedReader reader = new BufferedReader(new InputStreamReader(phyloFile));
 
 			String currentLine = reader.readLine();
@@ -66,6 +66,7 @@ public class SampleRanges {
 		}
 
 	}
+
 	/**
 	 * Parsed a new SampleRanges object. Needs hsd file format of ranges.
 	 * 
@@ -75,19 +76,20 @@ public class SampleRanges {
 	 *             Thrown if the format is incorrect or the ranges are invalid
 	 *             (e.g. < 0)
 	 */
-	public SampleRanges(String rangesToParse, boolean splitRange16569) throws InvalidRangeException {
-		
-		/*if(metaboChipPositions == null){
-			metaboChipPositions = new HashSet<Integer>();
-			
-			loadMetaboChipPositions();
-		}*/
-		
+	public SampleRanges(String rangesToParse, Reference reference, boolean splitRange16569) throws InvalidRangeException {
+
+		/*
+		 * if(metaboChipPositions == null){ metaboChipPositions = new
+		 * HashSet<Integer>();
+		 * 
+		 * loadMetaboChipPositions(); }
+		 */
+
 		if (rangesToParse.equals(""))
 			return;
 
 		String[] ranges = rangesToParse.split(";");
-		
+
 		this.length = ranges.length;
 
 		for (int i = 0; i < ranges.length; i++) {
@@ -106,16 +108,15 @@ public class SampleRanges {
 				} catch (NumberFormatException e) {
 					throw new InvalidRangeException(rangeParts[0] + " " + rangeParts[1]);
 				}
-				if (to > 16570 || from > 16570)
+				if (to > reference.getLength() + 1 || from > reference.getLength() + 1)
 					throw new InvalidRangeException(to + " > " + from);
 
 				try {
 					// make one range to two ranges
 					if (from > to) {
-						if (splitRange16569)
-						{
-						this.addCustomRange(from, 16569);
-						this.addCustomRange(1, to);
+						if (splitRange16569) {
+							this.addCustomRange(from, reference.getLength());
+							this.addCustomRange(1, to);
 						} else
 							this.addCustomRange(Integer.parseInt(rangeParts[0].trim()), Integer.parseInt(rangeParts[1].trim()));
 					}
@@ -141,29 +142,30 @@ public class SampleRanges {
 	/**
 	 * Adds the complete range(1-16569) to this SampleRanges instance,
 	 */
-	public void addCompleteRange() {
+	public void addCompleteRange(Reference reference) {
 		starts.add(1);
-		ends.add(16569);
+		ends.add(reference.getLength());
 	}
-	
+
 	/**
 	 * Adds the control range(16024-16569 1-576) to this SampleRanges instance,
 	 */
 	public void addControlRange() {
+
 		starts.add(16024);
 		ends.add(16569);
-		
+
 		starts.add(1);
 		ends.add(576);
 	}
-	
+
 	/**
 	 * Adds the Metabo chip positions to this SampleRanges instance,
 	 */
 	public void addMetaboChipRange() {
-		for(int currentMetaboPosition : metaboChipPositions){
-		starts.add(currentMetaboPosition);
-		ends.add(currentMetaboPosition);
+		for (int currentMetaboPosition : metaboChipPositions) {
+			starts.add(currentMetaboPosition);
+			ends.add(currentMetaboPosition);
 		}
 	}
 
@@ -187,7 +189,7 @@ public class SampleRanges {
 	 */
 	public boolean contains(Polymorphism polyToCheck) {
 		return getSubrangeID(polyToCheck) != -1 ? true : false;
-}
+	}
 //	public boolean contains(Polymorphism polyToCheck) {
 //		return containsPosition(polyToCheck.getPosition());
 //	}
@@ -234,7 +236,6 @@ public class SampleRanges {
 
 	}
 
-	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -250,56 +251,56 @@ public class SampleRanges {
 			return true;
 		if (obj == null)
 			return false;
-		
+
 		if (getClass() != obj.getClass())
 			return false;
 		SampleRanges other = (SampleRanges) obj;
 		if (ends == null) {
 			if (other.ends != null)
 				return false;
-		} 
-		
-		else{ 
-			for(int i : ends)
-				if(!other.ends.contains(i))
+		}
+
+		else {
+			for (int i : ends)
+				if (!other.ends.contains(i))
 					return false;
-			for(int i : other.ends)
-				if(!ends.contains(i))
+			for (int i : other.ends)
+				if (!ends.contains(i))
 					return false;
-			
-		} 
+
+		}
 		if (starts == null) {
-			for(int i : starts)
-				if(!other.starts.contains(i))
+			for (int i : starts)
+				if (!other.starts.contains(i))
 					return false;
-		} 
-		
+		}
+
 		if (starts == null) {
-			for(int i : other.starts)
-				if(!starts.contains(i))
+			for (int i : other.starts)
+				if (!starts.contains(i))
 					return false;
-		} 
+		}
 		return true;
 	}
 
 	public boolean isMataboChipRange() {
 		SampleRanges metaboChipRange = new SampleRanges();
 		metaboChipRange.addMetaboChipRange();
-		
+
 		return metaboChipRange.equals(this);
 	}
 
 	public boolean isControlRange() {
 		SampleRanges controlRange = new SampleRanges();
 		controlRange.addControlRange();
-		
+
 		return controlRange.equals(this);
 	}
 
-	public boolean isCompleteRange() {
+	public boolean isCompleteRange(Reference reference) {
 		SampleRanges completeRange = new SampleRanges();
-		completeRange.addCompleteRange();
-		
+		completeRange.addCompleteRange(reference);
+
 		return completeRange.equals(this);
 	}
 
@@ -308,19 +309,19 @@ public class SampleRanges {
 		ends.clear();
 	}
 
-	public boolean isCustomRange() {
-		
-		return !isCompleteRange() && !isControlRange() && !isMataboChipRange();
+	public boolean isCustomRange(Reference reference) {
+
+		return !isCompleteRange(reference) && !isControlRange() && !isMataboChipRange();
 	}
 
-	public int getSubrangeID(Polymorphism currentPoly) {	
+	public int getSubrangeID(Polymorphism currentPoly) {
 		int foundRangeID = -1;
 		for (int i = 0; i < starts.size(); i++) {
-			if ((starts.get(i) <= currentPoly.getPosition() && ends.get(i) >= currentPoly.getPosition()) || 
-					(starts.get(i) > ends.get(i) &&  (starts.get(i) >= currentPoly.getPosition() || ends.get(i) <= currentPoly.getPosition()))){
+			if ((starts.get(i) <= currentPoly.getPosition() && ends.get(i) >= currentPoly.getPosition())
+					|| (starts.get(i) > ends.get(i) && (starts.get(i) >= currentPoly.getPosition() || ends.get(i) <= currentPoly.getPosition()))) {
 				foundRangeID = i;
 				break;
-			}	
+			}
 		}
 		return foundRangeID;
 	}
@@ -330,7 +331,7 @@ public class SampleRanges {
 		newSubrange.addCustomRange(starts.get(i), ends.get(i));
 		return newSubrange;
 	}
-	
+
 	public int getLength() {
 		return length;
 	}
@@ -339,5 +340,4 @@ public class SampleRanges {
 		this.length = length;
 	}
 
-	
 }

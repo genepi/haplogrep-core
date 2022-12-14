@@ -1,6 +1,5 @@
 package qualityAssurance.rules;
 
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,45 +25,42 @@ import exceptions.parse.sample.InvalidPolymorphismException;
 
 public class CheckForSampleRange extends HaplogrepRule {
 	ArrayList<Polymorphism> foundReferencePolys = new ArrayList<Polymorphism>();
-	//static HashSet<Integer> metaboChipPositions = null;
+	// static HashSet<Integer> metaboChipPositions = null;
 	boolean isMetaboChip = true;
-	
-	public CheckForSampleRange(int priority){
+
+	public CheckForSampleRange(int priority) {
 		super(priority);
 
 	}
-	
-	
 
 	@Override
 	public void evaluate(QualityAssistent qualityAssistent, TestSample currentSample) {
-			
-		
+
 		isMetaboChip = true;
 		SampleRanges metaboChipRange = new SampleRanges();
 		metaboChipRange.addMetaboChipRange();
-		for(Polymorphism currentPoly : currentSample.getSample().getPolymorphisms()){
-			if(!metaboChipRange.contains(currentPoly)){
-					isMetaboChip = false;
-					break;
+		for (Polymorphism currentPoly : currentSample.getSample().getPolymorphisms()) {
+			if (!metaboChipRange.contains(currentPoly)) {
+				isMetaboChip = false;
+				break;
 			}
 		}
 		boolean isControlRange = false;
-		if(!isMetaboChip){
+		if (!isMetaboChip) {
 			isControlRange = true;
 			SampleRanges controlRange = new SampleRanges();
 			controlRange.addControlRange();
-			
-			for(Polymorphism currentPoly : currentSample.getSample().getPolymorphisms()){
-				if(!controlRange.contains(currentPoly)){
+
+			for (Polymorphism currentPoly : currentSample.getSample().getPolymorphisms()) {
+				if (!controlRange.contains(currentPoly)) {
 					isControlRange = false;
 					break;
 				}
 			}
 		}
-		
+
 		boolean isCompleteRange = false;
-		if(!isMetaboChip && !isControlRange){
+		if (!isMetaboChip && !isControlRange) {
 			isCompleteRange = true;
 //			SampleRanges controlRange = new SampleRanges();
 //			controlRange.addControlRange();
@@ -76,33 +72,30 @@ public class CheckForSampleRange extends HaplogrepRule {
 //				}
 //			}
 		}
-		
-		if(isMetaboChip && !currentSample.getSample().getSampleRanges().isMataboChipRange()){
+
+		if (isMetaboChip && !currentSample.getSample().getSampleRanges().isMataboChipRange()) {
 			qualityAssistent.addNewIssue(new MetaboRangeDetected(qualityAssistent, currentSample));
-		}
-		else if(isControlRange && !currentSample.getSample().getSampleRanges().isControlRange()){
-			qualityAssistent.addNewIssue(new ControlRangeDetected(qualityAssistent, currentSample));	
-		}
-		else if(isCompleteRange && !currentSample.getSample().getSampleRanges().isCompleteRange()
-				&& !currentSample.getSample().getSampleRanges().isCustomRange()){
-			qualityAssistent.addNewIssue(new CustomOrCompleteRangeDetected(qualityAssistent, currentSample));		
-		}
-		else
-		currentSample.setReachedQualityLevel(this.getPriority() + 1);
+		} else if (isControlRange && !currentSample.getSample().getSampleRanges().isControlRange()) {
+			qualityAssistent.addNewIssue(new ControlRangeDetected(qualityAssistent, currentSample));
+		} else if (isCompleteRange && !currentSample.getSample().getSampleRanges().isCompleteRange(currentSample.getReference())
+				&& !currentSample.getSample().getSampleRanges().isCustomRange(currentSample.getReference())) {
+			qualityAssistent.addNewIssue(new CustomOrCompleteRangeDetected(qualityAssistent, currentSample));
+		} else
+			currentSample.setReachedQualityLevel(this.getPriority() + 1);
 	}
 
 	public void suppressIssues(QualityAssistent qualityAssistent, TestSample currentSample) {
-		if(isMetaboChip){
-			QualityIssue issue = qualityAssistent.getIssue(currentSample,"Common rCRS polymorphim (263G 8860G or 15326G)");
-			if(issue != null){
+		if (isMetaboChip) {
+			QualityIssue issue = qualityAssistent.getIssue(currentSample, "Common rCRS polymorphim (263G 8860G or 15326G)");
+			if (issue != null) {
 				issue.setSuppress(true);
 			}
-			
-			issue = qualityAssistent.getIssue(currentSample,"common RSRS polymorphims found!");
-			if(issue != null){
+
+			issue = qualityAssistent.getIssue(currentSample, "common RSRS polymorphims found!");
+			if (issue != null) {
 				issue.setSuppress(true);
 			}
 		}
 	}
-		
+
 }

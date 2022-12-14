@@ -15,7 +15,7 @@ public class FastaImporterTests {
 	@Test
 	public void testRcrs() throws Exception {
 		String file = "test-data/fasta/rCRS.fasta";
-		
+
 		Reference ref = new Reference("test-data/reference/rcrs/rCRS.fasta");
 		StringBuilder actual = new StringBuilder();
 		FastaImporter impFasta = new FastaImporter();

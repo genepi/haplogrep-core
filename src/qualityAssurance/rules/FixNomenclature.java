@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import core.Polymorphism;
+import core.Reference;
 import core.TestSample;
 import exceptions.parse.sample.InvalidPolymorphismException;
 import genepi.io.table.reader.CsvTableReader;
@@ -23,6 +24,8 @@ public class FixNomenclature extends HaplogrepRule {
 
 	@Override
 	public void evaluate(QualityAssistent qualityAssistent, TestSample currentSample) {
+
+		Reference reference = currentSample.getReference();
 
 		if (rules == null) {
 			InputStream stream = this.getClass().getClassLoader().getResourceAsStream(getFile());
@@ -39,15 +42,15 @@ public class FixNomenclature extends HaplogrepRule {
 		}
 
 		ArrayList<Polymorphism> inPolys = currentSample.getSample().getPolymorphisms();
-		//System.out.println("INPOLYS " + inPolys);
+		// System.out.println("INPOLYS " + inPolys);
 
 		ArrayList<Polymorphism> outPolys = new ArrayList<Polymorphism>();
 
-		HashSet<Polymorphism> inputProfile = new HashSet<Polymorphism>();
+		HashSet<String> inputProfile = new HashSet<String>();
 		HashSet<String> inputProfileString = new HashSet<String>();
 
 		for (Polymorphism current : inPolys) {
-			inputProfile.add(current);
+			inputProfile.add(current.toString());
 			inputProfileString.add(current.toString());
 		}
 
@@ -68,7 +71,7 @@ public class FixNomenclature extends HaplogrepRule {
 				String expected = rules.get(error);
 				try {
 					for (String exp : expected.split(" ")) {
-						outPolys.add(new Polymorphism(exp));
+						outPolys.add(new Polymorphism(reference, exp));
 					}
 					for (String err : error.split(" ")) {
 						inputProfileString.remove(err);
@@ -81,15 +84,20 @@ public class FixNomenclature extends HaplogrepRule {
 		}
 
 		// add remaining
-		for (Polymorphism in : inputProfile) {
+		for (String in : inputProfile) {
 			// only if also removed from string
 			if (inputProfileString.contains(in.toString()))
-				outPolys.add(new Polymorphism(in));
+				try {
+					outPolys.add(new Polymorphism(reference, in));
+				} catch (InvalidPolymorphismException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		}
 
 		Collections.sort(outPolys);
 
-		//System.out.println("OUTPOLYS " + outPolys);
+		// System.out.println("OUTPOLYS " + outPolys);
 		currentSample.getSample().setPolymorphisms(outPolys);
 
 	}

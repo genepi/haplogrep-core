@@ -22,64 +22,76 @@ import exceptions.parse.sample.InvalidPolymorphismException;
 import exceptions.parse.samplefile.InvalidColumnCountException;
 
 /**
- * Represents one test sample. Includes the expected and detected haplogroup. In addition it stores all 
- * search results for a test sample 
+ * Represents one test sample. Includes the expected and detected haplogroup. In
+ * addition it stores all search results for a test sample
  * 
  * @author Dominic Pacher, Sebastian Schoenherr, Hansi Weissensteiner
  * 
  */
-public class TestSample implements Comparable<TestSample>{
-	
+public class TestSample implements Comparable<TestSample> {
+
 	final Logger log = Logger.getLogger(TestSample.class);
-	
+
 	ArrayList<RankedResult> searchResults = new ArrayList<RankedResult>();
 	ClusteredSearchResults clusteredResults = new ClusteredSearchResults(searchResults);
-	
+
 	private String testSampleID = "Unknown";
 	private Haplogroup expectedHaplogroup;
 	private Haplogroup detectedHaplogroup;
 	private Sample sample;
 	private int qualityRulesLevelReached = 0;
 	private boolean reset = false;
-	
-	private TestSample(){
-		
+	private static Reference reference;
+
+	private TestSample() {
+
 	}
-	
-	public TestSample(String sampleID,ArrayList<Polymorphism> polymorphisms,SampleRanges sampleRange) {
+
+	public TestSample(String sampleID, Reference reference, ArrayList<Polymorphism> polymorphisms, SampleRanges sampleRange) {
 		this.testSampleID = sampleID.replace(" ", "_");
-		sample = new Sample(polymorphisms,sampleRange);
+		sample = new Sample(polymorphisms, reference, sampleRange);
 	}
 
 	/**
 	 * Parses a new test sample object from an input string
-	 * @param inputString The string to parse
+	 * 
+	 * @param inputString
+	 *            The string to parse
 	 * @return The parsed string as new TestSample object
-	 * @throws HsdFileSampleParseException Thrown if the string could not parsed correctly
+	 * @throws HsdFileSampleParseException
+	 *             Thrown if the string could not parsed correctly
 	 */
-	public static TestSample parse(String inputString) throws HsdFileException {
+	public static TestSample parse(String inputString, Reference ref) throws HsdFileException {
 		TestSample parsedSample = new TestSample();
 		SampleRanges sampleRange = null;
-		Pattern p = Pattern.compile( "(\\d*(-|;)?)*" );
+		reference = ref;
+
+		Pattern p = Pattern.compile("(\\d*(-|;)?)*");
 		try {
-			//Split the input string in separate column strings 
+			// Split the input string in separate column strings
 			String[] columns = inputString.split("\t");
 
-			//Check of number of columns are correct
+			// Check of number of columns are correct
 			if (columns.length < 3)
 				throw new InvalidColumnCountException(columns.length);
 
-			//Parse the test sample id
-			parsedSample.testSampleID = columns[0].trim().replace("|", "_").replace(" ","_");
+			// Parse the test sample id
+			parsedSample.testSampleID = columns[0].trim().replace("|", "_").replace(" ", "_");
 
-			//Parse range
+			// Parse range
 			columns[1] = columns[1].replaceAll("\"", "");
-			
-			/** Haplogrep 2.0 calculates complete range every time, decided not to use it */
-			
-			sampleRange = new SampleRanges(columns[1], true); //true for split Range
 
-			//Parse expected haplogroup
+			/**
+			 * Haplogrep 2.0 calculates complete range every time, decided not
+			 * to use it
+			 */
+
+			sampleRange = new SampleRanges(columns[1], reference, true); // true
+																			// for
+																			// split
+																			// Range
+
+			// Parse expected haplogroup
 			if (columns[2].equals("?") || columns[2].equals("SEQ"))
 				parsedSample.expectedHaplogroup = new Haplogroup("");
 
@@ -90,13 +102,13 @@ public class TestSample implements Comparable<TestSample>{
 			for (int i = 3; i < columns.length; i++) {
 				sampleString.append(columns[i] + " ");
 			}
-				parsedSample.sample = new Sample(sampleString.toString(),sampleRange, 0);
+			parsedSample.sample = new Sample(sampleString.toString(), sampleRange, reference, 0);
 
-		} 
-		
-		//Something went wrong during the parse process. Throw exception.
-		 catch (InvalidPolymorphismException e) {
-			
+		}
+
+		// Something went wrong during the parse process. Throw exception.
+		catch (InvalidPolymorphismException e) {
+
 			HsdFileSampleParseException ex = new HsdFileSampleParseException(e.getMessage());
 			ex.setTestSampleID(parsedSample.testSampleID);
 			throw ex;
@@ -108,42 +120,40 @@ public class TestSample implements Comparable<TestSample>{
 	/**
 	 * @return The haplogroup the user expected by setting it in the hsd file.
 	 */
-	public Haplogroup getExpectedHaplogroup() {	
+	public Haplogroup getExpectedHaplogroup() {
 		return expectedHaplogroup;
 	}
-	
+
 	/**
-	 * @param expectedHaplogroup The new haplogroup to expect
+	 * @param expectedHaplogroup
+	 *            The new haplogroup to expect
 	 */
 	public void setExpectedHaplogroup(Haplogroup expectedHaplogroup) {
 		this.expectedHaplogroup = expectedHaplogroup;
 	}
-	
+
 	/**
 	 * @return The haplogroup of the best search result.
 	 */
 	public Haplogroup getDetectedHaplogroup() {
-		if(getTopResult() != null){
-			
+		if (getTopResult() != null) {
+
 			this.detectedHaplogroup = getTopResult().getSearchResult().getHaplogroup();
 			return detectedHaplogroup;
 		}
-		
+
 		else
 			return null;
 	}
-	
 
-	
 	/**
-	 * @return The sample object of this test sample. The sample object 
-	 * represents only the sample range and its polymorphisms.
+	 * @return The sample object of this test sample. The sample object
+	 *         represents only the sample range and its polymorphisms.
 	 */
 	public Sample getSample() {
 		return sample;
 	}
 
-	
 	/**
 	 * @return Returns the unique ID of this sample
 	 */
@@ -151,45 +161,49 @@ public class TestSample implements Comparable<TestSample>{
 		return testSampleID;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		String result = testSampleID + "\t" + expectedHaplogroup + "\t";
-		
-		for(Polymorphism currentPoly : sample.sample)
-		{
+
+		for (Polymorphism currentPoly : sample.sample) {
 			result += currentPoly.toString() + " ";
 		}
-		
-		return result;	
+
+		return result;
 	}
 
-	
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	@Override
 	public int compareTo(TestSample o) {
-	
-		 if(this.getSampleID().compareTo(o.getSampleID())<0)
-			   return -1;
-		 if (this.getSampleID().compareTo(o.getSampleID())>0)	
-			  return 1;
-		 else
-			 return 0;
+
+		if (this.getSampleID().compareTo(o.getSampleID()) < 0)
+			return -1;
+		if (this.getSampleID().compareTo(o.getSampleID()) > 0)
+			return 1;
+		else
+			return 0;
 	}
 
 	/**
-	 * Returns a single result identified by its haplogroup name which is unique.
-	 * @param haplogroup The haplogroup of the result
+	 * Returns a single result identified by its haplogroup name which is
+	 * unique.
+	 * 
+	 * @param haplogroup
+	 *            The haplogroup of the result
 	 * @return The search result
 	 */
 	public RankedResult getResult(Haplogroup haplogroup) {
-		for(RankedResult currentResult: searchResults){
-			if(currentResult.getHaplogroup().equals(haplogroup))
+		for (RankedResult currentResult : searchResults) {
+			if (currentResult.getHaplogroup().equals(haplogroup))
 				return currentResult;
 		}
 		return null;
@@ -201,11 +215,15 @@ public class TestSample implements Comparable<TestSample>{
 	public List<RankedResult> getResults() {
 		return searchResults;
 	}
-	
-	/**Creates a subtree of results identified by their haplogroups. Combines the path of each result 
-	 * and returns the root of the tree as json object. If a cluster of results with same distance is requested
-	 * , all results in the cluster are included in the three automatically.
-	 * @param selectedHaplogroups The haplogroups to identify the results
+
+	/**
+	 * Creates a subtree of results identified by their haplogroups. Combines
+	 * the path of each result and returns the root of the tree as json object.
+	 * If a cluster of results with same distance is requested , all results in
+	 * the cluster are included in the three automatically.
+	 * 
+	 * @param selectedHaplogroups
+	 *            The haplogroups to identify the results
 	 * @return The root json object of the tree
 	 */
 	public JSONObject getSelectetHaplogroupSubtree(ArrayList<String> selectedHaplogroups) {
@@ -241,8 +259,11 @@ public class TestSample implements Comparable<TestSample>{
 		return null;
 	}
 
-	/** Recursive method to combine result path to one json tree
-	 * @param paths The array of paths 
+	/**
+	 * Recursive method to combine result path to one json tree
+	 * 
+	 * @param paths
+	 *            The array of paths
 	 * @param list
 	 * @return the root json object of the tree
 	 * @throws JSONException
@@ -307,7 +328,7 @@ public class TestSample implements Comparable<TestSample>{
 
 					if (currentPath.get(i1).getFoundPolys().contains(currentPoly)) {
 						poly.put("state", "found");
-					}else if (currentPoly.isHeteroplasmy) {
+					} else if (currentPoly.isHeteroplasmy) {
 						poly.put("state", "hetero");
 					}
 
@@ -371,32 +392,37 @@ public class TestSample implements Comparable<TestSample>{
 		clusteredResults = null;
 	}
 
-	/**Restarts search and updates all search results for this sample
-	 * @param phyloTreeToUse The phylotree version used for the search
-	 * @param rankingMethod The ranking method used (e.g Hamming)
-	 */
-	public void updateSearchResults(Phylotree phyloTreeToUse,RankingMethod rankingMethod) {
-		//if(qualityRulesLevelReached > 0){
-		
-			List<RankedResult> results = phyloTreeToUse.search(this, rankingMethod.clone());
-		
-			searchResults = (ArrayList<RankedResult>) results;
-			clusteredResults = new ClusteredSearchResults(results);
-		//}
-	}
-	
 	/**
-	 * @return The search results in clustered by the equal distances. Ranked by the used ranking method
+	 * Restarts search and updates all search results for this sample
+	 * 
+	 * @param phyloTreeToUse
+	 *            The phylotree version used for the search
+	 * @param rankingMethod
+	 *            The ranking method used (e.g Hamming)
+	 */
+	public void updateSearchResults(Phylotree phyloTreeToUse, RankingMethod rankingMethod) {
+		// if(qualityRulesLevelReached > 0){
+
+		List<RankedResult> results = phyloTreeToUse.search(this, rankingMethod.clone());
+
+		searchResults = (ArrayList<RankedResult>) results;
+		clusteredResults = new ClusteredSearchResults(results);
+		// }
+	}
+
+	/**
+	 * @return The search results in clustered by the equal distances. Ranked by
+	 *         the used ranking method
 	 */
 	public JSONArray getClusteredSearchResults() {
-		if(clusteredResults != null)
+		if (clusteredResults != null)
 			return clusteredResults.toJSON();
-		return 
-				new JSONArray();
+		return new JSONArray();
 	}
-	
+
 	/**
-	 * @return The search results in clustered by the equal distances. Ranked by the used ranking method
+	 * @return The search results in clustered by the equal distances. Ranked by
+	 *         the used ranking method
 	 */
 	public ClusteredSearchResults getClusteredSearchResultsAsObject() {
 		return clusteredResults;
@@ -406,7 +432,7 @@ public class TestSample implements Comparable<TestSample>{
 	 * @return The top result of for this test sample
 	 */
 	public RankedResult getTopResult() {
-		if(searchResults.size() > 0)
+		if (searchResults.size() > 0)
 			return searchResults.get(0);
 		else
 			return null;
@@ -419,46 +445,47 @@ public class TestSample implements Comparable<TestSample>{
 	public void setReachedQualityLevel(int level) {
 		this.qualityRulesLevelReached = level;
 	}
-	
-	public ArrayList<TestSample> createFragmentsOld(SampleRanges fragmentRanges) {
+
+	public ArrayList<TestSample> createFragmentsOld(SampleRanges fragmentRanges, Reference reference) {
 
 		HashMap<Integer, ArrayList<Polymorphism>> fragmentsHashMap = new HashMap<Integer, ArrayList<Polymorphism>>(); // MultiMap
 		ArrayList<TestSample> resultFragments = new ArrayList<TestSample>();
-	
-		for(int i = 0; i <  fragmentRanges.getStarts().size();i++)
+
+		for (int i = 0; i < fragmentRanges.getStarts().size(); i++)
 			fragmentsHashMap.put(i, new ArrayList<Polymorphism>());
-		
+
 		for (Polymorphism currentPoly : sample.getPolymorphisms()) {
 			int key = fragmentRanges.getSubrangeID(currentPoly);
-			
+
 			ArrayList<Polymorphism> currentFragment = fragmentsHashMap.get(key);
 
 			if (currentFragment == null)
 				fragmentsHashMap.put(key, new ArrayList<Polymorphism>());
-			
+
 			fragmentsHashMap.get(key).add(currentPoly);
 
 		}
 		int i = 0;
-		
-		for(ArrayList<Polymorphism> currentFragment : fragmentsHashMap.values()){
-			resultFragments.add( new TestSample(testSampleID  + "_Frag_" + (fragmentRanges.getStarts().get(i)), currentFragment,fragmentRanges.getSubrange(i)));
+
+		for (ArrayList<Polymorphism> currentFragment : fragmentsHashMap.values()) {
+			resultFragments.add(
+					new TestSample(testSampleID + "_Frag_" + (fragmentRanges.getStarts().get(i)), reference, currentFragment, fragmentRanges.getSubrange(i)));
 			i++;
 		}
-		
+
 		return resultFragments;
 	}
-	
-	public ArrayList<TestSample> createFragmentsSimple(SampleRanges fragmentRanges) {
 
-	ArrayList<TestSample> resultFragments = new ArrayList<TestSample>();
+	public ArrayList<TestSample> createFragmentsSimple(SampleRanges fragmentRanges, Reference reference) {
 
-	
-	for(int i = 0; i <  fragmentRanges.getStarts().size();i++){
-		resultFragments.add( new TestSample(testSampleID  + "_Frag_" + (fragmentRanges.getStarts().get(i)), sample.getPolymorphisms(),fragmentRanges.getSubrange(i)));
-			
-	}
-	return resultFragments;
+		ArrayList<TestSample> resultFragments = new ArrayList<TestSample>();
+
+		for (int i = 0; i < fragmentRanges.getStarts().size(); i++) {
+			resultFragments.add(new TestSample(testSampleID + "_Frag_" + (fragmentRanges.getStarts().get(i)), reference, sample.getPolymorphisms(),
+					fragmentRanges.getSubrange(i)));
+
+		}
+		return resultFragments;
 	}
 
 	public void setDetectedHaplogroup(Haplogroup detectedHaplogroup) {
@@ -471,5 +498,13 @@ public class TestSample implements Comparable<TestSample>{
 
 	public void setReset(boolean reset) {
 		this.reset = reset;
+	}
+
+	public Reference getReference() {
+		return reference;
+	}
+
+	public void setReference(Reference reference) {
+		this.reference = reference;
 	}
 }

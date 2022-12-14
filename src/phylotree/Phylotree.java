@@ -24,6 +24,7 @@ import search.ranking.results.RankedResult;
 
 import core.Haplogroup;
 import core.Polymorphism;
+import core.Reference;
 import core.TestSample;
 import exceptions.parse.sample.InvalidBaseException;
 import exceptions.parse.sample.InvalidPolymorphismException;
@@ -50,7 +51,7 @@ public final class Phylotree {
 	 * @param phylogeneticWeightsFile
 	 *            Inputstream to the phylogentic weights file
 	 */
-	public Phylotree(InputStream phylotreeFile, InputStream phylogeneticWeightsFile) {
+	public Phylotree(InputStream phylotreeFile, InputStream phylogeneticWeightsFile, Reference reference) {
 
 		root = new PhyloTreeNode(this);
 		// Create a JDOM document out of the phylotree XML
@@ -58,7 +59,7 @@ public final class Phylotree {
 		try {
 
 			Document phyloTree = builder.build(phylotreeFile);
-			buildPhylotree(root, phyloTree.getRootElement().getChild("haplogroup"));
+			buildPhylotree(root, phyloTree.getRootElement().getChild("haplogroup"), reference);
 			// parses and sets the polygenetic weights
 			setPolygeneticWeights(phylogeneticWeightsFile);
 
@@ -92,7 +93,7 @@ public final class Phylotree {
 	 *             Thrown if the phylotree contains invalid (unreadable)
 	 *             polymorphisms
 	 */
-	private void buildPhylotree(PhyloTreeNode parentNode, Element currentXMLElement) throws InvalidPolymorphismException {
+	private void buildPhylotree(PhyloTreeNode parentNode, Element currentXMLElement, Reference reference) throws InvalidPolymorphismException {
 		PhyloTreeNode newNode = new PhyloTreeNode(this, parentNode, new Haplogroup(currentXMLElement.getAttribute("name").getValue()));
 		parentNode.addSubHaplogroup(newNode);
 		// Update index
@@ -101,12 +102,12 @@ public final class Phylotree {
 
 		List<Element> polys = currentXMLElement.getChild("details").getChildren("poly");
 		for (Element currentPolyElement : polys) {
-			Polymorphism newExpectedPoly = new Polymorphism(currentPolyElement.getValue());
+			Polymorphism newExpectedPoly = new Polymorphism(reference, currentPolyElement.getValue());
 			newNode.addExpectedPoly(newExpectedPoly);
 		}
 		List<Element> children = currentXMLElement.getChildren("haplogroup");
 		for (Element currentChildElement : children) {
-			buildPhylotree(newNode, currentChildElement);
+			buildPhylotree(newNode, currentChildElement, reference);
 		}
 	}
 
@@ -137,8 +138,8 @@ public final class Phylotree {
 	}
 
 	/**
-	 * Traverses the complete phylo tree beginning at the rCRS. For each child a new
-	 * SerachResult object is created.
+	 * Traverses the complete phylo tree beginning at the rCRS. For each child a
+	 * new SerachResult object is created.
 	 * 
 	 * @param parent
 	 *            The XML parent node
@@ -177,7 +178,8 @@ public final class Phylotree {
 						newResult.addExpectedPolyWeight(currentPoly);
 						newResult.addFoundPolyWeight(currentPoly);
 					}
-					// The sample contains a heteroplasmy for this position for this group
+					// The sample contains a heteroplasmy for this position for
+					// this group
 					else if (newResult.getSample().contains(currentPoly) == 2) {
 						currentPoly.setHeteroplasmy(true);
 						newResult.addExpectedPolyWeight(currentPoly);
@@ -213,8 +215,8 @@ public final class Phylotree {
 	}
 
 	/**
-	 * Traverses the complete phylo tree beginning at the rCRS. For each child a new
-	 * SerachResult object is created.
+	 * Traverses the complete phylo tree beginning at the rCRS. For each child a
+	 * new SerachResult object is created.
 	 * 
 	 * @param parent
 	 *            The XML parent node
@@ -249,7 +251,8 @@ public final class Phylotree {
 	}
 
 	/**
-	 * Parses the pyhlo weights given by a file. Sets weights for all polymorphismn
+	 * Parses the pyhlo weights given by a file. Sets weights for all
+	 * polymorphismn
 	 * 
 	 * @param inStreamPhyloWeightsFile
 	 *            The stream of the file with the phylo genetic weights
@@ -381,7 +384,7 @@ public final class Phylotree {
 		return distance;
 	}
 
-	public int getDistanceBetweenHaplogroups(Haplogroup hgToCheck1, Haplogroup hgToCheck2) throws Exception{
+	public int getDistanceBetweenHaplogroups(Haplogroup hgToCheck1, Haplogroup hgToCheck2) throws Exception {
 
 		int distance = -1;
 		HashSet<Haplogroup> markedHaplogroups = new HashSet<Haplogroup>();
@@ -408,7 +411,8 @@ public final class Phylotree {
 			}
 		}
 
-		// iterate for second haplogroup until common ancestor has been identified
+		// iterate for second haplogroup until common ancestor has been
+		// identified
 		complete = false;
 		Haplogroup result = null;
 		while (!complete) {
@@ -435,7 +439,7 @@ public final class Phylotree {
 		// actual difference between HG1 and HG2
 		return distance - distanceShared;
 	}
-	
+
 	public Haplogroup getCommonAncestor(Haplogroup hgToCheck1, Haplogroup hgToCheck2) {
 
 		HashSet<Haplogroup> markedHaplogroups = new HashSet<Haplogroup>();
@@ -456,7 +460,8 @@ public final class Phylotree {
 			}
 		}
 
-		// iterate for second haplogroup until common ancestor has been identified
+		// iterate for second haplogroup until common ancestor has been
+		// identified
 		complete = false;
 		Haplogroup result = null;
 		while (!complete) {
