@@ -29,12 +29,11 @@ import htsjdk.samtools.SAMSequenceRecord;
 import htsjdk.samtools.reference.ReferenceSequence;
 
 public class FastaImporter {
-	
-	static 
-	{
+
+	static {
 		String jbwaDir = FileUtil.path("jbwa-data");
 		try {
-			
+
 			InputStream stream = FastaImporter.class.getClassLoader().getResourceAsStream("jbwa.zip");
 
 			ZipInputStream zis = new ZipInputStream(stream);
@@ -74,13 +73,17 @@ public class FastaImporter {
 	private String range;
 
 	public ArrayList<String> load(File file, Reference reference) throws FileNotFoundException, IOException {
-		
-		// load required 
-	
+
+		// load required
+
 		ArrayList<String> lines = new ArrayList<String>();
-		
+
+		if (!new File(reference.getRefFilename() + ".bwt").exists()) {
+			throw new FileNotFoundException("WARNING: reference.bwt file not found. Run bwa index command on fasta reference");
+		}
+
 		BwaIndex index = new BwaIndex(new File(reference.getRefFilename()));
-		
+
 		BwaMem mem = new BwaMem(index);
 
 		FastaSequenceFile refFasta = new FastaSequenceFile(file, true);
@@ -150,7 +153,7 @@ public class FastaImporter {
 				SAMRecord samRecord = parser.parseLine(samRecordBulder.toString());
 
 				String variants = readCigar(samRecord, reference.getSequence());
-				
+
 				if (first) {
 					profile.append(sequence.getName() + "\t" + range + "\t" + "?");
 					first = false;
@@ -165,7 +168,7 @@ public class FastaImporter {
 		}
 
 		refFasta.close();
-		
+
 		return lines;
 	}
 
@@ -173,7 +176,8 @@ public class FastaImporter {
 
 		String readString = samRecord.getReadString();
 
-		//System.out.println(readString.length() + " " + samRecord.getCigarString());
+		// System.out.println(readString.length() + " " +
+		// samRecord.getCigarString());
 
 		StringBuilder pos = new StringBuilder();
 		StringBuilder _range = new StringBuilder();
@@ -189,7 +193,7 @@ public class FastaImporter {
 				if (currentPos != 0) {
 					countZero = currentPos;
 					start = currentPos;
-					//System.out.println("START " + start);
+					// System.out.println("START " + start);
 				}
 			}
 
@@ -230,22 +234,23 @@ public class FastaImporter {
 			}
 		}
 		Integer currentReferencePos = samRecord.getAlignmentStart();
-		
-		//System.out.println("CurrentREF POS " + currentReferencePos + " cigar " + samRecord.getCigarString());
+
+		// System.out.println("CurrentREF POS " + currentReferencePos + " cigar
+		// " + samRecord.getCigarString());
 
 		int sequencePos = 0;
 
-		int first=0;
-		//System.out.println("CONTIG " + samRecord.getContig());
-		
+		int first = 0;
+		// System.out.println("CONTIG " + samRecord.getContig());
+
 		for (CigarElement cigarElement : samRecord.getCigar().getCigarElements()) {
 
 			Integer cigarElementLength = cigarElement.getLength();
 
-			if (first==0) {
-				if (cigarElement.getOperator()==CigarOperator.S) {
-					currentReferencePos=1;
-					//System.out.println("HERE Cigar.S");
+			if (first == 0) {
+				if (cigarElement.getOperator() == CigarOperator.S) {
+					currentReferencePos = 1;
+					// System.out.println("HERE Cigar.S");
 				}
 				first++;
 			}
@@ -295,11 +300,13 @@ public class FastaImporter {
 
 			}
 
-			// only M and D operators consume bases 
-			//System.out.println("Check Operator BEFORE " + cigarElement.getOperator() + " " + samRecord.getCigarString());
+			// only M and D operators consume bases
+			// System.out.println("Check Operator BEFORE " +
+			// cigarElement.getOperator() + " " + samRecord.getCigarString());
 
 			if (cigarElement.getOperator().consumesReferenceBases()) {
-				//System.out.println("Check Operator AFTER " + cigarElement.getOperator());
+				// System.out.println("Check Operator AFTER " +
+				// cigarElement.getOperator());
 				currentReferencePos = currentReferencePos + cigarElement.getLength();
 			}
 
@@ -332,7 +339,6 @@ public class FastaImporter {
 		range += lastpos + "-" + stop + ";";
 		return range;
 	}
-
 
 	/*
 	 * public String invertRange(String unavailablePositions, int start, int
