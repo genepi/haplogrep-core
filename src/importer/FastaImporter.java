@@ -32,8 +32,7 @@ public class FastaImporter {
 	
 	static 
 	{
-		String jbwaDir = FileUtil.path("jbwa-" + System.currentTimeMillis() + "");
-
+		String jbwaDir = FileUtil.path("jbwa-data");
 		try {
 			
 			InputStream stream = FastaImporter.class.getClassLoader().getResourceAsStream("jbwa.zip");
