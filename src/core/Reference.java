@@ -2,16 +2,9 @@ package core;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
-import org.apache.commons.lang.SystemUtils;
-
-import genepi.io.FileUtil;
 
 public class Reference {
 
