@@ -1,17 +1,13 @@
 package dataVisualizers;
 
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.Polygon;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -33,15 +29,13 @@ import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
-import org.apache.batik.transcoder.wmf.tosvg.WMFPainter;
-import org.apache.batik.transcoder.wmf.tosvg.WMFRecordStore;
-import org.apache.batik.transcoder.wmf.tosvg.WMFTranscoder;
 import org.apache.fop.svg.AbstractFOPTranscoder;
 import org.apache.fop.svg.PDFTranscoder;
 import org.w3c.dom.DOMImplementation;
 
 import phylotree.Phylotree;
 import core.Polymorphism;
+import core.Reference;
 
 /**
  * Renders an overview tree image given by an XML root node.
@@ -53,38 +47,44 @@ public class PhylotreeRenderer {
 	private Font polymorphismFont = null;
 	private Font sampleIDFont = null;
 	private Font haplogroupFont = null;
-	
+
 	private Phylotree phyloTree = null;
 	private OverviewTree xmlPhyloTree = null;
 	private BufferedImage watermark = null;
 	private final int linePadding = 3;
-	
+
 	private float dpi = 72;
 	private int numEndNode = 0;
-	
+	Reference reference;
+
 	/**
-	 * Creates a new PhyloTreeRenderer instance with a xml document 
-	 * @param xmlPhyloTree representing the tree to render as xml document
+	 * Creates a new PhyloTreeRenderer instance with a xml document
+	 * 
+	 * @param xmlPhyloTree
+	 *            representing the tree to render as xml document
 	 */
-	public PhylotreeRenderer(Phylotree phyloTree,OverviewTree xmlPhyloTree)
-	{
+	public PhylotreeRenderer(Phylotree phyloTree, OverviewTree xmlPhyloTree, Reference reference) {
 		this.xmlPhyloTree = xmlPhyloTree;
 		this.phyloTree = phyloTree;
-		
-		polymorphismFont = new Font("Arial",Font.PLAIN,12);
-		sampleIDFont = new Font("Arial",Font.PLAIN,16);
-		haplogroupFont = new Font("Arial",Font.BOLD,14);
+		this.reference = reference;
+
+		polymorphismFont = new Font("Arial", Font.PLAIN, 12);
+		sampleIDFont = new Font("Arial", Font.PLAIN, 16);
+		haplogroupFont = new Font("Arial", Font.BOLD, 14);
 	}
-	
+
 	/**
-	 * Sets a watermark image 
-	 * @param path The path to the watermark image file
-	 * @throws IOException	Throw if the file is not found etc..
+	 * Sets a watermark image
+	 * 
+	 * @param path
+	 *            The path to the watermark image file
+	 * @throws IOException
+	 *             Throw if the file is not found etc..
 	 */
-	public void setWatermark(URL path) throws IOException{
+	public void setWatermark(URL path) throws IOException {
 		watermark = ImageIO.read(path);
 	}
-	
+
 	/**
 	 * @return the set DPI of the renderer
 	 */
@@ -94,25 +94,30 @@ public class PhylotreeRenderer {
 
 	/**
 	 * Sets the DPI of the image
-	 * @param dpi The new DPI value
+	 * 
+	 * @param dpi
+	 *            The new DPI value
 	 */
 	public void setDpi(float dpi) {
 		this.dpi = dpi;
 	}
 
 	/**
-	 * @param format The format of image as string ('png' or 'svg')
-	 * @param path The path the created image should be saved to 
-	 * @param includeHotspots	True if hotspots should be include, false otherwise
+	 * @param format
+	 *            The format of image as string ('png' or 'svg')
+	 * @param path
+	 *            The path the created image should be saved to
+	 * @param includeHotspots
+	 *            True if hotspots should be include, false otherwise
 	 * @return a file handle of the created file
 	 */
-	public File createImage(String format, String path, boolean includeHotspots, boolean includeAAC){
+	public File createImage(String format, String path, boolean includeHotspots, boolean includeAAC) {
 
 		File newImage = null;
 
 		try {
-			 newImage = renderImage(format,path,includeHotspots, includeAAC);
-			 
+			newImage = renderImage(format, path, includeHotspots, includeAAC);
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -120,12 +125,12 @@ public class PhylotreeRenderer {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return newImage;
 	}
-	
-	//TODO The tree should be as compact as possible
-	//renders the image...not finished...subject to change....
+
+	// TODO The tree should be as compact as possible
+	// renders the image...not finished...subject to change....
 	private File renderImage(String format, String path, boolean includeHotspots, boolean includeAAC) throws Exception {
 
 		// Get a DOMImplementation.
@@ -149,23 +154,25 @@ public class PhylotreeRenderer {
 			imageWidth = 300;
 
 		int treeHeight = r.getMaxHeight() + 50;
-		int imageHeight = treeHeight + g2.getFontMetrics().getHeight() * 7 + 10; //7 lines in Box
+		int imageHeight = treeHeight + g2.getFontMetrics().getHeight() * 7 + 10; // 7
+																					// lines
+																					// in
+																					// Box
 
 		document = domImpl.createDocument(svgNS, "svg", null);
 
-		
 		ctx = SVGGeneratorContext.createDefault(document);
 		ctx.setEmbeddedFontsOn(true);
 		// Create an instance of the SVG Generator.
 		svgGraphics2D = new SVGGraphics2D(document);
 		g2 = svgGraphics2D;// newImage.getGraphics();
 
-		//VectorGraphics freehep = new SVGGraphics2D(new File(path) , new Dimension(imageWidth, imageHeight));
-	
-		//freehep.startExport();
-		//g2 = freehep;
-		
-		
+		// VectorGraphics freehep = new SVGGraphics2D(new File(path) , new
+		// Dimension(imageWidth, imageHeight));
+
+		// freehep.startExport();
+		// g2 = freehep;
+
 		g2.setBackground(Color.white);
 
 		svgGraphics2D.setSVGCanvasSize(new Dimension(imageWidth, imageHeight));
@@ -216,16 +223,16 @@ public class PhylotreeRenderer {
 //			g2.drawImage(watermark, imageWidth - watermark.getWidth(), imageHeight - watermark.getHeight(), null);
 
 		if (format.equals("SVG")) {
-		
-			File resultFile = new File(path);	
+
+			File resultFile = new File(path);
 			FileOutputStream outFile = new FileOutputStream(resultFile);
 			Writer out = new OutputStreamWriter(outFile, "UTF-8");
 			svgGraphics2D.stream(out, true);
 
 			return resultFile;
 		} else if (format.equals("PDF")) {
-			File resultFile = new File(path);	
-			FileOutputStream outFile = new FileOutputStream(resultFile);  
+			File resultFile = new File(path);
+			FileOutputStream outFile = new FileOutputStream(resultFile);
 			PDFTranscoder transcoder = new PDFTranscoder();
 			ByteArrayOutputStream outb = new ByteArrayOutputStream();
 			Writer out = new OutputStreamWriter(outb, "UTF-8");
@@ -235,20 +242,25 @@ public class PhylotreeRenderer {
 			transcoder.addTranscodingHint(AbstractFOPTranscoder.KEY_STROKE_TEXT, new Boolean(false));
 			transcoder.transcode(input, output);
 			return resultFile;
-		}
-		else
-			return rescale( svgGraphics2D, r.getCurrentPos() + r.getMaxWidth() / 2, r.getMaxHeight() + g2.getFontMetrics().getHeight() * 4, path);
+		} else
+			return rescale(svgGraphics2D, r.getCurrentPos() + r.getMaxWidth() / 2, r.getMaxHeight() + g2.getFontMetrics().getHeight() * 4, path);
 	}
-	
+
 	/**
-	 * Rescales a svg graphic to a match a given DPI and rasters the image to png
-	 * @param svgGraphics2D The svg graphics context
-	 * @param widht	width of the image 
-	 * @param height height of the image
-	 * @param pathToSaveFile The path the new iamge should be save to
-	 * @return	A handle to the image file
+	 * Rescales a svg graphic to a match a given DPI and rasters the image to
+	 * png
+	 * 
+	 * @param svgGraphics2D
+	 *            The svg graphics context
+	 * @param widht
+	 *            width of the image
+	 * @param height
+	 *            height of the image
+	 * @param pathToSaveFile
+	 *            The path the new iamge should be save to
+	 * @return A handle to the image file
 	 */
-	private File rescale( SVGGraphics2D svgGraphics2D, int widht, int height, String pathToSaveFile) {
+	private File rescale(SVGGraphics2D svgGraphics2D, int widht, int height, String pathToSaveFile) {
 		boolean useCSS = true; // we want to use CSS style attributes
 		Writer out;
 
@@ -264,15 +276,15 @@ public class PhylotreeRenderer {
 			// Create the transcoder input
 
 			TranscoderInput input = new TranscoderInput(new ByteArrayInputStream(outb.toByteArray()));
-			
-			dpi=72;
-		
+
+			dpi = 72;
+
 			File resultFile = new File(pathToSaveFile);
 			FileOutputStream outFile = new FileOutputStream(resultFile);
-		
+
 			TranscoderOutput output = new TranscoderOutput(outFile);
 			transcoder.addTranscodingHint(SVGAbstractTranscoder.KEY_PIXEL_UNIT_TO_MILLIMETER, (float) (25.4 / 150.f));
-			transcoder.addTranscodingHint(SVGAbstractTranscoder.KEY_WIDTH, (float) ((widht) * dpi / 72.0) );
+			transcoder.addTranscodingHint(SVGAbstractTranscoder.KEY_WIDTH, (float) ((widht) * dpi / 72.0));
 			transcoder.addTranscodingHint(SVGAbstractTranscoder.KEY_HEIGHT, (float) ((height) * dpi / 72.0));
 
 			// Transform the svg document into a PNG image
@@ -289,51 +301,50 @@ public class PhylotreeRenderer {
 		} catch (SVGGraphics2DIOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}  catch (TranscoderException e) {
+		} catch (TranscoderException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		return null;
 	}
-	
+
 	int domi = 0;
-	//traverses tree and renders image using the graphics context..also subject to change
-	private RecData traverseTree(Graphics2D g2d, TreeNode result, int depth,RecData recData, int treeHeight, boolean includeAAC) throws Exception {
-			
+
+	// traverses tree and renders image using the graphics context..also subject
+	// to change
+	private RecData traverseTree(Graphics2D g2d, TreeNode result, int depth, RecData recData, int treeHeight, boolean includeAAC) throws Exception {
+
 		int oldDepth = depth;
-		
+
 		g2d.setFont(polymorphismFont);
-				
+
 		List<TreeNode> list = result.getChildren();
-		
-				
+
 		if (result instanceof OverviewTreeInnerNode) {
 			String s = "";
-			for(int i = 0 ; i < treeHeight;i++){
+			for (int i = 0; i < treeHeight; i++) {
 				s += " ";
 			}
-			
-			
-			int numPolys =  ((OverviewTreeInnerNode) result).getExpectedPoly().size();
-			int maxPolyWidth = getMaxStringWidthPolys(g2d,((OverviewTreeInnerNode) result).getExpectedPoly());
-			if(recData.getMaxWidth() < maxPolyWidth)
+
+			int numPolys = ((OverviewTreeInnerNode) result).getExpectedPoly().size();
+			int maxPolyWidth = getMaxStringWidthPolys(g2d, ((OverviewTreeInnerNode) result).getExpectedPoly());
+			if (recData.getMaxWidth() < maxPolyWidth)
 				recData.setMaxWidth(maxPolyWidth);
-			
-					
-			depth+= (1+numPolys) * (g2d.getFontMetrics().getHeight()+linePadding) + 15;
+
+			depth += (1 + numPolys) * (g2d.getFontMetrics().getHeight() + linePadding) + 15;
 			String haplogroupName = result.getPhyloTreeNode().getHaplogroup().toString();
-			
+
 			g2d.setFont(haplogroupFont);
-			int maxHaplogroupWidth = g2d.getFontMetrics().stringWidth(haplogroupName)+5;
-			
-			if(recData.getMaxWidth() < maxHaplogroupWidth)
+			int maxHaplogroupWidth = g2d.getFontMetrics().stringWidth(haplogroupName) + 5;
+
+			if (recData.getMaxWidth() < maxHaplogroupWidth)
 				recData.setMaxWidth(maxHaplogroupWidth);
 			g2d.setFont(polymorphismFont);
-			
+
 			RecData rNodeData = null;
 			RecData lNodeData = null;
-			
+
 //			ArrayList<OverviewTreeNode> l1 = new ArrayList<OverviewTreeNode>();
 //			ArrayList<OverviewTreeNode> l2 = new ArrayList<OverviewTreeNode>();
 //			for(OverviewTreeNode currentElement : list){
@@ -349,107 +360,109 @@ public class PhylotreeRenderer {
 //			list.addAll(l2);
 //			
 			int maxdepth = 0;
-			
-			for (int i = 0; i < list.size();i++){
-				
-				if( list.size() > 1){
-					recData.setMaxWidth(0);
-					recData = traverseTree(g2d, list.get(i), depth,recData,treeHeight, includeAAC);	}
-				
-				else{
 
-					recData = traverseTree(g2d, list.get(i), depth,recData,treeHeight, includeAAC);	}
-				
-				if(maxdepth < recData.getMaxHeight())
+			for (int i = 0; i < list.size(); i++) {
+
+				if (list.size() > 1) {
+					recData.setMaxWidth(0);
+					recData = traverseTree(g2d, list.get(i), depth, recData, treeHeight, includeAAC);
+				}
+
+				else {
+
+					recData = traverseTree(g2d, list.get(i), depth, recData, treeHeight, includeAAC);
+				}
+
+				if (maxdepth < recData.getMaxHeight())
 					maxdepth = recData.getMaxHeight();
-				
-				if(i == 0)
-				{				
+
+				if (i == 0) {
 					lNodeData = recData;
 				}
-				
-				if(i == list.size()-1)
-				{				
+
+				if (i == list.size() - 1) {
 					rNodeData = recData;
 				}
 			}
-			
-			//Calculate the x position of the supernode (average of child node position)
-			int superNodePosXCentered = lNodeData.getCenter() + (rNodeData.getCenter()-lNodeData.getCenter())/2;
-			
-			//Draw horizontal line
-			g2d.drawLine(lNodeData.getCenter(), depth  ,rNodeData.getCenter(), depth);
-			
-			//Draw vertical line
-			g2d.drawLine(superNodePosXCentered, oldDepth +10, superNodePosXCentered,oldDepth);
-			
-			//Draw all polymorphisms
-			drawPolymorhismn(g2d, (OverviewTreeInnerNode) result,superNodePosXCentered, depth);
+
+			// Calculate the x position of the supernode (average of child node
+			// position)
+			int superNodePosXCentered = lNodeData.getCenter() + (rNodeData.getCenter() - lNodeData.getCenter()) / 2;
+
+			// Draw horizontal line
+			g2d.drawLine(lNodeData.getCenter(), depth, rNodeData.getCenter(), depth);
+
+			// Draw vertical line
+			g2d.drawLine(superNodePosXCentered, oldDepth + 10, superNodePosXCentered, oldDepth);
+
+			// Draw all polymorphisms
+			drawPolymorhismn(g2d, (OverviewTreeInnerNode) result, superNodePosXCentered, depth);
 			depth += 5;
-			
-			//Draw haplogroup
-			drawHaplogroupNode(g2d, superNodePosXCentered,depth, haplogroupName);	
-				
-			//attach the end node with unused polys and sampleId 		
-			//if(result.getChild("DetailedResults") != null)
-			//drawEndNode(g2d, result.getChild("DetailedResults"), superNodePosXCentered,depth);
-			
-			
-			
-			return new RecData(superNodePosXCentered,recData.getCurrentPos(),recData.getMaxWidth(), maxdepth);
+
+			// Draw haplogroup
+			drawHaplogroupNode(g2d, superNodePosXCentered, depth, haplogroupName);
+
+			// attach the end node with unused polys and sampleId
+			// if(result.getChild("DetailedResults") != null)
+			// drawEndNode(g2d, result.getChild("DetailedResults"),
+			// superNodePosXCentered,depth);
+
+			return new RecData(superNodePosXCentered, recData.getCurrentPos(), recData.getMaxWidth(), maxdepth);
 		}
-		
-	
-		//list = result.getChildren("DetailedResults");
-		
-		//if(list.size() == 1){
-			
+
+		// list = result.getChildren("DetailedResults");
+
+		// if(list.size() == 1){
+
 		// s}
-		
-		else{
+
+		else {
 			int widthHgLabel = g2d.getFontMetrics().getHeight();
-			
-			int maxUnused = getMaxStringWidthUnusedPolys(g2d,(OverviewTreeLeafNode) result);
-			
-			if(recData.getMaxWidth() < maxUnused)
+
+			int maxUnused = getMaxStringWidthUnusedPolys(g2d, (OverviewTreeLeafNode) result);
+
+			if (recData.getMaxWidth() < maxUnused)
 				recData.setMaxWidth(maxUnused);
-			
+
 			int delta = (recData.getMaxWidth() /*- (widthHgLabel) */);
-			//Calc labels start and end position an save center pos
+			// Calc labels start and end position an save center pos
 			int left = recData.getCurrentPos();
 			int right = 0;
-			
-			if(delta < widthHgLabel)
+
+			if (delta < widthHgLabel)
 				right = recData.getCurrentPos() + widthHgLabel + 10;
 			else
-				right = recData.getCurrentPos()  + delta + 5;
-			
-			int center = left + (right-left)/2;
-			
-			RecData newData = new RecData(center,right,recData.getMaxWidth(),depth);
-			//Draw vertical line to from up-bottom
+				right = recData.getCurrentPos() + delta + 5;
+
+			int center = left + (right - left) / 2;
+
+			RecData newData = new RecData(center, right, recData.getMaxWidth(), depth);
+			// Draw vertical line to from up-bottom
 			g2d.setColor(Color.black);
-			g2d.drawLine(newData.getCenter(), oldDepth, newData.getCenter(),oldDepth + 10);
-			
-			//g2d.drawLine(newData.getCenter(), oldDepth, newData.getCenter(),depth + g2d.getFontMetrics().getHeight() + 3);
-			
-			//Draw all polymorphisms
-			//drawPolymorhismn(g2d, result, newData.getCenter(), depth);
-					
-			//Draw haplogroup
-			//drawHaplogroupNode(g2d, newData.getCenter(),depth, haplogroupName);		
-				
-			//attach the end node with unused polys and sampleId 		
-			//int y = drawEndNode(g2d, result, newData.getCenter(),depth);
-			int y = drawEndNode(g2d, (OverviewTreeLeafNode) result, newData.getCenter(),depth,treeHeight, includeAAC);
+			g2d.drawLine(newData.getCenter(), oldDepth, newData.getCenter(), oldDepth + 10);
+
+			// g2d.drawLine(newData.getCenter(), oldDepth,
+			// newData.getCenter(),depth + g2d.getFontMetrics().getHeight() +
+			// 3);
+
+			// Draw all polymorphisms
+			// drawPolymorhismn(g2d, result, newData.getCenter(), depth);
+
+			// Draw haplogroup
+			// drawHaplogroupNode(g2d, newData.getCenter(),depth,
+			// haplogroupName);
+
+			// attach the end node with unused polys and sampleId
+			// int y = drawEndNode(g2d, result, newData.getCenter(),depth);
+			int y = drawEndNode(g2d, (OverviewTreeLeafNode) result, newData.getCenter(), depth, treeHeight, includeAAC, reference);
 			newData.setMaxHeight(y);
-			
+
 			return newData;
 		}
-			
-		//throw new Exception("Invalid data format!");
+
+		// throw new Exception("Invalid data format!");
 	}
-	
+
 //	//traverses tree and renderes image using the graphics context..also subject to change
 //		private RecData traverseTree(Graphics2D g2d, OverviewTreeNode result, int depth,RecData recData, int treeHeight) throws Exception {
 //			
@@ -601,8 +614,11 @@ public class PhylotreeRenderer {
 
 	/**
 	 * Returns the max width of a string in a polymorphisms column
-	 * @param g2d The graphics context
-	 * @param polys The list of polymorphisms
+	 * 
+	 * @param g2d
+	 *            The graphics context
+	 * @param polys
+	 *            The list of polymorphisms
 	 * @return The max width of the polymorphims' strings
 	 */
 	private int getMaxStringWidthPolys(Graphics2D g2d, List<Polymorphism> polys) {
@@ -622,7 +638,12 @@ public class PhylotreeRenderer {
 		int width = 0;
 		g2d.setFont(polymorphismFont);
 		for (Polymorphism currentPoly : tree.getRemainingPolys()) {
-			width = g2d.getFontMetrics().stringWidth(currentPoly.toString() + "mis"); //takes the 'mis' prefix into account
+			width = g2d.getFontMetrics().stringWidth(currentPoly.toString() + "mis"); // takes
+																						// the
+																						// 'mis'
+																						// prefix
+																						// into
+																						// account
 			if (max < width) {
 				max = width;
 			}
@@ -630,7 +651,7 @@ public class PhylotreeRenderer {
 		}
 		return max;
 	}
-	
+
 	/**
 	 * @param g2d
 	 * @param child
@@ -639,55 +660,49 @@ public class PhylotreeRenderer {
 	 * @param treeHeight
 	 * @return
 	 */
-	private int drawEndNode(Graphics2D g2d, OverviewTreeLeafNode leafNode, int center, int depth, int treeHeight, boolean includeAAC) {
-
-	
+	private int drawEndNode(Graphics2D g2d, OverviewTreeLeafNode leafNode, int center, int depth, int treeHeight, boolean includeAAC, Reference reference) {
 
 		g2d.setFont(polymorphismFont);
 		depth += 10;
 
 		Collections.sort(leafNode.getRemainingPolys());
-		
-		for (Polymorphism currentPoly :  leafNode.getRemainingPolys()) {
+
+		for (Polymorphism currentPoly : leafNode.getRemainingPolys()) {
 
 			depth += g2d.getFontMetrics().getHeight() + linePadding;
-			
-			if (currentPoly.isMTHotspot()) {
+
+			if (currentPoly.isMTHotspot(reference)) {
 				g2d.setColor(new Color(153, 204, 153));
-			}
-			else if (currentPoly.isBackMutation()) {
+			} else if (currentPoly.isBackMutation()) {
 				g2d.setColor(Color.black);
-			}
-			else if (currentPoly.isHeteroplasmy()) {
+			} else if (currentPoly.isHeteroplasmy()) {
 				g2d.setColor(Color.gray);
 			}
-			
+
 			else if (phyloTree.getMutationRate(currentPoly) == 0) {
 				g2d.setColor(Color.red);
-			}		
-			else {
+			} else {
 				g2d.setColor(new Color(50, 180, 227));
 			}
-			
+
 			if (includeAAC) {
 				try {
-					if (currentPoly.getAnnotation()!=null)
-					drawCenteredNode(g2d, center, depth,
-							Polymorphism.convertToATBackmutation(currentPoly.toStringShortVersion()) + " " + currentPoly.getAnnotation().getAminoAcidChange());
+					if (currentPoly.getAnnotation() != null)
+						drawCenteredNode(g2d, center, depth, Polymorphism.convertToATBackmutation(currentPoly.toStringShortVersion()) + " "
+								+ currentPoly.getAnnotation().getAminoAcidChange());
 					else
-						drawCenteredNode(g2d, center, depth,
-								Polymorphism.convertToATBackmutation(currentPoly.toStringShortVersion()) );
-				
+						drawCenteredNode(g2d, center, depth, Polymorphism.convertToATBackmutation(currentPoly.toStringShortVersion()));
+
 				} catch (Exception e) {
 				}
 			} else
 				drawCenteredNode(g2d, center, depth, Polymorphism.convertToATBackmutation(currentPoly.toStringShortVersion()));
 
-		}	
-		
+		}
+
 		g2d.setColor(Color.black);
 		g2d.drawLine(center, depth, center, treeHeight - 15);
-		
+
 //		for (Polymorphism currentPoly :  leafNode.getMissingPolys()) {
 //			depth += g2d.getFontMetrics().getHeight() + linePadding;
 //			g2d.setColor(new Color(0, 0, 0));
@@ -701,15 +716,13 @@ public class PhylotreeRenderer {
 
 	}
 
-
-
 	private void drawHaplogroupNode(Graphics2D g2d, int x, int y, String haplogroupName) {
 		g2d.setFont(haplogroupFont);
 		g2d.setColor(Color.black);
-		drawCenteredNode(g2d, x, y-2, haplogroupName);
+		drawCenteredNode(g2d, x, y - 2, haplogroupName);
 		int width = Math.max(g2d.getFontMetrics().stringWidth(haplogroupName), 20);
-		
-		g2d.drawRect(x-width/2 - 4, y-g2d.getFontMetrics().getHeight()-7, width+8, g2d.getFontMetrics().getHeight());
+
+		g2d.drawRect(x - width / 2 - 4, y - g2d.getFontMetrics().getHeight() - 7, width + 8, g2d.getFontMetrics().getHeight());
 	}
 
 	private void drawPolymorhismn(Graphics2D g2d, OverviewTreeInnerNode currentNode, int x, int y) {
@@ -717,15 +730,15 @@ public class PhylotreeRenderer {
 		g2d.setFont(polymorphismFont);
 		g2d.setColor(Color.black);
 		y -= 5 + (currentNode.getExpectedPoly().size() * (g2d.getFontMetrics().getHeight() + linePadding));
-		
+
 		Collections.sort(currentNode.getExpectedPoly());
-		
-		for (Polymorphism currentPoly :  currentNode.getExpectedPoly()) {
+
+		for (Polymorphism currentPoly : currentNode.getExpectedPoly()) {
 
 			drawCenteredNode(g2d, x, y, Polymorphism.convertToATBackmutation(currentPoly.toStringShortVersion()));
 			y += g2d.getFontMetrics().getHeight() + linePadding;
 		}
-		
+
 //		for (Polymorphism currentPoly :  currentNode.getMissingPolys()) {
 //
 //			drawCenteredNode(g2d, x, y, currentPoly.toString());
@@ -742,16 +755,16 @@ public class PhylotreeRenderer {
 
 		y -= widthSampleID + 15;
 
-		
-		g2d.drawLine(x, y, x, y+4);
+		g2d.drawLine(x, y, x, y + 4);
 		g2d.translate(x - 6, y + 5);
 		g2d.rotate(Math.toRadians(90));
 		g2d.clearRect(-5, -15, widthSampleID + 5, 19);
-		int[] polylineX = {0-6,6-6,6+ widthSampleID-6,12 +  widthSampleID-6,6+ widthSampleID-6,6-6,0-6};
-		int[] polylineY = {-g2d.getFontMetrics().getHeight()/2+2,6,6,-g2d.getFontMetrics().getHeight()/2+2,-g2d.getFontMetrics().getHeight(),-g2d.getFontMetrics().getHeight(),-g2d.getFontMetrics().getHeight()/2+2};
-		
-		g2d.drawPolyline(polylineX,polylineY, 7);
-		
+		int[] polylineX = { 0 - 6, 6 - 6, 6 + widthSampleID - 6, 12 + widthSampleID - 6, 6 + widthSampleID - 6, 6 - 6, 0 - 6 };
+		int[] polylineY = { -g2d.getFontMetrics().getHeight() / 2 + 2, 6, 6, -g2d.getFontMetrics().getHeight() / 2 + 2, -g2d.getFontMetrics().getHeight(),
+				-g2d.getFontMetrics().getHeight(), -g2d.getFontMetrics().getHeight() / 2 + 2 };
+
+		g2d.drawPolyline(polylineX, polylineY, 7);
+
 		g2d.drawString(sampleIDText, 2, 0);
 		g2d.rotate(Math.toRadians(-90));
 		g2d.translate(-(x - 6), -(y + 5));
@@ -762,8 +775,10 @@ public class PhylotreeRenderer {
 		int stringWidth = g2d.getFontMetrics().stringWidth(text);
 
 		// Clear background
-		// HANSI removed white square 
-		//g2d.clearRect(x - stringWidth / 2, y - (int) (g2d.getFontMetrics().getHeight() * 1.5), stringWidth, g2d.getFontMetrics().getHeight() + 1);
+		// HANSI removed white square
+		// g2d.clearRect(x - stringWidth / 2, y - (int)
+		// (g2d.getFontMetrics().getHeight() * 1.5), stringWidth,
+		// g2d.getFontMetrics().getHeight() + 1);
 		g2d.drawString(text, x - stringWidth / 2, y - g2d.getFontMetrics().getHeight() / 2);
 	}
 }

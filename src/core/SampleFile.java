@@ -10,29 +10,26 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Locale;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
+import dataVisualizers.OverviewTree;
+import dataVisualizers.PhylotreeRenderer;
+import exceptions.parse.HsdFileException;
+import exceptions.parse.samplefile.UniqueSampleIDException;
 import phylotree.Phylotree;
 import qualityAssurance.QualityAssistent;
 import qualityAssurance.RuleSet;
 import qualityAssurance.issues.QualityIssue;
 import search.ranking.RankingMethod;
 import search.ranking.results.RankedResult;
-import dataVisualizers.OverviewTree;
-import dataVisualizers.PhylotreeRenderer;
-import exceptions.parse.HsdFileException;
-import exceptions.parse.samplefile.UniqueSampleIDException;
 
 /**
  * Represents the entire file of test sample. Used as main object in haplogrep.
@@ -49,6 +46,7 @@ public class SampleFile {
 	// QualityAssistent preChecksQualityAssistent = null;
 	Phylotree usedPhyloTreeLastRun = null;
 	RankingMethod usedRankingMethodLastRun = null;
+	Reference reference;
 
 	/**
 	 * Main constructor of SampleFile class. Creates a new test sample instance.
@@ -58,20 +56,22 @@ public class SampleFile {
 	 * @throws HsdFileException
 	 *             thrown if the hsd file cannot be parsed correctly
 	 */
-	public SampleFile(ArrayList<String> sampleLines) throws HsdFileException {
+	public SampleFile(ArrayList<String> sampleLines, Reference reference) throws HsdFileException {
 		int lineIndex = 1;
+		this.reference = reference;
 		for (String currentLine : sampleLines) {
 			TestSample newSample;
 			try {
 				String[] splits = currentLine.split("\t");
-				// if no polymorphisms have been found make a fake line (e.g. for VCF)
+				// if no polymorphisms have been found make a fake line (e.g.
+				// for VCF)
 				if (splits.length == 2) {
 					StringBuilder build = new StringBuilder();
 					build.append(splits[0] + "\t");
 					build.append(splits[1] + "\t?\t.");
 					currentLine = build.toString();
 				}
-				newSample = TestSample.parse(currentLine);
+				newSample = TestSample.parse(currentLine, reference);
 				// log.info("new sample " + newSample);
 			} catch (HsdFileException e) {
 				e.setLineExceptionOccured(lineIndex);
@@ -102,7 +102,7 @@ public class SampleFile {
 	 * @throws IOException
 	 */
 	// TODO:Try to get rid of the ugly boolean testCase parameter
-	public SampleFile(String pathToSampleFile, boolean testCase) throws HsdFileException, IOException {
+	public SampleFile(String pathToSampleFile, Reference reference, boolean testCase) throws HsdFileException, IOException {
 		BufferedReader sampleFileStream;
 		if (testCase) { // for test cases
 			String userDir = new java.io.File("").getAbsolutePath();
@@ -116,12 +116,12 @@ public class SampleFile {
 		String currentLine = sampleFileStream.readLine();
 
 		if (!currentLine.startsWith("SampleId\tRange")) {
-			TestSample newSample = TestSample.parse(currentLine);
+			TestSample newSample = TestSample.parse(currentLine, reference);
 			testSamples.put(newSample.getSampleID(), newSample);
 		}
 
 		while ((currentLine = sampleFileStream.readLine()) != null) {
-			TestSample newSample = TestSample.parse(currentLine);
+			TestSample newSample = TestSample.parse(currentLine, reference);
 			testSamples.put(newSample.getSampleID(), newSample);
 
 		}
@@ -175,8 +175,8 @@ public class SampleFile {
 	}
 
 	/**
-	 * Converts all data of test samples in a xml file. Used to display grid data on
-	 * the web gui.
+	 * Converts all data of test samples in a xml file. Used to display grid
+	 * data on the web gui.
 	 * 
 	 * @return The root element of the xml file.
 	 */
@@ -231,8 +231,8 @@ public class SampleFile {
 			sampleRowElement.addContent(newElement);
 
 			/*
-			 * //sample status (detected haplogroup equal, similar or different to expected
-			 * haplogroup? ) newElement = new Element("status");
+			 * //sample status (detected haplogroup equal, similar or different
+			 * to expected haplogroup? ) newElement = new Element("status");
 			 * newElement.setText(String.valueOf("Column not in use"));
 			 * sampleRowElement.addContent(newElement);
 			 */
@@ -297,7 +297,8 @@ public class SampleFile {
 		for (TestSample currenTestSample : testSamples.values()) {
 			currenTestSample.updateSearchResults(phylotree, rankingMethod);
 		}
-		// log.debug("time executed: " + (System.currentTimeMillis() - start) + " with "
+		// log.debug("time executed: " + (System.currentTimeMillis() - start) +
+		// " with "
 		// + rankingMethod.toString());
 
 	}
@@ -364,8 +365,8 @@ public class SampleFile {
 	}
 
 	/**
-	 * Creates a new overview image of all test samples. Uses detected haplogroups
-	 * and polymorphisms to create this overview.
+	 * Creates a new overview image of all test samples. Uses detected
+	 * haplogroups and polymorphisms to create this overview.
 	 * 
 	 * @param sessionID
 	 *            The current session ID
@@ -374,7 +375,8 @@ public class SampleFile {
 	 * @param resolution
 	 *            The image resolution in DPI
 	 * @param includeHotspots
-	 *            True if mitochondrial hotspots should be included, false otherwise
+	 *            True if mitochondrial hotspots should be included, false
+	 *            otherwise
 	 * @param includeAAC
 	 *            True if polymorphisms in remaining have non-synonymous SNPS
 	 * @return The generated overview file handle
@@ -387,7 +389,8 @@ public class SampleFile {
 
 		File image = null;
 		PhylotreeRenderer renderer = new PhylotreeRenderer(testSamples.values().iterator().next()
-				.getResult(testSamples.values().iterator().next().getExpectedHaplogroup()).getSearchResult().getAttachedPhyloTreeNode().getTree(), resultTree);
+				.getResult(testSamples.values().iterator().next().getExpectedHaplogroup()).getSearchResult().getAttachedPhyloTreeNode().getTree(), resultTree,
+				reference);
 
 		URL url = this.getClass().getClassLoader().getResource("haplogrepGray.png");
 
@@ -455,7 +458,7 @@ public class SampleFile {
 
 		}
 
-		newOverviewTree.generateLeafNodes(includeHotspots);
+		newOverviewTree.generateLeafNodes(includeHotspots, reference);
 
 		return newOverviewTree;
 	}
@@ -623,7 +626,8 @@ public class SampleFile {
 			}
 		}
 
-		// log.debug("TO HSD FILE TIME: " + (System.currentTimeMillis() - start));
+		// log.debug("TO HSD FILE TIME: " + (System.currentTimeMillis() -
+		// start));
 		return result.toString();
 	}
 }

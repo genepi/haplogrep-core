@@ -12,6 +12,7 @@ import java.util.StringTokenizer;
 
 import core.AnnotationAAC;
 import core.Polymorphism;
+import core.Reference;
 import exceptions.parse.sample.InvalidPolymorphismException;
 
 public class Annotation {
@@ -33,11 +34,11 @@ public class Annotation {
 		return instance;
 	}
 
-	private void loadLookup() {
+	private void loadLookup(Reference reference) {
 
 		acidLookup = new HashMap<Polymorphism, AnnotationAAC>();
 		InputStream annotationStream = this.getClass().getClassLoader().getResourceAsStream(annotationPath);
-		
+
 		BufferedReader annotationFileReader;
 
 		try {
@@ -53,7 +54,7 @@ public class Annotation {
 				short cod = Short.parseShort(mainTokenizer.nextToken());
 				String aachange = mainTokenizer.nextToken();
 				AnnotationAAC aac = new AnnotationAAC(pos, gen, cod, aachange);
-				acidLookup.put(new Polymorphism(pos), aac);
+				acidLookup.put(new Polymorphism(reference, pos), aac);
 				line = annotationFileReader.readLine();
 			}
 
@@ -66,12 +67,12 @@ public class Annotation {
 		}
 	}
 
-	public HashMap<Polymorphism, AnnotationAAC> getAnnotation() {
+	public HashMap<Polymorphism, AnnotationAAC> getAnnotation(Reference reference) {
 
 		if (acidLookup == null) {
-			loadLookup();
+			loadLookup(reference);
 		}
-		
+
 		return acidLookup;
 	}
 

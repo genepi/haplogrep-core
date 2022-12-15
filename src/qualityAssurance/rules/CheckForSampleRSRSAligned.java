@@ -1,6 +1,5 @@
 package qualityAssurance.rules;
 
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,39 +19,40 @@ import qualityAssurance.QualityAssistent;
 import qualityAssurance.issues.IssueType;
 import qualityAssurance.issues.QualityFatal;
 import core.Polymorphism;
+import core.Reference;
 import core.TestSample;
 import exceptions.parse.sample.InvalidPolymorphismException;
 
 public class CheckForSampleRSRSAligned extends HaplogrepRule {
 	static final Log log = LogFactory.getLog(CheckForSampleRSRSAligned.class);
 	static ArrayList<Polymorphism> uniqueRSRSPolys = null;
-	
-	public CheckForSampleRSRSAligned(int priority){
+	static Reference reference;
+
+	public CheckForSampleRSRSAligned(int priority) {
 		super(priority);
-		if(uniqueRSRSPolys == null){
+		if (uniqueRSRSPolys == null) {
 			uniqueRSRSPolys = new ArrayList<Polymorphism>();
-			
+
 			loadUniqueRSRSPositions();
 		}
 	}
-	
+
 	private void loadUniqueRSRSPositions() {
 		try {
 			InputStream phyloFile = this.getClass().getClassLoader().getResourceAsStream("RSRSPolymorphisms");
-			
-			if(phyloFile == null)
-				phyloFile = new  FileInputStream(new File("testDataFiles/RSRSPolymorphisms"));
-			
+
+			if (phyloFile == null)
+				phyloFile = new FileInputStream(new File("testDataFiles/RSRSPolymorphisms"));
+
 			BufferedReader reader = new BufferedReader(new InputStreamReader(phyloFile));
 
 			String currentLine = reader.readLine();
 
-			while(currentLine != null){
-			Polymorphism newUniquePoly = new Polymorphism(currentLine.trim());
-			uniqueRSRSPolys.add(newUniquePoly);
-			currentLine = reader.readLine();
+			while (currentLine != null) {
+				Polymorphism newUniquePoly = new Polymorphism(reference, currentLine.trim());
+				uniqueRSRSPolys.add(newUniquePoly);
+				currentLine = reader.readLine();
 			}
-			
 
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -66,38 +66,37 @@ public class CheckForSampleRSRSAligned extends HaplogrepRule {
 		}
 
 	}
+
 	@Override
 	public void evaluate(QualityAssistent qualityAssistent, TestSample currentSample) {
 
+		reference = currentSample.getReference();
 		int numRSRSPolysFound = 0;
-	
-			
-		for(Polymorphism currentUniqueRSRSPoly : uniqueRSRSPolys)	
-			if(currentSample.getSample().contains(currentUniqueRSRSPoly)>0) 
+
+		for (Polymorphism currentUniqueRSRSPoly : uniqueRSRSPolys)
+			if (currentSample.getSample().contains(currentUniqueRSRSPoly) > 0)
 				numRSRSPolysFound++;
-		
-		
-			if(numRSRSPolysFound > 1){
-				if(numRSRSPolysFound == 5){
-					for(Polymorphism currentUniqueRSRSPoly : uniqueRSRSPolys)	
-						if(currentSample.getSample().contains(currentUniqueRSRSPoly)>0){
-							log.debug(currentUniqueRSRSPoly);
-						}
-								
-				}
-				
-				qualityAssistent.addNewIssue(new QualityFatal(qualityAssistent, currentSample, numRSRSPolysFound + " common RSRS polymorphims found! " +
-						"The sample seems to be aligned to RSRS. Haplogrep only supports rCRS aligned samples.", IssueType.QUAL));
-				
+
+		if (numRSRSPolysFound > 1) {
+			if (numRSRSPolysFound == 5) {
+				for (Polymorphism currentUniqueRSRSPoly : uniqueRSRSPolys)
+					if (currentSample.getSample().contains(currentUniqueRSRSPoly) > 0) {
+						log.debug(currentUniqueRSRSPoly);
+					}
+
 			}
-			else
-				currentSample.setReachedQualityLevel(this.getPriority()+1);		
-		}
+
+			qualityAssistent.addNewIssue(new QualityFatal(qualityAssistent, currentSample, numRSRSPolysFound + " common RSRS polymorphims found! "
+					+ "The sample seems to be aligned to RSRS. Haplogrep only supports rCRS aligned samples.", IssueType.QUAL));
+
+		} else
+			currentSample.setReachedQualityLevel(this.getPriority() + 1);
+	}
 
 	@Override
 	public void suppressIssues(QualityAssistent qualityAssistent, TestSample currentSample) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

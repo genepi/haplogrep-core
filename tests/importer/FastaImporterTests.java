@@ -4,30 +4,22 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
-import core.SampleFile;
-import core.TestSample;
-import exceptions.parse.HsdFileException;
-import importer.FastaImporter;
-import importer.FastaImporter.References;
-import phylotree.Phylotree;
-import phylotree.PhylotreeManager;
-import search.ranking.KulczynskiRanking;
-import util.ExportUtils;
+import core.Reference;
 
 public class FastaImporterTests {
 
 	@Test
 	public void testRcrs() throws Exception {
 		String file = "test-data/fasta/rCRS.fasta";
+
+		Reference ref = new Reference("test-data/reference/rcrs/rCRS.fasta");
 		StringBuilder actual = new StringBuilder();
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), References.RCRS);
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
 
 		String[] splits = samples.get(0).split("\t");
 		for (int i = 3; i < splits.length; i++) {
@@ -42,7 +34,8 @@ public class FastaImporterTests {
 		String file = "test-data/fasta/rsrs.fasta";
 		StringBuilder actual = new StringBuilder();
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), References.RSRS);
+		Reference ref = new Reference("test-data/reference/rsrs/rsrs.fasta");
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
 
 		String[] splits = samples.get(0).split("\t");
 		for (int i = 3; i < splits.length; i++) {
@@ -58,7 +51,8 @@ public class FastaImporterTests {
 		String file = "test-data/fasta/rCRS.fasta";
 		StringBuilder actual = new StringBuilder();
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), References.RSRS);
+		Reference ref = new Reference("test-data/reference/rsrs/rsrs.fasta");
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
 
 		String[] splits = samples.get(0).split("\t");
 
@@ -76,7 +70,8 @@ public class FastaImporterTests {
 		String file = "test-data/fasta/AY195749.fasta";
 		StringBuilder actual = new StringBuilder();
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), References.RSRS);
+		Reference ref = new Reference("test-data/reference/rsrs/rsrs.fasta");
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
 
 		String[] splits = samples.get(0).split("\t");
 
@@ -96,7 +91,8 @@ public class FastaImporterTests {
 	public void testParseSampleWithInsertionsDeletions() throws Exception {
 		String file = "test-data/fasta/InsertionTest.fasta";
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), References.RCRS);
+		Reference ref = new Reference("test-data/reference/rcrs/rCRS.fasta");
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
 
 		String[] splits = samples.get(0).split("\t");
 		HashSet<String> set = new HashSet<String>();
@@ -116,7 +112,8 @@ public class FastaImporterTests {
 	public void testParseSampleWithInsertionsDeletionsShuffle() throws Exception {
 		String file = "test-data/fasta/InsertionTest2.fasta";
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), References.RCRS);
+		Reference ref = new Reference("test-data/reference/rcrs/rCRS.fasta");
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
 
 		String[] splits = samples.get(0).split("\t");
 		HashSet<String> set = new HashSet<String>();
@@ -137,7 +134,8 @@ public class FastaImporterTests {
 	public void testParseSampleWithInsertionsDeletionsShuffleRandom() throws Exception {
 		String file = "test-data/fasta/InsertionTest3.fasta";
 		FastaImporter impFasta = new FastaImporter();
-		ArrayList<String> samples = impFasta.load(new File(file), References.RCRS);
+		Reference ref = new Reference("test-data/reference/rcrs/rCRS.fasta");
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
 
 		String[] splits = samples.get(0).split("\t");
 		HashSet<String> set = new HashSet<String>();

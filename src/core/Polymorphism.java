@@ -26,13 +26,12 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	private String insertedPolys = "";
 	boolean isHeteroplasmy = false;
 	int isReliable = 0;
-
+	public Reference reference;
 	private int hashCode;
 
 	/**
 	 * rCRS reference sequence
 	 */
-	public static String rCRS = "gatcacaggtctatcaccctattaaccactcacgggagctctccatgcatttggtattttcgtctggggggtatgcacgcgatagcattgcgagacgctggagccggagcaccctatgtcgcagtatctgtctttgattcctgcctcatcctattatttatcgcacctacgttcaatattacaggcgaacatacttactaaagtgtgttaattaattaatgcttgtaggacataataataacaattgaatgtctgcacagccactttccacacagacatcataacaaaaaatttccaccaaaccccccctcccccgcttctggccacagcacttaaacacatctctgccaaaccccaaaaacaaagaaccctaacaccagcctaaccagatttcaaattttatcttttggcggtatgcacttttaacagtcaccccccaactaacacattattttcccctcccactcccatactactaatctcatcaatacaacccccgcccatcctacccagcacacacacaccgctgctaaccccataccccgaaccaaccaaaccccaaagacaccccccacagtttatgtagcttacctcctcaaagcaatacactgaaaatgtttagacgggctcacatcaccccataaacaaataggtttggtcctagcctttctattagctcttagtaagattacacatgcaagcatccccgttccagtgagttcaccctctaaatcaccacgatcaaaaggaacaagcatcaagcacgcagcaatgcagctcaaaacgcttagcctagccacacccccacgggaaacagcagtgattaacctttagcaataaacgaaagtttaactaagctatactaaccccagggttggtcaatttcgtgccagccaccgcggtcacacgattaacccaagtcaatagaagccggcgtaaagagtgttttagatcaccccctccccaataaagctaaaactcacctgagttgtaaaaaactccagttgacacaaaatagactacgaaagtggctttaacatatctgaacacacaatagctaagacccaaactgggattagataccccactatgcttagccctaaacctcaacagttaaatcaacaaaactgctcgccagaacactacgagccacagcttaaaactcaaaggacctggcggtgcttcatatccctctagaggagcctgttctgtaatcgataaaccccgatcaacctcaccacctcttgctcagcctatataccgccatcttcagcaaaccctgatgaaggctacaaagtaagcgcaagtacccacgtaaagacgttaggtcaaggtgtagcccatgaggtggcaagaaatgggctacattttctaccccagaaaactacgatagcccttatgaaacttaagggtcgaaggtggatttagcagtaaactaagagtagagtgcttagttgaacagggccctgaagcgcgtacacaccgcccgtcaccctcctcaagtatacttcaaaggacatttaactaaaacccctacgcatttatatagaggagacaagtcgtaacatggtaagtgtactggaaagtgcacttggacgaaccagagtgtagcttaacacaaagcacccaacttacacttaggagatttcaacttaacttgaccgctctgagctaaacctagccccaaacccactccaccttactaccagacaaccttagccaaaccatttacccaaataaagtataggcgatagaaattgaaacctggcgcaatagatatagtaccgcaagggaaagatgaaaaattataaccaagcataatatagcaaggactaacccctataccttctgcataatgaattaactagaaataactttgcaaggagagccaaagctaagacccccgaaaccagacgagctacctaagaacagctaaaagagcacacccgtctatgtagcaaaatagtgggaagatttataggtagaggcgacaaacctaccgagcctggtgatagctggttgtccaagatagaatcttagttcaactttaaatttgcccacagaaccctctaaatccccttgtaaatttaactgttagtccaaagaggaacagctctttggacactaggaaaaaaccttgtagagagagtaaaaaatttaacacccatagtaggcctaaaagcagccaccaattaagaaagcgttcaagctcaacacccactacctaaaaaatcccaaacatataactgaactcctcacacccaattggaccaatctatcaccctatagaagaactaatgttagtataagtaacatgaaaacattctcctccgcataagcctgcgtcagattaaaacactgaactgacaattaacagcccaatatctacaatcaaccaacaagtcattattaccctcactgtcaacccaacacaggcatgctcataaggaaaggttaaaaaaagtaaaaggaactcggcaaatcttaccccgcctgtttaccaaaaacatcacctctagcatcaccagtattagaggcaccgcctgcccagtgacacatgtttaacggccgcggtaccctaaccgtgcaaaggtagcataatcacttgttccttaaatagggacctgtatgaatggctccacgagggttcagctgtctcttacttttaaccagtgaaattgacctgcccgtgaagaggcgggcataacacagcaagacgagaagaccctatggagctttaatttattaatgcaaacagtacctaacaaacccacaggtcctaaactaccaaacctgcattaaaaatttcggttggggcgacctcggagcagaacccaacctccgagcagtacatgctaagacttcaccagtcaaagcgaactactatactcaattgatccaataacttgaccaacggaacaagttaccctagggataacagcgcaatcctattctagagtccatatcaacaatagggtttacgacctcgatgttggatcaggacatcccgatggtgcagccgctattaaaggttcgtttgttcaacgattaaagtcctacgtgatctgagttcagaccggagtaatccaggtcggtttctatctacnttcaaattcctccctgtacgaaaggacaagagaaataaggcctacttcacaaagcgccttcccccgtaaatgatatcatctcaacttagtattatacccacacccacccaagaacagggtttgttaagatggcagagcccggtaatcgcataaaacttaaaactttacagtcagaggttcaattcctcttcttaacaacatacccatggccaacctcctactcctcattgtacccattctaatcgcaatggcattcctaatgcttaccgaacgaaaaattctaggctatatacaactacgcaaaggccccaacgttgtaggcccctacgggctactacaacccttcgctgacgccataaaactcttcaccaaagagcccctaaaacccgccacatctaccatcaccctctacatcaccgccccgaccttagctctcaccatcgctcttctactatgaacccccctccccatacccaaccccctggtcaacctcaacctaggcctcctatttattctagccacctctagcctagccgtttactcaatcctctgatcagggtgagcatcaaactcaaactacgccctgatcggcgcactgcgagcagtagcccaaacaatctcatatgaagtcaccctagccatcattctactatcaacattactaataagtggctcctttaacctctccacccttatcacaacacaagaacacctctgattactcctgccatcatgacccttggccataatatgatttatctccacactagcagagaccaaccgaacccccttcgaccttgccgaaggggagtccgaactagtctcaggcttcaacatcgaatacgccgcaggccccttcgccctattcttcatagccgaatacacaaacattattataataaacaccctcaccactacaatcttcctaggaacaacatatgacgcactctcccctgaactctacacaacatattttgtcaccaagaccctacttctaacctccctgttcttatgaattcgaacagcatacccccgattccgctacgaccaactcatacacctcctatgaaaaaacttcctaccactcaccctagcattacttatatgatatgtctccatacccattacaatctccagcattccccctcaaacctaagaaatatgtctgataaaagagttactttgatagagtaaataataggagcttaaacccccttatttctaggactatgagaatcgaacccatccctgagaatccaaaattctccgtgccacctatcacaccccatcctaaagtaaggtcagctaaataagctatcgggcccataccccgaaaatgttggttatacccttcccgtactaattaatcccctggcccaacccgtcatctactctaccatctttgcaggcacactcatcacagcgctaagctcgcactgattttttacctgagtaggcctagaaataaacatgctagcttttattccagttctaaccaaaaaaataaaccctcgttccacagaagctgccatcaagtatttcctcacgcaagcaaccgcatccataatccttctaatagctatcctcttcaacaatatactctccggacaatgaaccataaccaatactaccaatcaatactcatcattaataatcataatagctatagcaataaaactaggaatagccccctttcacttctgagtcccagaggttacccaaggcacccctctgacatccggcctgcttcttctcacatgacaaaaactagcccccatctcaatcatataccaaatctctccctcactaaacgtaagccttctcctcactctctcaatcttatccatcatagcaggcagttgaggtggattaaaccaaacccagctacgcaaaatcttagcatactcctcaattacccacataggatgaataatagcagttctaccgtacaaccctaacataaccattcttaatttaactatttatattatcctaactactaccgcattcctactactcaacttaaactccagcaccacgaccctactactatctcgcacctgaaacaagctaacatgactaacacccttaattccatccaccctcctctccctaggaggcctgcccccgctaaccggctttttgcccaaatgggccattatcgaagaattcacaaaaaacaatagcctcatcatccccaccatcatagccaccatcaccctccttaacctctacttctacctacgcctaatctactccacctcaatcacactactccccatatctaacaacgtaaaaataaaatgacagtttgaacatacaaaacccaccccattcctccccacactcatcgcccttaccacgctactcctacctatctccccttttatactaataatcttatagaaatttaggttaaatacagaccaagagccttcaaagccctcagtaagttgcaatacttaatttctgtaacagctaaggactgcaaaaccccactctgcatcaactgaacgcaaatcagccactttaattaagctaagcccttactagaccaatgggacttaaacccacaaacacttagttaacagctaagcaccctaatcaactggcttcaatctacttctcccgccgccgggaaaaaaggcgggagaagccccggcaggtttgaagctgcttcttcgaatttgcaattcaatatgaaaatcacctcggagctggtaaaaagaggcctaacccctgtctttagatttacagtccaatgcttcactcagccattttacctcacccccactgatgttcgccgaccgttgactattctctacaaaccacaaagacattggaacactatacctattattcggcgcatgagctggagtcctaggcacagctctaagcctccttattcgagccgagctgggccagccaggcaaccttctaggtaacgaccacatctacaacgttatcgtcacagcccatgcatttgtaataatcttcttcatagtaatacccatcataatcggaggctttggcaactgactagttcccctaataatcggtgcccccgatatggcgtttccccgcataaacaacataagcttctgactcttacctccctctctcctactcctgctcgcatctgctatagtggaggccggagcaggaacaggttgaacagtctaccctcccttagcagggaactactcccaccctggagcctccgtagacctaaccatcttctccttacacctagcaggtgtctcctctatcttaggggccatcaatttcatcacaacaattatcaatataaaaccccctgccataacccaataccaaacgcccctcttcgtctgatccgtcctaatcacagcagtcctacttctcctatctctcccagtcctagctgctggcatcactatactactaacagaccgcaacctcaacaccaccttcttcgaccccgccggaggaggagaccccattctataccaacacctattctgatttttcggtcaccctgaagtttatattcttatcctaccaggcttcggaataatctcccatattgtaacttactactccggaaaaaaagaaccatttggatacataggtatggtctgagctatgatatcaattggcttcctagggtttatcgtgtgagcacaccatatatttacagtaggaatagacgtagacacacgagcatatttcacctccgctaccataatcatcgctatccccaccggcgtcaaagtatttagctgactcgccacactccacggaagcaatatgaaatgatctgctgcagtgctctgagccctaggattcatctttcttttcaccgtaggtggcctgactggcattgtattagcaaactcatcactagacatcgtactacacgacacgtactacgttgtagcccacttccactatgtcctatcaataggagctgtatttgccatcataggaggcttcattcactgatttcccctattctcaggctacaccctagaccaaacctacgccaaaatccatttcactatcatattcatcggcgtaaatctaactttcttcccacaacactttctcggcctatccggaatgccccgacgttactcggactaccccgatgcatacaccacatgaaacatcctatcatctgtaggctcattcatttctctaacagcagtaatattaataattttcatgatttgagaagccttcgcttcgaagcgaaaagtcctaatagtagaagaaccctccataaacctggagtgactatatggatgccccccaccctaccacacattcgaagaacccgtatacataaaatctagacaaaaaaggaaggaatcgaaccccccaaagctggtttcaagccaaccccatggcctccatgactttttcaaaaaggtattagaaaaaccatttcataactttgtcaaagttaaattataggctaaatcctatatatcttaatggcacatgcagcgcaagtaggtctacaagacgctacttcccctatcatagaagagcttatcacctttcatgatcacgccctcataatcattttccttatctgcttcctagtcctgtatgcccttttcctaacactcacaacaaaactaactaatactaacatctcagacgctcaggaaatagaaaccgtctgaactatcctgcccgccatcatcctagtcctcatcgccctcccatccctacgcatcctttacataacagacgaggtcaacgatccctcccttaccatcaaatcaattggccaccaatggtactgaacctacgagtacaccgactacggcggactaatcttcaactcctacatacttcccccattattcctagaaccaggcgacctgcgactccttgacgttgacaatcgagtagtactcccgattgaagcccccattcgtataataattacatcacaagacgtcttgcactcatgagctgtccccacattaggcttaaaaacagatgcaattcccggacgtctaaaccaaaccactttcaccgctacacgaccgggggtatactacggtcaatgctctgaaatctgtggagcaaaccacagtttcatgcccatcgtcctagaattaattcccctaaaaatctttgaaatagggcccgtatttaccctatagcaccccctctaccccctctagagcccactgtaaagctaacttagcattaaccttttaagttaaagattaagagaaccaacacctctttacagtgaaatgccccaactaaatactaccgtatggcccaccataattacccccatactccttacactattcctcatcacccaactaaaaatattaaacacaaactaccacctacctccctcaccaaagcccataaaaataaaaaattataacaaaccctgagaaccaaaatgaacgaaaatctgttcgcttcattcattgcccccacaatcctaggcctacccgccgcagtactgatcattctatttccccctctattgatccccacctccaaatatctcatcaacaaccgactaatcaccacccaacaatgactaatcaaactaacctcaaaacaaatgataaccatacacaacactaaaggacgaacctgatctcttatactagtatccttaatcatttttattgccacaactaacctcctcggactcctgcctcactcatttacaccaaccacccaactatctataaacctagccatggccatccccttatgagcgggcacagtgattataggctttcgctctaagattaaaaatgccctagcccacttcttaccacaaggcacacctacaccccttatccccatactagttattatcgaaaccatcagcctactcattcaaccaatagccctggccgtacgcctaaccgctaacattactgcaggccacctactcatgcacctaattggaagcgccaccctagcaatatcaaccattaaccttccctctacacttatcatcttcacaattctaattctactgactatcctagaaatcgctgtcgccttaatccaagcctacgttttcacacttctagtaagcctctacctgcacgacaacacataatgacccaccaatcacatgcctatcatatagtaaaacccagcccatgacccctaacaggggccctctcagccctcctaatgacctccggcctagccatgtgatttcacttccactccataacgctcctcatactaggcctactaaccaacacactaaccatataccaatgatggcgcgatgtaacacgagaaagcacataccaaggccaccacacaccacctgtccaaaaaggccttcgatacgggataatcctatttattacctcagaagtttttttcttcgcaggatttttctgagccttttaccactccagcctagcccctaccccccaattaggagggcactggcccccaacaggcatcaccccgctaaatcccctagaagtcccactcctaaacacatccgtattactcgcatcaggagtatcaatcacctgagctcaccatagtctaatagaaaacaaccgaaaccaaataattcaagcactgcttattacaattttactgggtctctattttaccctcctacaagcctcagagtacttcgagtctcccttcaccatttccgacggcatctacggctcaacattttttgtagccacaggcttccacggacttcacgtcattattggctcaactttcctcactatctgcttcatccgccaactaatatttcactttacatccaaacatcactttggcttcgaagccgccgcctgatactggcattttgtagatgtggtttgactatttctgtatgtctccatctattgatgagggtcttactcttttagtataaatagtaccgttaacttccaattaactagttttgacaacattcaaaaaagagtaataaacttcgccttaattttaataatcaacaccctcctagccttactactaataattattacattttgactaccacaactcaacggctacatagaaaaatccaccccttacgagtgcggcttcgaccctatatcccccgcccgcgtccctttctccataaaattcttcttagtagctattaccttcttattatttgatctagaaattgccctccttttacccctaccatgagccctacaaacaactaacctgccactaatagttatgtcatccctcttattaatcatcatcctagccctaagtctggcctatgagtgactacaaaaaggattagactgaaccgaattggtatatagtttaaacaaaacgaatgatttcgactcattaaattatgataatcatatttaccaaatgcccctcatttacataaatattatactagcatttaccatctcacttctaggaatactagtatatcgctcacacctcatatcctccctactatgcctagaaggaataatactatcgctgttcattatagctactctcataaccctcaacacccactccctcttagccaatattgtgcctattgccatactagtctttgccgcctgcgaagcagcggtgggcctagccctactagtctcaatctccaacacatatggcctagactacgtacataacctaaacctactccaatgctaaaactaatcgtcccaacaattatattactaccactgacatgactttccaaaaaacacataatttgaatcaacacaaccacccacagcctaattattagcatcatccctctactattttttaaccaaatcaacaacaacctatttagctgttccccaaccttttcctccgaccccctaacaacccccctcctaatactaactacctgactcctacccctcacaatcatggcaagccaacgccacttatccagtgaaccactatcacgaaaaaaactctacctctctatactaatctccctacaaatctccttaattataacattcacagccacagaactaatcatattttatatcttcttcgaaaccacacttatccccaccttggctatcatcacccgatgaggcaaccagccagaacgcctgaacgcaggcacatacttcctattctacaccctagtaggctcccttcccctactcatcgcactaatttacactcacaacaccctaggctcactaaacattctactactcactctcactgcccaagaactatcaaactcctgagccaacaacttaatatgactagcttacacaatagcttttatagtaaagatacctctttacggactccacttatgactccctaaagcccatgtcgaagcccccatcgctgggtcaatagtacttgccgcagtactcttaaaactaggcggctatggtataatacgcctcacactcattctcaaccccctgacaaaacacatagcctaccccttccttgtactatccctatgaggcataattataacaagctccatctgcctacgacaaacagacctaaaatcgctcattgcatactcttcaatcagccacatagccctcgtagtaacagccattctcatccaaaccccctgaagcttcaccggcgcagtcattctcataatcgcccacgggcttacatcctcattactattctgcctagcaaactcaaactacgaacgcactcacagtcgcatcataatcctctctcaaggacttcaaactctactcccactaatagctttttgatgacttctagcaagcctcgctaacctcgccttaccccccactattaacctactgggagaactctctgtgctagtaaccacgttctcctgatcaaatatcactctcctacttacaggactcaacatactagtcacagccctatactccctctacatatttaccacaacacaatggggctcactcacccaccacattaacaacataaaaccctcattcacacgagaaaacaccctcatgttcatacacctatcccccattctcctcctatccctcaaccccgacatcattaccgggttttcctcttgtaaatatagtttaaccaaaacatcagattgtgaatctgacaacagaggcttacgaccccttatttaccgagaaagctcacaagaactgctaactcatgcccccatgtctaacaacatggctttctcaacttttaaaggataacagctatccattggtcttaggccccaaaaattttggtgcaactccaaataaaagtaataaccatgcacactactataaccaccctaaccctgacttccctaattccccccatccttaccaccctcgttaaccctaacaaaaaaaactcatacccccattatgtaaaatccattgtcgcatccacctttattatcagtctcttccccacaacaatattcatgtgcctagaccaagaagttattatctcgaactgacactgagccacaacccaaacaacccagctctccctaagcttcaaactagactacttctccataatattcatccctgtagcattgttcgttacatggtccatcatagaattctcactgtgatatataaactcagacccaaacattaatcagttcttcaaatatctactcatcttcctaattaccatactaatcttagttaccgctaacaacctattccaactgttcatcggctgagagggcgtaggaattatatccttcttgctcatcagttgatgatacgcccgagcagatgccaacacagcagccattcaagcaatcctatacaaccgtatcggcgatatcggtttcatcctcgccttagcatgatttatcctacactccaactcatgagacccacaacaaatagcccttctaaacgctaatccaagcctcaccccactactaggcctcctcctagcagcagcaggcaaatcagcccaattaggtctccacccctgactcccctcagccatagaaggccccaccccagtctcagccctactccactcaagcactatagttgtagcaggaatcttcttactcatccgcttccaccccctagcagaaaatagcccactaatccaaactctaacactatgcttaggcgctatcaccactctgttcgcagcagtctgcgcccttacacaaaatgacatcaaaaaaatcgtagccttctccacttcaagtcaactaggactcataatagttacaatcggcatcaaccaaccacacctagcattcctgcacatctgtacccacgccttcttcaaagccatactatttatgtgctccgggtccatcatccacaaccttaacaatgaacaagatattcgaaaaataggaggactactcaaaaccatacctctcacttcaacctccctcaccattggcagcctagcattagcaggaatacctttcctcacaggtttctactccaaagaccacatcatcgaaaccgcaaacatatcatacacaaacgcctgagccctatctattactctcatcgctacctccctgacaagcgcctatagcactcgaataattcttctcaccctaacaggtcaacctcgcttccccacccttactaacattaacgaaaataaccccaccctactaaaccccattaaacgcctggcagccggaagcctattcgcaggatttctcattactaacaacatttcccccgcatcccccttccaaacaacaatccccctctacctaaaactcacagccctcgctgtcactttcctaggacttctaacagccctagacctcaactacctaaccaacaaacttaaaataaaatccccactatgcacattttatttctccaacatactcggattctaccctagcatcacacaccgcacaatcccctatctaggccttcttacgagccaaaacctgcccctactcctcctagacctaacctgactagaaaagctattacctaaaacaatttcacagcaccaaatctccacctccatcatcacctcaacccaaaaaggcataattaaactttacttcctctctttcttcttcccactcatcctaaccctactcctaatcacataacctattcccccgagcaatctcaattacaatatatacaccaacaaacaatgttcaaccagtaactactactaatcaacgcccataatcatacaaagcccccgcaccaataggatcctcccgaatcaaccctgacccctctccttcataaattattcagcttcctacactattaaagtttaccacaaccaccaccccatcatactctttcacccacagcaccaatcctacctccatcgctaaccccactaaaacactcaccaagacctcaacccctgacccccatgcctcaggatactcctcaatagccatcgctgtagtatatccaaagacaaccatcattccccctaaataaattaaaaaaactattaaacccatataacctcccccaaaattcagaataataacacacccgaccacaccgctaacaatcaatactaaacccccataaataggagaaggcttagaagaaaaccccacaaaccccattactaaacccacactcaacagaaacaaagcatacatcattattctcgcacggactacaaccacgaccaatgatatgaaaaaccatcgttgtatttcaactacaagaacaccaatgaccccaatacgcaaaactaaccccctaataaaattaattaaccactcattcatcgacctccccaccccatccaacatctccgcatgatgaaacttcggctcactccttggcgcctgcctgatcctccaaatcaccacaggactattcctagccatgcactactcaccagacgcctcaaccgccttttcatcaatcgcccacatcactcgagacgtaaattatggctgaatcatccgctaccttcacgccaatggcgcctcaatattctttatctgcctcttcctacacatcgggcgaggcctatattacggatcatttctctactcagaaacctgaaacatcggcattatcctcctgcttgcaactatagcaacagccttcataggctatgtcctcccgtgaggccaaatatcattctgaggggccacagtaattacaaacttactatccgccatcccatacattgggacagacctagttcaatgaatctgaggaggctactcagtagacagtcccaccctcacacgattctttacctttcacttcatcttgcccttcattattgcagccctagcaacactccacctcctattcttgcacgaaacgggatcaaacaaccccctaggaatcacctcccattccgataaaatcaccttccacccttactacacaatcaaagacgccctcggcttacttctcttccttctctccttaatgacattaacactattctcaccagacctcctaggcgacccagacaattataccctagccaaccccttaaacacccctccccacatcaagcccgaatgatatttcctattcgcctacacaattctccgatccgtccctaacaaactaggaggcgtccttgccctattactatccatcctcatcctagcaataatccccatcctccatatatccaaacaacaaagcataatatttcgcccactaagccaatcactttattgactcctagccgcagacctcctcattctaacctgaatcggaggacaaccagtaagctacccttttaccatcattggacaagtagcatccgtactatacttcacaacaatcctaatcctaataccaactatctccctaattgaaaacaaaatactcaaatgggcctgtccttgtagtataaactaatacaccagtcttgtaaaccggagatgaaaacctttttccaaggacaaatcagagaaaaagtctttaactccaccattagcacccaaagctaagattctaatttaaactattctctgttctttcatggggaagcagatttgggtaccacccaagtattgactcacccatcaacaaccgctatgtatttcgtacattactgccagccaccatgaatattgtacggtaccataaatacttgaccacctgtagtacataaaaacccaatccacatcaaaaccccctccccatgcttacaagcaagtacagcaatcaaccctcaactatcacacatcaactgcaactccaaagccacccctcacccactaggataccaacaaacctacccacccttaacagtacatagtacataaagccatttaccgtacatagcacattacagtcaaatcccttctcgtccccatggatgacccccctcagataggggtcccttgaccaccatcctccgtgaaatcaatatcccgcacaagagtgctactctcctcgctccgggcccataacacttgggggtagctaaagtgaactgtatccgacatctggttcctacttcagggtcataaagcctaaatagcccacacgttccccttaaataagacatcacgatg";
 
 	/**
 	 * Creates a new Polymorphism instance
@@ -42,13 +41,15 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	 * @param mutatedBase
 	 *            The muation on the given position
 	 */
-	Polymorphism(int newPosition, Mutations mutatedBase) {
+	Polymorphism(Reference reference, int newPosition, Mutations mutatedBase) {
+		this.reference = reference;
 		this.mutation = mutatedBase;
 		this.position = newPosition;
 		hashCode = toString().hashCode();
 	}
 
-	Polymorphism(int newPosition, Mutations mutatedBase, int isReliable) {
+	Polymorphism(Reference reference, int newPosition, Mutations mutatedBase, int isReliable) {
+		this.reference = reference;
 		this.mutation = mutatedBase;
 		this.position = newPosition;
 		hashCode = toString().hashCode();
@@ -63,20 +64,23 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	 * @throws InvalidPolymorphismException
 	 *             If the string could not be parsed
 	 */
-	public Polymorphism(String phyloString) throws InvalidPolymorphismException {
+	public Polymorphism(Reference reference, String phyloString) throws InvalidPolymorphismException {
+		this.reference = reference;
 		parse(phyloString);
 		hashCode = toString().hashCode();
 		this.setHeteroplasmy(false);
 	}
 
-	public Polymorphism(String phyloString, int isReliable) throws InvalidPolymorphismException {
+	public Polymorphism(Reference reference, String phyloString, int isReliable) throws InvalidPolymorphismException {
+		this.reference = reference;
 		parse(phyloString);
 		hashCode = toString().hashCode();
 		this.setHeteroplasmy(false);
 		this.setReliable(isReliable);
 	}
 
-	public Polymorphism(String phyloString, boolean Heteroplasmy) throws InvalidPolymorphismException {
+	public Polymorphism(Reference reference, String phyloString, boolean Heteroplasmy) throws InvalidPolymorphismException {
+		this.reference = reference;
 		parse(phyloString);
 		this.setHeteroplasmy(Heteroplasmy); // TODO CHECK HETEREOPLASMY
 		hashCode = toString().hashCode();
@@ -95,77 +99,38 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		this.numberOfIns = polyToCopy.numberOfIns;
 		this.insertedPolys = polyToCopy.insertedPolys;
 		this.isHeteroplasmy = polyToCopy.isHeteroplasmy;
+		this.reference = polyToCopy.reference;
 
 		hashCode = toString().hashCode();
 	}
 
-	/*
-	 * Remark: The polymorphism equals method don't check for back mutation of two
-	 * instances (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	// @Override
-	// public boolean equals(Object p) {
-	// if (!(p instanceof Polymorphism))
-	// return false;
-	//
-	// if (this.position == ((Polymorphism) p).position && this.mutation ==
-	// ((Polymorphism) p).mutation) {
-	//
-	// //insertions
-	// if(((Polymorphism)p).getMutation().equals(this.mutation.INS)){
-	// if(((Polymorphism)p).insertedPolys.contains(this.insertedPolys))
-	// return true;
-	// else if (((Polymorphism)p).insertedPolys.contains(".X"))
-	// return true;
-	// else return false;
-	// }
-	// //end insertions
-	//
-	// else if (((Polymorphism) p).isBackMutation != this.isBackMutation)
-	// return false;
-	//
-	// else
-	// return true;
-	// }
-	//
-	// else
-	// return false;
-	// }
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
 	@Override
 	public String toString() {
 
-		if (position > 16569)
+		if (position > reference.getLength()) {
 			return "";
-
-		try {
-
-		} catch (Exception e) {
-			;
 		}
+
 		if (position != 0) {
 			if (!isBackMutation && !this.mutation.equals("N")) {
 				if (this.mutation == Mutations.INS)
 					return position + numberOfIns + insertedPolys;
 
-				else if (this.mutation == Mutations.DEL)
+				else if (this.mutation == Mutations.DEL) {
 					return position + "d";
+				}
 
-				else
+				else {
 					return position + mutation.toString().trim();
+				}
 			}
 
-			else
+			else {
 				return position + mutation.toString().trim() + "!";
-		} else
+			}
+		} else {
 			return "";
+		}
 	}
 
 	@Override
@@ -203,27 +168,27 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 
 		else {
 
-			if (isTransitionPoly())
+			if (isTransitionPoly()) {
 				convertedString = String.valueOf(position);
+			}
 
 			else {
-				if (position != 0)
+				if (position != 0) {
 					convertedString = position + mutation.toString().trim();
+				}
 			}
 		}
 
-		// }
-
-		// else
-		if (isBackMutation)
+		if (isBackMutation) {
 			return convertedString + "!";
+		}
 
 		return convertedString;
 	}
 
 	/**
-	 * Reformat a string representation of a polymorphism with back mutation from
-	 * '!' to '@' e.g. 185! to '@185'
+	 * Reformat a string representation of a polymorphism with back mutation
+	 * from '!' to '@' e.g. 185! to '@185'
 	 * 
 	 * @param poly
 	 * @return The reformatted string
@@ -232,8 +197,9 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		if (poly.contains("!")) {
 			poly = poly.replace("!", "");
 			return "@" + poly;
-		} else
+		} else {
 			return poly;
+		}
 	}
 
 	/**
@@ -246,8 +212,8 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	}
 
 	/**
-	 * Creates and returns a polymorphism representing the reference at the position
-	 * of this instance
+	 * Creates and returns a polymorphism representing the reference at the
+	 * position of this instance
 	 * 
 	 * @return The polymorphism representing the reference
 	 */
@@ -264,25 +230,19 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	 * @return The polymorphism representing the reference
 	 */
 	private Polymorphism getReferenceBase(int position) {
-		if (position < 16569 && position > 0) {
-			String base = String.valueOf(rCRS.charAt(position - 1));
+		if (position < reference.getLength() && position > 0) {
+			String base = String.valueOf(reference.getSequence().charAt(position - 1));
 			base = base.toUpperCase();
 			try {
-				return new Polymorphism(position, Mutations.getBase(base));
+				return new Polymorphism(reference, position, Mutations.getBase(base));
 			} catch (InvalidBaseException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				return null;
 			}
-			return null;
-		} else
-			return null;
-	}
 
-	// TODO: Ask hansi if this can be replaced by getReferenceBase(int position)
-	public static String getReferenceBaseSingle(int position) throws InvalidBaseException {
-		String base = String.valueOf(rCRS.charAt(position - 1));
-		base = base.toUpperCase();
-		return base;
+		} else {
+			return null;
+		}
 	}
 
 	/**
@@ -300,7 +260,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		stringToParse = stringToParse.trim();
 
 		try {
-			//ignore R on insertions
+			// ignore R on insertions
 			if (stringToParse.contains("R") && !stringToParse.contains(".")) {
 				this.position = Integer.valueOf(stringToParse.substring(0, stringToParse.length() - 1));
 
@@ -309,7 +269,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 				if (getReferenceBase(position).equals("G"))
 					this.mutation = Mutations.A;
 			}
-			//ignore Y on insertions
+			// ignore Y on insertions
 			if (stringToParse.contains("Y") && !stringToParse.contains(".")) {
 				this.position = Integer.valueOf(stringToParse.substring(0, stringToParse.length() - 1));
 				if (getReferenceBase(position).equals("C"))
@@ -385,7 +345,8 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 			this.insertedPolys = mutationString;
 		}
 
-		// TRANSITION/TRANSVERSION If base is included, its a transversion, so just
+		// TRANSITION/TRANSVERSION If base is included, its a transversion, so
+		// just
 		// take it as it is.
 		else {
 			Pattern p = Pattern.compile("[a-zA-Z]");
@@ -482,37 +443,6 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		return insertedPolys;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Comparable#compareTo(java.lang.O private void loadLookup() {
-	 * acidLookup= new HashMap<Polymorphism, AnnotationAAC>(); String annotationPath
-	 * = "aminoacidchange.txt"; InputStream annotationStream =
-	 * this.getClass().getClassLoader().getResourceAsStream(annotationPath);
-	 * BufferedReader annotationFileReader; if (annotationStream == null) {
-	 * 
-	 * try { annotationStream = new FileInputStream(new File(annotationPath)); }
-	 * catch (FileNotFoundException e) { // TODO Auto-generated catch block
-	 * e.printStackTrace(); } }
-	 * 
-	 * 
-	 * try{ annotationFileReader = new BufferedReader(new
-	 * InputStreamReader(annotationStream)); String line =
-	 * annotationFileReader.readLine(); line = annotationFileReader.readLine(); //
-	 * Read-in each line while (line != null) { StringTokenizer mainTokenizer = new
-	 * StringTokenizer(line, "\t");
-	 * 
-	 * String pos = mainTokenizer.nextToken(); String gen =
-	 * mainTokenizer.nextToken(); short cod =
-	 * Short.parseShort(mainTokenizer.nextToken()); String aachange =
-	 * mainTokenizer.nextToken(); AnnotationAAC aac = new AnnotationAAC(pos, gen,
-	 * cod, aachange); acidLookup.put(new Polymorphism(pos), aac); line =
-	 * annotationFileReader.readLine(); }
-	 * 
-	 * } catch (InvalidPolymorphismException e) { // TODO Auto-generated catch block
-	 * e.printStackTrace(); } catch (IOException e) { // TODO Auto-generated catch
-	 * block e.printStackTrace(); } }bject)
-	 */
 	@Override
 	public int compareTo(Polymorphism o) {
 
@@ -544,36 +474,52 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	}
 
 	// TODO hotspots depend on phylotree version! Move somewhere better
-	public boolean isMTHotspot() {
+	public boolean isMTHotspot(Reference reference) {
 		try {
-			if (this.equals(new Polymorphism("315.1C")))
-				return true;
-			if (this.equals(new Polymorphism("309.1C")))
-				return true;
-			if (this.equals(new Polymorphism("309.1CC")))
-				return true;
-			if (this.equals(new Polymorphism("523d")))
-				return true;
-			if (this.equals(new Polymorphism("524d")))
-				return true;
-			if (this.equals(new Polymorphism("524.1AC")))
-				return true;
-			if (this.equals(new Polymorphism("524.1ACAC")))
-				return true;
-			if (this.equals(new Polymorphism("3107d")))
-				return true;
-			if (this.equals(new Polymorphism("16182C")))
-				return true;
-			if (this.equals(new Polymorphism("16183C")))
-				return true;
-			if (this.equals(new Polymorphism("16193.1C")))
-				return true;
-			if (this.equals(new Polymorphism("16193.1CC")))
-				return true;
-			if (this.equals(new Polymorphism("16519")))
-				return true;
-			else
-				return false;
+			// TODO change to enum
+			if (reference.getName().equals("RCRS") || reference.getName().equals("RSRS")) {
+				if (this.equals(new Polymorphism(reference, "315.1C"))) {
+					return true;
+				}
+				if (this.equals(new Polymorphism(reference, "309.1C"))) {
+					return true;
+				}
+				if (this.equals(new Polymorphism(reference, "309.1CC"))) {
+					return true;
+				}
+				if (this.equals(new Polymorphism(reference, "523d"))) {
+					return true;
+				}
+				if (this.equals(new Polymorphism(reference, "524d"))) {
+					return true;
+				}
+				if (this.equals(new Polymorphism(reference, "524.1AC"))) {
+					return true;
+				}
+				if (this.equals(new Polymorphism(reference, "524.1ACAC"))) {
+					return true;
+				}
+				if (this.equals(new Polymorphism(reference, "3107d"))) {
+					return true;
+				}
+				if (this.equals(new Polymorphism(reference, "16182C"))) {
+					return true;
+				}
+				if (this.equals(new Polymorphism(reference, "16183C"))) {
+					return true;
+				}
+				if (this.equals(new Polymorphism(reference, "16193.1C"))) {
+					return true;
+				}
+				if (this.equals(new Polymorphism(reference, "16193.1CC"))) {
+					return true;
+				}
+				if (this.equals(new Polymorphism(reference, "16519"))) {
+					return true;
+				} else {
+					return false;
+				}
+			}
 		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -617,8 +563,8 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	}
 
 	/**
-	 * @return True if the polymorphism is a heteroplasmy (R or Y), false if it is
-	 *         not
+	 * @return True if the polymorphism is a heteroplasmy (R or Y), false if it
+	 *         is not
 	 */
 	public boolean isHeteroplasmy() {
 		return isHeteroplasmy;
@@ -638,7 +584,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 
 	public AnnotationAAC getAnnotation() {
 
-		HashMap<Polymorphism, AnnotationAAC> annotationLookup = Annotation.getInstance().getAnnotation();
+		HashMap<Polymorphism, AnnotationAAC> annotationLookup = Annotation.getInstance().getAnnotation(reference);
 
 		AnnotationAAC annotation = null;
 

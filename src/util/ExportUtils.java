@@ -8,37 +8,25 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
-import java.util.stream.Collectors;
 
-import org.apache.commons.collections.MultiMap;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.io.FilenameUtils;
-import org.w3c.dom.svg.GetSVGDocument;
 
 import core.Haplogroup;
-import core.Mutations;
 import core.Polymorphism;
+import core.Reference;
 import core.SampleRanges;
 import core.TestSample;
-import exceptions.parse.sample.InvalidBaseException;
 import exceptions.parse.sample.InvalidPolymorphismException;
 import genepi.io.table.writer.CsvTableWriter;
-import importer.FastaImporter.References;
 import search.SearchResult;
 import search.SearchResultTreeNode;
-import search.ranking.HammingRanking;
-import search.ranking.JaccardRanking;
-import search.ranking.KulczynskiRanking;
-import search.ranking.RankingMethod;
 import search.ranking.results.RankedResult;
 import vcf.Sample;
 import vcf.Variant;
@@ -70,7 +58,7 @@ public class ExportUtils {
 		return lines;
 	}
 
-	public static void createReport(Collection<TestSample> sampleCollection, String outFilename, boolean extended) throws IOException {
+	public static void createReport(Collection<TestSample> sampleCollection, Reference reference, String outFilename, boolean extended) throws IOException {
 
 		CsvTableWriter writer = new CsvTableWriter(outFilename, '\t');
 
@@ -158,7 +146,7 @@ public class ExportUtils {
 
 						result = new StringBuffer();
 						for (Polymorphism currentPoly : allChecked) {
-							String type = getTypeRemaining(currentPoly, currentResult.getSearchResult());
+							String type = getTypeRemaining(reference, currentPoly, currentResult.getSearchResult());
 							result.append(" " + currentPoly + " (" + type + ")");
 						}
 
@@ -199,10 +187,10 @@ public class ExportUtils {
 
 	}
 
-	private static String getTypeRemaining(Polymorphism p, SearchResult result) {
+	private static String getTypeRemaining(Reference reference, Polymorphism p, SearchResult result) {
 
 		if (result.getPhyloTree().getMutationRate(p) == 0) {
-			if (p.isMTHotspot()) {
+			if (p.isMTHotspot(reference)) {
 				return "hotspot";
 			} else {
 				return "globalPrivateMutation";
@@ -367,7 +355,7 @@ public class ExportUtils {
 					if (!polyToExclude(poly)) {
 						remaining += poly + " ";
 						remaining += "\n";
-						//System.out.println(" Remaining  + " + remaining);
+						// System.out.println(" Remaining + " + remaining);
 					}
 				}
 
@@ -478,7 +466,7 @@ public class ExportUtils {
 		}
 	}
 
-	public static void generateFasta(Collection<TestSample> sampleCollection, String out) throws IOException {
+	public static void generateFasta(Collection<TestSample> sampleCollection, Reference reference, String out) throws IOException {
 		String fileName = FilenameUtils.removeExtension(out);
 
 		String fastafile = fileName + ".fasta";
@@ -487,7 +475,7 @@ public class ExportUtils {
 		for (TestSample sample : sampleCollection) {
 
 			Collections.sort((List<Polymorphism>) sample.getSample().getPolymorphisms());
-			String fastaResult = Polymorphism.rCRS;
+			String fastaResult = reference.getSequence();
 			int insertions = 0;
 			int deletions = 0;
 			// System.out.println("sample " + sample.getSampleID());
@@ -511,36 +499,36 @@ public class ExportUtils {
 				}
 			}
 
-			// replace all entries not covered in Range 
+			// replace all entries not covered in Range
 			SampleRanges srange = sample.getSample().getSampleRanges();
 
-			for (int i = 1; i < Polymorphism.rCRS.length()+1; i++) {
+			for (int i = 1; i < reference.getLength() + 1; i++) {
 				Polymorphism p;
 
 				try {
-					p = new Polymorphism(i + "N");
+					p = new Polymorphism(reference, i + "N");
 
 					if (!srange.contains(p))
-						fastaResult = replaceChar(fastaResult, 'N', i-1);
+						fastaResult = replaceChar(fastaResult, 'N', i - 1);
 				} catch (InvalidPolymorphismException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
 			}
-	
+
 			fasta.write(">" + sample.getSampleID() + "\n" + fastaResult + "\n");
 
 		}
 		fasta.close();
 	}
 
-	public static void generateFastaMSA(Collection<TestSample> sampleCollection, String out) throws IOException {
+	public static void generateFastaMSA(Collection<TestSample> sampleCollection, Reference reference, String out) throws IOException {
 
 		String fileName = FilenameUtils.removeExtension(out);
 
 		String fasta = fileName + "_MSA.fasta";
-		
+
 		System.out.println(fasta);
 
 		FileWriter fastaMSA = new FileWriter(fasta);
@@ -571,7 +559,7 @@ public class ExportUtils {
 
 								try {
 
-									Polymorphism p1 = new Polymorphism(
+									Polymorphism p1 = new Polymorphism(reference,
 											poly.getPosition() + ".1" + poly.getInsertedPolys().substring(1, i + 1) + poly.getInsertedPolys().charAt(i));
 									v1.add(p1);
 								} catch (NumberFormatException e) {
@@ -594,7 +582,7 @@ public class ExportUtils {
 								Polymorphism p1 = null;
 								try {
 
-									p1 = new Polymorphism(poly.getPosition() + ".1" + h.substring(0, i + 1));
+									p1 = new Polymorphism(reference, poly.getPosition() + ".1" + h.substring(0, i + 1));
 
 									if (!vectorhelp.contains(p1.toString())) {
 										vectorPolys.add(p1);
@@ -625,7 +613,7 @@ public class ExportUtils {
 				vsamplep = new Vector<Polymorphism>(sample.getSample().getPolymorphisms());
 
 				int j = 0;
-				String fastaResult = Polymorphism.rCRS;
+				String fastaResult = reference.getSequence();
 
 				int insertion = 0;
 				for (int i = 0; i < vectorPolys.size(); i++) {
@@ -665,26 +653,25 @@ public class ExportUtils {
 						insertion++;
 					}
 				}
-				
-				// replace all entries not covered in Range 
+
+				// replace all entries not covered in Range
 				SampleRanges srange = sample.getSample().getSampleRanges();
 
-				for (int i = 1; i < Polymorphism.rCRS.length()+1; i++) {
+				for (int i = 1; i < reference.getLength() + 1; i++) {
 					Polymorphism p;
 
 					try {
-						p = new Polymorphism(i + "N");
+						p = new Polymorphism(reference, i + "N");
 
 						if (!srange.contains(p))
-							fastaResult = replaceChar(fastaResult, 'N', i-1);
+							fastaResult = replaceChar(fastaResult, 'N', i - 1);
 					} catch (InvalidPolymorphismException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 
 				}
-				
-				
+
 				fastaMSA.write(fastaResult + "\n");
 			}
 		}

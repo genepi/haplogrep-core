@@ -1,11 +1,7 @@
 package dataVisualizers;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import org.jdom.Element;
-
-import core.Polymorphism;
+import core.Reference;
 import core.TestSample;
 
 import search.SearchResultTreeNode;
@@ -14,7 +10,6 @@ public class OverviewTree {
 	private OverviewTreeInnerNode root;
 	private ArrayList<OverviewTreeLeafNode> leafNodes = new ArrayList<OverviewTreeLeafNode>();
 
-	
 //	public OverviewTree(Element phyloTreePathXML, String SampleID,Element unusedPolys){
 //		this.root = phyloTreePathXML;
 //		
@@ -32,58 +27,59 @@ public class OverviewTree {
 //		
 //		currentNode.addContent(newSampleIDElement);
 //	}
-	
-	public OverviewTree(){
-		
+
+	public OverviewTree() {
+
 	}
-	
-	public void  addNewPath(TestSample testSample,ArrayList<SearchResultTreeNode> newPath){	
+
+	public void addNewPath(TestSample testSample, ArrayList<SearchResultTreeNode> newPath) {
 		int i = 0;
-		if (root == null)
-		{
-			root = new OverviewTreeInnerNode(null,newPath.get(i));
+		if (root == null) {
+			root = new OverviewTreeInnerNode(null, newPath.get(i));
 			i++;
 		}
-		
-		addNewPathNode(testSample,root,newPath,1);
+
+		addNewPathNode(testSample, root, newPath, 1);
 	}
-	
-	public void addNewPathNode(TestSample currentSample,TreeNode currentTreeRootNode, ArrayList<SearchResultTreeNode> pathToAdd,int currentIteration){
+
+	public void addNewPathNode(TestSample currentSample, TreeNode currentTreeRootNode, ArrayList<SearchResultTreeNode> pathToAdd, int currentIteration) {
 		SearchResultTreeNode currentNodeToAdd = pathToAdd.get(currentIteration);
-		
+
 		boolean foundChild = false;
-		for(TreeNode currentChildNode : currentTreeRootNode.getChildren()){
-			if (currentChildNode instanceof OverviewTreeInnerNode &&  currentChildNode.getPhyloTreeNode().equals(pathToAdd.get(currentIteration).getPhyloTreeNode())) {
-				((OverviewTreeInnerNode) currentChildNode).addDistinctFoundPolys(currentNodeToAdd.getExpectedPolys());  //sets Phylotree 
-			
-				if(currentIteration + 1 < pathToAdd.size())
-					addNewPathNode(currentSample,currentChildNode,pathToAdd, currentIteration + 1);
-				
-				else{
-					OverviewTreeLeafNode newTreeNode = new OverviewTreeLeafNode(currentChildNode,currentSample,pathToAdd.get(pathToAdd.size()-1)); 
+		for (TreeNode currentChildNode : currentTreeRootNode.getChildren()) {
+			if (currentChildNode instanceof OverviewTreeInnerNode
+					&& currentChildNode.getPhyloTreeNode().equals(pathToAdd.get(currentIteration).getPhyloTreeNode())) {
+				((OverviewTreeInnerNode) currentChildNode).addDistinctFoundPolys(currentNodeToAdd.getExpectedPolys()); // sets
+																														// Phylotree
+
+				if (currentIteration + 1 < pathToAdd.size())
+					addNewPathNode(currentSample, currentChildNode, pathToAdd, currentIteration + 1);
+
+				else {
+					OverviewTreeLeafNode newTreeNode = new OverviewTreeLeafNode(currentChildNode, currentSample, pathToAdd.get(pathToAdd.size() - 1));
 //					currentTreeRootNode.addChild(newTreeNode);
 					currentTreeRootNode = newTreeNode;
 					leafNodes.add(newTreeNode);
-					}
+				}
 				foundChild = true;
 				break;
 			}
 		}
-		
-		if(!foundChild){
-			for(int i = currentIteration;i < pathToAdd.size();i++){
-				OverviewTreeInnerNode newNode = new OverviewTreeInnerNode(currentTreeRootNode,pathToAdd.get(i));
+
+		if (!foundChild) {
+			for (int i = currentIteration; i < pathToAdd.size(); i++) {
+				OverviewTreeInnerNode newNode = new OverviewTreeInnerNode(currentTreeRootNode, pathToAdd.get(i));
 //				currentTreeRootNode.addChild(newNode);
 				newNode.addDistinctFoundPolys(pathToAdd.get(i).getFoundPolys());
-				currentTreeRootNode = newNode;	
+				currentTreeRootNode = newNode;
 			}
-			
-			OverviewTreeLeafNode newTreeNode = new OverviewTreeLeafNode(currentTreeRootNode,currentSample,pathToAdd.get(pathToAdd.size()-1)); 
+
+			OverviewTreeLeafNode newTreeNode = new OverviewTreeLeafNode(currentTreeRootNode, currentSample, pathToAdd.get(pathToAdd.size() - 1));
 //			currentTreeRootNode.addChild(newTreeNode);
 			currentTreeRootNode = newTreeNode;
 			leafNodes.add(newTreeNode);
 		}
-		
+
 		// The current result tree does NOT contain the current subpath. So we
 		// add it to the tree
 		// and are finished
@@ -124,23 +120,23 @@ public class OverviewTree {
 //					newPolys.add(newPoly);
 //				}
 //			}
-		
+
 //			for (Element c : newPolys)
 //				currentTreeRootNode.addContent(c);
 //
 //			newPolys.clear();
 
-			// Check if we are at the end of the subpath. If true then our
-			// result tree already contains
-			// the subpath completely and we leave the function immediately
+		// Check if we are at the end of the subpath. If true then our
+		// result tree already contains
+		// the subpath completely and we leave the function immediately
 //			if (currentPathNode.getChildren("TreeNode").size() == 0) {
 //				return true;
 //			}
 
-			// boolean foundInsertPos = false;
-			// The tree contains our current subpath so we step one node ahead
-			// and make a RECURSIVE
-			// call to this function for each child element
+		// boolean foundInsertPos = false;
+		// The tree contains our current subpath so we step one node ahead
+		// and make a RECURSIVE
+		// call to this function for each child element
 //			for (TreeNode currentTreeChild : currentTreeRootNode.getChildren()) {
 //				if(pathToAdd.size() > currentIteration + 1){
 //					if (addNewPathNode(currentSample,currentTreeChild, pathToAdd,currentIteration+1))
@@ -172,19 +168,17 @@ public class OverviewTree {
 //		}
 	}
 
-	public void generateLeafNodes(boolean includeHotspots) {
+	public void generateLeafNodes(boolean includeHotspots, Reference reference) {
 		int i = 0;
-		for(OverviewTreeLeafNode currentLeafNode : leafNodes){
-			currentLeafNode.updatePolys(includeHotspots);
-			
-		
+		for (OverviewTreeLeafNode currentLeafNode : leafNodes) {
+			currentLeafNode.updatePolys(includeHotspots, reference);
+
 		}
-		
+
 	}
-	
-	public OverviewTreeInnerNode getRootNode(){
+
+	public OverviewTreeInnerNode getRootNode() {
 		return root;
 	}
-	
-	
+
 }
