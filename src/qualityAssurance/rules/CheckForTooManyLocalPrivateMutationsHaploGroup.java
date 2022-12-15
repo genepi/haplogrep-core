@@ -1,34 +1,26 @@
 package qualityAssurance.rules;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.TreeMap;
-import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import core.Polymorphism;
+import core.Reference;
+import core.TestSample;
 import qualityAssurance.QualityAssistent;
 import qualityAssurance.issues.IssueType;
-import qualityAssurance.issues.QualityFatal;
 import qualityAssurance.issues.QualityWarning;
 import search.SearchResult;
-import core.Polymorphism;
-import core.TestSample;
 
 public class CheckForTooManyLocalPrivateMutationsHaploGroup extends HaplogrepRule {
 
@@ -42,6 +34,8 @@ public class CheckForTooManyLocalPrivateMutationsHaploGroup extends HaplogrepRul
 
 	@Override
 	public void evaluate(QualityAssistent qualityAssistent, TestSample currentSample) {
+		
+		Reference ref = currentSample.getReference();
 		
 		if(currentSample.getResults().size() != 0){
 		SearchResult topResult = currentSample.getResults().get(0).getSearchResult();
@@ -69,7 +63,7 @@ public class CheckForTooManyLocalPrivateMutationsHaploGroup extends HaplogrepRul
 		StringBuffer helpHGs=new StringBuffer();
 		for(Polymorphism currentRemainingPoly : topResult.getDetailedResult().getRemainingPolysInSample()){
 
-			if(!currentRemainingPoly.isMTHotspot() && !(qualityAssistent.getUsedPhyloTree().getMutationRate(currentRemainingPoly) == 0) && !(currentRemainingPoly.equalsReference()))
+			if(!currentRemainingPoly.isMTHotspot(ref) && !(qualityAssistent.getUsedPhyloTree().getMutationRate(currentRemainingPoly) == 0) && !(currentRemainingPoly.equalsReference()))
 				{
 				numLocalPrivateMuations++;
 				sb.append(currentRemainingPoly.toString()+" ");

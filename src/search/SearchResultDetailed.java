@@ -11,6 +11,7 @@ import org.jdom.Element;
 
 import phylotree.PhyloTreeNode;
 import core.Polymorphism;
+import core.Reference;
 import core.SampleRanges;
 
 /**
@@ -228,7 +229,7 @@ public class SearchResultDetailed implements Serializable {
 	 *            True if hotspots should be included, false otherwise
 	 * @return The root element of the xml representation
 	 */
-	public Element getUnusedPolysXML(boolean includeHotspots) {
+	public Element getUnusedPolysXML(boolean includeHotspots, Reference reference) {
 		Element results = new Element("DetailedResults");
 
 		Collections.sort(remainingPolys);
@@ -277,7 +278,7 @@ public class SearchResultDetailed implements Serializable {
 					results.addContent(result);
 				}
 
-				else if (currentPoly.isMTHotspot()) {
+				else if (currentPoly.isMTHotspot(reference)) {
 
 					if (includeHotspots) {
 						reasonUnusedPoly.setText("hotspot");

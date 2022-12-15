@@ -10,29 +10,26 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Locale;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
+import dataVisualizers.OverviewTree;
+import dataVisualizers.PhylotreeRenderer;
+import exceptions.parse.HsdFileException;
+import exceptions.parse.samplefile.UniqueSampleIDException;
 import phylotree.Phylotree;
 import qualityAssurance.QualityAssistent;
 import qualityAssurance.RuleSet;
 import qualityAssurance.issues.QualityIssue;
 import search.ranking.RankingMethod;
 import search.ranking.results.RankedResult;
-import dataVisualizers.OverviewTree;
-import dataVisualizers.PhylotreeRenderer;
-import exceptions.parse.HsdFileException;
-import exceptions.parse.samplefile.UniqueSampleIDException;
 
 /**
  * Represents the entire file of test sample. Used as main object in haplogrep.
@@ -49,6 +46,7 @@ public class SampleFile {
 	// QualityAssistent preChecksQualityAssistent = null;
 	Phylotree usedPhyloTreeLastRun = null;
 	RankingMethod usedRankingMethodLastRun = null;
+	Reference reference;
 
 	/**
 	 * Main constructor of SampleFile class. Creates a new test sample instance.
@@ -60,6 +58,7 @@ public class SampleFile {
 	 */
 	public SampleFile(ArrayList<String> sampleLines, Reference reference) throws HsdFileException {
 		int lineIndex = 1;
+		this.reference = reference;
 		for (String currentLine : sampleLines) {
 			TestSample newSample;
 			try {
@@ -390,7 +389,8 @@ public class SampleFile {
 
 		File image = null;
 		PhylotreeRenderer renderer = new PhylotreeRenderer(testSamples.values().iterator().next()
-				.getResult(testSamples.values().iterator().next().getExpectedHaplogroup()).getSearchResult().getAttachedPhyloTreeNode().getTree(), resultTree);
+				.getResult(testSamples.values().iterator().next().getExpectedHaplogroup()).getSearchResult().getAttachedPhyloTreeNode().getTree(), resultTree,
+				reference);
 
 		URL url = this.getClass().getClassLoader().getResource("haplogrepGray.png");
 
@@ -458,7 +458,7 @@ public class SampleFile {
 
 		}
 
-		newOverviewTree.generateLeafNodes(includeHotspots);
+		newOverviewTree.generateLeafNodes(includeHotspots, reference);
 
 		return newOverviewTree;
 	}

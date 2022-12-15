@@ -111,7 +111,6 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 			return "";
 		}
 
-	
 		if (position != 0) {
 			if (!isBackMutation && !this.mutation.equals("N")) {
 				if (this.mutation == Mutations.INS)
@@ -237,14 +236,14 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 			try {
 				return new Polymorphism(reference, position, Mutations.getBase(base));
 			} catch (InvalidBaseException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				return null;
 			}
-			return null;
-		} else
-			return null;
-	}
 
+		} else {
+			return null;
+		}
+	}
 
 	/**
 	 * Parses a string to create a new polymorphism instance
@@ -475,36 +474,52 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	}
 
 	// TODO hotspots depend on phylotree version! Move somewhere better
-	public boolean isMTHotspot() {
+	public boolean isMTHotspot(Reference reference) {
 		try {
-			if (this.equals(new Polymorphism(reference, "315.1C")))
-				return true;
-			if (this.equals(new Polymorphism(reference, "309.1C")))
-				return true;
-			if (this.equals(new Polymorphism(reference, "309.1CC")))
-				return true;
-			if (this.equals(new Polymorphism(reference, "523d")))
-				return true;
-			if (this.equals(new Polymorphism(reference, "524d")))
-				return true;
-			if (this.equals(new Polymorphism(reference, "524.1AC")))
-				return true;
-			if (this.equals(new Polymorphism(reference, "524.1ACAC")))
-				return true;
-			if (this.equals(new Polymorphism(reference, "3107d")))
-				return true;
-			if (this.equals(new Polymorphism(reference, "16182C")))
-				return true;
-			if (this.equals(new Polymorphism(reference, "16183C")))
-				return true;
-			if (this.equals(new Polymorphism(reference, "16193.1C")))
-				return true;
-			if (this.equals(new Polymorphism(reference, "16193.1CC")))
-				return true;
-			if (this.equals(new Polymorphism(reference, "16519")))
-				return true;
-			else
-				return false;
+			// TODO change to enum
+			if (reference.getName().equals("RCRS") || reference.getName().equals("RSRS")) {
+				if (this.equals(new Polymorphism(reference, "315.1C"))) {
+					return true;
+				}
+				if (this.equals(new Polymorphism(reference, "309.1C"))) {
+					return true;
+				}
+				if (this.equals(new Polymorphism(reference, "309.1CC"))) {
+					return true;
+				}
+				if (this.equals(new Polymorphism(reference, "523d"))) {
+					return true;
+				}
+				if (this.equals(new Polymorphism(reference, "524d"))) {
+					return true;
+				}
+				if (this.equals(new Polymorphism(reference, "524.1AC"))) {
+					return true;
+				}
+				if (this.equals(new Polymorphism(reference, "524.1ACAC"))) {
+					return true;
+				}
+				if (this.equals(new Polymorphism(reference, "3107d"))) {
+					return true;
+				}
+				if (this.equals(new Polymorphism(reference, "16182C"))) {
+					return true;
+				}
+				if (this.equals(new Polymorphism(reference, "16183C"))) {
+					return true;
+				}
+				if (this.equals(new Polymorphism(reference, "16193.1C"))) {
+					return true;
+				}
+				if (this.equals(new Polymorphism(reference, "16193.1CC"))) {
+					return true;
+				}
+				if (this.equals(new Polymorphism(reference, "16519"))) {
+					return true;
+				} else {
+					return false;
+				}
+			}
 		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

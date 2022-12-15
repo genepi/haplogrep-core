@@ -8,37 +8,25 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
-import java.util.stream.Collectors;
 
-import org.apache.commons.collections.MultiMap;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.io.FilenameUtils;
-import org.w3c.dom.svg.GetSVGDocument;
 
 import core.Haplogroup;
-import core.Mutations;
 import core.Polymorphism;
 import core.Reference;
 import core.SampleRanges;
 import core.TestSample;
-import exceptions.parse.sample.InvalidBaseException;
 import exceptions.parse.sample.InvalidPolymorphismException;
 import genepi.io.table.writer.CsvTableWriter;
 import search.SearchResult;
 import search.SearchResultTreeNode;
-import search.ranking.HammingRanking;
-import search.ranking.JaccardRanking;
-import search.ranking.KulczynskiRanking;
-import search.ranking.RankingMethod;
 import search.ranking.results.RankedResult;
 import vcf.Sample;
 import vcf.Variant;
@@ -70,7 +58,7 @@ public class ExportUtils {
 		return lines;
 	}
 
-	public static void createReport(Collection<TestSample> sampleCollection, String outFilename, boolean extended) throws IOException {
+	public static void createReport(Collection<TestSample> sampleCollection, Reference reference, String outFilename, boolean extended) throws IOException {
 
 		CsvTableWriter writer = new CsvTableWriter(outFilename, '\t');
 
@@ -158,7 +146,7 @@ public class ExportUtils {
 
 						result = new StringBuffer();
 						for (Polymorphism currentPoly : allChecked) {
-							String type = getTypeRemaining(currentPoly, currentResult.getSearchResult());
+							String type = getTypeRemaining(reference, currentPoly, currentResult.getSearchResult());
 							result.append(" " + currentPoly + " (" + type + ")");
 						}
 
@@ -199,10 +187,10 @@ public class ExportUtils {
 
 	}
 
-	private static String getTypeRemaining(Polymorphism p, SearchResult result) {
+	private static String getTypeRemaining(Reference reference, Polymorphism p, SearchResult result) {
 
 		if (result.getPhyloTree().getMutationRate(p) == 0) {
-			if (p.isMTHotspot()) {
+			if (p.isMTHotspot(reference)) {
 				return "hotspot";
 			} else {
 				return "globalPrivateMutation";
