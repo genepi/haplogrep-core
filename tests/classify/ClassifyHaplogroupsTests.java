@@ -28,7 +28,7 @@ import phylotree.PhylotreeManager;
 import search.ranking.KulczynskiRanking;
 import util.ExportUtils;
 
-public class ClassifyHaplogroups {
+public class ClassifyHaplogroupsTests {
 
 	private static Phylotree phylotree = null;
 
