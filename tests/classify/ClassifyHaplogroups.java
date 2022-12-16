@@ -99,7 +99,7 @@ public class ClassifyHaplogroups {
 	}
 
 	@Test
-	public void testH100WithNomenclatureRules() throws Exception {
+	public void testNomenclatureRules() throws Exception {
 
 		String file = "test-data/fasta/InsertionTest3.fasta";
 		FastaImporter impFasta = new FastaImporter();
