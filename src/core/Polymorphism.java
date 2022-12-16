@@ -473,63 +473,6 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 		return result;
 	}
 
-	// TODO hotspots depend on phylotree version! Move somewhere better
-	public boolean isMTHotspot(Reference reference) {
-		try {
-			// TODO change to enum
-			if (reference.getName() != null && (reference.getName().equals("RCRS") || reference.getName().equals("RSRS"))) {
-				if (this.equals(new Polymorphism(reference, "315.1C"))) {
-					return true;
-				}
-				if (this.equals(new Polymorphism(reference, "309.1C"))) {
-					return true;
-				}
-				if (this.equals(new Polymorphism(reference, "309.1CC"))) {
-					return true;
-				}
-				if (this.equals(new Polymorphism(reference, "523d"))) {
-					return true;
-				}
-				if (this.equals(new Polymorphism(reference, "524d"))) {
-					return true;
-				}
-				if (this.equals(new Polymorphism(reference, "524.1AC"))) {
-					return true;
-				}
-				if (this.equals(new Polymorphism(reference, "524.1ACAC"))) {
-					return true;
-				}
-				if (this.equals(new Polymorphism(reference, "3107d"))) {
-					return true;
-				}
-				if (this.equals(new Polymorphism(reference, "16182C"))) {
-					return true;
-				}
-				if (this.equals(new Polymorphism(reference, "16183C"))) {
-					return true;
-				}
-				if (this.equals(new Polymorphism(reference, "16193.1C"))) {
-					return true;
-				}
-				if (this.equals(new Polymorphism(reference, "16193.1CC"))) {
-					return true;
-				}
-				if (this.equals(new Polymorphism(reference, "16519"))) {
-					return true;
-				} else {
-					return false;
-				}
-			}
-		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidPolymorphismException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return false;
-	}
-
 	/**
 	 * @return The position of the polymorphism
 	 */

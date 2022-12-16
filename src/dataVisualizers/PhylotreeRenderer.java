@@ -55,7 +55,6 @@ public class PhylotreeRenderer {
 
 	private float dpi = 72;
 	private int numEndNode = 0;
-	Reference reference;
 
 	/**
 	 * Creates a new PhyloTreeRenderer instance with a xml document
@@ -66,7 +65,6 @@ public class PhylotreeRenderer {
 	public PhylotreeRenderer(Phylotree phyloTree, OverviewTree xmlPhyloTree, Reference reference) {
 		this.xmlPhyloTree = xmlPhyloTree;
 		this.phyloTree = phyloTree;
-		this.reference = reference;
 
 		polymorphismFont = new Font("Arial", Font.PLAIN, 12);
 		sampleIDFont = new Font("Arial", Font.PLAIN, 16);
@@ -454,7 +452,7 @@ public class PhylotreeRenderer {
 
 			// attach the end node with unused polys and sampleId
 			// int y = drawEndNode(g2d, result, newData.getCenter(),depth);
-			int y = drawEndNode(g2d, (OverviewTreeLeafNode) result, newData.getCenter(), depth, treeHeight, includeAAC, reference);
+			int y = drawEndNode(g2d, (OverviewTreeLeafNode) result, newData.getCenter(), depth, treeHeight, includeAAC);
 			newData.setMaxHeight(y);
 
 			return newData;
@@ -660,7 +658,7 @@ public class PhylotreeRenderer {
 	 * @param treeHeight
 	 * @return
 	 */
-	private int drawEndNode(Graphics2D g2d, OverviewTreeLeafNode leafNode, int center, int depth, int treeHeight, boolean includeAAC, Reference reference) {
+	private int drawEndNode(Graphics2D g2d, OverviewTreeLeafNode leafNode, int center, int depth, int treeHeight, boolean includeAAC) {
 
 		g2d.setFont(polymorphismFont);
 		depth += 10;
@@ -671,7 +669,7 @@ public class PhylotreeRenderer {
 
 			depth += g2d.getFontMetrics().getHeight() + linePadding;
 
-			if (currentPoly.isMTHotspot(reference)) {
+			if (phyloTree.isHotspot(currentPoly)) {
 				g2d.setColor(new Color(153, 204, 153));
 			} else if (currentPoly.isBackMutation()) {
 				g2d.setColor(Color.black);

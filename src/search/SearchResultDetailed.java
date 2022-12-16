@@ -278,7 +278,7 @@ public class SearchResultDetailed implements Serializable {
 					results.addContent(result);
 				}
 
-				else if (currentPoly.isMTHotspot(reference)) {
+				else if (searchResult.getPhyloTree().isHotspot(currentPoly)) {
 
 					if (includeHotspots) {
 						reasonUnusedPoly.setText("hotspot");

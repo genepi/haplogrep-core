@@ -3,7 +3,7 @@ package dataVisualizers;
 import java.util.ArrayList;
 import core.Reference;
 import core.TestSample;
-
+import phylotree.Phylotree;
 import search.SearchResultTreeNode;
 
 public class OverviewTree {
@@ -168,10 +168,10 @@ public class OverviewTree {
 //		}
 	}
 
-	public void generateLeafNodes(boolean includeHotspots, Reference reference) {
+	public void generateLeafNodes(boolean includeHotspots, Phylotree phylotree) {
 		int i = 0;
 		for (OverviewTreeLeafNode currentLeafNode : leafNodes) {
-			currentLeafNode.updatePolys(includeHotspots, reference);
+			currentLeafNode.updatePolys(includeHotspots, phylotree);
 
 		}
 

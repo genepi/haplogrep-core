@@ -28,7 +28,7 @@ public class CheckForTooManyLocalPrivateMutations extends HaplogrepRule {
 
 			for (Polymorphism currentRemainingPoly : topResult.getDetailedResult().getRemainingPolysInSample()) {
 
-				if (!currentRemainingPoly.isMTHotspot(ref) && !(qualityAssistent.getUsedPhyloTree().getMutationRate(currentRemainingPoly) == 0)
+				if (!qualityAssistent.getUsedPhyloTree().isHotspot(currentRemainingPoly) && !(qualityAssistent.getUsedPhyloTree().getMutationRate(currentRemainingPoly) == 0)
 						&& !(currentRemainingPoly.equalsReference())) {
 					numLocalPrivateMuations++;
 				}

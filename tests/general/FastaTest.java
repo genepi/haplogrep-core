@@ -170,7 +170,7 @@ public class FastaTest {
 			throws NumberFormatException, JDOMException, IOException, InvalidPolymorphismException, HsdFileException, InvalidColumnCountException {
 		Reference ref = new Reference("test-data/reference/rcrs/rCRS.fasta");
 
-		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt", ref);
+		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt", ref, null);
 
 		ArrayList<TestSample> testArray = new ArrayList<TestSample>();
 

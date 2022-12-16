@@ -460,7 +460,7 @@ public class SampleFile {
 
 		}
 
-		newOverviewTree.generateLeafNodes(includeHotspots, reference);
+		newOverviewTree.generateLeafNodes(includeHotspots,usedPhyloTreeLastRun);
 
 		return newOverviewTree;
 	}

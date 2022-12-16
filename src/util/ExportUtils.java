@@ -200,7 +200,7 @@ public class ExportUtils {
 	private static String getTypeRemaining(Reference reference, Polymorphism p, SearchResult result) {
 
 		if (result.getPhyloTree().getMutationRate(p) == 0) {
-			if (p.isMTHotspot(reference)) {
+			if (result.getPhyloTree().isHotspot(p)) {
 				return "hotspot";
 			} else {
 				return "globalPrivateMutation";

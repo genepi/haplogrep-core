@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import core.Reference;
@@ -43,7 +44,12 @@ public class PhylotreeManager {
 	 *            Path to the file containing the phylogentic weights.
 	 * @return The requested phylotree instance
 	 */
+	
 	public Phylotree getPhylotree(String phylotreePath, String phyloGeneticWeightsPath, Reference reference) {
+		return getPhylotree( phylotreePath,  phyloGeneticWeightsPath,  reference, null);
+	}
+	
+	public Phylotree getPhylotree(String phylotreePath, String phyloGeneticWeightsPath, Reference reference, HashSet<String> hotspots) {
 		if (phylotreeMap.containsKey(phylotreePath))
 			return phylotreeMap.get(phylotreePath);
 		else {
@@ -59,7 +65,7 @@ public class PhylotreeManager {
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
-			Phylotree searchMananger = new Phylotree(phyloFile, flucRates, reference);
+			Phylotree searchMananger = new Phylotree(phyloFile, flucRates, reference, hotspots);
 			phylotreeMap.put(phylotreePath, searchMananger);
 			return searchMananger;
 		}

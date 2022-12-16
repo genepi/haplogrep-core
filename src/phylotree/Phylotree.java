@@ -42,6 +42,7 @@ public final class Phylotree {
 	private PhyloTreeNode root;
 	private HashMap<String, Double> phyloGeneticWeights = new HashMap<String, Double>();
 	private HashMap<Haplogroup, PhyloTreeNode> haplogroupLookup = new HashMap<Haplogroup, PhyloTreeNode>();
+	private HashSet<String> hotspots = new HashSet<String>();
 
 	/**
 	 * Creates a new phylotree instance
@@ -51,7 +52,7 @@ public final class Phylotree {
 	 * @param phylogeneticWeightsFile
 	 *            Inputstream to the phylogentic weights file
 	 */
-	public Phylotree(InputStream phylotreeFile, InputStream phylogeneticWeightsFile, Reference reference) {
+	public Phylotree(InputStream phylotreeFile, InputStream phylogeneticWeightsFile, Reference reference, HashSet<String> hotspots) {
 
 		root = new PhyloTreeNode(this);
 		// Create a JDOM document out of the phylotree XML
@@ -62,6 +63,7 @@ public final class Phylotree {
 			buildPhylotree(root, phyloTree.getRootElement().getChild("haplogroup"), reference);
 			// parses and sets the polygenetic weights
 			setPolygeneticWeights(phylogeneticWeightsFile);
+			this.hotspots = hotspots;
 
 		} catch (JDOMException e) {
 			// TODO Auto-generated catch block
@@ -501,6 +503,24 @@ public final class Phylotree {
 		}
 
 		return distance;
+	}
+
+	public HashSet<String> getHotspots() {
+		return hotspots;
+	}
+
+	public void setHotspots(HashSet<String> hotspots) {
+		this.hotspots = hotspots;
+	}
+
+	public boolean isHotspot(Polymorphism polymorphism) {
+
+		if (hotspots != null) {
+			return hotspots.contains(polymorphism.toString());
+		} else {
+			return false;
+		}
+
 	}
 
 }

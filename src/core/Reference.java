@@ -4,22 +4,17 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashSet;
 
+import exceptions.parse.sample.InvalidPolymorphismException;
 
 public class Reference {
 
-	String name;
 	String refFilename;
+
 	String sequence;
+
 	int length;
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
 
 	public String getSequence() {
 		return sequence;
@@ -36,7 +31,7 @@ public class Reference {
 	public void setLength(int length) {
 		this.length = length;
 	}
-	
+
 	public String getRefFilename() {
 		return refFilename;
 	}
@@ -44,7 +39,6 @@ public class Reference {
 	public void setRefFilename(String refFilename) {
 		this.refFilename = refFilename;
 	}
-
 
 	public Reference(String refFilename) {
 
@@ -55,7 +49,7 @@ public class Reference {
 	}
 
 	public void loadReference(String refFilename) {
-		
+
 		System.out.println(new File(refFilename).getAbsolutePath());
 
 		StringBuilder stringBuilder = null;
@@ -77,17 +71,16 @@ public class Reference {
 			if (!new File(refFilename + ".bwt").exists()) {
 				System.err.println("WARNING: reference.bwt file not found. Run bwa index command on reference");
 			}
-			
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		String seq = stringBuilder.toString();
-		
+
 		this.sequence = seq;
 		this.length = seq.length();
 	}
-
 
 }

@@ -6,6 +6,7 @@ import search.SearchResultTreeNode;
 import core.Polymorphism;
 import core.Reference;
 import core.TestSample;
+import phylotree.Phylotree;
 
 public class OverviewTreeLeafNode extends TreeNode {
 	private ArrayList<Polymorphism> foundPolys = new ArrayList<Polymorphism>();
@@ -16,7 +17,6 @@ public class OverviewTreeLeafNode extends TreeNode {
 	public OverviewTreeLeafNode(TreeNode parent, TestSample sample, SearchResultTreeNode attachedPhylotreeNode) {
 		parent.addChild(this);
 		this.parent = parent;
-
 		phylotreeNode = attachedPhylotreeNode.getPhyloTreeNode();
 		foundPolys.addAll(attachedPhylotreeNode.getFoundPolys());
 		this.testSample = sample;
@@ -38,7 +38,7 @@ public class OverviewTreeLeafNode extends TreeNode {
 		return testSample;
 	}
 
-	public void updatePolys(boolean includeHotspots, Reference reference) {
+	public void updatePolys(boolean includeHotspots, Phylotree phylotree) {
 		ArrayList<Polymorphism> foundPolysAllSamples = new ArrayList<Polymorphism>();
 
 		OverviewTreeInnerNode c = (OverviewTreeInnerNode) parent;
@@ -49,7 +49,7 @@ public class OverviewTreeLeafNode extends TreeNode {
 		 */
 		for (Polymorphism currentRemaining : testSample.getResult(testSample.getExpectedHaplogroup()).getSearchResult().getDetailedResult()
 				.getRemainingPolysInSample()) {
-			if (includeHotspots || (!includeHotspots && !currentRemaining.isMTHotspot(reference)))
+			if (includeHotspots || (!includeHotspots && !phylotree.isHotspot(currentRemaining)))
 				remainingPolys.add(currentRemaining);
 		}
 
