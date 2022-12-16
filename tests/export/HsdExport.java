@@ -76,8 +76,8 @@ public class HsdExport {
 		KulczynskiRanking newRanker = new KulczynskiRanking(10);
 		newSampleFile.updateClassificationResults(phylotree, newRanker);
 
-		ExportUtils.createReport(newSampleFile.getTestSamples(), ref, "test.txt", true);
-		Assert.assertTrue(readFileIntoString("test.txt").contains("16519C (hotspot)"));
+		ExportUtils.createReport(newSampleFile.getTestSamples(), ref, "h100.txt", true);
+		Assert.assertTrue(readFileIntoString("h100.txt").contains("16519C (hotspot)"));
 		
 	}
 

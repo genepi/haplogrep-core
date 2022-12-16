@@ -1,6 +1,8 @@
 package general;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import org.jdom.JDOMException;
@@ -30,7 +32,9 @@ public class HaplogroupTest {
 
 		reference = new Reference("test-data/reference/rcrs/rCRS.fasta");
 
-		phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt", reference);
+		HashSet<String> hotspots = new HashSet<>(Arrays.asList("315.1C", "309.1C", "309.1CC", "523d","524d","524.1AC","524.1ACAC","3107d","16182C","16183C","16193.1C","16193.1CC","16519C"));
+
+		phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt", reference, hotspots);
 
 	}
 

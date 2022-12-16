@@ -539,8 +539,6 @@ public class ExportUtils {
 
 		String fasta = fileName + "_MSA.fasta";
 
-		System.out.println(fasta);
-
 		FileWriter fastaMSA = new FileWriter(fasta);
 
 		Vector<Polymorphism> vectorPolys = new Vector<Polymorphism>();
