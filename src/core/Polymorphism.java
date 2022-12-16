@@ -477,7 +477,7 @@ public class Polymorphism implements Comparable<Polymorphism>, Serializable {
 	public boolean isMTHotspot(Reference reference) {
 		try {
 			// TODO change to enum
-			if (reference.getName().equals("RCRS") || reference.getName().equals("RSRS")) {
+			if (reference.getName() != null && (reference.getName().equals("RCRS") || reference.getName().equals("RSRS"))) {
 				if (this.equals(new Polymorphism(reference, "315.1C"))) {
 					return true;
 				}

@@ -57,8 +57,12 @@ public class ExportUtils {
 		}
 		return lines;
 	}
-
+	
 	public static void createReport(Collection<TestSample> sampleCollection, Reference reference, String outFilename, boolean extended) throws IOException {
+		createReport( sampleCollection,  reference,  outFilename,  extended,  1);
+	}
+
+	public static void createReport(Collection<TestSample> sampleCollection, Reference reference, String outFilename, boolean extended, int tophits) throws IOException {
 
 		CsvTableWriter writer = new CsvTableWriter(outFilename, '\t');
 
@@ -82,8 +86,14 @@ public class ExportUtils {
 				int rank = 0;
 
 				for (RankedResult currentResult : sample.getResults()) {
-
+					
 					rank++;
+					
+					if(rank > tophits) {
+						break;
+					}
+					
+				
 
 					SampleRanges range = sample.getSample().getSampleRanges();
 
