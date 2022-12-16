@@ -101,8 +101,9 @@ public class FastaImporter {
 			// also include supplemental alignments ("chimeric reads")
 
 			boolean first = true;
+			
 			for (AlnRgn alignedRead : mem.align(read)) {
-
+				
 				// as defined by BWA
 				if (alignedRead.getAs() < 30) {
 					continue;
@@ -175,25 +176,24 @@ public class FastaImporter {
 	private String readCigar(SAMRecord samRecord, String reference) {
 
 		String readString = samRecord.getReadString();
-
-		// System.out.println(readString.length() + " " +
-		// samRecord.getCigarString());
-
 		StringBuilder pos = new StringBuilder();
 		StringBuilder _range = new StringBuilder();
 		int start = 0;
 		int lastpos = 0;
 		int countZero = 0;
+		
 		for (int i = 0; i < readString.length(); i++) {
-
+ 
 			int currentPos = samRecord.getReferencePositionAtReadPosition(i + 1);
+			
+			System.out.println("POS "  + i + "(" + samRecord + ")");
+			System.out.println("current "  + currentPos);
 
 			// if Ns at beginning, samrecord gets 0
 			if (countZero == 0) {
 				if (currentPos != 0) {
 					countZero = currentPos;
 					start = currentPos;
-					// System.out.println("START " + start);
 				}
 			}
 
@@ -207,22 +207,18 @@ public class FastaImporter {
 			// e.g. INS and DEL having currentPos 0
 			if (currentPos > 0) {
 				lastpos = currentPos;
-				/*
-				 * if (startRange && inputBase != 'N') {
-				 * _range.append(currentPos); startRange = false; }
-				 *
-				 * else if (inputBase == 'N') { _range.append("-" + (currentPos
-				 * - 1) + "; "); startRange = true; }
-				 */
 
 				if (inputBase == 'N') {
 					_range.append(currentPos + ";");
 					if (start == 0)
 						start = currentPos + 1;
-					// pos.append("\t" + currentPos + "" + inputBase);
-					continue;
 				}
 
+				//2021-03-19 REMOVED as otherwise heteroplasmy or mixtures not detected	
+				/*	if (inputBase != 'A' && inputBase != 'C' && inputBase != 'G' && inputBase != 'T') {
+						continue;
+					}*/
+				
 				char referenceBase = reference.charAt(currentPos - 1);
 
 				if (inputBase != referenceBase) {
@@ -235,25 +231,12 @@ public class FastaImporter {
 		}
 		Integer currentReferencePos = samRecord.getAlignmentStart();
 
-		// System.out.println("CurrentREF POS " + currentReferencePos + " cigar
-		// " + samRecord.getCigarString());
-
 		int sequencePos = 0;
-
-		int first = 0;
-		// System.out.println("CONTIG " + samRecord.getContig());
 
 		for (CigarElement cigarElement : samRecord.getCigar().getCigarElements()) {
 
 			Integer cigarElementLength = cigarElement.getLength();
 
-			if (first == 0) {
-				if (cigarElement.getOperator() == CigarOperator.S) {
-					currentReferencePos = 1;
-					// System.out.println("HERE Cigar.S");
-				}
-				first++;
-			}
 			StringBuilder buildDeletion = new StringBuilder();
 
 			if (cigarElement.getOperator() == CigarOperator.D) {
@@ -301,12 +284,7 @@ public class FastaImporter {
 			}
 
 			// only M and D operators consume bases
-			// System.out.println("Check Operator BEFORE " +
-			// cigarElement.getOperator() + " " + samRecord.getCigarString());
-
 			if (cigarElement.getOperator().consumesReferenceBases()) {
-				// System.out.println("Check Operator AFTER " +
-				// cigarElement.getOperator());
 				currentReferencePos = currentReferencePos + cigarElement.getLength();
 			}
 
@@ -315,6 +293,7 @@ public class FastaImporter {
 			if (cigarElement.getOperator().consumesReadBases()) {
 				sequencePos = sequencePos + cigarElement.getLength();
 			}
+
 		}
 		this.range = cleanRange(_range.toString(), start, lastpos);
 		return pos.toString();
@@ -323,7 +302,7 @@ public class FastaImporter {
 	private String cleanRange(String emptyPos, int start, int stop) {
 		String range = "";
 		int lastpos = start;
-		// System.out.println("start " + start + " + " + stop);
+		//System.out.println("start  " + start + "  + " + stop);
 		if (emptyPos.length() == 0)
 			return (start + "-" + stop + ";");
 		StringTokenizer st = new StringTokenizer(emptyPos, ";");
@@ -339,28 +318,4 @@ public class FastaImporter {
 		range += lastpos + "-" + stop + ";";
 		return range;
 	}
-
-	/*
-	 * public String invertRange(String unavailablePositions, int start, int
-	 * stop, int length) {
-	 * 
-	 * StringBuilder range = new StringBuilder();
-	 * 
-	 * int lastPos = start;
-	 * 
-	 * if (unavailablePositions.length() == 0) { return (start + "-" + stop +
-	 * ";"); }
-	 * 
-	 * String[] splits = unavailablePositions.split(";");
-	 * 
-	 * for (String split : splits) {
-	 * 
-	 * int currentN = Integer.valueOf(split);
-	 * 
-	 * if (currentN > lastPos) { range.append(lastPos + "-" + (currentN - 1) +
-	 * ";"); lastPos = currentN + 1; } else if (currentN == lastPos) {
-	 * lastPos++; } } if (lastPos <= length) { range.append(lastPos + "-" + stop
-	 * + ";"); } return range.toString(); }
-	 */
-
 }

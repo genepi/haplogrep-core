@@ -9,6 +9,9 @@ import java.util.HashSet;
 import org.junit.Test;
 
 import core.Reference;
+import core.SampleFile;
+import core.TestSample;
+import search.ranking.KulczynskiRanking;
 
 public class FastaImporterTests {
 
@@ -151,5 +154,4 @@ public class FastaImporterTests {
 
 	}
 	
-
 }

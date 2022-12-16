@@ -137,5 +137,73 @@ public class ClassifyHaplogroups {
 		Assert.assertTrue(set.contains("315.1C"));
 
 	}
+	
+	@Test
+	public void testH100MaskedFirstPart() throws Exception {
+		String file = "test-data/fasta/H100_masked_0_8500.fasta";
+		FastaImporter impFasta = new FastaImporter();
+		Reference ref = new Reference("test-data/reference/rcrs/rCRS.fasta");
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
+		
+		String[] splits = samples.get(0).split("\t");
+		
+		assertEquals("8500-16569;", splits[1]);
+
+		// for later
+		SampleFile samplesFasta = new SampleFile(samples,ref);
+		KulczynskiRanking newRanker = new KulczynskiRanking(1);
+		samplesFasta.updateClassificationResults(phylotree, newRanker);
+
+		ExportUtils.createReport(samplesFasta.getTestSamples(), ref, "test.txt", true, 1);
+
+	}
+	
+	@Test
+	public void testH100MaskedSecondPart() throws Exception {
+		String file = "test-data/fasta/H100_masked_8500_16569.fasta";
+		FastaImporter impFasta = new FastaImporter();
+		Reference ref = new Reference("test-data/reference/rcrs/rCRS.fasta");
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
+		
+		String[] splits = samples.get(0).split("\t");
+		assertEquals("1-8499;", splits[1]);
+		
+		// for later
+		SampleFile samplesFasta = new SampleFile(samples,ref);
+		KulczynskiRanking newRanker = new KulczynskiRanking(1);
+		samplesFasta.updateClassificationResults(phylotree, newRanker);
+
+		ExportUtils.createReport(samplesFasta.getTestSamples(), ref, "test.txt", true, 1);
+
+	}
+	
+	@Test
+	public void testH100MaskedMiddlePart() throws Exception {
+		String file = "test-data/fasta/H100_masked_3000_13000.fasta";
+		FastaImporter impFasta = new FastaImporter();
+		Reference ref = new Reference("test-data/reference/rcrs/rCRS.fasta");
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
+		
+		String[] splits = samples.get(0).split("\t");
+
+		HashSet<String> set = new HashSet<String>();
+
+		for (int i = 3; i < splits.length; i++) {
+			set.add(splits[i]);
+			System.out.println(splits[i]);
+		}
+		
+		System.out.println("Range " + splits[1]);
+		assertEquals("1-2999; 13000-16569", splits[1]);
+
+		// for later
+		SampleFile samplesFasta = new SampleFile(samples,ref);
+		KulczynskiRanking newRanker = new KulczynskiRanking(1);
+		samplesFasta.updateClassificationResults(phylotree, newRanker);
+
+		ExportUtils.createReport(samplesFasta.getTestSamples(), ref, "test.txt", true, 1);
+
+	}
+	
 
 }
