@@ -186,8 +186,8 @@ public class FastaImporter {
  
 			int currentPos = samRecord.getReferencePositionAtReadPosition(i + 1);
 			
-			System.out.println("POS "  + i + "(" + samRecord + ")");
-			System.out.println("current "  + currentPos);
+			//System.out.println("POS "  + i + "(" + samRecord + ")");
+			//System.out.println("current "  + currentPos);
 
 			// if Ns at beginning, samrecord gets 0
 			if (countZero == 0) {
