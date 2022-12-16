@@ -11,7 +11,6 @@ public class Reference {
 	String name;
 	String refFilename;
 	String sequence;
-	String jbwaDir;
 	int length;
 
 	public String getName() {

@@ -2,6 +2,7 @@ package core;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -314,8 +315,9 @@ public class SampleFile {
 	// }
 	/**
 	 * Runs all quality rules of the standard rule set
+	 * @throws FileNotFoundException 
 	 */
-	public void runQualityChecks(Phylotree phylotree) {
+	public void runQualityChecks(Phylotree phylotree) throws FileNotFoundException {
 		if (qualityAssistent == null) {
 			RuleSet rules = new RuleSet();
 			rules.addStandardRules();
@@ -324,7 +326,7 @@ public class SampleFile {
 		qualityAssistent.reevaluateRules();
 	}
 
-	public void applyNomenclatureRules(Phylotree phylotree, String file) {
+	public void applyNomenclatureRules(Phylotree phylotree, String file) throws FileNotFoundException {
 
 		if (qualityAssistent == null) {
 			RuleSet rules = new RuleSet();
@@ -334,7 +336,7 @@ public class SampleFile {
 		qualityAssistent.reevaluateRules();
 	}
 
-	public void reevaluateSample(TestSample sampleToReevaluate) {
+	public void reevaluateSample(TestSample sampleToReevaluate) throws FileNotFoundException {
 		qualityAssistent.reevaluateRulesForSample(sampleToReevaluate);
 
 		if (!qualityAssistent.hasFatalIssues(sampleToReevaluate))
@@ -577,7 +579,7 @@ public class SampleFile {
 	// return samples;
 	// }
 
-	public void correctIssue(int issueID, int correctionMethodID) {
+	public void correctIssue(int issueID, int correctionMethodID) throws FileNotFoundException {
 		// TestSample currentSample =
 		// session.getCurrentSampleFile().getTestSample("663002210");
 		QualityIssue issue = qualityAssistent.doCorrection(issueID, correctionMethodID);

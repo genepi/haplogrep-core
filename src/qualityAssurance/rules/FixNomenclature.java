@@ -3,6 +3,8 @@ package qualityAssurance.rules;
 import qualityAssurance.QualityAssistent;
 
 import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,25 +22,25 @@ public class FixNomenclature extends HaplogrepRule {
 		super(priority, file);
 	}
 
-	private HashMap<String, String> rules = null;
-
 	@Override
-	public void evaluate(QualityAssistent qualityAssistent, TestSample currentSample) {
+	public void evaluate(QualityAssistent qualityAssistent, TestSample currentSample) throws FileNotFoundException {
 
 		Reference reference = currentSample.getReference();
 
-		if (rules == null) {
-			InputStream stream = this.getClass().getClassLoader().getResourceAsStream(getFile());
+		InputStream stream = null;
+		try {
+			stream = new FileInputStream(getFile());
+		} catch (FileNotFoundException e) {
+			throw new FileNotFoundException("Please specify a rules file!");
+		}
+		CsvTableReader reader;
 
-			CsvTableReader reader;
+		reader = new CsvTableReader(new DataInputStream(stream), ',');
 
-			reader = new CsvTableReader(new DataInputStream(stream), ',');
+		HashMap<String, String> rules = new HashMap<String, String>();
 
-			rules = new HashMap<String, String>();
-
-			while (reader.next()) {
-				rules.put(reader.getString("error"), reader.getString("expected"));
-			}
+		while (reader.next()) {
+			rules.put(reader.getString("error"), reader.getString("expected"));
 		}
 
 		ArrayList<Polymorphism> inPolys = currentSample.getSample().getPolymorphisms();

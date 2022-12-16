@@ -1,5 +1,6 @@
 package qualityAssurance;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -49,7 +50,7 @@ public class RuleSet {
 		     this.rules.get(newRule.getPriority()).add(newRule);
 	}
 	
-	void reevaluateAllRules(QualityAssistent qualityAssistent, TestSample currentSample) {
+	void reevaluateAllRules(QualityAssistent qualityAssistent, TestSample currentSample) throws FileNotFoundException {
 		for (int i = 0; i < 10;i++)
 			if(qualityAssistent.getIssues(currentSample).size() == 0)	
 				reevaluateRules(qualityAssistent, i, currentSample);
@@ -60,7 +61,7 @@ public class RuleSet {
 				suppressRules(qualityAssistent, currentPriority, currentSample);
 	}
 	
-	private void reevaluateRules(QualityAssistent qualityAssistent,int priority,TestSample currentSample) {
+	private void reevaluateRules(QualityAssistent qualityAssistent,int priority,TestSample currentSample) throws FileNotFoundException {
 		for(HaplogrepRule currentRule : rules.get(priority)){
 			currentRule.evaluate(qualityAssistent,currentSample);
 		}

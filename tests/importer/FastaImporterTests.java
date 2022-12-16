@@ -150,5 +150,6 @@ public class FastaImporterTests {
 		assertEquals(true, set.contains("8270-8277d"));
 
 	}
+	
 
 }

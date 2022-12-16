@@ -2,6 +2,8 @@ package qualityAssurance.rules;
 
 import qualityAssurance.QualityAssistent;
 
+import java.io.FileNotFoundException;
+
 import core.TestSample;
 
 public abstract class HaplogrepRule {
@@ -18,7 +20,7 @@ public abstract class HaplogrepRule {
 		this.file = file;
 	}
 
-	public abstract void evaluate(QualityAssistent qualityAssistent, TestSample currentSample);
+	public abstract void evaluate(QualityAssistent qualityAssistent, TestSample currentSample) throws FileNotFoundException;
 
 	public abstract void suppressIssues(QualityAssistent qualityAssistent, TestSample currentSample);
 

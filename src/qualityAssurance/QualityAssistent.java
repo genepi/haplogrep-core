@@ -1,5 +1,6 @@
 package qualityAssurance;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,7 +38,7 @@ public class QualityAssistent {
 		// get(0).getSearchResult().getAttachedPhyloTreeNode().getTree();
 	}
 
-	public void reevaluateRules() {
+	public void reevaluateRules() throws FileNotFoundException {
 		//clearAllIssues();
 
 		for (int i = 0; i < 10; i++) {
@@ -226,7 +227,7 @@ public class QualityAssistent {
 		return issueLookup.get(issueID);
 	}
 
-	public void reevaluateRulesForSample(TestSample sampleToReevaluate) {
+	public void reevaluateRulesForSample(TestSample sampleToReevaluate) throws FileNotFoundException {
 		removeAllIssuesOfSample(sampleToReevaluate);
 
 		for (int i = 0; i < 10; i++) {

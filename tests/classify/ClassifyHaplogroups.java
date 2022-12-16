@@ -1,4 +1,4 @@
-package exporter;
+package classify;
 
 import static org.junit.Assert.assertEquals;
 
@@ -7,21 +7,27 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 
 import org.jdom.JDOMException;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import core.Polymorphism;
 import core.Reference;
 import core.SampleFile;
+import core.TestSample;
 import exceptions.parse.sample.InvalidPolymorphismException;
+import importer.FastaImporter;
 import importer.HsdImporter;
 import phylotree.Phylotree;
 import phylotree.PhylotreeManager;
 import search.ranking.KulczynskiRanking;
 import util.ExportUtils;
 
-public class HsdExport {
+public class ClassifyHaplogroups {
 
 	private static Phylotree phylotree = null;
 
@@ -89,6 +95,45 @@ public class HsdExport {
 			e.printStackTrace();
 		}
 		return lines;
+
+	}
+
+	@Test
+	public void testH100WithNomenclatureRules() throws Exception {
+
+		String file = "test-data/fasta/InsertionTest3.fasta";
+		FastaImporter impFasta = new FastaImporter();
+		Reference ref = new Reference("test-data/reference/rcrs/rCRS.fasta");
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
+
+		// create top 10 hits
+		SampleFile samplesFasta = new SampleFile(samples,ref);
+		KulczynskiRanking newRanker = new KulczynskiRanking(10);
+		samplesFasta.updateClassificationResults(phylotree, newRanker);
+		TestSample a = samplesFasta.getTestSamples().get(0);
+
+		HashSet<String> set = new HashSet<String>();
+
+		for (Polymorphism input : a.getSample().getPolymorphisms()) {
+			set.add(input.toString());
+		}
+		Assert.assertTrue(set.contains("309.1CCT"));
+		Assert.assertFalse(set.contains("309.1C"));
+		Assert.assertFalse(set.contains("309.2C"));
+		Assert.assertFalse(set.contains("315.1C"));
+
+		//set rules for fasta
+		samplesFasta.applyNomenclatureRules(phylotree,"test-data/rules/rules.csv");
+
+		set = new HashSet<String>();
+		for (Polymorphism input : a.getSample().getPolymorphisms()) {
+			set.add(input.toString());
+		}
+
+		Assert.assertFalse(set.contains("309.1CCT"));
+		Assert.assertTrue(set.contains("309.1C"));
+		Assert.assertTrue(set.contains("309.2C"));
+		Assert.assertTrue(set.contains("315.1C"));
 
 	}
 
