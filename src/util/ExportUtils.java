@@ -365,7 +365,6 @@ public class ExportUtils {
 					if (!polyToExclude(poly)) {
 						remaining += poly + " ";
 						remaining += "\n";
-						// System.out.println(" Remaining + " + remaining);
 					}
 				}
 
@@ -488,7 +487,6 @@ public class ExportUtils {
 			String fastaResult = reference.getSequence();
 			int insertions = 0;
 			int deletions = 0;
-			// System.out.println("sample " + sample.getSampleID());
 			for (Polymorphism poly : sample.getSample().getPolymorphisms()) {
 
 				poly.getPosition();
@@ -496,12 +494,8 @@ public class ExportUtils {
 					for (int i = 0; i < poly.getInsertedPolys().length(); i++) {
 						insertions++;
 						fastaResult = insertChar(fastaResult, poly.getInsertedPolys().toString().charAt(i), poly.getPosition() - 1 + insertions - deletions);
-						// System.out.println("!ins " + poly.getPosition()+" " +
-						// poly.getMutation() + " "+
-						// poly.getInsertedPolys().toString());
 					}
 				} else if (poly.getMutation().toString().equals("DEL")) {
-					// System.out.println(poly + " poly " + poly.getMutation());
 					fastaResult = deleteChar(fastaResult, poly.getPosition() - 1 + insertions - deletions);
 					deletions++;
 				} else {

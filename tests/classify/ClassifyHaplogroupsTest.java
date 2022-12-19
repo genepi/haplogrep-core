@@ -8,7 +8,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 
 import org.jdom.JDOMException;
@@ -28,7 +27,7 @@ import phylotree.PhylotreeManager;
 import search.ranking.KulczynskiRanking;
 import util.ExportUtils;
 
-public class ClassifyHaplogroupsTests {
+public class ClassifyHaplogroupsTest {
 
 	private static Phylotree phylotree = null;
 
@@ -60,7 +59,7 @@ public class ClassifyHaplogroupsTests {
 
 		ExportUtils.createReport(newSampleFile.getTestSamples(), ref, "test.txt", true);
 
-		assertEquals(1, countLineBufferedReader("test.txt") - 1);
+		assertEquals(1, countLines("test.txt") - 1);
 
 	}
 
@@ -81,11 +80,11 @@ public class ClassifyHaplogroupsTests {
 		// export top 5 hits
 		ExportUtils.createReport(newSampleFile.getTestSamples(), ref, "test.txt", true, 5);
 
-		assertEquals(5, countLineBufferedReader("test.txt") - 1);
+		assertEquals(5, countLines("test.txt") - 1);
 
 	}
 
-	public static long countLineBufferedReader(String fileName) {
+	public static long countLines(String fileName) {
 
 		long lines = 0;
 		try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
@@ -190,11 +189,35 @@ public class ClassifyHaplogroupsTests {
 
 		for (int i = 3; i < splits.length; i++) {
 			set.add(splits[i]);
-			System.out.println(splits[i]);
 		}
 		
-		System.out.println("Range " + splits[1]);
-		assertEquals("1-2999; 13000-16569", splits[1]);
+		assertEquals("13000-16569;1-2999;", splits[1]);
+
+		// for later
+		SampleFile samplesFasta = new SampleFile(samples,ref);
+		KulczynskiRanking newRanker = new KulczynskiRanking(1);
+		samplesFasta.updateClassificationResults(phylotree, newRanker);
+
+		ExportUtils.createReport(samplesFasta.getTestSamples(), ref, "test.txt", true, 1);
+
+	}
+	
+	@Test
+	public void testH1003Times() throws Exception {
+		String file = "test-data/fasta/H100_3times.fasta";
+		FastaImporter impFasta = new FastaImporter();
+		Reference ref = new Reference("test-data/reference/rcrs/rCRS.fasta");
+		ArrayList<String> samples = impFasta.load(new File(file), ref);
+		
+		String[] splits = samples.get(0).split("\t");
+
+		HashSet<String> set = new HashSet<String>();
+
+		for (int i = 3; i < splits.length; i++) {
+			set.add(splits[i]);
+		}
+		
+		assertEquals("1-16569;", splits[1]);
 
 		// for later
 		SampleFile samplesFasta = new SampleFile(samples,ref);

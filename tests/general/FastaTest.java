@@ -158,7 +158,6 @@ public class FastaTest {
 			set.add(splits[i]);
 		}
 
-		System.out.println(set.toString());
 		assertEquals(true, set.contains("16182.1C"));
 		assertEquals(true, set.contains("309.1CCT"));
 		assertEquals(true, set.contains("3106-3106d"));
@@ -218,13 +217,6 @@ public class FastaTest {
 		TestSample ts3 = TestSample.parse(samples.get(2), ref);
 		TestSample ts4 = TestSample.parse(samples.get(3), ref);
 
-		System.out.println(samples.get(0));
-		System.out.println(samples.get(1));
-		System.out.println(samples.get(2) + " \t " + ts3.getSample().getSampleRanges().toString());
-		System.out.println(samples.get(3) + " \t " + ts4.getSample().getSampleRanges().toString());
-
-		// System.out.println(ts1.getSample().getSampleRanges());
-
 		assertEquals(ts1.getSample().getSampleRanges().toString(), "1-3106 ; 3108-16569 ;");
 		// assertEquals(ts2.getSample().getSampleRanges().toString(), "1-100 ;
 		// 200-2000 ; 5000-16000 ; 16200-16569");
@@ -279,7 +271,6 @@ public class FastaTest {
 
 		for (int j = 0; j < testArray.size(); j++) {
 			testArray.get(j).updateSearchResults(phylotree, new KulczynskiRanking());
-			System.out.println(testArray.get(j).getSampleID() + " " + testArray.get(j).getDetectedHaplogroup());
 		}
 
 		ref = new Reference("test-data/reference/rcrs/rCRS.fasta");
@@ -290,64 +281,6 @@ public class FastaTest {
 		FastaImporter impFasta = new FastaImporter();
 		ArrayList<String> samples = impFasta.load(new File(file), ref);
 		TestSample ts1 = TestSample.parse(samples.get(0), ref);
-		// TestSample ts2 = TestSample.parse(samples.get(1));
-		// TestSample ts3 = TestSample.parse(samples.get(2));
-		// TestSample ts4 = TestSample.parse(samples.get(3));
-
-		System.out.println(samples.get(0));
-		// System.out.println(samples.get(1));
-		// System.out.println(samples.get(2));
-		// System.out.println(samples.get(3));
-
-		// System.out.println(ts1.getSample().getSampleRanges());
-
-		// assertEquals(ts1.getSample().getSampleRanges().toString(), "1-3106 ;
-		// 3108-16569 ;");
-		//assertEquals(ts1.getSample().getSampleRanges().toString(), "1-100 ; 200-2000 ; 5000-16000 ; 16200-16569");
-		// assertEquals(ts3.getSample().getSampleRanges().toString(), "10-20 ;
-		// 22-55 ; 58-500 ;");
-		// assertEquals(ts3.getSample().getSampleRanges().toString(), "10-20 ;
-		// 22-55 ; 58-500 ;");
 	}
 
-	/*
-	 * @Test public void parsePhylotree17() throws Exception { String file =
-	 * "test-data/fasta/Phylotree17hgs.zip"; String fileTemp =
-	 * "test-data/fasta/temp.fasta";
-	 * 
-	 * // Phylotree phylotree = // PhylotreeManager.getInstance().getPhylotree(
-	 * "data/phylotree/phylotree17.xml","data/weights/weights17.txt"); Phylotree
-	 * phylotree = PhylotreeManager.getInstance().getPhylotree(
-	 * "data/phylotree/phylotree17_rsrs.xml",
-	 * "data/weights/weights17_rsrs.txt");
-	 * 
-	 * FileInputStream fileInputStream = new FileInputStream(file);
-	 * BufferedInputStream bufferedInputStream = new
-	 * BufferedInputStream(fileInputStream); ZipInputStream zin = new
-	 * ZipInputStream(bufferedInputStream); ZipEntry ze = null; Map<String,
-	 * String> differences = new HashMap<String, String>(); while ((ze =
-	 * zin.getNextEntry()) != null) { String expectedHG = ze.getName();
-	 * OutputStream out = new FileOutputStream(fileTemp); byte[] buffer = new
-	 * byte[20000]; int len; while ((len = zin.read(buffer)) != -1) {
-	 * out.write(buffer, 0, len); } out.close(); FastaImporter impFasta = new
-	 * FastaImporter();
-	 * 
-	 * ArrayList<String> samples = impFasta.load(new File(fileTemp),
-	 * References.RSRS);
-	 * 
-	 * List<RankedResult> result =
-	 * phylotree.search(TestSample.parse(samples.get(0)), new HammingRanking());
-	 * String expected = samples.get(0).split("\t")[0]; String resulting =
-	 * result.get(0).getHaplogroup().toString();
-	 * 
-	 * if (!expected.equals(resulting)) { differences.put(expected, resulting);
-	 * }
-	 * 
-	 * } /// System.out.println(differences.size()); for (Map.Entry<String,
-	 * String> entry : differences.entrySet()) { //
-	 * System.out.println("Expected = " + entry.getKey() + ", Resulting = " + //
-	 * entry.getValue()); } zin.close();
-	 * 
-	 * }
-	 */
 }

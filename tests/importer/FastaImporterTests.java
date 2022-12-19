@@ -58,7 +58,7 @@ public class FastaImporterTests {
 		ArrayList<String> samples = impFasta.load(new File(file), ref);
 
 		String[] splits = samples.get(0).split("\t");
-
+		
 		for (int i = 3; i < splits.length; i++) {
 			actual.append(splits[i] + ",");
 		}
