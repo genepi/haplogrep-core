@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>genepi</groupId>
 	<artifactId>haplogrep-core</artifactId>
-	<version>3.0.0-rc1</version>
+	<version>3.0.0-rc3</version>
 
 	<properties>
 		<github.global.server>github</github.global.server>

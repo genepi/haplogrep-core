@@ -235,5 +235,20 @@ public class HaplogroupTest {
 
 		Assert.assertEquals("W1+119", result.get(0).getHaplogroup().toString());
 	}
+	
+	@Test
+	public void testEurope52()
+			throws NumberFormatException, JDOMException, IOException, InvalidPolymorphismException, HsdFileException, InvalidColumnCountException {
+
+		List<RankedResult> result = phylotree.search(TestSample.parse(
+				"Europe52	16024-16569;1-576		16129A	16223T	16391A	16519C	73G	152C	199C	204C	207A	239C	250C	263G	309.1C	315.1C	573.1CCCC",
+				reference), new KulczynskiRanking(1));
+
+		System.out.println(result.get(0).getDistance());
+		System.out.println(result.get(0).getSearchResult().getDetailedResult().getExpectedPolys());
+		System.out.println(result.get(0).getSearchResult().getDetailedResult().getFoundNotFoundPolys());
+		Assert.assertEquals("I3", result.get(0).getHaplogroup().toString());
+	}
+	
 
 }

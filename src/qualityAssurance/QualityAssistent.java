@@ -258,4 +258,12 @@ public class QualityAssistent {
 			return false;
 	}
 
+	public RuleSet getRules() {
+		return rules;
+	}
+
+	public void setRules(RuleSet rules) {
+		this.rules = rules;
+	}
+
 }
