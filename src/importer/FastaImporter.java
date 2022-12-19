@@ -70,8 +70,6 @@ public class FastaImporter {
 		System.load(jbwaLib);
 	}
 
-	private String range;
-
 	public ArrayList<String> load(File file, Reference reference) throws FileNotFoundException, IOException {
 
 		// load required
@@ -97,13 +95,11 @@ public class FastaImporter {
 			SAMLineParser parser = new SAMLineParser(header);
 
 			StringBuilder profile = new StringBuilder();
+			StringBuilder range = new StringBuilder();
 
 			// also include supplemental alignments ("chimeric reads")
-
-			boolean first = true;
-			
 			for (AlnRgn alignedRead : mem.align(read)) {
-				
+
 				// as defined by BWA
 				if (alignedRead.getAs() < 30) {
 					continue;
@@ -153,18 +149,13 @@ public class FastaImporter {
 
 				SAMRecord samRecord = parser.parseLine(samRecordBulder.toString());
 
-				String variants = readCigar(samRecord, reference.getSequence());
-
-				if (first) {
-					profile.append(sequence.getName() + "\t" + range + "\t" + "?");
-					first = false;
-				}
+				String variants = readCigar(samRecord, reference.getSequence(), range);
 
 				profile.append(variants);
 
 			}
 
-			lines.add(profile.toString());
+			lines.add(sequence.getName() + "\t" + range.toString() + "\t" + "?" + profile.toString());
 
 		}
 
@@ -173,23 +164,19 @@ public class FastaImporter {
 		return lines;
 	}
 
-	private String readCigar(SAMRecord samRecord, String reference) {
+	private String readCigar(SAMRecord samRecord, String reference, StringBuilder range) {
 
 		String readString = samRecord.getReadString();
-		StringBuilder pos = new StringBuilder();
-		StringBuilder _range = new StringBuilder();
+		StringBuilder variants = new StringBuilder();
+		StringBuilder n_positions = new StringBuilder();
 		int start = 0;
 		int lastpos = 0;
 		int countZero = 0;
-		
-		for (int i = 0; i < readString.length(); i++) {
- 
-			int currentPos = samRecord.getReferencePositionAtReadPosition(i + 1);
-			
-			//System.out.println("POS "  + i + "(" + samRecord + ")");
-			//System.out.println("current "  + currentPos);
 
-			// if Ns at beginning, samrecord gets 0
+		for (int i = 0; i < readString.length(); i++) {
+
+			int currentPos = samRecord.getReferencePositionAtReadPosition(i + 1);
+
 			if (countZero == 0) {
 				if (currentPos != 0) {
 					countZero = currentPos;
@@ -209,21 +196,18 @@ public class FastaImporter {
 				lastpos = currentPos;
 
 				if (inputBase == 'N') {
-					_range.append(currentPos + ";");
-					if (start == 0)
+					n_positions.append(currentPos + ";");
+
+					if (start == 0) {
 						start = currentPos + 1;
+					}
 				}
 
-				//2021-03-19 REMOVED as otherwise heteroplasmy or mixtures not detected	
-				/*	if (inputBase != 'A' && inputBase != 'C' && inputBase != 'G' && inputBase != 'T') {
-						continue;
-					}*/
-				
 				char referenceBase = reference.charAt(currentPos - 1);
 
 				if (inputBase != referenceBase) {
 
-					pos.append("\t" + currentPos + "" + inputBase);
+					variants.append("\t" + currentPos + "" + inputBase);
 
 				}
 
@@ -253,7 +237,7 @@ public class FastaImporter {
 					// pos.append("\t" + cigarElementStart + "d");
 					cigarElementStart++;
 				}
-				pos.append("\t" + buildDeletion.toString());
+				variants.append("\t" + buildDeletion.toString());
 
 			}
 
@@ -279,7 +263,7 @@ public class FastaImporter {
 					i++;
 				}
 
-				pos.append("\t" + currentReferencePosIns + ".1" + buildInsertion.toString());
+				variants.append("\t" + currentReferencePosIns + ".1" + buildInsertion.toString());
 
 			}
 
@@ -295,17 +279,24 @@ public class FastaImporter {
 			}
 
 		}
-		this.range = cleanRange(_range.toString(), start, lastpos);
-		return pos.toString();
+		
+		String _range = removeNPositionsFromRange(n_positions.toString(), start, lastpos);
+		range.append(_range);
+		
+		return variants.toString();
 	}
 
-	private String cleanRange(String emptyPos, int start, int stop) {
+	private String removeNPositionsFromRange(String emptyPositions, int start, int stop) {
+
 		String range = "";
 		int lastpos = start;
-		//System.out.println("start  " + start + "  + " + stop);
-		if (emptyPos.length() == 0)
+
+		if (emptyPositions.length() == 0) {
 			return (start + "-" + stop + ";");
-		StringTokenizer st = new StringTokenizer(emptyPos, ";");
+		}
+
+		StringTokenizer st = new StringTokenizer(emptyPositions, ";");
+
 		while (st.hasMoreTokens()) {
 			int posN = Integer.valueOf(st.nextToken());
 			if (posN > lastpos) {
@@ -316,6 +307,7 @@ public class FastaImporter {
 			}
 		}
 		range += lastpos + "-" + stop + ";";
+
 		return range;
 	}
 }
