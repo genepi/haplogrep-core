@@ -50,8 +50,6 @@ public class Reference {
 
 	public void loadReference(String refFilename) {
 
-		System.out.println(new File(refFilename).getAbsolutePath());
-
 		StringBuilder stringBuilder = null;
 		try {
 
