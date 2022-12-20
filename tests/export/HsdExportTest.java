@@ -75,6 +75,9 @@ public class HsdExportTest {
 
 		KulczynskiRanking newRanker = new KulczynskiRanking(10);
 		newSampleFile.updateClassificationResults(phylotree, newRanker);
+		
+		System.out.println("a " +phylotree.getHotspots());
+		System.out.println("b " + phylotree.getPhyloTree().getTree().getHotspots());
 
 		ExportUtils.createReport(newSampleFile.getTestSamples(), ref, "h100.txt", true);
 		System.out.println("content " + readFileIntoString("h100.txt"));
