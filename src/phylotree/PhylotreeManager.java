@@ -28,9 +28,9 @@ public class PhylotreeManager {
 	}
 
 	public static PhylotreeManager getInstance() {
-		// if (instance == null) {
+		if (instance == null) {
 		instance = new PhylotreeManager();
-		// }
+		}
 		return instance;
 	}
 
