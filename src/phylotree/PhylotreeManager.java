@@ -46,11 +46,13 @@ public class PhylotreeManager {
 	 */
 
 	public Phylotree getPhylotree(String phylotreePath, String phyloGeneticWeightsPath, Reference reference) {
+		System.out.println("HERE");
 		return getPhylotree(phylotreePath, phyloGeneticWeightsPath, reference, null);
 	}
 
 	public Phylotree getPhylotree(String phylotreePath, String phyloGeneticWeightsPath, Reference reference, HashSet<String> hotspots) {
 		System.out.println("SIZE MAP " +phylotreeMap.size() );
+		System.out.println("SIZE MAP " +hotspots );
 		if (phylotreeMap.containsKey(phylotreePath)) {
 			System.out.println("existing key: "+  phylotreePath);
 			System.out.println("get phylo hotspots  " + phylotreeMap.get(phylotreePath).getHotspots());
