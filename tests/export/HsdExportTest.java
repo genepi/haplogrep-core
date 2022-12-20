@@ -75,7 +75,8 @@ public class HsdExportTest {
 
 		KulczynskiRanking newRanker = new KulczynskiRanking(10);
 		newSampleFile.updateClassificationResults(phylotree, newRanker);
-		
+		HashSet<String> hotspots = new HashSet<>(Arrays.asList("315.1C", "309.1C", "309.1CC", "523d","524d","524.1AC","524.1ACAC","3107d","16182C","16183C","16193.1C","16193.1CC","16519C"));
+		phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt", reference, hotspots);
 		System.out.println("a " +phylotree.getHotspots());
 		System.out.println("b " + phylotree.getPhyloTree().getTree().getHotspots());
 
