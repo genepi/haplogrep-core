@@ -27,7 +27,7 @@ import phylotree.PhylotreeManager;
 import search.ranking.KulczynskiRanking;
 import util.ExportUtils;
 
-public class HsdExport {
+public class HsdExportTest {
 
 	private static Phylotree phylotree = null;
 

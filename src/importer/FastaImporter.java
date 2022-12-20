@@ -70,8 +70,6 @@ public class FastaImporter {
 		System.load(jbwaLib);
 	}
 
-	private String range;
-
 	public ArrayList<String> load(File file, Reference reference) throws FileNotFoundException, IOException {
 
 		// load required
@@ -97,10 +95,9 @@ public class FastaImporter {
 			SAMLineParser parser = new SAMLineParser(header);
 
 			StringBuilder profile = new StringBuilder();
+			StringBuilder range = new StringBuilder();
 
 			// also include supplemental alignments ("chimeric reads")
-
-			boolean first = true;
 			for (AlnRgn alignedRead : mem.align(read)) {
 
 				// as defined by BWA
@@ -152,18 +149,13 @@ public class FastaImporter {
 
 				SAMRecord samRecord = parser.parseLine(samRecordBulder.toString());
 
-				String variants = readCigar(samRecord, reference.getSequence());
-
-				if (first) {
-					profile.append(sequence.getName() + "\t" + range + "\t" + "?");
-					first = false;
-				}
+				String variants = readCigar(samRecord, reference.getSequence(), range);
 
 				profile.append(variants);
 
 			}
 
-			lines.add(profile.toString());
+			lines.add(sequence.getName() + "\t" + range.toString() + "\t" + "?" + profile.toString());
 
 		}
 
@@ -172,28 +164,23 @@ public class FastaImporter {
 		return lines;
 	}
 
-	private String readCigar(SAMRecord samRecord, String reference) {
+	private String readCigar(SAMRecord samRecord, String reference, StringBuilder range) {
 
 		String readString = samRecord.getReadString();
-
-		// System.out.println(readString.length() + " " +
-		// samRecord.getCigarString());
-
-		StringBuilder pos = new StringBuilder();
-		StringBuilder _range = new StringBuilder();
+		StringBuilder variants = new StringBuilder();
+		StringBuilder n_positions = new StringBuilder();
 		int start = 0;
 		int lastpos = 0;
 		int countZero = 0;
+
 		for (int i = 0; i < readString.length(); i++) {
 
 			int currentPos = samRecord.getReferencePositionAtReadPosition(i + 1);
 
-			// if Ns at beginning, samrecord gets 0
 			if (countZero == 0) {
 				if (currentPos != 0) {
 					countZero = currentPos;
 					start = currentPos;
-					// System.out.println("START " + start);
 				}
 			}
 
@@ -207,27 +194,20 @@ public class FastaImporter {
 			// e.g. INS and DEL having currentPos 0
 			if (currentPos > 0) {
 				lastpos = currentPos;
-				/*
-				 * if (startRange && inputBase != 'N') {
-				 * _range.append(currentPos); startRange = false; }
-				 *
-				 * else if (inputBase == 'N') { _range.append("-" + (currentPos
-				 * - 1) + "; "); startRange = true; }
-				 */
 
 				if (inputBase == 'N') {
-					_range.append(currentPos + ";");
-					if (start == 0)
+					n_positions.append(currentPos + ";");
+
+					if (start == 0) {
 						start = currentPos + 1;
-					// pos.append("\t" + currentPos + "" + inputBase);
-					continue;
+					}
 				}
 
 				char referenceBase = reference.charAt(currentPos - 1);
 
 				if (inputBase != referenceBase) {
 
-					pos.append("\t" + currentPos + "" + inputBase);
+					variants.append("\t" + currentPos + "" + inputBase);
 
 				}
 
@@ -235,25 +215,12 @@ public class FastaImporter {
 		}
 		Integer currentReferencePos = samRecord.getAlignmentStart();
 
-		// System.out.println("CurrentREF POS " + currentReferencePos + " cigar
-		// " + samRecord.getCigarString());
-
 		int sequencePos = 0;
-
-		int first = 0;
-		// System.out.println("CONTIG " + samRecord.getContig());
 
 		for (CigarElement cigarElement : samRecord.getCigar().getCigarElements()) {
 
 			Integer cigarElementLength = cigarElement.getLength();
 
-			if (first == 0) {
-				if (cigarElement.getOperator() == CigarOperator.S) {
-					currentReferencePos = 1;
-					// System.out.println("HERE Cigar.S");
-				}
-				first++;
-			}
 			StringBuilder buildDeletion = new StringBuilder();
 
 			if (cigarElement.getOperator() == CigarOperator.D) {
@@ -270,7 +237,7 @@ public class FastaImporter {
 					// pos.append("\t" + cigarElementStart + "d");
 					cigarElementStart++;
 				}
-				pos.append("\t" + buildDeletion.toString());
+				variants.append("\t" + buildDeletion.toString());
 
 			}
 
@@ -296,17 +263,12 @@ public class FastaImporter {
 					i++;
 				}
 
-				pos.append("\t" + currentReferencePosIns + ".1" + buildInsertion.toString());
+				variants.append("\t" + currentReferencePosIns + ".1" + buildInsertion.toString());
 
 			}
 
 			// only M and D operators consume bases
-			// System.out.println("Check Operator BEFORE " +
-			// cigarElement.getOperator() + " " + samRecord.getCigarString());
-
 			if (cigarElement.getOperator().consumesReferenceBases()) {
-				// System.out.println("Check Operator AFTER " +
-				// cigarElement.getOperator());
 				currentReferencePos = currentReferencePos + cigarElement.getLength();
 			}
 
@@ -315,18 +277,26 @@ public class FastaImporter {
 			if (cigarElement.getOperator().consumesReadBases()) {
 				sequencePos = sequencePos + cigarElement.getLength();
 			}
+
 		}
-		this.range = cleanRange(_range.toString(), start, lastpos);
-		return pos.toString();
+		
+		String _range = removeNPositionsFromRange(n_positions.toString(), start, lastpos);
+		range.append(_range);
+		
+		return variants.toString();
 	}
 
-	private String cleanRange(String emptyPos, int start, int stop) {
+	private String removeNPositionsFromRange(String emptyPositions, int start, int stop) {
+
 		String range = "";
 		int lastpos = start;
-		// System.out.println("start " + start + " + " + stop);
-		if (emptyPos.length() == 0)
+
+		if (emptyPositions.length() == 0) {
 			return (start + "-" + stop + ";");
-		StringTokenizer st = new StringTokenizer(emptyPos, ";");
+		}
+
+		StringTokenizer st = new StringTokenizer(emptyPositions, ";");
+
 		while (st.hasMoreTokens()) {
 			int posN = Integer.valueOf(st.nextToken());
 			if (posN > lastpos) {
@@ -337,30 +307,7 @@ public class FastaImporter {
 			}
 		}
 		range += lastpos + "-" + stop + ";";
+
 		return range;
 	}
-
-	/*
-	 * public String invertRange(String unavailablePositions, int start, int
-	 * stop, int length) {
-	 * 
-	 * StringBuilder range = new StringBuilder();
-	 * 
-	 * int lastPos = start;
-	 * 
-	 * if (unavailablePositions.length() == 0) { return (start + "-" + stop +
-	 * ";"); }
-	 * 
-	 * String[] splits = unavailablePositions.split(";");
-	 * 
-	 * for (String split : splits) {
-	 * 
-	 * int currentN = Integer.valueOf(split);
-	 * 
-	 * if (currentN > lastPos) { range.append(lastPos + "-" + (currentN - 1) +
-	 * ";"); lastPos = currentN + 1; } else if (currentN == lastPos) {
-	 * lastPos++; } } if (lastPos <= length) { range.append(lastPos + "-" + stop
-	 * + ";"); } return range.toString(); }
-	 */
-
 }
