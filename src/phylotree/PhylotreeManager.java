@@ -28,9 +28,9 @@ public class PhylotreeManager {
 	}
 
 	public static PhylotreeManager getInstance() {
-	//	if (instance == null) {
-			instance = new PhylotreeManager();
-	//	}
+		// if (instance == null) {
+		instance = new PhylotreeManager();
+		// }
 		return instance;
 	}
 
@@ -44,16 +44,18 @@ public class PhylotreeManager {
 	 *            Path to the file containing the phylogentic weights.
 	 * @return The requested phylotree instance
 	 */
-	
+
 	public Phylotree getPhylotree(String phylotreePath, String phyloGeneticWeightsPath, Reference reference) {
-		return getPhylotree( phylotreePath,  phyloGeneticWeightsPath,  reference, null);
+		return getPhylotree(phylotreePath, phyloGeneticWeightsPath, reference, null);
 	}
-	
+
 	public Phylotree getPhylotree(String phylotreePath, String phyloGeneticWeightsPath, Reference reference, HashSet<String> hotspots) {
-		if (phylotreeMap.containsKey(phylotreePath))
+		if (phylotreeMap.containsKey(phylotreePath)) {
+			System.out.println("key: "+  phylotreePath);
+			System.out.println("get phylo hotspots  " + phylotreeMap.get(phylotreePath).getHotspots());
 			return phylotreeMap.get(phylotreePath);
-		else {
-			// for CLAP protocol:
+		} else {
+			System.out.println("new key: "+  phylotreePath);
 			InputStream phyloFile = this.getClass().getClassLoader().getResourceAsStream(phylotreePath);
 			InputStream flucRates = this.getClass().getClassLoader().getResourceAsStream(phyloGeneticWeightsPath);
 			try {
