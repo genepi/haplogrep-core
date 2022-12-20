@@ -77,6 +77,7 @@ public class HsdExportTest {
 		newSampleFile.updateClassificationResults(phylotree, newRanker);
 
 		ExportUtils.createReport(newSampleFile.getTestSamples(), ref, "h100.txt", true);
+		System.out.println("content " + readFileIntoString("h100.txt"));
 		Assert.assertTrue(readFileIntoString("h100.txt").contains("16519C (hotspot)"));
 		
 	}

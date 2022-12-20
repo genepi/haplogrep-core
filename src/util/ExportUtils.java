@@ -200,6 +200,8 @@ public class ExportUtils {
 	private static String getTypeRemaining(Reference reference, Polymorphism p, SearchResult result) {
 
 		if (result.getPhyloTree().getMutationRate(p) == 0) {
+			System.out.println("poly " + p);
+			System.out.println("hotspots " + result.getPhyloTree().getHotspots());
 			if (result.getPhyloTree().isHotspot(p)) {
 				return "hotspot";
 			} else {
