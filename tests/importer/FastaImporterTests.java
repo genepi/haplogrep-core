@@ -9,6 +9,9 @@ import java.util.HashSet;
 import org.junit.Test;
 
 import core.Reference;
+import core.SampleFile;
+import core.TestSample;
+import search.ranking.KulczynskiRanking;
 
 public class FastaImporterTests {
 
@@ -55,7 +58,7 @@ public class FastaImporterTests {
 		ArrayList<String> samples = impFasta.load(new File(file), ref);
 
 		String[] splits = samples.get(0).split("\t");
-
+		
 		for (int i = 3; i < splits.length; i++) {
 			actual.append(splits[i] + ",");
 		}
@@ -151,5 +154,4 @@ public class FastaImporterTests {
 
 	}
 	
-
 }

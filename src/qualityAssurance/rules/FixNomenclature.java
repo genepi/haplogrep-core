@@ -44,7 +44,6 @@ public class FixNomenclature extends HaplogrepRule {
 		}
 
 		ArrayList<Polymorphism> inPolys = currentSample.getSample().getPolymorphisms();
-		// System.out.println("INPOLYS " + inPolys);
 
 		ArrayList<Polymorphism> outPolys = new ArrayList<Polymorphism>();
 
@@ -99,7 +98,6 @@ public class FixNomenclature extends HaplogrepRule {
 
 		Collections.sort(outPolys);
 
-		// System.out.println("OUTPOLYS " + outPolys);
 		currentSample.getSample().setPolymorphisms(outPolys);
 
 	}

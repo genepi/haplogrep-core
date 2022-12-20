@@ -44,16 +44,11 @@ public class PhylotreeManager {
 	 *            Path to the file containing the phylogentic weights.
 	 * @return The requested phylotree instance
 	 */
-	
-	public Phylotree getPhylotree(String phylotreePath, String phyloGeneticWeightsPath, Reference reference) {
-		return getPhylotree( phylotreePath,  phyloGeneticWeightsPath,  reference, null);
-	}
-	
+
 	public Phylotree getPhylotree(String phylotreePath, String phyloGeneticWeightsPath, Reference reference, HashSet<String> hotspots) {
-		if (phylotreeMap.containsKey(phylotreePath))
+		if (phylotreeMap.containsKey(phylotreePath)) {
 			return phylotreeMap.get(phylotreePath);
-		else {
-			// for CLAP protocol:
+		} else {
 			InputStream phyloFile = this.getClass().getClassLoader().getResourceAsStream(phylotreePath);
 			InputStream flucRates = this.getClass().getClassLoader().getResourceAsStream(phyloGeneticWeightsPath);
 			try {
