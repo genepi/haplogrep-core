@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 
 import org.jdom.JDOMException;
@@ -169,8 +170,6 @@ public class FastaTest {
 			throws NumberFormatException, JDOMException, IOException, InvalidPolymorphismException, HsdFileException, InvalidColumnCountException {
 		Reference ref = new Reference("test-data/reference/rcrs/rCRS.fasta");
 
-		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt", ref, null);
-
 		ArrayList<TestSample> testArray = new ArrayList<TestSample>();
 
 		ArrayList<Polymorphism> polys = new ArrayList<Polymorphism>();
@@ -230,7 +229,10 @@ public class FastaTest {
 
 		Reference ref = new Reference("test-data/reference/rcrs/rCRS.fasta");
 
-		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt", ref);
+		HashSet<String> hotspots = new HashSet<>(Arrays.asList("315.1C", "309.1C", "309.1CC", "523d", "524d", "524.1AC", "524.1ACAC", "3107d", "16182C",
+				"16183C", "16193.1C", "16193.1CC", "16519C"));
+
+		Phylotree phylotree = PhylotreeManager.getInstance().getPhylotree("phylotree17.xml", "weights17.txt", ref, hotspots);
 
 		ArrayList<TestSample> testArray = new ArrayList<TestSample>();
 

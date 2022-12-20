@@ -29,7 +29,7 @@ public class PhylotreeManager {
 
 	public static PhylotreeManager getInstance() {
 		if (instance == null) {
-		instance = new PhylotreeManager();
+			instance = new PhylotreeManager();
 		}
 		return instance;
 	}
@@ -45,21 +45,10 @@ public class PhylotreeManager {
 	 * @return The requested phylotree instance
 	 */
 
-	public Phylotree getPhylotree(String phylotreePath, String phyloGeneticWeightsPath, Reference reference) {
-		System.out.println("HERE");
-		return getPhylotree(phylotreePath, phyloGeneticWeightsPath, reference, null);
-	}
-
 	public Phylotree getPhylotree(String phylotreePath, String phyloGeneticWeightsPath, Reference reference, HashSet<String> hotspots) {
-		System.out.println("SIZE MAP " +phylotreeMap.size() );
-		System.out.println("SIZE MAP " +hotspots );
 		if (phylotreeMap.containsKey(phylotreePath)) {
-			System.out.println("existing key: "+  phylotreePath);
-			System.out.println("get phylo hotspots  " + phylotreeMap.get(phylotreePath).getHotspots());
 			return phylotreeMap.get(phylotreePath);
 		} else {
-			System.out.println("new key: "+  phylotreePath);
-			System.out.println("set hotspots: "+  hotspots);
 			InputStream phyloFile = this.getClass().getClassLoader().getResourceAsStream(phylotreePath);
 			InputStream flucRates = this.getClass().getClassLoader().getResourceAsStream(phyloGeneticWeightsPath);
 			try {
