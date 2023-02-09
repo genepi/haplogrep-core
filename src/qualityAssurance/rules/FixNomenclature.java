@@ -40,8 +40,6 @@ public class FixNomenclature extends HaplogrepRule {
 		HashMap<String, String> rules = new HashMap<String, String>();
 
 		while (reader.next()) {
-			System.out.println("A "+ reader.getString("error").trim());
-			System.out.println("B "+ reader.getString("expected").trim());
 			rules.put(reader.getString("error").trim(), reader.getString("expected").trim());
 		}
 
