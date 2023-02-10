@@ -30,6 +30,10 @@ public class FastaImporterTests {
 		}
 
 		assertEquals(0, actual.length());
+		
+		// check length of polymorphisms array
+		SampleFile sampleFile = new SampleFile(samples, ref);
+		assertEquals(0, sampleFile.getTestSamples().get(0).getSample().getPolymorphisms().size());
 	}
 
 	@Test

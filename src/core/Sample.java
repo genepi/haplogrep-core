@@ -23,8 +23,10 @@ public class Sample {
 
 	// callMethod defines the call. callMethod=1 call from PhyloTree
 	public Sample(String sampleToParse, SampleRanges sampleRange, Reference reference, int callMethod) throws InvalidPolymorphismException {
-
-		String[] polyTokens = sampleToParse.trim().split("\\s+");
+		String[] polyTokens = new String[0];
+		if (!sampleToParse.trim().isEmpty()) {
+			polyTokens = sampleToParse.trim().split("\\s+");
+		}
 		ArrayList<String> listOfSampleTokens = new ArrayList<String>(Arrays.asList(polyTokens));
 		this.reference = reference;
 		this.sample = parseSample(listOfSampleTokens, callMethod);
