@@ -33,7 +33,7 @@ public class CheckForTooManyGlobalPrivateMutations extends HaplogrepRule {
 					numGlobalPrivateMuations++;
 			}
 
-			if (numGlobalPrivateMuations > 2)
+			if (numGlobalPrivateMuations > 3)
 				qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample,
 						"The sample contains " + numGlobalPrivateMuations + " global private " + "mutation(s) that are not known by Phylotree",
 						IssueType.QUAL));
