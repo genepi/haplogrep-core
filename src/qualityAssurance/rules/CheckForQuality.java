@@ -31,8 +31,8 @@ public class CheckForQuality extends HaplogrepRule {
 			
 		double topResult = currentSample.getResults().get(0).getDistance();
 	
-		 if (topResult <= 0.8)
-			qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "The detected haplogroup quality " + new DecimalFormat("#0.00").format(topResult)+" is low. ", IssueType.QUAL));
+		 if (topResult <= 0.9)
+			qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "The detected haplogroup quality " + new DecimalFormat("#0.00").format(topResult)+" is below 0.9.", IssueType.QUAL));
 		}
 	}
 
