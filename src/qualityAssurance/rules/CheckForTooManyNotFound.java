@@ -1,5 +1,6 @@
 package qualityAssurance.rules;
 
+import java.text.DecimalFormat;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -26,8 +27,10 @@ public class CheckForTooManyNotFound extends HaplogrepRule {
 		if(currentSample.getResults().size() != 0){
 		SearchResult topResult = currentSample.getResults().get(0).getSearchResult();
 		
-		if(topResult.getDetailedResult().getFoundNotFoundPolysArray().size() > 2)
-			qualityAssistent.addNewIssue(new QualityFatal(qualityAssistent, currentSample, "The sample misses " + topResult.getDetailedResult().getFoundNotFoundPolysArray().size() + " expected polymorphisms ", IssueType.QUAL));
+		double missedPolysInPercentage = (double) topResult.getDetailedResult().getFoundNotFoundPolysArray().size() / topResult.getDetailedResult().getExpectedPolys().size();
+		
+		if(missedPolysInPercentage >= 0.5)
+			qualityAssistent.addNewIssue(new QualityFatal(qualityAssistent, currentSample, "The sample misses " + new DecimalFormat("#0.00").format(missedPolysInPercentage) + " % of the exepected polymorphisms. ", IssueType.QUAL));
 		}
 	}
 
