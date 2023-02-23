@@ -28,12 +28,11 @@ public class CheckForQuality extends HaplogrepRule {
 	public void evaluate(QualityAssistent qualityAssistent, TestSample currentSample) {
 	
 		if(currentSample.getResults().size()!=0){
+			
 		double topResult = currentSample.getResults().get(0).getDistance();
 	
-		if(topResult <= 0.9 & topResult > 0.8)
-			qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "The detected haplogroup quality " + new DecimalFormat("#0.00").format(topResult) + " is moderate. Sample is marked yellow ", IssueType.QUAL));
-		else if (topResult <= 0.8)
-			qualityAssistent.addNewIssue(new QualityFatal(qualityAssistent, currentSample, "The detected haplogroup quality " + new DecimalFormat("#0.00").format(topResult)+" is low. Sample is marked red", IssueType.QUAL));
+		 if (topResult <= 0.8)
+			qualityAssistent.addNewIssue(new QualityWarning(qualityAssistent, currentSample, "The detected haplogroup quality " + new DecimalFormat("#0.00").format(topResult)+" is low. ", IssueType.QUAL));
 		}
 	}
 
