@@ -20,6 +20,7 @@ public class VcfImporter {
 	public HashMap<String, Sample> load(File file, boolean chip) throws Exception {
 
 		final VCFFileReader vcfReader = new VCFFileReader(file, false);
+		
 
 		VCFHeader vcfHeader = vcfReader.getFileHeader();
 
@@ -42,16 +43,19 @@ public class VcfImporter {
 			range.append("1-16569");
 
 		}
+	
 
 		for (final VariantContext vc : vcfReader) {
 
 			if (vc.getStart() > 16569) {
 
 				System.out
-						.println("Error! Position " + vc.getStart() + " outside the range. Please double check if VCF includes variants mapped to rCRS only.");
+						.println("Error! Position " + vc.getStart() + " outside the range. Please double check if VCF includes variants mapped to rCRS only. Skipping position.");
+				continue;
 			}
 
 			String reference = vc.getReference().getBaseString();
+			
 
 			for (String sampleVcf : vcfHeader.getSampleNamesInOrder()) {
 				
