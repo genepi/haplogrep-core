@@ -48,6 +48,15 @@ public class Reference {
 
 	}
 
+	public String getReferenceBase(int position) {
+		if(position <= length) {
+			return String.valueOf(sequence.charAt(position - 1));
+		} else {
+			return null;
+		}
+		
+	}
+
 	public void loadReference(String refFilename) {
 
 		StringBuilder stringBuilder = null;
