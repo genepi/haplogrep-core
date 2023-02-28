@@ -302,6 +302,10 @@ public final class Phylotree {
 			return 0;
 
 	}
+	
+	public boolean isTreePosition(String position) {
+		return phyloGeneticWeights.containsKey(position);
+	}
 
 	/**
 	 * @return A reference to this phylotree instance
@@ -517,6 +521,16 @@ public final class Phylotree {
 
 		if (hotspots != null) {
 			return hotspots.contains(polymorphism.toString());
+		} else {
+			return false;
+		}
+
+	}
+	
+	public boolean isHotspot(String position) {
+
+		if (hotspots != null) {
+			return hotspots.contains(position);
 		} else {
 			return false;
 		}
