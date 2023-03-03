@@ -52,7 +52,6 @@ public class KylczynskiResult extends RankedResult {
 	 * @return The calculated Kylczynski distance
 	 */
 	private double calcDistance() {
-	
 		if (getCorrectPolyInTestSampleRatio() > 0 && getCorrectPolyInHaplogroupRatio() > 0) {
 			return getCorrectPolyInTestSampleRatio() * 0.5 + getCorrectPolyInHaplogroupRatio() * 0.5;
 		} else if (getCorrectPolyInTestSampleRatio() > 0) {
@@ -65,14 +64,19 @@ public class KylczynskiResult extends RankedResult {
 	}
 
 	public double getCorrectPolyInTestSampleRatio() {
-		return (searchResult.getWeightFoundPolys() / (searchResult.getSumWeightsAllPolysSample()));
+		if (searchResult.getSumWeightsAllPolysSample() > 0) {
+			return (searchResult.getWeightFoundPolys() / (searchResult.getSumWeightsAllPolysSample()));
+		} else {
+			return 0;
+		}
 	}
 
 	private double getCorrectPolyInHaplogroupRatio() {
-		if (searchResult.getExpectedWeightPolys() != 0)
+		if (searchResult.getExpectedWeightPolys() != 0) {
 			return searchResult.getWeightFoundPolys() / searchResult.getExpectedWeightPolys();
-		else
+		} else {
 			return 1;
+		}
 	}
 
 	/*
@@ -82,7 +86,7 @@ public class KylczynskiResult extends RankedResult {
 	 */
 	@Override
 	public double getDistance() {
-			return kylcinskiDistance;
+		return kylcinskiDistance;
 	}
 
 	/*
@@ -98,19 +102,18 @@ public class KylczynskiResult extends RankedResult {
 		child.put("rank", df.format(kylcinskiDistance));
 		child.put("name", searchResult.getHaplogroup().toString());
 		child.put("id", searchResult.getHaplogroup().toString());
-		
-		if (!Double.isNaN(getCorrectPolyInTestSampleRatio())){
+
+		if (!Double.isNaN(getCorrectPolyInTestSampleRatio())) {
 			child.put("rankS", df.format(getCorrectPolyInTestSampleRatio()));
 		} else {
 			child.put("rankS", "-");
 		}
-		
-		if (!Double.isNaN(getCorrectPolyInHaplogroupRatio())){
+
+		if (!Double.isNaN(getCorrectPolyInHaplogroupRatio())) {
 			child.put("rankHG", df.format(getCorrectPolyInHaplogroupRatio()));
 		} else {
 			child.put("rankHG", "-");
 		}
-		
-	
+
 	}
 }
